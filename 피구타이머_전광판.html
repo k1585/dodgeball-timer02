@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>피구 전광판</title>
+<style>
+body{
+margin:0;
+background:#000;
+color:#fff;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+font-family:Arial,sans-serif;
+overflow:hidden;
+}
+#time{
+font-size:min(35vw,260px);
+font-weight:bold;
+white-space:nowrap;
+}
+</style>
+</head>
+<body>
+<div id="time">00.00</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsUAj6nR2eihsyZn6BREseo_iH-3I56i0",
+  authDomain: "stopwatch-6bb55.firebaseapp.com",
+  databaseURL: "https://stopwatch-6bb55-default-rtdb.firebaseio.com",
+  projectId: "stopwatch-6bb55",
+  storageBucket: "stopwatch-6bb55.firebasestorage.app",
+  messagingSenderId: "113223681035",
+  appId: "1:113223681035:web:218ded3ff96c995d39b30e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+onValue(ref(db,"timer"),(snapshot)=>{
+ const data=snapshot.val();
+ if(!data) return;
+
+ const ms=Math.max(0, Number(data.ms||0));
+ const sec=Math.floor(ms/1000);
+ const cs=Math.floor((ms%1000)/10);
+
+ document.getElementById("time").textContent =
+   String(sec).padStart(2,"0")+"."+String(cs).padStart(2,"0");
+});
+</script>
+</body>
+</html>

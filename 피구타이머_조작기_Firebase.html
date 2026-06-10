@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>피구 타이머</title>
+
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      background: #101014;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: transparent;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    body.flash::before {
+      animation: flashOverlay 0.18s;
+    }
+
+    @keyframes flashOverlay {
+      0% {
+        background: rgba(120, 120, 130, 0.55);
+      }
+
+      100% {
+        background: transparent;
+      }
+    }
+
+    .fullscreen-button {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: #2f2f38;
+      color: white;
+      border: none;
+      font-size: 24px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      padding: 0;
+      margin: 0;
+    }
+
+    .fullscreen-button:active {
+      transform: scale(0.96);
+    }
+
+    .app {
+      width: 90%;
+      max-width: 420px;
+      text-align: center;
+      transform: translateY(-28px);
+      position: relative;
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 32px;
+      margin-bottom: 12px;
+    }
+
+    #time {
+      height: 178px;
+      margin: 28px 0;
+      line-height: 1;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    #time.over-time {
+      color: #ff3333;
+    }
+
+    #secondsText {
+      font-size: 150px;
+      transition: font-size 0.15s;
+    }
+
+    #millisecondsText {
+      font-size: 52px;
+      opacity: 0.75;
+      margin-left: 6px;
+      transition: font-size 0.15s;
+    }
+
+    #overText {
+      display: none;
+      font-size: 34px;
+      margin-left: 8px;
+      vertical-align: baseline;
+      transition: font-size 0.15s;
+    }
+
+    #time.compact #secondsText {
+      font-size: 122px;
+    }
+
+    #time.compact #millisecondsText {
+      font-size: 44px;
+    }
+
+    #time.compact #overText {
+      font-size: 30px;
+    }
+
+    #time.more-compact #secondsText {
+      font-size: 96px;
+    }
+
+    #time.more-compact #millisecondsText {
+      font-size: 36px;
+    }
+
+    #time.more-compact #overText {
+      font-size: 26px;
+    }
+
+    button {
+      width: 100%;
+      font-size: 30px;
+      padding: 22px;
+      border: none;
+      border-radius: 18px;
+      color: white;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    #settingButton {
+      background: #4444ff;
+      font-size: 22px;
+      padding: 14px;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    #mainButton {
+      background: #ff3b3b;
+      padding: 30px 22px;
+      font-size: 32px;
+    }
+
+    #stopButton {
+      background: #555;
+      font-size: 26px;
+      padding: 18px;
+    }
+
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      box-sizing: border-box;
+      z-index: 40;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 360px;
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #202028;
+      border-radius: 24px;
+      padding: 28px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+
+    .modal h2 {
+      margin-top: 0;
+      margin-bottom: 18px;
+      font-size: 28px;
+    }
+
+    .setting-section {
+      margin-top: 22px;
+    }
+
+    .setting-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #ccc;
+    }
+
+    input {
+      width: 120px;
+      font-size: 36px;
+      text-align: center;
+      padding: 12px;
+      border-radius: 14px;
+      border: none;
+      margin-bottom: 8px;
+    }
+
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .mode-button {
+      background: #3a3a44;
+      font-size: 22px;
+      padding: 16px;
+      margin-top: 0;
+    }
+
+    .mode-button.selected {
+      background: #ff3b3b;
+    }
+
+    .apply-button {
+      background: #4444ff;
+      font-size: 26px;
+      padding: 18px;
+      margin-top: 24px;
+    }
+
+    .cancel-button {
+      background: #555;
+      font-size: 22px;
+      padding: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <button class="fullscreen-button" onclick="toggleFullscreen()" title="전체화면">⛶</button>
+
+  <div class="app">
+    <h1>피구 타이머</h1>
+
+    <button id="settingButton" onclick="openSetting()">설정</button>
+
+    <div id="time">
+      <span id="secondsText">3</span><span id="millisecondsText">.00</span><span id="overText">초과</span>
+    </div>
+
+    <button id="mainButton" onclick="restartTimer()">시작</button>
+    <button id="stopButton" onclick="stopAndResetTimer()">정지/초기화</button>
+  </div>
+
+  <div id="settingModal" class="modal-bg">
+    <div class="modal">
+      <h2>설정</h2>
+
+      <div class="setting-section">
+        <div class="setting-title">시간 변경</div>
+        <input id="secondsInput" type="number" value="3" min="1" max="99" />
+        <div>초</div>
+      </div>
+
+      <div class="setting-section">
+        <div class="setting-title">알림 모드</div>
+
+        <div class="mode-buttons">
+          <button id="silentModeButton" class="mode-button" onclick="selectAlertMode('silent')">무음 모드</button>
+          <button id="vibrationModeButton" class="mode-button selected" onclick="selectAlertMode('vibration')">진동 모드</button>
+          <button id="soundOnlyModeButton" class="mode-button" onclick="selectAlertMode('soundOnly')">소리 모드</button>
+          <button id="soundVibrationModeButton" class="mode-button" onclick="selectAlertMode('soundVibration')">소리+진동 모드</button>
+        </div>
+      </div>
+
+      <div class="setting-section">
+        <div class="setting-title">화면 깜빡임</div>
+
+        <div class="mode-buttons">
+          <button id="flashOnButton" class="mode-button selected" onclick="selectFlashMode(true)">켜기</button>
+          <button id="flashOffButton" class="mode-button" onclick="selectFlashMode(false)">끄기</button>
+        </div>
+      </div>
+
+      <button class="apply-button" onclick="applySetting()">적용</button>
+      <button class="cancel-button" onclick="closeSetting()">취소</button>
+    </div>
+  </div>
+
+  
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsUAj6nR2eihsyZn6BREseo_iH-3I56i0",
+  authDomain: "stopwatch-6bb55.firebaseapp.com",
+  databaseURL: "https://stopwatch-6bb55-default-rtdb.firebaseio.com",
+  projectId: "stopwatch-6bb55",
+  storageBucket: "stopwatch-6bb55.firebasestorage.app",
+  messagingSenderId: "113223681035",
+  appId: "1:113223681035:web:218ded3ff96c995d39b30e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.syncTimerToFirebase = function(totalMs, mode){
+  set(ref(db, "timer"), {
+    ms: Math.round(totalMs),
+    mode: mode || "countdown",
+    updated: Date.now()
+  });
+};
+</script>
+
+<script>
+    let running = false;
+    let mode = "countdown";
+
+    let alertMode = "vibration";
+    let tempAlertMode = "vibration";
+
+    let flashEnabled = true;
+    let tempFlashEnabled = true;
+
+    let savedSeconds = 3;
+    let countdownEndTime = 0;
+    let stopwatchStartTime = 0;
+
+    let animationId = null;
+    let finishTimeoutId = null;
+    let overAlertIntervalId = null;
+
+    let countdownAlertTimeoutIds = [];
+    let alarmBurstTimeoutIds = [];
+
+    let audioContext = null;
+    let wakeLock = null;
+
+    const timeBox = document.getElementById("time");
+    const secondsText = document.getElementById("secondsText");
+    const millisecondsText = document.getElementById("millisecondsText");
+    const overText = document.getElementById("overText");
+    const secondsInput = document.getElementById("secondsInput");
+    const mainButton = document.getElementById("mainButton");
+    const settingModal = document.getElementById("settingModal");
+
+    const silentModeButton = document.getElementById("silentModeButton");
+    const vibrationModeButton = document.getElementById("vibrationModeButton");
+    const soundOnlyModeButton = document.getElementById("soundOnlyModeButton");
+    const soundVibrationModeButton = document.getElementById("soundVibrationModeButton");
+
+    const flashOnButton = document.getElementById("flashOnButton");
+    const flashOffButton = document.getElementById("flashOffButton");
+
+    function loadSettings() {
+      const savedTimeValue = localStorage.getItem("dodgeball_saved_seconds");
+      const savedAlertModeValue = localStorage.getItem("dodgeball_alert_mode");
+      const savedFlashValue = localStorage.getItem("dodgeball_flash_enabled");
+
+      const parsedSeconds = Number(savedTimeValue);
+
+      if (parsedSeconds && parsedSeconds >= 1) {
+        savedSeconds = parsedSeconds;
+      }
+
+      if (
+        savedAlertModeValue === "silent" ||
+        savedAlertModeValue === "vibration" ||
+        savedAlertModeValue === "soundOnly" ||
+        savedAlertModeValue === "soundVibration"
+      ) {
+        alertMode = savedAlertModeValue;
+        tempAlertMode = savedAlertModeValue;
+      }
+
+      if (savedFlashValue === "true") {
+        flashEnabled = true;
+        tempFlashEnabled = true;
+      }
+
+      if (savedFlashValue === "false") {
+        flashEnabled = false;
+        tempFlashEnabled = false;
+      }
+    }
+
+    function saveSettings() {
+      localStorage.setItem("dodgeball_saved_seconds", String(savedSeconds));
+      localStorage.setItem("dodgeball_alert_mode", alertMode);
+      localStorage.setItem("dodgeball_flash_enabled", String(flashEnabled));
+    }
+
+    async function requestScreenWakeLock() {
+      try {
+        if ("wakeLock" in navigator && running) {
+          wakeLock = await navigator.wakeLock.request("screen");
+
+          wakeLock.addEventListener("release", () => {
+            wakeLock = null;
+          });
+        }
+      } catch (error) {
+        wakeLock = null;
+      }
+    }
+
+    async function releaseScreenWakeLock() {
+      try {
+        if (wakeLock) {
+          await wakeLock.release();
+          wakeLock = null;
+        }
+      } catch (error) {
+        wakeLock = null;
+      }
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && running) {
+        requestScreenWakeLock();
+      }
+    });
+
+    function toggleFullscreen() {
+      const page = document.documentElement;
+
+      if (!document.fullscreenElement) {
+        if (page.requestFullscreen) {
+          page.requestFullscreen();
+        } else if (page.webkitRequestFullscreen) {
+          page.webkitRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    function updateDisplay(totalMs) {
+      const safeMs = Math.max(0, totalMs);
+
+      const seconds = Math.floor(safeMs / 1000);
+      const centiseconds = Math.floor((safeMs % 1000) / 10);
+
+      secondsText.textContent = String(seconds).padStart(2, "0");
+      millisecondsText.textContent = "." + String(centiseconds).padStart(2, "0");
+
+      adjustTimeSize(seconds);
+
+      if (window.syncTimerToFirebase) {
+        window.syncTimerToFirebase(totalMs, mode);
+      }
+    }
+
+    function adjustTimeSize(seconds) {
+      timeBox.classList.remove("compact");
+      timeBox.classList.remove("more-compact");
+
+      if (seconds >= 1000) {
+        timeBox.classList.add("more-compact");
+        return;
+      }
+
+      if (seconds >= 100) {
+        timeBox.classList.add("compact");
+      }
+    }
+
+    function setOverTimeStyle(isOverTime) {
+      if (isOverTime) {
+        timeBox.classList.add("over-time");
+        overText.style.display = "inline";
+      } else {
+        timeBox.classList.remove("over-time");
+        overText.style.display = "none";
+      }
+    }
+
+    function flashScreen() {
+      if (!flashEnabled) return;
+
+      document.body.classList.remove("flash");
+      void document.body.offsetWidth;
+      document.body.classList.add("flash");
+    }
+
+    function getAudioContext() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      if (audioContext.state === "suspended") {
+        audioContext.resume();
+      }
+
+      return audioContext;
+    }
+
+    function playBeep(frequency, duration, volume) {
+      if (alertMode !== "soundOnly" && alertMode !== "soundVibration") return;
+
+      const ctx = getAudioContext();
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+
+      oscillator.type = "square";
+      oscillator.frequency.value = frequency;
+
+      gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration / 1000);
+
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      oscillator.start();
+      oscillator.stop(ctx.currentTime + duration / 1000);
+    }
+
+    function playVibration(pattern) {
+      if (alertMode !== "vibration" && alertMode !== "soundVibration") return;
+
+      if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+      }
+    }
+
+    function playStartAlert() {
+      if (alertMode === "silent") return;
+
+      if (alertMode === "vibration") {
+        playVibration(100);
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundOnly") {
+        playBeep(900, 80, 0.25);
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundVibration") {
+        playBeep(900, 80, 0.25);
+        playVibration(100);
+        flashScreen();
+      }
+    }
+
+    function playCountdownAlert() {
+      if (alertMode === "silent") return;
+
+      if (alertMode === "vibration") {
+        playVibration(120);
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundOnly") {
+        playBeep(1200, 90, 0.35);
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundVibration") {
+        playBeep(1200, 90, 0.35);
+        playVibration(120);
+        flashScreen();
+      }
+    }
+
+    function playOverStartAlert() {
+      if (alertMode === "silent") return;
+
+      if (alertMode === "vibration") {
+        playVibration([500, 100, 500, 100, 500]);
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundOnly") {
+        playFourBeepAlarm();
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundVibration") {
+        playFourBeepAlarm();
+        playVibration([500, 100, 500, 100, 500]);
+        flashScreen();
+      }
+    }
+
+    function playContinuousOverAlert() {
+      if (alertMode === "silent") return;
+
+      if (alertMode === "vibration") {
+        playVibration([900, 50]);
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundOnly") {
+        playFourBeepAlarm();
+        flashScreen();
+        return;
+      }
+
+      if (alertMode === "soundVibration") {
+        playFourBeepAlarm();
+        playVibration([900, 50]);
+        flashScreen();
+      }
+    }
+
+    function playFourBeepAlarm() {
+      if (alertMode !== "soundOnly" && alertMode !== "soundVibration") return;
+
+      clearAlarmBurstTimeouts();
+
+      const frequency = 1700;
+      const duration = 70;
+      const volume = 0.45;
+      const delays = [0, 120, 240, 360];
+
+      delays.forEach((delay) => {
+        const timeoutId = setTimeout(() => {
+          if (
+            running &&
+            mode === "stopwatch" &&
+            (alertMode === "soundOnly" || alertMode === "soundVibration")
+          ) {
+            playBeep(frequency, duration, volume);
+          }
+        }, delay);
+
+        alarmBurstTimeoutIds.push(timeoutId);
+      });
+    }
+
+    function clearAlarmBurstTimeouts() {
+      alarmBurstTimeoutIds.forEach((id) => clearTimeout(id));
+      alarmBurstTimeoutIds = [];
+    }
+
+    function clearCountdownAlertTimeouts() {
+      countdownAlertTimeoutIds.forEach((id) => clearTimeout(id));
+      countdownAlertTimeoutIds = [];
+    }
+
+    function stopAllAlerts() {
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+
+      clearAlarmBurstTimeouts();
+    }
+
+    function stopTimerOnly() {
+      clearCountdownAlertTimeouts();
+
+      if (finishTimeoutId) {
+        clearTimeout(finishTimeoutId);
+        finishTimeoutId = null;
+      }
+
+      if (overAlertIntervalId) {
+        clearInterval(overAlertIntervalId);
+        overAlertIntervalId = null;
+      }
+
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+      }
+
+      stopAllAlerts();
+
+      running = false;
+      releaseScreenWakeLock();
+    }
+
+    function stopAndResetTimer() {
+      stopTimerOnly();
+
+      mode = "countdown";
+      setOverTimeStyle(false);
+      updateDisplay(savedSeconds * 1000);
+      mainButton.textContent = "시작";
+    }
+
+    function openSetting() {
+      secondsInput.value = savedSeconds;
+
+      tempAlertMode = alertMode;
+      tempFlashEnabled = flashEnabled;
+
+      updateModeButtons();
+      updateFlashButtons();
+
+      settingModal.style.display = "flex";
+    }
+
+    function closeSetting() {
+      settingModal.style.display = "none";
+    }
+
+    function selectAlertMode(newMode) {
+      tempAlertMode = newMode;
+      updateModeButtons();
+    }
+
+    function selectFlashMode(isEnabled) {
+      tempFlashEnabled = isEnabled;
+      updateFlashButtons();
+    }
+
+    function updateModeButtons() {
+      silentModeButton.classList.remove("selected");
+      vibrationModeButton.classList.remove("selected");
+      soundOnlyModeButton.classList.remove("selected");
+      soundVibrationModeButton.classList.remove("selected");
+
+      if (tempAlertMode === "silent") {
+        silentModeButton.classList.add("selected");
+      }
+
+      if (tempAlertMode === "vibration") {
+        vibrationModeButton.classList.add("selected");
+      }
+
+      if (tempAlertMode === "soundOnly") {
+        soundOnlyModeButton.classList.add("selected");
+      }
+
+      if (tempAlertMode === "soundVibration") {
+        soundVibrationModeButton.classList.add("selected");
+      }
+    }
+
+    function updateFlashButtons() {
+      flashOnButton.classList.remove("selected");
+      flashOffButton.classList.remove("selected");
+
+      if (tempFlashEnabled) {
+        flashOnButton.classList.add("selected");
+      } else {
+        flashOffButton.classList.add("selected");
+      }
+    }
+
+    function applySetting() {
+      const newSeconds = Number(secondsInput.value);
+
+      if (!newSeconds || newSeconds < 1) {
+        alert("1초 이상 입력하세요.");
+        return;
+      }
+
+      savedSeconds = newSeconds;
+      alertMode = tempAlertMode;
+      flashEnabled = tempFlashEnabled;
+
+      saveSettings();
+      stopTimerOnly();
+
+      mode = "countdown";
+      setOverTimeStyle(false);
+      updateDisplay(savedSeconds * 1000);
+      mainButton.textContent = "시작";
+
+      if (alertMode === "soundOnly" || alertMode === "soundVibration") {
+        getAudioContext();
+      }
+
+      closeSetting();
+    }
+
+    function restartTimer() {
+      stopTimerOnly();
+      setOverTimeStyle(false);
+
+      if (alertMode === "soundOnly" || alertMode === "soundVibration") {
+        getAudioContext();
+      }
+
+      startCountdown();
+    }
+
+    function startCountdown() {
+      if (!savedSeconds || savedSeconds < 1) {
+        alert("1초 이상 설정하세요.");
+        return;
+      }
+
+      running = true;
+      mode = "countdown";
+      mainButton.textContent = "재시작";
+
+      const now = performance.now();
+      countdownEndTime = now + savedSeconds * 1000;
+
+      setOverTimeStyle(false);
+      updateDisplay(savedSeconds * 1000);
+
+      requestScreenWakeLock();
+
+      playStartAlert();
+      scheduleCountdownAlerts();
+      scheduleFinishAlert();
+      animate();
+    }
+
+    function scheduleCountdownAlerts() {
+      clearCountdownAlertTimeouts();
+
+      for (let second = 1; second < savedSeconds; second++) {
+        const timeoutId = setTimeout(() => {
+          if (running && mode === "countdown") {
+            playCountdownAlert();
+          }
+        }, second * 1000);
+
+        countdownAlertTimeoutIds.push(timeoutId);
+      }
+    }
+
+    function scheduleFinishAlert() {
+      if (finishTimeoutId) {
+        clearTimeout(finishTimeoutId);
+      }
+
+      finishTimeoutId = setTimeout(() => {
+        if (running && mode === "countdown") {
+          switchToStopwatch();
+        }
+      }, savedSeconds * 1000);
+    }
+
+    function animate() {
+      if (!running) return;
+
+      const now = performance.now();
+
+      if (mode === "countdown") {
+        const remainingMs = countdownEndTime - now;
+        updateDisplay(remainingMs);
+
+        if (remainingMs <= 0) {
+          switchToStopwatch();
+          return;
+        }
+      }
+
+      if (mode === "stopwatch") {
+        const elapsedMs = now - stopwatchStartTime;
+        updateDisplay(elapsedMs);
+      }
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    function switchToStopwatch() {
+      if (!running || mode !== "countdown") return;
+
+      clearCountdownAlertTimeouts();
+
+      if (finishTimeoutId) {
+        clearTimeout(finishTimeoutId);
+        finishTimeoutId = null;
+      }
+
+      updateDisplay(0);
+      setOverTimeStyle(true);
+
+      mode = "stopwatch";
+      stopwatchStartTime = performance.now();
+
+      playOverStartAlert();
+      startOverAlertLoop();
+
+      animationId = requestAnimationFrame(animate);
+    }
+
+    function startOverAlertLoop() {
+      if (overAlertIntervalId) {
+        clearInterval(overAlertIntervalId);
+      }
+
+      overAlertIntervalId = setInterval(() => {
+        if (running && mode === "stopwatch") {
+          playContinuousOverAlert();
+        }
+      }, 850);
+    }
+
+    loadSettings();
+    updateDisplay(savedSeconds * 1000);
+    setOverTimeStyle(false);
+    updateModeButtons();
+    updateFlashButtons();
+  </script>
+</body>
+</html>
