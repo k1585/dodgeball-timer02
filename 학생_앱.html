@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학생용 숙제 앱</title>
+<style>
+  :root{
+    /* 포인트 색상: 이 값만 바꾸면 전체 화면의 파란색이 한 번에 바뀝니다 */
+    --point-strong:#3F6FF5;  /* 진한 포인트컬러 */
+    --point-light:#E6ECFF;   /* 연한 포인트컬러 */
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  html, body{
+    height:100%;
+    margin:0;
+    overflow:hidden;
+  }
+
+  body{
+    background:#ffffff;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+
+  .app-shell{
+    width:100%;
+    max-width:480px;
+    height:100vh;
+    background:#ffffff;
+    position:relative;
+  }
+
+  /* 4: 화면(페이지) 전환 */
+  .page{
+    display:none;
+    flex-direction:column;
+    height:100%;
+  }
+
+  .page.active{
+    display:flex;
+  }
+
+  /* 하단 고정 메뉴 (홈 / 숙제 목록 화면 공용) */
+  .bottom-nav{
+    flex-shrink:0;
+    display:flex;
+    border-top:1px solid #eeeeee;
+    background:#ffffff;
+  }
+
+  .nav-item{
+    flex:1;
+    background:none;
+    border:none;
+    padding:8px 0 9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    color:#9aa0a6;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-0.2px;
+    cursor:pointer;
+  }
+
+  .nav-item svg{
+    width:21px;
+    height:21px;
+  }
+
+  .nav-item.active{
+    color:var(--point-strong);
+  }
+
+  /* ================= 홈 화면 ================= */
+  #page-home .home-content{
+    flex:1;
+    overflow-y:auto;
+    padding:22px 20px 14px;
+  }
+
+  .top-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .greeting{
+    font-size:24px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .greeting .user-name{
+    color:var(--point-strong);
+  }
+
+  .greeting .page-label{
+    color:#9aa0a6;
+    font-weight:700;
+    margin-right:6px;
+  }
+
+  .top-icons{
+    display:flex;
+    gap:14px;
+  }
+
+  .icon-btn{
+    width:36px;
+    height:36px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--point-strong);
+  }
+
+  .homework-card{
+    margin-top:20px;
+    background:var(--point-strong);
+    border-radius:24px;
+    padding:18px 20px;
+  }
+
+  .homework-title{
+    color:#ffffff;
+    font-size:22px;
+    font-weight:800;
+    margin:0 0 4px 0;
+  }
+
+  .homework-date-range{
+    color:#ffffff;
+    font-size:15px;
+    opacity:0.9;
+    margin:0 0 14px 0;
+  }
+
+  #page-home .homework-item{
+    background:#ffffff;
+    border-radius:18px;
+    padding:16px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+  }
+
+  #page-home .hw-name{
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 4px;
+  }
+
+  #page-home .hw-due{
+    font-size:12px;
+    color:#888888;
+    margin:0;
+  }
+
+  #page-home .hw-right{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+  }
+
+  #page-home .hw-dday{
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:14px;
+    padding:6px 12px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  #page-home .hw-arrow{
+    color:#c2c2c2;
+    display:flex;
+  }
+
+  .more-link{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed rgba(255,255,255,0.5);
+    text-align:center;
+    color:#ffffff;
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .blank-section{
+    background:#ffffff;
+    min-height:120px;
+  }
+
+  /* ================= 숙제 목록 화면 (1: 사이즈 축소) ================= */
+  #page-list .list-fixed-top{
+    flex-shrink:0;
+    padding:20px 20px 0;
+  }
+
+  .page-title{
+    font-size:22px;
+    font-weight:800;
+    color:#111111;
+    margin:0;
+  }
+
+  .tabs{
+    display:flex;
+    margin-top:14px;
+    border-bottom:1px solid #eeeeee;
+  }
+
+  .tab{
+    flex:1;
+    background:none;
+    border:none;
+    padding:10px 0;
+    font-size:14px;
+    font-weight:700;
+    color:#9aa0a6;
+    border-bottom:3px solid transparent;
+    margin-bottom:-1px;
+    cursor:pointer;
+  }
+
+  .tab.active{
+    color:var(--point-strong);
+    border-bottom-color:var(--point-strong);
+  }
+
+  .date-range{
+    color:var(--point-strong);
+    font-size:14px;
+    font-weight:800;
+    margin:14px 0 10px;
+  }
+
+  #page-list .list-area{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:0 20px 14px;
+  }
+
+  #page-list .hw-card{
+    border:1px solid #ececec;
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+  }
+
+  #page-list .hw-name{
+    font-size:17px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 4px;
+  }
+
+  #page-list .hw-due{
+    font-size:12px;
+    color:#888888;
+  }
+
+  #page-list .hw-right{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+  }
+
+  #page-list .hw-dday{
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:13px;
+    padding:5px 11px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  #page-list .hw-arrow{
+    color:#c2c2c2;
+    display:flex;
+  }
+
+  .section-divider{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#9aa0a6;
+    font-size:12px;
+    font-weight:700;
+    margin:16px 0 10px;
+    white-space:nowrap;
+  }
+
+  .section-divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#e5e5e5;
+  }
+
+  /* ================= 숙제 업로드(상세) 화면 (7: 압축해서 스크롤 없이) ================= */
+  #page-detail .detail-content{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:16px 18px 12px;
+  }
+
+  .top-bar-sm{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .back-btn{
+    width:28px;
+    height:28px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#111111;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  .page-title-sm{
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+    margin:0;
+  }
+
+  .bundle-header{
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .bundle-title{
+    font-size:16px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .bundle-due{
+    font-size:11px;
+    color:#888888;
+  }
+
+  .bundle-dday{
+    margin-left:auto;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  /* 3: 개별 숙제 목록 - 조금 더 길게(세로) + 자체 스크롤 */
+  .task-list{
+    margin-top:10px;
+    max-height:210px;
+    overflow-y:auto;
+    padding-right:4px;
+  }
+
+  .task-card{
+    border:1px solid #ececec;
+    border-radius:12px;
+    padding:9px 12px;
+    margin-bottom:7px;
+  }
+
+  .task-card:last-child{
+    margin-bottom:0;
+  }
+
+  .task-name{
+    font-size:14px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 3px;
+  }
+
+  .task-meta{
+    font-size:11px;
+    color:#888888;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .task-meta .meta-divider{
+    color:#dddddd;
+  }
+
+  .upload-box{
+    margin-top:14px;
+    background:var(--point-light);
+    border-radius:16px;
+    padding:16px 16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  .upload-icon{
+    color:var(--point-strong);
+    margin-bottom:6px;
+  }
+
+  .upload-icon svg{
+    width:26px;
+    height:26px;
+  }
+
+  .upload-text{
+    font-size:13px;
+    font-weight:700;
+    color:#444444;
+    margin:0 0 12px;
+  }
+
+  .upload-actions{
+    display:flex;
+    gap:8px;
+    width:100%;
+  }
+
+  .upload-action-btn{
+    flex:1;
+    background:#ffffff;
+    color:var(--point-strong);
+    border:1px solid var(--point-strong);
+    border-radius:10px;
+    padding:9px 6px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .uploaded-count{
+    margin:14px 0 8px;
+    font-size:13px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .thumb-row{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+
+  .thumb{
+    flex-shrink:0;
+    width:60px;
+    height:60px;
+    border-radius:10px;
+    overflow:hidden;
+    background:#f0f2f5;
+    cursor:pointer;
+    border:1px solid #eeeeee;
+  }
+
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .thumb-empty{
+    font-size:12px;
+    color:#bbbbbb;
+  }
+
+  .notice-box{
+    margin-top:14px;
+    background:var(--point-light);
+    border-radius:10px;
+    padding:9px 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .notice-icon{
+    color:var(--point-strong);
+    flex-shrink:0;
+    display:flex;
+  }
+
+  .notice-icon svg{
+    width:15px;
+    height:15px;
+  }
+
+  .notice-box span.notice-text{
+    font-size:11px;
+    color:#4a4a4a;
+    font-weight:600;
+  }
+
+  .submit-bar{
+    flex-shrink:0;
+    padding:10px 18px 16px;
+    border-top:1px solid #f0f0f0;
+    background:#ffffff;
+  }
+
+  .submit-btn{
+    width:100%;
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:14px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* 나가기 확인 팝업 */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+
+  .modal-overlay.show{
+    display:flex;
+  }
+
+  .modal-box{
+    background:#ffffff;
+    border-radius:20px;
+    padding:26px 22px;
+    width:100%;
+    max-width:320px;
+    text-align:center;
+  }
+
+  .modal-text{
+    font-size:15px;
+    font-weight:700;
+    color:#222222;
+    margin:0 0 20px;
+    line-height:1.5;
+  }
+
+  .modal-actions{
+    display:flex;
+    gap:10px;
+  }
+
+  .modal-actions button{
+    flex:1;
+    border-radius:12px;
+    padding:13px 8px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    border:none;
+  }
+
+  #cancelExitBtn{
+    background:#f1f2f5;
+    color:#555555;
+  }
+
+  #confirmExitBtn{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  /* 사진 크게 보기 */
+  .lightbox-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    align-items:center;
+    justify-content:center;
+    z-index:110;
+    padding:24px;
+  }
+
+  .lightbox-overlay.show{
+    display:flex;
+  }
+
+  .lightbox-overlay img{
+    max-width:100%;
+    max-height:100%;
+    border-radius:12px;
+  }
+
+  /* 5,6: 제출 완료 화면 */
+  .success-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#ffffff;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:120;
+    padding:24px;
+  }
+
+  .success-overlay.show{
+    display:flex;
+  }
+
+  .success-title{
+    font-size:19px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 22px;
+    text-align:center;
+  }
+
+  .success-circle{
+    width:92px;
+    height:92px;
+    border-radius:50%;
+    background:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .success-actions{
+    margin-top:64px;
+    width:100%;
+    max-width:320px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .success-btn{
+    width:100%;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .success-btn.strong{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  .success-btn.light{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ================= 홈 화면 ================= -->
+  <div class="page active" id="page-home">
+    <div class="home-content">
+
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
+
+        <div class="top-icons">
+          <button class="icon-btn" aria-label="알림">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="homework-card">
+        <p class="homework-title">제출해야 할 숙제</p>
+        <p class="homework-date-range">8월 25일 ~ 8월 25일 숙제</p>
+
+        <div class="homework-item" onclick="showPage('detail')">
+          <div>
+            <p class="hw-name">0825 숙제</p>
+            <p class="hw-due">제출 기한: 8월 25일</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-1일</span>
+            <span class="hw-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="more-link">외 0건의 숙제 &gt;</div>
+      </div>
+
+      <div class="blank-section"></div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="showPage('list')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item" data-nav="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= 숙제 목록 화면 ================= -->
+  <div class="page" id="page-list">
+
+    <div class="list-fixed-top">
+      <h1 class="page-title">숙제 목록</h1>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="remaining">남은 숙제</button>
+        <button class="tab" data-tab="pending">승인 대기</button>
+        <button class="tab" data-tab="past">지난 숙제</button>
+      </div>
+
+      <p class="date-range">8월 24일 ~ 8월 30일</p>
+    </div>
+
+    <div class="list-area">
+
+      <div class="hw-card" onclick="showPage('detail')">
+        <div>
+          <p class="hw-name">0825 숙제</p>
+          <p class="hw-due">제출 기한: 8월 25일 (월)</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">D-1일</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="section-divider">8월 26일 이후 숙제</div>
+
+      <div class="hw-card" onclick="showPage('detail')">
+        <div>
+          <p class="hw-name">0827 숙제</p>
+          <p class="hw-due">제출 기한: 8월 27일 (수)</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">D-3일</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="hw-card" onclick="showPage('detail')">
+        <div>
+          <p class="hw-name">0828 숙제</p>
+          <p class="hw-due">제출 기한: 8월 28일 (목)</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">D-4일</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="hw-card" onclick="showPage('detail')">
+        <div>
+          <p class="hw-name">0829 숙제</p>
+          <p class="hw-due">제출 기한: 8월 29일 (금)</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">D-5일</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="hw-card" onclick="showPage('detail')">
+        <div>
+          <p class="hw-name">0830 숙제</p>
+          <p class="hw-due">제출 기한: 8월 30일 (토)</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">D-6일</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+      <div class="hw-card" onclick="showPage('detail')">
+        <div>
+          <p class="hw-name">0831 숙제</p>
+          <p class="hw-due">제출 기한: 8월 31일 (일)</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">D-7일</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="showPage('list')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item" data-nav="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= 숙제 업로드(상세) 화면 ================= -->
+  <div class="page" id="page-detail">
+
+    <div class="detail-content">
+
+      <div class="top-bar-sm">
+        <button class="back-btn" id="backBtn" aria-label="나가기">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"></path>
+            <path d="M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <h1 class="page-title-sm">숙제 업로드</h1>
+      </div>
+
+      <div class="bundle-header">
+        <span class="bundle-title" id="bundleTitle">0825 숙제</span>
+        <span class="bundle-due">제출 기한: 8월 25일 (월)</span>
+        <span class="bundle-dday">D-1일</span>
+      </div>
+
+      <div class="task-list">
+        <div class="task-card">
+          <p class="task-name">듣기 숙제</p>
+          <div class="task-meta">
+            <span>108~112p / 스텝 1,2</span>
+            <span class="meta-divider">|</span>
+            <span>풀기/채점하기/고치기</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <p class="task-name">문법 숙제</p>
+          <div class="task-meta">
+            <span>Unit 5 연습문제</span>
+            <span class="meta-divider">|</span>
+            <span>풀기/채점하기</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <p class="task-name">독해 숙제</p>
+          <div class="task-meta">
+            <span>지문 3개 분석</span>
+            <span class="meta-divider">|</span>
+            <span>읽기/요약하기/오답노트</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <p class="task-name">어휘 숙제</p>
+          <div class="task-meta">
+            <span>단어 30개 암기</span>
+            <span class="meta-divider">|</span>
+            <span>암기/테스트</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-box">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <p class="upload-text">숙제 사진을 업로드하세요</p>
+        <div class="upload-actions">
+          <button class="upload-action-btn" id="cameraBtn">카메라로 촬영</button>
+          <button class="upload-action-btn" id="galleryBtn">갤러리에서 선택</button>
+        </div>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+        <input type="file" id="galleryInput" accept="image/*" multiple hidden>
+      </div>
+
+      <p class="uploaded-count">업로드한 사진 (<span id="photoCount">0</span>)</p>
+      <div class="thumb-row" id="thumbRow">
+        <span class="thumb-empty">아직 업로드한 사진이 없어요</span>
+      </div>
+
+      <div class="notice-box">
+        <span class="notice-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </span>
+        <span class="notice-text">업로드한 숙제는 수정할 수 없습니다</span>
+      </div>
+
+    </div>
+
+    <div class="submit-bar">
+      <button class="submit-btn" id="submitBtn">제출하기</button>
+    </div>
+  </div>
+
+  <!-- 나가기 확인 팝업 -->
+  <div class="modal-overlay" id="exitModal">
+    <div class="modal-box">
+      <p class="modal-text">업로드중인 숙제가<br>제출되지 않습니다</p>
+      <div class="modal-actions">
+        <button id="cancelExitBtn">취소</button>
+        <button id="confirmExitBtn">뒤로가기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사진 크게 보기 -->
+  <div class="lightbox-overlay" id="lightbox">
+    <img id="lightboxImg" src="" alt="업로드한 사진 크게 보기">
+  </div>
+
+  <!-- 제출 완료 화면 -->
+  <div class="success-overlay" id="successOverlay">
+    <p class="success-title" id="successTitle">0825 숙제가 제출됐어요!</p>
+
+    <div class="success-circle">
+      <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17l-5-5"></path>
+      </svg>
+    </div>
+
+    <div class="success-actions">
+      <button class="success-btn strong" id="goHomeBtn">홈화면으로 이동하기</button>
+      <button class="success-btn light" id="goPendingBtn">승인대기중 숙제 확인하기</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* 4: 화면 전환 */
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach((p) => {
+      p.classList.toggle("active", p.id === "page-" + name);
+    });
+
+    document.querySelectorAll(".nav-item").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.nav === name);
+    });
+
+    if (name === "detail") {
+      history.pushState({ uploadGuard: true }, "");
+    }
+  }
+
+  /* 사진 업로드 */
+  let uploadedPhotos = [];
+
+  const photoCountEl = document.getElementById("photoCount");
+  const thumbRow = document.getElementById("thumbRow");
+
+  function renderThumbs() {
+    photoCountEl.textContent = uploadedPhotos.length;
+
+    if (uploadedPhotos.length === 0) {
+      thumbRow.innerHTML = '<span class="thumb-empty">아직 업로드한 사진이 없어요</span>';
+      return;
+    }
+
+    thumbRow.innerHTML = "";
+    uploadedPhotos.forEach((url) => {
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+
+      const img = document.createElement("img");
+      img.src = url;
+      thumb.appendChild(img);
+
+      thumb.addEventListener("click", () => openLightbox(url));
+      thumbRow.appendChild(thumb);
+    });
+  }
+
+  function addFiles(fileList) {
+    Array.from(fileList).forEach((file) => {
+      uploadedPhotos.push(URL.createObjectURL(file));
+    });
+    renderThumbs();
+  }
+
+  function resetUploadForm() {
+    uploadedPhotos = [];
+    renderThumbs();
+  }
+
+  document.getElementById("cameraBtn").addEventListener("click", () => {
+    document.getElementById("cameraInput").click();
+  });
+
+  document.getElementById("galleryBtn").addEventListener("click", () => {
+    document.getElementById("galleryInput").click();
+  });
+
+  document.getElementById("cameraInput").addEventListener("change", (e) => addFiles(e.target.files));
+  document.getElementById("galleryInput").addEventListener("change", (e) => addFiles(e.target.files));
+
+  /* 사진 크게 보기 */
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+
+  function openLightbox(url) {
+    lightboxImg.src = url;
+    lightbox.classList.add("show");
+  }
+
+  lightbox.addEventListener("click", () => {
+    lightbox.classList.remove("show");
+  });
+
+  /* 나가기 확인 팝업 (뒤로가기 화살표 + 폰 뒤로가기 버튼 모두 대응) */
+  const exitModal = document.getElementById("exitModal");
+
+  function showExitModal() {
+    exitModal.classList.add("show");
+  }
+
+  document.getElementById("backBtn").addEventListener("click", showExitModal);
+
+  document.getElementById("cancelExitBtn").addEventListener("click", () => {
+    exitModal.classList.remove("show");
+  });
+
+  document.getElementById("confirmExitBtn").addEventListener("click", () => {
+    exitModal.classList.remove("show");
+    showPage("list");
+  });
+
+  window.addEventListener("popstate", () => {
+    if (document.getElementById("page-detail").classList.contains("active") && !exitModal.classList.contains("show")) {
+      history.pushState({ uploadGuard: true }, "");
+      showExitModal();
+    }
+  });
+
+  /* 5,6: 제출하기 -> 제출 완료 화면 */
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    document.getElementById("successTitle").textContent =
+      document.getElementById("bundleTitle").textContent + "가 제출됐어요!";
+    document.getElementById("successOverlay").classList.add("show");
+  });
+
+  document.getElementById("goHomeBtn").addEventListener("click", () => {
+    document.getElementById("successOverlay").classList.remove("show");
+    resetUploadForm();
+    showPage("home");
+  });
+
+  document.getElementById("goPendingBtn").addEventListener("click", () => {
+    document.getElementById("successOverlay").classList.remove("show");
+    resetUploadForm();
+    showPage("list");
+    document.querySelectorAll(".tab").forEach((t) => {
+      t.classList.toggle("active", t.dataset.tab === "pending");
+    });
+  });
+</script>
+
+</body>
+</html>
