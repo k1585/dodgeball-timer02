@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>숙제 업로드</title>
+<style>
+  :root{
+    /* 포인트 색상: 이 값만 바꾸면 전체 화면의 파란색이 한 번에 바뀝니다 */
+    --point-strong:#3F6FF5;  /* 진한 포인트컬러 */
+    --point-light:#E6ECFF;   /* 연한 포인트컬러 */
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  html, body{
+    margin:0;
+  }
+
+  body{
+    background:#ffffff;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+
+  .screen{
+    width:100%;
+    max-width:480px;
+    padding:24px 20px 110px;
+  }
+
+  /* 2: 상단 - 나가기 화살표 + 숙제 업로드 제목 (알림 아이콘 없음) */
+  .top-bar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+
+  .back-btn{
+    width:32px;
+    height:32px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#111111;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  .page-title-sm{
+    font-size:20px;
+    font-weight:800;
+    color:#111111;
+    margin:0;
+  }
+
+  /* 3: 숙제 정보 카드 (숙제 목록 카드 재사용, 세로형 + 디데이 아래 + 화살표 없음) */
+  .hw-info-card{
+    border:1px solid #ececec;
+    border-radius:16px;
+    padding:18px;
+    margin-top:20px;
+  }
+
+  .subject-badge{
+    display:inline-block;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-size:13px;
+    font-weight:800;
+    padding:5px 12px;
+    border-radius:999px;
+    margin-bottom:10px;
+  }
+
+  .hw-name{
+    font-size:20px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 6px;
+  }
+
+  .hw-due{
+    font-size:13px;
+    color:#888888;
+    margin:0;
+  }
+
+  .hw-dday{
+    display:inline-block;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:14px;
+    padding:6px 12px;
+    border-radius:999px;
+    margin-top:10px;
+  }
+
+  /* 4: 숙제 안내 */
+  .section-label{
+    font-size:14px;
+    color:#888888;
+    font-weight:700;
+    margin:22px 0 10px;
+  }
+
+  .guide-box{
+    border:1px solid #ececec;
+    border-radius:16px;
+    padding:18px;
+  }
+
+  .guide-box p{
+    margin:0;
+    font-size:15px;
+    color:#333333;
+    line-height:1.7;
+  }
+
+  /* 5: 숙제 업로드 영역 */
+  .upload-box{
+    margin-top:22px;
+    background:var(--point-light);
+    border-radius:20px;
+    padding:32px 20px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  .upload-icon{
+    color:var(--point-strong);
+    margin-bottom:12px;
+  }
+
+  .upload-text{
+    font-size:15px;
+    font-weight:700;
+    color:#444444;
+    margin:0 0 18px;
+  }
+
+  .upload-actions{
+    display:flex;
+    gap:10px;
+    width:100%;
+  }
+
+  .upload-action-btn{
+    flex:1;
+    background:#ffffff;
+    color:var(--point-strong);
+    border:1px solid var(--point-strong);
+    border-radius:12px;
+    padding:12px 8px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* 6: 업로드한 사진 목록 */
+  .uploaded-count{
+    margin:22px 0 12px;
+    font-size:15px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .thumb-row{
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+
+  .thumb{
+    flex-shrink:0;
+    width:84px;
+    height:84px;
+    border-radius:14px;
+    overflow:hidden;
+    background:#f0f2f5;
+    cursor:pointer;
+    border:1px solid #eeeeee;
+  }
+
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .thumb-empty{
+    font-size:13px;
+    color:#bbbbbb;
+  }
+
+  /* 7: 안내 문구 */
+  .notice-box{
+    margin-top:22px;
+    background:var(--point-light);
+    border-radius:12px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .notice-icon{
+    color:var(--point-strong);
+    flex-shrink:0;
+    display:flex;
+  }
+
+  .notice-box span.notice-text{
+    font-size:13px;
+    color:#4a4a4a;
+    font-weight:600;
+  }
+
+  /* 8: 제출하기 버튼 (하단 고정, 메뉴 없음) */
+  .submit-bar{
+    position:fixed;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:480px;
+    background:#ffffff;
+    padding:14px 20px 22px;
+    border-top:1px solid #f0f0f0;
+    z-index:50;
+  }
+
+  .submit-btn{
+    width:100%;
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+    padding:17px;
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* 9: 나가기 확인 팝업 */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+
+  .modal-overlay.show{
+    display:flex;
+  }
+
+  .modal-box{
+    background:#ffffff;
+    border-radius:20px;
+    padding:26px 22px;
+    width:100%;
+    max-width:320px;
+    text-align:center;
+  }
+
+  .modal-text{
+    font-size:15px;
+    font-weight:700;
+    color:#222222;
+    margin:0 0 20px;
+    line-height:1.5;
+  }
+
+  .modal-actions{
+    display:flex;
+    gap:10px;
+  }
+
+  .modal-actions button{
+    flex:1;
+    border-radius:12px;
+    padding:13px 8px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    border:none;
+  }
+
+  #cancelExitBtn{
+    background:#f1f2f5;
+    color:#555555;
+  }
+
+  #confirmExitBtn{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  /* 사진 크게 보기 */
+  .lightbox-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    align-items:center;
+    justify-content:center;
+    z-index:110;
+    padding:24px;
+  }
+
+  .lightbox-overlay.show{
+    display:flex;
+  }
+
+  .lightbox-overlay img{
+    max-width:100%;
+    max-height:100%;
+    border-radius:12px;
+  }
+
+  /* 10: 제출 완료 화면 */
+  .success-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#ffffff;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    z-index:120;
+    padding:24px;
+  }
+
+  .success-overlay.show{
+    display:flex;
+  }
+
+  .success-circle{
+    width:96px;
+    height:96px;
+    border-radius:50%;
+    background:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .go-home-btn{
+    margin-top:56px;
+    width:100%;
+    max-width:320px;
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+    padding:17px;
+    font-size:17px;
+    font-weight:800;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="screen">
+
+  <div class="top-bar">
+    <button class="back-btn" id="backBtn" aria-label="나가기">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5"></path>
+        <path d="M12 19l-7-7 7-7"></path>
+      </svg>
+    </button>
+    <h1 class="page-title-sm">숙제 업로드</h1>
+  </div>
+
+  <div class="hw-info-card">
+    <span class="subject-badge">독해</span>
+    <p class="hw-name">백지T 연습</p>
+    <p class="hw-due">제출 기한: 8월 25일 (월)</p>
+    <div><span class="hw-dday">D-1일</span></div>
+  </div>
+
+  <p class="section-label">숙제 안내</p>
+  <div class="guide-box">
+    <p>102~105p</p>
+    <p>문제풀기 / 채점 / 오답노트</p>
+  </div>
+
+  <div class="upload-box">
+    <div class="upload-icon">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+        <circle cx="12" cy="13" r="4"></circle>
+      </svg>
+    </div>
+    <p class="upload-text">숙제 사진을 업로드하세요</p>
+    <div class="upload-actions">
+      <button class="upload-action-btn" id="cameraBtn">카메라로 촬영</button>
+      <button class="upload-action-btn" id="galleryBtn">갤러리에서 선택</button>
+    </div>
+    <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+    <input type="file" id="galleryInput" accept="image/*" multiple hidden>
+  </div>
+
+  <p class="uploaded-count">업로드한 사진 (<span id="photoCount">0</span>)</p>
+  <div class="thumb-row" id="thumbRow">
+    <span class="thumb-empty">아직 업로드한 사진이 없어요</span>
+  </div>
+
+  <div class="notice-box">
+    <span class="notice-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+    </span>
+    <span class="notice-text">업로드한 숙제는 수정할 수 없습니다</span>
+  </div>
+
+</div>
+
+<div class="submit-bar">
+  <button class="submit-btn" id="submitBtn">제출하기</button>
+</div>
+
+<!-- 9: 나가기 확인 팝업 -->
+<div class="modal-overlay" id="exitModal">
+  <div class="modal-box">
+    <p class="modal-text">업로드중인 숙제가<br>제출되지 않습니다</p>
+    <div class="modal-actions">
+      <button id="cancelExitBtn">취소</button>
+      <button id="confirmExitBtn">뒤로가기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 사진 크게 보기 -->
+<div class="lightbox-overlay" id="lightbox">
+  <img id="lightboxImg" src="" alt="업로드한 사진 크게 보기">
+</div>
+
+<!-- 10: 제출 완료 화면 -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-circle">
+    <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20 6L9 17l-5-5"></path>
+    </svg>
+  </div>
+  <button class="go-home-btn" id="goHomeBtn">홈화면으로 이동</button>
+</div>
+
+<script>
+  let uploadedPhotos = [];
+
+  const photoCountEl = document.getElementById("photoCount");
+  const thumbRow = document.getElementById("thumbRow");
+
+  function renderThumbs() {
+    photoCountEl.textContent = uploadedPhotos.length;
+
+    if (uploadedPhotos.length === 0) {
+      thumbRow.innerHTML = '<span class="thumb-empty">아직 업로드한 사진이 없어요</span>';
+      return;
+    }
+
+    thumbRow.innerHTML = "";
+    uploadedPhotos.forEach((url) => {
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+
+      const img = document.createElement("img");
+      img.src = url;
+      thumb.appendChild(img);
+
+      thumb.addEventListener("click", () => openLightbox(url));
+      thumbRow.appendChild(thumb);
+    });
+  }
+
+  function addFiles(fileList) {
+    Array.from(fileList).forEach((file) => {
+      uploadedPhotos.push(URL.createObjectURL(file));
+    });
+    renderThumbs();
+  }
+
+  document.getElementById("cameraBtn").addEventListener("click", () => {
+    document.getElementById("cameraInput").click();
+  });
+
+  document.getElementById("galleryBtn").addEventListener("click", () => {
+    document.getElementById("galleryInput").click();
+  });
+
+  document.getElementById("cameraInput").addEventListener("change", (e) => addFiles(e.target.files));
+  document.getElementById("galleryInput").addEventListener("change", (e) => addFiles(e.target.files));
+
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+
+  function openLightbox(url) {
+    lightboxImg.src = url;
+    lightbox.classList.add("show");
+  }
+
+  lightbox.addEventListener("click", () => {
+    lightbox.classList.remove("show");
+  });
+
+  /* 9: 나가기 확인 팝업 (뒤로가기 화살표 + 폰 뒤로가기 버튼 모두 대응) */
+  const exitModal = document.getElementById("exitModal");
+
+  function showExitModal() {
+    exitModal.classList.add("show");
+  }
+
+  document.getElementById("backBtn").addEventListener("click", showExitModal);
+
+  document.getElementById("cancelExitBtn").addEventListener("click", () => {
+    exitModal.classList.remove("show");
+  });
+
+  document.getElementById("confirmExitBtn").addEventListener("click", () => {
+    window.location.href = "숙제_목록.html";
+  });
+
+  history.pushState({ uploadGuard: true }, "");
+
+  window.addEventListener("popstate", () => {
+    if (exitModal.classList.contains("show")) return;
+    history.pushState({ uploadGuard: true }, "");
+    showExitModal();
+  });
+
+  /* 10: 제출하기 */
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    document.getElementById("successOverlay").classList.add("show");
+  });
+
+  document.getElementById("goHomeBtn").addEventListener("click", () => {
+    window.location.href = "학생_홈.html";
+  });
+</script>
+
+</body>
+</html>
