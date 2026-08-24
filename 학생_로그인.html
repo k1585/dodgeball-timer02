@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>학생 로그인 (디자인 테스트)</title>
+<style>
+  :root{
+    --point-strong:#3F6FF5;
+    --point-mid:#5C87FF;
+    --point-light:#E6ECFF;
+    --ink:#111318;
+    --sub:#8A8FA3;
+    --line:#EEF0F6;
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  html, body{
+    height:100%;
+    margin:0;
+    overflow:hidden;
+  }
+
+  body{
+    background:#F4F6FC;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+
+  .app-shell{
+    width:100%;
+    max-width:480px;
+    background:#ffffff;
+    position:relative;
+    overflow:hidden;
+    height:100vh;
+    height:100dvh;
+  }
+
+  /* 은은한 배경 장식 */
+  .bg-blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(50px);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .bg-blob.b1{
+    width:280px;
+    height:280px;
+    top:-120px;
+    right:-90px;
+    background:radial-gradient(circle, rgba(63,111,245,0.16), rgba(63,111,245,0) 70%);
+  }
+
+  .bg-blob.b2{
+    width:240px;
+    height:240px;
+    bottom:-100px;
+    left:-80px;
+    background:radial-gradient(circle, rgba(92,135,255,0.14), rgba(92,135,255,0) 70%);
+  }
+
+  .page{
+    display:none;
+    flex-direction:column;
+    height:100%;
+    position:relative;
+    z-index:1;
+  }
+
+  .page.active{
+    display:flex;
+    animation:pageIn 0.4s cubic-bezier(.2,.8,.25,1);
+  }
+
+  @keyframes pageIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* 상단바 (뒤로가기 + 진행 점) */
+  .top-bar{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 20px 0;
+  }
+
+  .back-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    border:none;
+    background:#F5F6FA;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .back-btn:active{
+    transform:scale(0.94);
+  }
+
+  .progress-dots{
+    display:flex;
+    gap:6px;
+  }
+
+  .progress-dots span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--line);
+    transition:background 0.2s, width 0.2s;
+  }
+
+  .progress-dots span.done{
+    background:var(--point-light);
+  }
+
+  .progress-dots span.current{
+    background:var(--point-strong);
+    width:16px;
+    border-radius:4px;
+  }
+
+  /* ===== 1. 시작 화면 ===== */
+  .welcome-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 32px;
+    transform:translateY(-30px);
+  }
+
+  .brand-badge{
+    width:76px;
+    height:76px;
+    border-radius:24px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 14px 28px rgba(63,111,245,0.30);
+    margin-bottom:26px;
+  }
+
+  .welcome-title{
+    font-size:26px;
+    font-weight:800;
+    color:var(--point-strong);
+    margin:0;
+    letter-spacing:-0.3px;
+  }
+
+  .welcome-brand{
+    font-weight:800;
+    color:var(--ink);
+    margin:6px 0 0;
+    white-space:nowrap;
+    letter-spacing:-0.3px;
+  }
+
+  .welcome-tagline{
+    font-size:13px;
+    color:var(--sub);
+    margin:10px 0 0;
+    text-align:center;
+  }
+
+  .welcome-start-btn{
+    margin-top:40px;
+    width:100%;
+    max-width:280px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:18px;
+    padding:17px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 12px 24px rgba(63,111,245,0.28);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .welcome-start-btn:active{
+    transform:scale(0.98);
+  }
+
+  /* ===== 2. 역할 선택 ===== */
+  .role-heading{
+    padding:8px 24px 0;
+    flex-shrink:0;
+  }
+
+  .role-heading h1{
+    font-size:23px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+
+  .role-heading p{
+    font-size:13px;
+    color:var(--sub);
+    margin:0;
+  }
+
+  .role-list{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:14px;
+    padding:20px 24px 24px;
+  }
+
+  .role-card{
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:22px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(20,25,60,0.05);
+    transition:transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+
+  .role-card:active{
+    transform:scale(0.98);
+    box-shadow:0 3px 10px rgba(20,25,60,0.06);
+  }
+
+  .role-card.student{
+    border-color:rgba(63,111,245,0.18);
+  }
+
+  .role-icon{
+    flex-shrink:0;
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .role-card.student .role-icon{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+
+  .role-card.teacher .role-icon{
+    background:#FFF1DB;
+    color:#E08A00;
+  }
+
+  .role-text{
+    flex:1;
+  }
+
+  .role-text h2{
+    font-size:17px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+
+  .role-text p{
+    font-size:12.5px;
+    color:var(--sub);
+    line-height:1.55;
+    margin:0;
+    word-break:keep-all;
+  }
+
+  .role-arrow{
+    flex-shrink:0;
+    color:#C9CCDA;
+  }
+
+  /* ===== 3,4. 이름/코드 입력 공용 ===== */
+  .onboard-center{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+
+  .onboard-center.shift-up{
+    justify-content:flex-start;
+    padding-top:10vh;
+  }
+
+  .step-icon{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+
+  .onboard-title{
+    font-size:21px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 6px;
+    text-align:center;
+  }
+
+  .onboard-desc{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 26px;
+    text-align:center;
+  }
+
+  .onboard-input-wrap{
+    width:100%;
+    max-width:280px;
+    position:relative;
+  }
+
+  .onboard-input{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:16px;
+    padding:16px 18px;
+    font-size:16px;
+    text-align:center;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--ink);
+    background:#FAFBFF;
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .onboard-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+    box-shadow:0 0 0 4px rgba(63,111,245,0.12);
+    background:#ffffff;
+  }
+
+  .onboard-confirm{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--point-strong);
+    min-height:20px;
+    margin:16px 0 24px;
+    opacity:0;
+    transition:opacity 0.2s;
+  }
+
+  .onboard-confirm.show{
+    opacity:1;
+  }
+
+  .onboard-btn{
+    width:100%;
+    max-width:280px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 10px 20px rgba(63,111,245,0.22);
+    transition:opacity 0.15s, transform 0.1s;
+  }
+
+  .onboard-btn:disabled{
+    background:#E4E6EF;
+    box-shadow:none;
+    color:#AEB2C4;
+    cursor:default;
+  }
+
+  .onboard-btn:not(:disabled):active{
+    transform:scale(0.98);
+  }
+
+  /* ===== 4. 코드 입력 (OTP 스타일) ===== */
+  .otp-row{
+    display:flex;
+    gap:8px;
+  }
+
+  .otp-box{
+    width:42px;
+    height:52px;
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    text-align:center;
+    font-size:20px;
+    font-weight:800;
+    color:var(--ink);
+    background:#FAFBFF;
+    font-family:inherit;
+    transition:border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  .otp-box:focus{
+    outline:none;
+    border-color:var(--point-strong);
+    box-shadow:0 0 0 4px rgba(63,111,245,0.12);
+    background:#ffffff;
+  }
+
+  .otp-row.shake{
+    animation:shake 0.4s;
+  }
+
+  .otp-row.shake .otp-box{
+    border-color:#E4423F;
+    background:#FFF4F4;
+  }
+
+  @keyframes shake{
+    0%, 100%{ transform:translateX(0); }
+    20%{ transform:translateX(-8px); }
+    40%{ transform:translateX(8px); }
+    60%{ transform:translateX(-6px); }
+    80%{ transform:translateX(6px); }
+  }
+
+  .code-error{
+    min-height:16px;
+    margin:14px 0 0;
+    font-size:12.5px;
+    font-weight:700;
+    color:#E4423F;
+    text-align:center;
+    opacity:0;
+    transition:opacity 0.2s;
+  }
+
+  .code-error.show{
+    opacity:1;
+  }
+
+  .code-hint{
+    margin-top:14px;
+    font-size:11.5px;
+    color:#C4C7D6;
+    text-align:center;
+  }
+
+  #codeConfirmSection{
+    margin-top:30px;
+    text-align:center;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .confirm-badge{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 14px;
+  }
+
+  .onboard-confirm-big{
+    font-size:18px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 22px;
+  }
+
+  .onboard-btn-row{
+    display:flex;
+    gap:10px;
+    width:100%;
+    max-width:280px;
+  }
+
+  .secondary-btn{
+    flex:1;
+    background:#F5F6FA;
+    color:var(--sub);
+    border:none;
+    border-radius:16px;
+    padding:15px 10px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .secondary-btn:active{
+    transform:scale(0.98);
+  }
+
+  .onboard-btn-row .onboard-btn{
+    flex:1.4;
+  }
+
+  /* ===== 5. 완료 화면 ===== */
+  .complete-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+
+  .complete-circle{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 16px 30px rgba(63,111,245,0.30);
+    margin-bottom:26px;
+    animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes popIn{
+    0%{ transform:scale(0.4); opacity:0; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+
+  .onboard-welcome-text{
+    font-size:20px;
+    font-weight:800;
+    color:var(--ink);
+    text-align:center;
+    margin:0 0 6px;
+    line-height:1.5;
+  }
+
+  .complete-sub{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 36px;
+    text-align:center;
+  }
+
+  .onboard-final-actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    max-width:280px;
+  }
+
+  .onboard-final-actions button{
+    width:100%;
+  }
+
+  .test-note{
+    margin-top:20px;
+    font-size:11px;
+    color:#C4C7D6;
+    text-align:center;
+  }
+
+  /* ===== 미완성 기능 팝업 ===== */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,20,40,0.45);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+
+  .modal-overlay.show{
+    display:flex;
+  }
+
+  .modal-box{
+    background:#ffffff;
+    border-radius:22px;
+    padding:30px 24px 24px;
+    width:100%;
+    max-width:300px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(20,25,60,0.18);
+  }
+
+  .lock-icon{
+    color:#B7BBCC;
+    display:flex;
+    justify-content:center;
+    margin-bottom:14px;
+  }
+
+  .modal-text{
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 20px;
+    line-height:1.5;
+  }
+
+  .modal-actions button{
+    width:100%;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:13px 8px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+
+  <!-- ===== 1. 시작 화면 ===== -->
+  <div class="page active" id="page-welcome">
+    <div class="welcome-content">
+      <div class="brand-badge">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+      </div>
+      <p class="welcome-title">환영합니다</p>
+      <p class="welcome-brand" id="welcomeBrand">Today English</p>
+      <p class="welcome-tagline">오늘의 숙제, Today Homework와 함께해요</p>
+
+      <button class="welcome-start-btn" onclick="showPage('role-select')">
+        시작하기
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="M13 6l6 6-6 6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== 2. 역할 선택 ===== -->
+  <div class="page" id="page-role-select">
+    <div class="top-bar">
+      <button class="back-btn" onclick="showPage('welcome')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="current"></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="role-heading">
+      <h1>누구신가요?</h1>
+      <p>맞는 유형을 선택하고 시작해요</p>
+    </div>
+
+    <div class="role-list">
+      <div class="role-card student" onclick="showPage('name-input')">
+        <div class="role-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10L12 5 2 10l10 5 10-5z"></path>
+            <path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"></path>
+          </svg>
+        </div>
+        <div class="role-text">
+          <h2>학생이신가요?</h2>
+          <p>학생이라면 여기를 눌러 선생님이 배부하신 코드로 시작하세요</p>
+        </div>
+        <span class="role-arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </span>
+      </div>
+
+      <div class="role-card teacher" onclick="showComingSoon()">
+        <div class="role-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+            <path d="M8 21h8M12 17v4"></path>
+          </svg>
+        </div>
+        <div class="role-text">
+          <h2>선생님이신가요?</h2>
+          <p>선생님이시라면 여기를 눌러 클래스를 만들고 Today Homework와 함께하세요</p>
+        </div>
+        <span class="role-arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. 이름 입력 ===== -->
+  <div class="page" id="page-name-input">
+    <div class="top-bar">
+      <button class="back-btn" onclick="showPage('role-select')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="done"></span>
+        <span class="current"></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="onboard-center">
+      <div class="step-icon">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <p class="onboard-title">성명을 입력해 주세요!</p>
+      <p class="onboard-desc">원활한 서비스 이용을 위해 실명을 입력하세요</p>
+
+      <div class="onboard-input-wrap">
+        <input type="text" id="nameInput" class="onboard-input" placeholder="이름 입력">
+      </div>
+
+      <p class="onboard-confirm" id="nameConfirmText">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+        <span id="nameConfirmLabel"></span>
+      </p>
+
+      <button class="onboard-btn" id="nameConfirmBtn" disabled>맞아요</button>
+    </div>
+  </div>
+
+  <!-- ===== 4. 코드 입력 ===== -->
+  <div class="page" id="page-code-input">
+    <div class="top-bar">
+      <button class="back-btn" onclick="showPage('name-input')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="done"></span>
+        <span class="done"></span>
+        <span class="current"></span>
+      </div>
+    </div>
+
+    <div class="onboard-center" id="codeCenter">
+      <div id="codeInputSection" style="display:flex; flex-direction:column; align-items:center;">
+        <div class="step-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <p class="onboard-title">코드를 입력하세요!</p>
+        <p class="onboard-desc">선생님께서 알려주신 코드 6자리를 입력하세요</p>
+
+        <div class="otp-row" id="otpRow">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="0">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="1">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="2">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="3">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="4">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="5">
+        </div>
+
+        <p class="code-error" id="codeError">존재하지 않는 코드에요 다시 확인해주세요</p>
+        <p class="code-hint">테스트용 코드: 123456 · 111111</p>
+      </div>
+
+      <div id="codeConfirmSection" style="display:none;">
+        <div class="confirm-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"></path>
+          </svg>
+        </div>
+        <p class="onboard-confirm-big" id="classConfirmText">A반이 맞으신가요?</p>
+        <div class="onboard-btn-row">
+          <button class="secondary-btn" id="codeRetryBtn">다시 입력할게요</button>
+          <button class="onboard-btn" id="codeOkBtn">맞아요</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5. 완료 화면 ===== -->
+  <div class="page" id="page-onboard-complete">
+    <div class="complete-content">
+      <div class="complete-circle">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+      </div>
+      <p class="onboard-welcome-text" id="onboardWelcomeText">A반의 김민준님 환영해요</p>
+      <p class="complete-sub">이제 Today Homework를 시작할 수 있어요</p>
+
+      <div class="onboard-final-actions">
+        <button class="onboard-btn" id="startServiceBtn">서비스 시작하기</button>
+        <button class="secondary-btn" id="restartOnboardBtn">처음으로</button>
+      </div>
+
+      <p class="test-note">※ 디자인 테스트 파일 — 실제 서비스 화면은 아직 연결되지 않았어요</p>
+    </div>
+  </div>
+
+  <!-- 미완성 기능 팝업 -->
+  <div class="modal-overlay" id="comingSoonModal">
+    <div class="modal-box">
+      <div class="lock-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+        </svg>
+      </div>
+      <p class="modal-text">아직 이 기능은<br>완성되지 않았어요</p>
+      <div class="modal-actions">
+        <button id="closeComingSoonBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach((p) => {
+      p.classList.toggle("active", p.id === "page-" + name);
+    });
+  }
+
+  function showComingSoon() {
+    document.getElementById("comingSoonModal").classList.add("show");
+  }
+
+  document.getElementById("closeComingSoonBtn").addEventListener("click", () => {
+    document.getElementById("comingSoonModal").classList.remove("show");
+  });
+
+  /* Today English 폭을 환영합니다에 맞춤 */
+  function fitWelcomeBrandWidth() {
+    const title = document.querySelector(".welcome-title");
+    const brand = document.getElementById("welcomeBrand");
+    const targetWidth = title.getBoundingClientRect().width;
+
+    let fontSize = 26;
+    brand.style.fontSize = fontSize + "px";
+
+    while (brand.getBoundingClientRect().width > targetWidth && fontSize > 8) {
+      fontSize -= 0.5;
+      brand.style.fontSize = fontSize + "px";
+    }
+  }
+
+  let studentName = "";
+  let selectedClassName = "";
+
+  /* 이름 입력 */
+  const nameInput = document.getElementById("nameInput");
+  const nameConfirmText = document.getElementById("nameConfirmText");
+  const nameConfirmLabel = document.getElementById("nameConfirmLabel");
+  const nameConfirmBtn = document.getElementById("nameConfirmBtn");
+
+  nameInput.addEventListener("input", () => {
+    const val = nameInput.value.trim();
+    if (val) {
+      nameConfirmLabel.textContent = val + "님이 맞으신가요?";
+      nameConfirmText.classList.add("show");
+      nameConfirmBtn.disabled = false;
+    } else {
+      nameConfirmText.classList.remove("show");
+      nameConfirmBtn.disabled = true;
+    }
+  });
+
+  nameConfirmBtn.addEventListener("click", () => {
+    const val = nameInput.value.trim();
+    if (!val) return;
+    studentName = val;
+    showPage("code-input");
+  });
+
+  /* 코드 입력 (OTP 스타일) */
+  const validClassCodes = {
+    "123456": "A반",
+    "111111": "B반",
+  };
+
+  const otpBoxes = Array.from(document.querySelectorAll(".otp-box"));
+  const otpRow = document.getElementById("otpRow");
+  const codeCenter = document.getElementById("codeCenter");
+  const codeConfirmSection = document.getElementById("codeConfirmSection");
+  const codeError = document.getElementById("codeError");
+
+  otpBoxes.forEach((box, idx) => {
+    box.addEventListener("input", () => {
+      box.value = box.value.replace(/[^0-9]/g, "");
+      if (box.value && idx < otpBoxes.length - 1) {
+        otpBoxes[idx + 1].focus();
+      }
+      if (box.value && idx === otpBoxes.length - 1) {
+        checkOtpComplete();
+      }
+    });
+
+    box.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && !box.value && idx > 0) {
+        otpBoxes[idx - 1].focus();
+      }
+    });
+
+    box.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData.getData("text") || "").replace(/[^0-9]/g, "").slice(0, 6);
+      text.split("").forEach((ch, i) => {
+        if (otpBoxes[i]) otpBoxes[i].value = ch;
+      });
+      if (text.length === 6) {
+        checkOtpComplete();
+      } else if (otpBoxes[text.length]) {
+        otpBoxes[text.length].focus();
+      }
+    });
+  });
+
+  function checkOtpComplete() {
+    const code = otpBoxes.map((b) => b.value).join("");
+    if (code.length === 6) submitClassCode(code);
+  }
+
+  function submitClassCode(code) {
+    const className = validClassCodes[code];
+
+    if (!className) {
+      codeError.classList.add("show");
+      otpRow.classList.add("shake");
+      setTimeout(() => {
+        otpRow.classList.remove("shake");
+        otpBoxes.forEach((b) => (b.value = ""));
+        otpBoxes[0].focus();
+      }, 400);
+      return;
+    }
+
+    selectedClassName = className;
+    codeError.classList.remove("show");
+    document.getElementById("classConfirmText").textContent = className + "이 맞으신가요?";
+    codeCenter.classList.add("shift-up");
+    document.getElementById("codeInputSection").style.display = "none";
+    codeConfirmSection.style.display = "flex";
+  }
+
+  function resetCodeInput() {
+    codeCenter.classList.remove("shift-up");
+    codeConfirmSection.style.display = "none";
+    document.getElementById("codeInputSection").style.display = "flex";
+    otpBoxes.forEach((b) => (b.value = ""));
+    codeError.classList.remove("show");
+    otpBoxes[0].focus();
+  }
+
+  document.getElementById("codeRetryBtn").addEventListener("click", resetCodeInput);
+
+  document.getElementById("codeOkBtn").addEventListener("click", () => {
+    document.getElementById("onboardWelcomeText").textContent =
+      selectedClassName + "의 " + studentName + "님 환영해요";
+    showPage("onboard-complete");
+  });
+
+  /* 완료 화면 (디자인 테스트용 - 실제 앱과는 아직 미연결) */
+  document.getElementById("restartOnboardBtn").addEventListener("click", () => {
+    studentName = "";
+    selectedClassName = "";
+    nameInput.value = "";
+    nameConfirmText.classList.remove("show");
+    nameConfirmBtn.disabled = true;
+    resetCodeInput();
+    showPage("welcome");
+  });
+
+  document.getElementById("startServiceBtn").addEventListener("click", () => {
+    document.getElementById("onboardWelcomeText").textContent = "곧 " + studentName + "님의 홈 화면으로 연결될 예정이에요";
+  });
+
+  fitWelcomeBrandWidth();
+</script>
+
+</body>
+</html>
