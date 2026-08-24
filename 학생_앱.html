@@ -610,22 +610,22 @@
     display:block;
   }
 
-  /* 4: 업로드한 사진 삭제(X) 버튼 */
+  /* 4: 업로드한 사진 삭제(X) 버튼 (터치하기 쉽도록 여유 있는 크기로) */
   .thumb-remove{
     position:absolute;
-    top:2px;
-    right:2px;
-    width:16px;
-    height:16px;
+    top:0;
+    right:0;
+    width:20px;
+    height:20px;
     border-radius:50%;
-    background:rgba(0,0,0,0.6);
+    background:rgba(0,0,0,0.65);
     color:#ffffff;
     border:none;
     padding:0;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:11px;
+    font-size:13px;
     line-height:1;
     cursor:pointer;
   }
@@ -1453,7 +1453,12 @@
     return "완료";
   }
 
-  /* ===== 승인현황 데이터 (이 세션 동안만 유지되는 데모 데이터) ===== */
+  /* ===== 승인현황 데이터 (이 세션 동안만 유지되는 데모 데이터) =====
+     bundleOrder로 표시 순서를 별도 관리 (객체 키 순서에 기대지 않음 -
+     날짜 키가 "1015"처럼 앞자리가 0이 아니면 브라우저가 숫자 크기 순으로
+     자동 재배열해버리는 걸 방지하기 위함) */
+  let bundleOrder = ["0819", "0821", "0822", "0823"];
+
   const bundles = {
     "0819": {
       name: "0819 숙제", due: "8월 19일 (화)", dday: "D-0일", status: "approved",
@@ -1650,8 +1655,9 @@
     const container = document.getElementById("pendingList");
     container.innerHTML = "";
 
-    Object.entries(bundles).forEach(([key, b]) => {
-      if (b.movedToPast) return;
+    bundleOrder.forEach((key) => {
+      const b = bundles[key];
+      if (!b || b.movedToPast) return;
 
       const card = document.createElement("div");
       card.className = "hw-card";
@@ -1671,7 +1677,7 @@
   }
 
   function renderCounts() {
-    const values = Object.values(bundles).filter((b) => !b.movedToPast);
+    const values = bundleOrder.map((key) => bundles[key]).filter((b) => b && !b.movedToPast);
     document.getElementById("countPending").textContent = values.filter((b) => b.status === "pending").length + "건";
     document.getElementById("countRejected").textContent = values.filter((b) => b.status === "rejected").length + "건";
     document.getElementById("countApproved").textContent = values.filter((b) => b.status === "approved").length + "건";
@@ -1679,7 +1685,7 @@
 
   function renderPastList() {
     const container = document.getElementById("tab-past");
-    const moved = Object.entries(bundles).filter(([, b]) => b.movedToPast);
+    const moved = bundleOrder.filter((key) => bundles[key] && bundles[key].movedToPast);
 
     if (moved.length === 0) {
       container.innerHTML = '<p class="empty-state">아직 지난 숙제가 없어요</p>';
@@ -1687,7 +1693,8 @@
     }
 
     container.innerHTML = "";
-    moved.forEach(([key, b]) => {
+    moved.forEach((key) => {
+      const b = bundles[key];
       const card = document.createElement("div");
       card.className = "hw-card";
       card.innerHTML =
@@ -1871,6 +1878,9 @@
     if (!currentBundle) return;
 
     const key = currentBundle.name.replace(" 숙제", "");
+    if (!bundleOrder.includes(key)) {
+      bundleOrder.push(key);
+    }
     bundles[key] = {
       name: currentBundle.name,
       due: currentBundle.due,
