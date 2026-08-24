@@ -31,9 +31,11 @@
   .app-shell{
     width:100%;
     max-width:480px;
-    height:100vh;
     background:#ffffff;
     position:relative;
+    /* 1: 모바일 브라우저 주소창 때문에 아래가 잘리는 문제 방지 (동적 뷰포트 높이 우선 사용) */
+    height:100vh;
+    height:100dvh;
   }
 
   /* 화면(페이지) 전환 */
@@ -268,7 +270,8 @@
     display:block;
   }
 
-  #page-list .hw-card{
+  #page-list .hw-card,
+  #page-status-detail .hw-card{
     border:1px solid #ececec;
     border-radius:14px;
     padding:14px;
@@ -280,26 +283,26 @@
     cursor:pointer;
   }
 
-  #page-list .hw-card.disabled{
+  .hw-card.disabled{
     opacity:0.45;
     cursor:default;
   }
 
-  #page-list .hw-name{
+  .hw-name{
     font-size:17px;
     font-weight:800;
     color:#111111;
     margin:0 0 4px;
   }
 
-  #page-list .hw-name-row{
+  .hw-name-row{
     display:flex;
     align-items:center;
     gap:8px;
     margin:0 0 4px;
   }
 
-  #page-list .hw-name-row .hw-name{
+  .hw-name-row .hw-name{
     margin:0;
   }
 
@@ -309,19 +312,19 @@
     color:var(--point-strong);
   }
 
-  #page-list .hw-due{
+  .hw-due{
     font-size:12px;
     color:#888888;
   }
 
-  #page-list .hw-right{
+  .hw-right{
     display:flex;
     align-items:center;
-    gap:4px;
+    gap:6px;
     flex-shrink:0;
   }
 
-  #page-list .hw-dday{
+  .hw-dday{
     background:var(--point-light);
     color:var(--point-strong);
     font-weight:800;
@@ -331,7 +334,7 @@
     white-space:nowrap;
   }
 
-  #page-list .hw-arrow{
+  .hw-arrow{
     color:#c2c2c2;
     display:flex;
   }
@@ -354,7 +357,7 @@
     background:#e5e5e5;
   }
 
-  /* 승인 현황 - 상태 요약 3칸 */
+  /* 승인 현황 - 상태 요약 3칸 (3: 완료/거절 투톤으로) */
   .status-row{
     display:flex;
     gap:8px;
@@ -373,13 +376,13 @@
   }
 
   .status-box.rejected{
-    background:#ff4d4f;
-    color:#ffffff;
+    background:#fde7e7;
+    color:#e4423f;
   }
 
   .status-box.approved{
-    background:#22c55e;
-    color:#ffffff;
+    background:#e3f5e9;
+    color:#1fa455;
   }
 
   .status-label{
@@ -410,13 +413,13 @@
   }
 
   .status-pill.rejected{
-    background:#ff4d4f;
-    color:#ffffff;
+    background:#fde7e7;
+    color:#e4423f;
   }
 
   .status-pill.approved{
-    background:#22c55e;
-    color:#ffffff;
+    background:#e3f5e9;
+    color:#1fa455;
   }
 
   .empty-state{
@@ -426,8 +429,9 @@
     color:#bbbbbb;
   }
 
-  /* ================= 숙제 업로드(상세) 화면 ================= */
-  #page-detail .detail-content{
+  /* ================= 숙제 업로드(상세) / 승인현황 상세 공용 ================= */
+  #page-detail .detail-content,
+  #page-status-detail .detail-content{
     flex:1;
     min-height:0;
     overflow-y:auto;
@@ -588,6 +592,7 @@
   }
 
   .thumb{
+    position:relative;
     flex-shrink:0;
     width:52px;
     height:52px;
@@ -603,6 +608,26 @@
     height:100%;
     object-fit:cover;
     display:block;
+  }
+
+  /* 4: 업로드한 사진 삭제(X) 버튼 */
+  .thumb-remove{
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:16px;
+    height:16px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.6);
+    color:#ffffff;
+    border:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:11px;
+    line-height:1;
+    cursor:pointer;
   }
 
   .thumb-empty{
@@ -637,7 +662,6 @@
     font-weight:600;
   }
 
-  /* 추가1: 선생님께 보낼 쪽지 */
   .note-section{
     margin-top:10px;
   }
@@ -665,17 +689,57 @@
     border-color:var(--point-strong);
   }
 
+  .note-input:disabled{
+    background:#f6f6f6;
+    color:#999999;
+  }
+
+  /* 거절 사유 */
+  .reject-box{
+    margin-top:10px;
+    background:#fff5f5;
+    border:1px solid #ffd6d6;
+    border-radius:10px;
+    padding:8px 12px;
+  }
+
+  .reject-box .note-label{
+    color:#e4423f;
+  }
+
+  .reject-box p{
+    margin:0;
+    font-size:12px;
+    color:#c53030;
+    line-height:1.5;
+  }
+
   .submit-bar{
     flex-shrink:0;
+    display:flex;
+    gap:10px;
     padding:8px 18px 14px;
     border-top:1px solid #f0f0f0;
     background:#ffffff;
   }
 
   .submit-btn{
+    flex:1;
     width:100%;
     background:var(--point-strong);
     color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .secondary-btn{
+    flex:1;
+    background:#f1f2f5;
+    color:#555555;
     border:none;
     border-radius:14px;
     padding:13px;
@@ -769,7 +833,14 @@
     border-radius:12px;
   }
 
-  /* 제출 완료 화면 */
+  #lightboxColorBox{
+    width:260px;
+    height:260px;
+    max-width:100%;
+    border-radius:16px;
+  }
+
+  /* 제출/수정/재업로드/이동 완료 화면 */
   .success-overlay{
     display:none;
     position:fixed;
@@ -938,7 +1009,7 @@
       <!-- 남은 숙제 -->
       <div class="tab-content active" id="tab-remaining">
 
-        <div class="hw-card" id="hwcard-0825" onclick="openDetailCard(this)">
+        <div class="hw-card" onclick="openDetailCard(this)">
           <div>
             <p class="hw-name">0825 숙제</p>
             <p class="hw-due">제출 기한: 8월 25일 (월)</p>
@@ -1038,63 +1109,19 @@
         <div class="status-row">
           <div class="status-box pending">
             <span class="status-label">승인 대기중</span>
-            <span class="status-count" id="countPending">1건</span>
+            <span class="status-count" id="countPending">0건</span>
           </div>
           <div class="status-box rejected">
             <span class="status-label">승인 거절</span>
-            <span class="status-count" id="countRejected">1건</span>
+            <span class="status-count" id="countRejected">0건</span>
           </div>
           <div class="status-box approved">
             <span class="status-label">승인 완료</span>
-            <span class="status-count" id="countApproved">2건</span>
+            <span class="status-count" id="countApproved">0건</span>
           </div>
         </div>
 
-        <div id="pendingList">
-          <div class="hw-card">
-            <div>
-              <div class="hw-name-row">
-                <span class="hw-name">0823 숙제</span>
-                <span class="hw-dday-inline">D-2일</span>
-              </div>
-              <p class="hw-due">제출 기한: 8월 23일 (토)</p>
-            </div>
-            <span class="status-pill pending">대기중</span>
-          </div>
-
-          <div class="hw-card">
-            <div>
-              <div class="hw-name-row">
-                <span class="hw-name">0822 숙제</span>
-                <span class="hw-dday-inline">D-0일</span>
-              </div>
-              <p class="hw-due">제출 기한: 8월 22일 (금)</p>
-            </div>
-            <span class="status-pill rejected">거절</span>
-          </div>
-
-          <div class="hw-card">
-            <div>
-              <div class="hw-name-row">
-                <span class="hw-name">0821 숙제</span>
-                <span class="hw-dday-inline">D-1일</span>
-              </div>
-              <p class="hw-due">제출 기한: 8월 21일 (목)</p>
-            </div>
-            <span class="status-pill approved">완료</span>
-          </div>
-
-          <div class="hw-card">
-            <div>
-              <div class="hw-name-row">
-                <span class="hw-name">0819 숙제</span>
-                <span class="hw-dday-inline">D-0일</span>
-              </div>
-              <p class="hw-due">제출 기한: 8월 19일 (화)</p>
-            </div>
-            <span class="status-pill approved">완료</span>
-          </div>
-        </div>
+        <div id="pendingList"></div>
 
       </div>
 
@@ -1157,8 +1184,8 @@
 
       <div class="bundle-header">
         <span class="bundle-title" id="bundleTitle">0825 숙제</span>
-        <span class="bundle-due">제출 기한: 8월 25일 (월)</span>
-        <span class="bundle-dday">D-1일</span>
+        <span class="bundle-due" id="bundleDue">제출 기한: 8월 25일 (월)</span>
+        <span class="bundle-dday" id="bundleDday">D-1일</span>
       </div>
 
       <div class="task-list">
@@ -1239,11 +1266,108 @@
     </div>
 
     <div class="submit-bar">
-      <button class="submit-btn" id="submitBtn">제출하기</button>
+      <button class="submit-btn" id="submitBtn" style="flex:1;">제출하기</button>
     </div>
   </div>
 
-  <!-- 나가기 확인 팝업 -->
+  <!-- ================= 승인현황 상세보기 화면 ================= -->
+  <div class="page" id="page-status-detail">
+
+    <div class="detail-content">
+
+      <div class="top-bar-sm">
+        <button class="back-btn" id="sdBackBtn" aria-label="나가기">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"></path>
+            <path d="M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <h1 class="page-title-sm">업로드한 숙제 확인</h1>
+        <span class="status-pill pending" id="sdStatusBadge" style="margin-left:auto;">대기중</span>
+      </div>
+
+      <div class="bundle-header">
+        <span class="bundle-title" id="sdBundleTitle">0823 숙제</span>
+        <span class="bundle-due" id="sdBundleDue">제출 기한: 8월 23일 (토)</span>
+        <span class="bundle-dday" id="sdBundleDday">D-2일</span>
+      </div>
+
+      <div class="task-list">
+        <div class="task-card">
+          <p class="task-name">듣기 숙제</p>
+          <div class="task-meta">
+            <span>108~112p / 스텝 1,2</span>
+            <span class="meta-divider">|</span>
+            <span>풀기/채점하기/고치기</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <p class="task-name">문법 숙제</p>
+          <div class="task-meta">
+            <span>Unit 5 연습문제</span>
+            <span class="meta-divider">|</span>
+            <span>풀기/채점하기</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <p class="task-name">독해 숙제</p>
+          <div class="task-meta">
+            <span>지문 3개 분석</span>
+            <span class="meta-divider">|</span>
+            <span>읽기/요약하기/오답노트</span>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <p class="task-name">어휘 숙제</p>
+          <div class="task-meta">
+            <span>단어 30개 암기</span>
+            <span class="meta-divider">|</span>
+            <span>암기/테스트</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="upload-box" id="sdUploadBox">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <p class="upload-text">사진 추가</p>
+        <div class="upload-actions">
+          <button class="upload-action-btn" id="sdCameraBtn">카메라로 촬영</button>
+          <button class="upload-action-btn" id="sdGalleryBtn">갤러리에서 선택</button>
+        </div>
+        <input type="file" id="sdCameraInput" accept="image/*" capture="environment" hidden>
+        <input type="file" id="sdGalleryInput" accept="image/*" multiple hidden>
+      </div>
+
+      <p class="uploaded-count">업로드한 사진 (<span id="sdPhotoCount">0</span>)</p>
+      <div class="thumb-row" id="sdThumbRow"></div>
+
+      <div class="note-section">
+        <p class="note-label">선생님께 보낼 쪽지 (선택)</p>
+        <textarea id="sdNote" class="note-input" rows="2" placeholder="선생님께 하고 싶은 말을 적어주세요"></textarea>
+      </div>
+
+      <div class="reject-box" id="sdRejectBlock" style="display:none;">
+        <p class="note-label">선생님이 작성하신 거절 사유</p>
+        <p id="sdRejectReason"></p>
+      </div>
+
+    </div>
+
+    <div class="submit-bar">
+      <button class="secondary-btn" id="sdBackBottomBtn">뒤로가기</button>
+      <button class="submit-btn" id="sdActionBtn">수정하기</button>
+    </div>
+  </div>
+
+  <!-- 나가기 확인 팝업 (업로드/승인현황 상세 공용) -->
   <div class="modal-overlay" id="exitModal">
     <div class="modal-box">
       <p class="modal-text">업로드중인 숙제가<br>제출되지 않습니다</p>
@@ -1267,9 +1391,10 @@
   <!-- 사진 크게 보기 -->
   <div class="lightbox-overlay" id="lightbox">
     <img id="lightboxImg" src="" alt="업로드한 사진 크게 보기">
+    <div id="lightboxColorBox"></div>
   </div>
 
-  <!-- 제출 완료 화면 -->
+  <!-- 제출/수정/재업로드/이동 완료 화면 -->
   <div class="success-overlay" id="successOverlay">
     <p class="success-title" id="successTitle">0825 숙제가 제출됐어요!</p>
 
@@ -1288,7 +1413,7 @@
 </div>
 
 <script>
-  /* 화면 전환 */
+  /* ===== 화면 전환 ===== */
   function showPage(name) {
     document.querySelectorAll(".page").forEach((p) => {
       p.classList.toggle("active", p.id === "page-" + name);
@@ -1298,12 +1423,12 @@
       btn.classList.toggle("active", btn.dataset.nav === name);
     });
 
-    if (name === "detail") {
+    if (name === "detail" || name === "status-detail") {
       history.pushState({ uploadGuard: true }, "");
     }
   }
 
-  /* 숙제 목록 탭 전환 */
+  /* ===== 숙제 목록 탭 전환 ===== */
   const tabLabels = {
     remaining: "남은 숙제",
     pending: "승인 현황",
@@ -1322,37 +1447,107 @@
     document.getElementById("listTabName").textContent = tabLabels[tabName];
   }
 
-  /* 숙제 목록 카드 클릭 (비활성화된 카드는 무시) */
+  function statusLabel(status) {
+    if (status === "pending") return "대기중";
+    if (status === "rejected") return "거절";
+    return "완료";
+  }
+
+  /* ===== 승인현황 데이터 (이 세션 동안만 유지되는 데모 데이터) ===== */
+  const bundles = {
+    "0819": {
+      name: "0819 숙제", due: "8월 19일 (화)", dday: "D-0일", status: "approved",
+      photos: ["placeholder:#93C5FD", "placeholder:#FDBA74"],
+      note: "다 풀었습니다! 확인 부탁드려요.", rejectReason: null, movedToPast: false,
+    },
+    "0821": {
+      name: "0821 숙제", due: "8월 21일 (목)", dday: "D-1일", status: "approved",
+      photos: ["placeholder:#A7F3D0"],
+      note: "오늘 숙제 제출합니다.", rejectReason: null, movedToPast: false,
+    },
+    "0822": {
+      name: "0822 숙제", due: "8월 22일 (금)", dday: "D-0일", status: "rejected",
+      photos: ["placeholder:#FCA5A5"],
+      note: "다 했어요!", rejectReason: "사진이 흐릿해서 글씨가 안 보여요. 다시 찍어서 올려주세요.", movedToPast: false,
+    },
+    "0823": {
+      name: "0823 숙제", due: "8월 23일 (토)", dday: "D-2일", status: "pending",
+      photos: ["placeholder:#DDD6FE"],
+      note: "", rejectReason: null, movedToPast: false,
+    },
+  };
+
+  /* ===== 남은 숙제 카드 클릭 -> 상세 정보 반영 후 업로드 화면 ===== */
+  let currentBundle = null;
+
   function openDetailCard(el) {
     if (el.classList.contains("disabled")) return;
+
+    const name = el.querySelector(".hw-name").textContent;
+    const due = el.querySelector(".hw-due").textContent.replace("제출 기한: ", "");
+    const dday = el.querySelector(".hw-dday").textContent;
+    currentBundle = { cardEl: el, name, due, dday };
+
+    document.getElementById("bundleTitle").textContent = name;
+    document.getElementById("bundleDue").textContent = "제출 기한: " + due;
+    document.getElementById("bundleDday").textContent = dday;
+
     showPage("detail");
   }
 
-  /* 사진 업로드 */
+  /* ===== 사진 표시(공용): 실제 업로드 사진 / 데모용 색상 placeholder 모두 지원 ===== */
+  function renderPhotoSection(countEl, rowEl, photos, editable, onRemove) {
+    countEl.textContent = photos.length;
+
+    if (photos.length === 0) {
+      rowEl.innerHTML = '<span class="thumb-empty">아직 업로드한 사진이 없어요</span>';
+      return;
+    }
+
+    rowEl.innerHTML = "";
+    photos.forEach((p, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+
+      if (typeof p === "string" && p.indexOf("placeholder:") === 0) {
+        const color = p.split(":")[1];
+        const box = document.createElement("div");
+        box.style.cssText = "width:100%;height:100%;background:" + color;
+        thumb.appendChild(box);
+        thumb.addEventListener("click", () => openLightboxColor(color));
+      } else {
+        const img = document.createElement("img");
+        img.src = p;
+        thumb.appendChild(img);
+        thumb.addEventListener("click", () => openLightbox(p));
+      }
+
+      if (editable) {
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "thumb-remove";
+        rm.textContent = "×";
+        rm.addEventListener("click", (e) => {
+          e.stopPropagation();
+          onRemove(idx);
+        });
+        thumb.appendChild(rm);
+      }
+
+      rowEl.appendChild(thumb);
+    });
+  }
+
+  /* ===== 숙제 업로드 화면: 사진 업로드 ===== */
   let uploadedPhotos = [];
 
   const photoCountEl = document.getElementById("photoCount");
   const thumbRow = document.getElementById("thumbRow");
 
   function renderThumbs() {
-    photoCountEl.textContent = uploadedPhotos.length;
-
-    if (uploadedPhotos.length === 0) {
-      thumbRow.innerHTML = '<span class="thumb-empty">아직 업로드한 사진이 없어요</span>';
-      return;
-    }
-
-    thumbRow.innerHTML = "";
-    uploadedPhotos.forEach((url) => {
-      const thumb = document.createElement("div");
-      thumb.className = "thumb";
-
-      const img = document.createElement("img");
-      img.src = url;
-      thumb.appendChild(img);
-
-      thumb.addEventListener("click", () => openLightbox(url));
-      thumbRow.appendChild(thumb);
+    renderPhotoSection(photoCountEl, thumbRow, uploadedPhotos, true, (idx) => {
+      uploadedPhotos.splice(idx, 1);
+      renderThumbs();
     });
   }
 
@@ -1380,12 +1575,22 @@
   document.getElementById("cameraInput").addEventListener("change", (e) => addFiles(e.target.files));
   document.getElementById("galleryInput").addEventListener("change", (e) => addFiles(e.target.files));
 
-  /* 사진 크게 보기 */
+  /* ===== 사진 크게 보기 (실제 사진 / 데모 색상 둘 다 지원) ===== */
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightboxImg");
+  const lightboxColorBox = document.getElementById("lightboxColorBox");
 
   function openLightbox(url) {
+    lightboxImg.style.display = "block";
     lightboxImg.src = url;
+    lightboxColorBox.style.display = "none";
+    lightbox.classList.add("show");
+  }
+
+  function openLightboxColor(color) {
+    lightboxImg.style.display = "none";
+    lightboxColorBox.style.display = "block";
+    lightboxColorBox.style.background = color;
     lightbox.classList.add("show");
   }
 
@@ -1393,14 +1598,18 @@
     lightbox.classList.remove("show");
   });
 
-  /* 나가기 확인 팝업 (뒤로가기 화살표 + 폰 뒤로가기 버튼 모두 대응) */
+  /* ===== 나가기 확인 팝업 (업로드 화면 + 승인현황 상세 화면 공용) ===== */
   const exitModal = document.getElementById("exitModal");
+  let exitConfirmAction = () => showPage("list");
 
-  function showExitModal() {
+  function showExitModal(onConfirm) {
+    exitConfirmAction = onConfirm || (() => showPage("list"));
     exitModal.classList.add("show");
   }
 
-  document.getElementById("backBtn").addEventListener("click", showExitModal);
+  document.getElementById("backBtn").addEventListener("click", () => {
+    showExitModal(() => showPage("list"));
+  });
 
   document.getElementById("cancelExitBtn").addEventListener("click", () => {
     exitModal.classList.remove("show");
@@ -1408,66 +1617,242 @@
 
   document.getElementById("confirmExitBtn").addEventListener("click", () => {
     exitModal.classList.remove("show");
-    showPage("list");
+    exitConfirmAction();
   });
 
   window.addEventListener("popstate", () => {
-    if (document.getElementById("page-detail").classList.contains("active") && !exitModal.classList.contains("show")) {
+    const detailActive = document.getElementById("page-detail").classList.contains("active");
+    const statusDetailActive = document.getElementById("page-status-detail").classList.contains("active");
+    const statusIsApproved =
+      statusDetailActive && currentStatusBundleKey && bundles[currentStatusBundleKey].status === "approved";
+
+    const needsGuard = (detailActive || (statusDetailActive && !statusIsApproved)) && !exitModal.classList.contains("show");
+
+    if (needsGuard) {
       history.pushState({ uploadGuard: true }, "");
-      showExitModal();
+      showExitModal(
+        detailActive
+          ? () => showPage("list")
+          : () => { showPage("list"); selectTab("pending"); }
+      );
     }
   });
 
-  /* 사진 미업로드 팝업 */
+  /* ===== 사진 미업로드 팝업 ===== */
   const noPhotoModal = document.getElementById("noPhotoModal");
 
   document.getElementById("closeNoPhotoBtn").addEventListener("click", () => {
     noPhotoModal.classList.remove("show");
   });
 
-  /* 제출하기 -> 제출 완료 화면 (사진 없으면 제출 불가) */
-  const successOverlay = document.getElementById("successOverlay");
-  let successTimeoutId = null;
+  /* ===== 승인현황 목록 / 지난 숙제 목록 렌더링 ===== */
+  function renderApprovalList() {
+    const container = document.getElementById("pendingList");
+    container.innerHTML = "";
 
-  document.getElementById("submitBtn").addEventListener("click", () => {
-    if (uploadedPhotos.length === 0) {
+    Object.entries(bundles).forEach(([key, b]) => {
+      if (b.movedToPast) return;
+
+      const card = document.createElement("div");
+      card.className = "hw-card";
+      card.innerHTML =
+        '<div>' +
+          '<div class="hw-name-row"><span class="hw-name">' + b.name + '</span><span class="hw-dday-inline">' + b.dday + '</span></div>' +
+          '<p class="hw-due">제출 기한: ' + b.due + '</p>' +
+        '</div>' +
+        '<div class="hw-right">' +
+          '<span class="status-pill ' + b.status + '">' + statusLabel(b.status) + '</span>' +
+          '<span class="hw-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span>' +
+        '</div>';
+
+      card.addEventListener("click", () => openStatusDetail(key));
+      container.appendChild(card);
+    });
+  }
+
+  function renderCounts() {
+    const values = Object.values(bundles).filter((b) => !b.movedToPast);
+    document.getElementById("countPending").textContent = values.filter((b) => b.status === "pending").length + "건";
+    document.getElementById("countRejected").textContent = values.filter((b) => b.status === "rejected").length + "건";
+    document.getElementById("countApproved").textContent = values.filter((b) => b.status === "approved").length + "건";
+  }
+
+  function renderPastList() {
+    const container = document.getElementById("tab-past");
+    const moved = Object.entries(bundles).filter(([, b]) => b.movedToPast);
+
+    if (moved.length === 0) {
+      container.innerHTML = '<p class="empty-state">아직 지난 숙제가 없어요</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+    moved.forEach(([key, b]) => {
+      const card = document.createElement("div");
+      card.className = "hw-card";
+      card.innerHTML =
+        '<div>' +
+          '<p class="hw-name">' + b.name + '</p>' +
+          '<p class="hw-due">제출 기한: ' + b.due + '</p>' +
+        '</div>' +
+        '<span class="status-pill approved">완료</span>';
+
+      card.addEventListener("click", () => openStatusDetail(key));
+      container.appendChild(card);
+    });
+  }
+
+  /* ===== 승인현황 상세보기 화면 ===== */
+  let currentStatusBundleKey = null;
+  let sdUploadedPhotos = [];
+
+  function renderSdThumbs() {
+    const b = bundles[currentStatusBundleKey];
+    renderPhotoSection(
+      document.getElementById("sdPhotoCount"),
+      document.getElementById("sdThumbRow"),
+      sdUploadedPhotos,
+      b.status !== "approved",
+      (idx) => {
+        sdUploadedPhotos.splice(idx, 1);
+        renderSdThumbs();
+      }
+    );
+  }
+
+  function openStatusDetail(key) {
+    currentStatusBundleKey = key;
+    const b = bundles[key];
+    sdUploadedPhotos = b.photos.slice();
+
+    document.getElementById("sdBundleTitle").textContent = b.name;
+    document.getElementById("sdBundleDue").textContent = "제출 기한: " + b.due;
+    document.getElementById("sdBundleDday").textContent = b.dday;
+
+    const badge = document.getElementById("sdStatusBadge");
+    badge.className = "status-pill " + b.status;
+    badge.textContent = statusLabel(b.status);
+
+    const rejectBlock = document.getElementById("sdRejectBlock");
+    if (b.status === "rejected") {
+      rejectBlock.style.display = "block";
+      document.getElementById("sdRejectReason").textContent = b.rejectReason || "";
+    } else {
+      rejectBlock.style.display = "none";
+    }
+
+    const noteInput = document.getElementById("sdNote");
+    noteInput.value = b.note || "";
+    noteInput.disabled = b.status === "approved";
+
+    document.getElementById("sdUploadBox").style.display = b.status === "approved" ? "none" : "flex";
+
+    renderSdThumbs();
+
+    const actionBtn = document.getElementById("sdActionBtn");
+    const backBottomBtn = document.getElementById("sdBackBottomBtn");
+
+    if (b.status === "approved") {
+      actionBtn.textContent = "지난 숙제로 이동하기";
+      actionBtn.style.flex = "1 1 100%";
+      backBottomBtn.style.display = "none";
+    } else {
+      actionBtn.textContent = b.status === "rejected" ? "재업로드하기" : "수정하기";
+      actionBtn.style.flex = "1";
+      backBottomBtn.style.display = "block";
+    }
+
+    showPage("status-detail");
+  }
+
+  document.getElementById("sdBackBtn").addEventListener("click", () => {
+    const b = bundles[currentStatusBundleKey];
+    if (b.status === "approved") {
+      showPage("list");
+      selectTab("pending");
+    } else {
+      showExitModal(() => { showPage("list"); selectTab("pending"); });
+    }
+  });
+
+  document.getElementById("sdBackBottomBtn").addEventListener("click", () => {
+    showExitModal(() => { showPage("list"); selectTab("pending"); });
+  });
+
+  document.getElementById("sdCameraBtn").addEventListener("click", () => {
+    document.getElementById("sdCameraInput").click();
+  });
+
+  document.getElementById("sdGalleryBtn").addEventListener("click", () => {
+    document.getElementById("sdGalleryInput").click();
+  });
+
+  document.getElementById("sdCameraInput").addEventListener("change", (e) => {
+    Array.from(e.target.files).forEach((file) => sdUploadedPhotos.push(URL.createObjectURL(file)));
+    renderSdThumbs();
+  });
+
+  document.getElementById("sdGalleryInput").addEventListener("change", (e) => {
+    Array.from(e.target.files).forEach((file) => sdUploadedPhotos.push(URL.createObjectURL(file)));
+    renderSdThumbs();
+  });
+
+  document.getElementById("sdActionBtn").addEventListener("click", () => {
+    const b = bundles[currentStatusBundleKey];
+
+    if (b.status === "approved") {
+      b.movedToPast = true;
+      renderApprovalList();
+      renderCounts();
+      renderPastList();
+      showCompletionScreen(b.name + "가 지난 숙제로 이동했어요!", "지난 숙제 확인하기", () => selectTab("past"));
+      return;
+    }
+
+    if (sdUploadedPhotos.length === 0) {
       noPhotoModal.classList.add("show");
       return;
     }
 
-    const bundleName = document.getElementById("bundleTitle").textContent;
-    document.getElementById("successTitle").textContent = bundleName + "가 제출됐어요!";
+    const wasRejected = b.status === "rejected";
+    b.photos = sdUploadedPhotos.slice();
+    b.note = document.getElementById("sdNote").value;
+    b.status = "pending";
+    b.rejectReason = null;
+
+    renderApprovalList();
+    renderCounts();
+
+    const title = wasRejected ? (b.name + "가 재업로드됐어요!") : (b.name + " 수정이 완료됐어요!");
+    showCompletionScreen(title, "승인대기중 숙제 확인하기", () => selectTab("pending"));
+  });
+
+  /* ===== 제출/수정/재업로드/이동 완료 화면 (공용) ===== */
+  const successOverlay = document.getElementById("successOverlay");
+  const goPendingBtn = document.getElementById("goPendingBtn");
+  let successTimeoutId = null;
+
+  function showCompletionScreen(titleText, secondBtnLabel, onSecondBtn) {
+    document.getElementById("successTitle").textContent = titleText;
+    goPendingBtn.textContent = secondBtnLabel;
+
+    goPendingBtn.onclick = () => {
+      clearTimeout(successTimeoutId);
+      successOverlay.classList.remove("show");
+      resetUploadForm();
+      showPage("list");
+      onSecondBtn();
+    };
+
     successOverlay.classList.add("show");
 
-    /* 방금 제출한 숙제를 남은 숙제 목록에서 비활성화하고, 승인현황(대기중)에 추가 */
-    const submittedCard = document.getElementById("hwcard-0825");
-    if (submittedCard && !submittedCard.classList.contains("disabled")) {
-      submittedCard.classList.add("disabled");
-
-      const newItem = document.createElement("div");
-      newItem.className = "hw-card";
-      newItem.innerHTML =
-        '<div>' +
-          '<div class="hw-name-row"><span class="hw-name">' + bundleName + '</span><span class="hw-dday-inline">D-1일</span></div>' +
-          '<p class="hw-due">제출 기한: 8월 25일 (월)</p>' +
-        '</div>' +
-        '<span class="status-pill pending">대기중</span>';
-
-      document.getElementById("pendingList").prepend(newItem);
-
-      const countEl = document.getElementById("countPending");
-      const current = parseInt(countEl.textContent, 10) || 0;
-      countEl.textContent = (current + 1) + "건";
-    }
-
-    /* 6: 3초간 아무 버튼도 누르지 않으면 자동으로 홈화면 이동 */
     clearTimeout(successTimeoutId);
     successTimeoutId = setTimeout(() => {
       successOverlay.classList.remove("show");
       resetUploadForm();
       showPage("home");
     }, 3000);
-  });
+  }
 
   document.getElementById("goHomeBtn").addEventListener("click", () => {
     clearTimeout(successTimeoutId);
@@ -1476,13 +1861,39 @@
     showPage("home");
   });
 
-  document.getElementById("goPendingBtn").addEventListener("click", () => {
-    clearTimeout(successTimeoutId);
-    successOverlay.classList.remove("show");
-    resetUploadForm();
-    showPage("list");
-    selectTab("pending");
+  /* ===== 숙제 업로드 화면의 제출하기 (2: 어떤 숙제를 눌러도 정상 동작) ===== */
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    if (uploadedPhotos.length === 0) {
+      noPhotoModal.classList.add("show");
+      return;
+    }
+
+    if (!currentBundle) return;
+
+    const key = currentBundle.name.replace(" 숙제", "");
+    bundles[key] = {
+      name: currentBundle.name,
+      due: currentBundle.due,
+      dday: currentBundle.dday,
+      status: "pending",
+      photos: uploadedPhotos.slice(),
+      note: document.getElementById("teacherNote").value,
+      rejectReason: null,
+      movedToPast: false,
+    };
+
+    currentBundle.cardEl.classList.add("disabled");
+
+    renderApprovalList();
+    renderCounts();
+
+    showCompletionScreen(currentBundle.name + "가 제출됐어요!", "승인대기중 숙제 확인하기", () => selectTab("pending"));
   });
+
+  /* ===== 초기 렌더링 ===== */
+  renderApprovalList();
+  renderCounts();
+  renderPastList();
 </script>
 
 </body>
