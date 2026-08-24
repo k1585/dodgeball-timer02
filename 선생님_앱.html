@@ -718,6 +718,215 @@
     transform:scale(0.98);
   }
 
+  /* ================= 반 상세 ================= */
+  .detail-title{
+    font-size:16px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+  }
+
+  .detail-code-chip{
+    flex-shrink:0;
+    margin:14px 20px 0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border-radius:14px;
+    padding:12px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:700;
+  }
+
+  .detail-code-chip strong{
+    font-size:15px;
+    letter-spacing:2px;
+    margin-left:4px;
+  }
+
+  .detail-code-copy{
+    background:#ffffff;
+    color:var(--point-strong);
+    border:none;
+    border-radius:10px;
+    padding:8px 14px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .detail-code-copy:active{
+    transform:scale(0.96);
+  }
+
+  #page-class-detail .tabs{
+    flex-shrink:0;
+    display:flex;
+    margin:18px 20px 0;
+    border-bottom:1px solid var(--line);
+  }
+
+  #page-class-detail .tab{
+    flex:1;
+    background:none;
+    border:none;
+    padding:12px 0;
+    font-size:14px;
+    font-weight:700;
+    color:var(--sub);
+    border-bottom:3px solid transparent;
+    margin-bottom:-1px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+
+  #page-class-detail .tab.active{
+    color:var(--point-strong);
+    border-bottom-color:var(--point-strong);
+  }
+
+  .tab-badge{
+    background:#E4423F;
+    color:#ffffff;
+    font-size:11px;
+    font-weight:800;
+    padding:1px 6px;
+    border-radius:999px;
+  }
+
+  #page-class-detail .detail-content{
+    flex:1;
+    overflow-y:auto;
+    padding:18px 20px 24px;
+  }
+
+  .tab-content{
+    display:none;
+  }
+
+  .tab-content.active{
+    display:block;
+  }
+
+  .add-student-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    background:#F5F6FA;
+    color:var(--ink);
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    margin-bottom:14px;
+  }
+
+  .add-student-btn:active{
+    transform:scale(0.98);
+  }
+
+  .add-student-form{
+    display:none;
+    gap:8px;
+    margin-bottom:14px;
+  }
+
+  .add-student-form.show{
+    display:flex;
+  }
+
+  .add-student-input{
+    flex:1;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:14px;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--ink);
+    background:#FAFBFF;
+  }
+
+  .add-student-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+  }
+
+  .add-student-form button{
+    flex-shrink:0;
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:12px;
+    padding:0 18px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .add-student-form button:active{
+    transform:scale(0.96);
+  }
+
+  .student-delete-btn{
+    flex-shrink:0;
+    width:30px;
+    height:30px;
+    border:none;
+    background:none;
+    color:var(--sub);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .approve-actions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+  }
+
+  .approve-btn, .reject-btn{
+    border:none;
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .approve-btn{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  .reject-btn{
+    background:#FDE7E7;
+    color:#E4423F;
+  }
+
+  .approve-btn:active, .reject-btn:active{
+    transform:scale(0.95);
+  }
+
+  .empty-approval{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--sub);
+    font-size:14px;
+    font-weight:700;
+  }
+
   .blank-section{
     background:#ffffff;
     min-height:80px;
@@ -1086,6 +1295,54 @@
     </nav>
   </div>
 
+  <!-- ===== 반 상세 (학생 관리 / 숙제 승인) ===== -->
+  <div class="page" id="page-class-detail">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage('home')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <p class="detail-title" id="classDetailTitle">클래스</p>
+      <span style="width:38px;flex-shrink:0;"></span>
+    </div>
+
+    <div class="detail-code-chip">
+      <span>코드 <strong id="classDetailCode">000000</strong></span>
+      <button class="detail-code-copy" id="classDetailCopyBtn" onclick="copyClassCode(classes[currentClassIndex].code, this)">복사</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
+      <button class="tab" data-tab="approve" onclick="switchDetailTab('approve')">
+        숙제 승인<span class="tab-badge" id="approveBadge" style="display:none;">0</span>
+      </button>
+    </div>
+
+    <div class="detail-content">
+      <div class="tab-content active" id="detailTab-manage">
+        <button class="add-student-btn" id="addStudentToggleBtn" onclick="toggleAddStudentForm()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          학생 추가
+        </button>
+
+        <div class="add-student-form" id="addStudentForm">
+          <input type="text" id="newStudentInput" class="add-student-input" placeholder="학생 이름 입력">
+          <button id="newStudentConfirmBtn" onclick="addStudentToClass()">추가</button>
+        </div>
+
+        <div id="manageStudentList"></div>
+      </div>
+
+      <div class="tab-content" id="detailTab-approve">
+        <div id="approveStudentList"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- 미완성 기능 팝업 -->
   <div class="modal-overlay" id="comingSoonModal">
     <div class="modal-box">
@@ -1200,6 +1457,21 @@
   let className = "";
   let classCode = "";
   let classes = [];
+  let currentClassIndex = null;
+
+  function demoStudents() {
+    return [
+      { name: "김민준", status: "done", lastSubmit: "8월 25일" },
+      { name: "박서연", status: "pending", lastSubmit: "8월 24일" },
+      { name: "이도윤", status: "missing", lastSubmit: "8월 20일" },
+    ];
+  }
+
+  function statusLabel(status) {
+    if (status === "done") return "제출완료";
+    if (status === "pending") return "승인대기";
+    return "미제출";
+  }
 
   /* 이름 입력 */
   const nameInput = document.getElementById("nameInput");
@@ -1279,7 +1551,7 @@
 
   document.getElementById("codeNextBtn").addEventListener("click", () => {
     playTapSound();
-    classes.push({ name: className, code: classCode });
+    classes.push({ name: className, code: classCode, students: demoStudents() });
     renderClassList();
     showPage("home");
     launchConfetti();
@@ -1333,11 +1605,11 @@
     let html = "";
     classes.forEach((c, i) => {
       html += `
-        <div class="code-card"${i === 0 ? "" : ' style="margin-top:12px;"'}>
+        <div class="code-card" style="cursor:pointer;${i === 0 ? "" : "margin-top:12px;"}" onclick="openClassDetail(${i})">
           <p class="code-card-label">${c.name}</p>
           <div class="code-card-row">
             <span class="code-card-value">${c.code}</span>
-            <button class="code-card-copy" onclick="copyClassCode('${c.code}', this)">
+            <button class="code-card-copy" onclick="event.stopPropagation(); copyClassCode('${c.code}', this)">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
@@ -1370,6 +1642,125 @@
       btn.textContent = "복사완료";
       setTimeout(() => { btn.innerHTML = orig; }, 1200);
     }
+  }
+
+  /* ===== 반 상세: 학생 관리 / 숙제 승인 ===== */
+  function openClassDetail(i) {
+    playTapSound();
+    currentClassIndex = i;
+    const c = classes[i];
+    document.getElementById("classDetailTitle").textContent = c.name;
+    document.getElementById("classDetailCode").textContent = c.code;
+    document.getElementById("newStudentInput").value = "";
+    document.getElementById("addStudentForm").classList.remove("show");
+    switchDetailTab("manage", true);
+    renderClassDetail();
+    showPage("class-detail");
+  }
+
+  function switchDetailTab(tabName, silent) {
+    if (!silent) playTapSound();
+    document.querySelectorAll("#page-class-detail .tab").forEach((t) => {
+      t.classList.toggle("active", t.dataset.tab === tabName);
+    });
+    document.querySelectorAll("#page-class-detail .tab-content").forEach((c) => {
+      c.classList.toggle("active", c.id === "detailTab-" + tabName);
+    });
+  }
+
+  function renderClassDetail() {
+    const c = classes[currentClassIndex];
+    const manageList = document.getElementById("manageStudentList");
+    const approveList = document.getElementById("approveStudentList");
+    const badge = document.getElementById("approveBadge");
+
+    if (c.students.length === 0) {
+      manageList.innerHTML = '<p class="empty-approval">아직 학생이 없어요</p>';
+    } else {
+      manageList.innerHTML = c.students.map((s, i) => `
+        <div class="student-card" style="cursor:default;">
+          <div class="student-avatar">${s.name[0]}</div>
+          <div class="student-info">
+            <p class="student-name">${s.name}</p>
+            <p class="student-meta">최근 제출: ${s.lastSubmit}</p>
+          </div>
+          <span class="status-pill ${s.status}">${statusLabel(s.status)}</span>
+          <button class="student-delete-btn" onclick="removeStudent(${i})" aria-label="삭제">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"></path>
+            </svg>
+          </button>
+        </div>
+      `).join("");
+    }
+
+    const pending = c.students.map((s, i) => ({ name: s.name, lastSubmit: s.lastSubmit, idx: i })).filter((_, i) => c.students[i].status === "pending");
+    if (pending.length === 0) {
+      approveList.innerHTML = '<p class="empty-approval">승인 대기중인 숙제가 없어요</p>';
+    } else {
+      approveList.innerHTML = pending.map((s) => `
+        <div class="student-card" style="cursor:default;">
+          <div class="student-avatar">${s.name[0]}</div>
+          <div class="student-info">
+            <p class="student-name">${s.name}</p>
+            <p class="student-meta">최근 제출: ${s.lastSubmit}</p>
+          </div>
+          <div class="approve-actions">
+            <button class="approve-btn" onclick="approveStudent(${s.idx})">승인</button>
+            <button class="reject-btn" onclick="rejectStudent(${s.idx})">반려</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    if (pending.length > 0) {
+      badge.style.display = "";
+      badge.textContent = pending.length;
+    } else {
+      badge.style.display = "none";
+    }
+  }
+
+  function toggleAddStudentForm() {
+    playTapSound();
+    const form = document.getElementById("addStudentForm");
+    form.classList.toggle("show");
+    if (form.classList.contains("show")) {
+      document.getElementById("newStudentInput").focus();
+    }
+  }
+
+  function addStudentToClass() {
+    const input = document.getElementById("newStudentInput");
+    const val = input.value.trim();
+    if (!val) return;
+    playTapSound();
+    classes[currentClassIndex].students.push({ name: val, status: "missing", lastSubmit: "-" });
+    input.value = "";
+    document.getElementById("addStudentForm").classList.remove("show");
+    renderClassDetail();
+  }
+
+  function removeStudent(i) {
+    playTapSound();
+    classes[currentClassIndex].students.splice(i, 1);
+    renderClassDetail();
+  }
+
+  function approveStudent(i) {
+    playSuccessChime();
+    const s = classes[currentClassIndex].students[i];
+    s.status = "done";
+    s.lastSubmit = "방금 승인";
+    renderClassDetail();
+  }
+
+  function rejectStudent(i) {
+    playTapSound();
+    const s = classes[currentClassIndex].students[i];
+    s.status = "missing";
+    s.lastSubmit = "반려됨";
+    renderClassDetail();
   }
 
   fitWelcomeBrandWidth();
