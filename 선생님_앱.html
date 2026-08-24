@@ -927,6 +927,133 @@
     font-weight:700;
   }
 
+  .add-hw-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    background:#F5F6FA;
+    color:var(--ink);
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    margin-bottom:14px;
+  }
+
+  .add-hw-btn:active{
+    transform:scale(0.98);
+  }
+
+  .add-hw-form{
+    display:none;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:14px;
+  }
+
+  .add-hw-form.show{
+    display:flex;
+  }
+
+  .add-hw-input, .add-hw-textarea{
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:14px;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--ink);
+    background:#FAFBFF;
+    width:100%;
+  }
+
+  .add-hw-textarea{
+    resize:none;
+    min-height:64px;
+    font-weight:500;
+  }
+
+  .add-hw-input:focus, .add-hw-textarea:focus{
+    outline:none;
+    border-color:var(--point-strong);
+  }
+
+  .add-hw-form button{
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:12px;
+    padding:13px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .add-hw-form button:active{
+    transform:scale(0.98);
+  }
+
+  .hw-manage-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:10px;
+  }
+
+  .hw-manage-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:6px;
+  }
+
+  .hw-manage-title{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+  }
+
+  .hw-manage-dday{
+    flex-shrink:0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-size:12px;
+    font-weight:800;
+    padding:4px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .hw-manage-desc{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 8px;
+    line-height:1.5;
+  }
+
+  .hw-manage-due{
+    font-size:12px;
+    color:var(--sub);
+    margin:0;
+  }
+
+  .hw-manage-delete{
+    background:none;
+    border:none;
+    color:var(--sub);
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+    padding:0;
+    margin-top:10px;
+  }
+
   .blank-section{
     background:#ffffff;
     min-height:80px;
@@ -1315,6 +1442,7 @@
 
     <div class="tabs">
       <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
+      <button class="tab" data-tab="homework" onclick="switchDetailTab('homework')">숙제 관리</button>
       <button class="tab" data-tab="approve" onclick="switchDetailTab('approve')">
         숙제 승인<span class="tab-badge" id="approveBadge" style="display:none;">0</span>
       </button>
@@ -1335,6 +1463,24 @@
         </div>
 
         <div id="manageStudentList"></div>
+      </div>
+
+      <div class="tab-content" id="detailTab-homework">
+        <button class="add-hw-btn" id="addHwToggleBtn" onclick="toggleAddHwForm()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          숙제 만들기
+        </button>
+
+        <div class="add-hw-form" id="addHwForm">
+          <input type="text" id="newHwTitle" class="add-hw-input" placeholder="숙제 이름 입력">
+          <input type="date" id="newHwDue" class="add-hw-input">
+          <textarea id="newHwDesc" class="add-hw-textarea" placeholder="설명 (선택)"></textarea>
+          <button id="newHwConfirmBtn" onclick="addHomeworkToClass()">만들기</button>
+        </div>
+
+        <div id="hwManageList"></div>
       </div>
 
       <div class="tab-content" id="detailTab-approve">
@@ -1473,6 +1619,29 @@
     return "미제출";
   }
 
+  function demoHomeworks() {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return [
+      { title: "단어 시험 준비", due: d.toISOString().slice(0, 10), desc: "Unit 5 단어 30개 암기" },
+    ];
+  }
+
+  function calcDday(dueDateStr) {
+    const due = new Date(dueDateStr + "T23:59:59");
+    const now = new Date();
+    const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return "마감";
+    if (diffDays === 0) return "D-day";
+    return "D-" + diffDays;
+  }
+
+  function formatKoreanDate(dateStr) {
+    const d = new Date(dateStr + "T00:00:00");
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+    return (d.getMonth() + 1) + "월 " + d.getDate() + "일 (" + days[d.getDay()] + ")";
+  }
+
   /* 이름 입력 */
   const nameInput = document.getElementById("nameInput");
   const nameConfirmText = document.getElementById("nameConfirmText");
@@ -1551,7 +1720,7 @@
 
   document.getElementById("codeNextBtn").addEventListener("click", () => {
     playTapSound();
-    classes.push({ name: className, code: classCode, students: demoStudents() });
+    classes.push({ name: className, code: classCode, students: demoStudents(), homeworks: demoHomeworks() });
     renderClassList();
     showPage("home");
     launchConfetti();
@@ -1653,6 +1822,10 @@
     document.getElementById("classDetailCode").textContent = c.code;
     document.getElementById("newStudentInput").value = "";
     document.getElementById("addStudentForm").classList.remove("show");
+    document.getElementById("newHwTitle").value = "";
+    document.getElementById("newHwDue").value = "";
+    document.getElementById("newHwDesc").value = "";
+    document.getElementById("addHwForm").classList.remove("show");
     switchDetailTab("manage", true);
     renderClassDetail();
     showPage("class-detail");
@@ -1719,6 +1892,23 @@
     } else {
       badge.style.display = "none";
     }
+
+    const hwList = document.getElementById("hwManageList");
+    if (c.homeworks.length === 0) {
+      hwList.innerHTML = '<p class="empty-approval">아직 만든 숙제가 없어요</p>';
+    } else {
+      hwList.innerHTML = c.homeworks.map((h, i) => `
+        <div class="hw-manage-card">
+          <div class="hw-manage-top">
+            <p class="hw-manage-title">${h.title}</p>
+            <span class="hw-manage-dday">${calcDday(h.due)}</span>
+          </div>
+          ${h.desc ? `<p class="hw-manage-desc">${h.desc}</p>` : ""}
+          <p class="hw-manage-due">마감: ${formatKoreanDate(h.due)}</p>
+          <button class="hw-manage-delete" onclick="removeHomework(${i})">삭제</button>
+        </div>
+      `).join("");
+    }
   }
 
   function toggleAddStudentForm() {
@@ -1744,6 +1934,37 @@
   function removeStudent(i) {
     playTapSound();
     classes[currentClassIndex].students.splice(i, 1);
+    renderClassDetail();
+  }
+
+  function toggleAddHwForm() {
+    playTapSound();
+    const form = document.getElementById("addHwForm");
+    form.classList.toggle("show");
+    if (form.classList.contains("show")) {
+      document.getElementById("newHwTitle").focus();
+    }
+  }
+
+  function addHomeworkToClass() {
+    const titleInput = document.getElementById("newHwTitle");
+    const dueInput = document.getElementById("newHwDue");
+    const descInput = document.getElementById("newHwDesc");
+    const title = titleInput.value.trim();
+    const due = dueInput.value;
+    if (!title || !due) return;
+    playTapSound();
+    classes[currentClassIndex].homeworks.push({ title: title, due: due, desc: descInput.value.trim() });
+    titleInput.value = "";
+    dueInput.value = "";
+    descInput.value = "";
+    document.getElementById("addHwForm").classList.remove("show");
+    renderClassDetail();
+  }
+
+  function removeHomework(i) {
+    playTapSound();
+    classes[currentClassIndex].homeworks.splice(i, 1);
     renderClassDetail();
   }
 
