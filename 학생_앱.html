@@ -866,6 +866,21 @@
     text-align:center;
   }
 
+  .success-subtitle{
+    display:none;
+    font-size:13px;
+    font-weight:600;
+    color:#9aa0a6;
+    margin:0 0 22px;
+    text-align:center;
+  }
+
+  .lock-icon{
+    color:#9aa0a6;
+    display:flex;
+    justify-content:center;
+  }
+
   .success-circle{
     width:88px;
     height:88px;
@@ -919,7 +934,7 @@
         <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
 
         <div class="top-icons">
-          <button class="icon-btn" aria-label="알림">
+          <button class="icon-btn" aria-label="알림" onclick="showComingSoon()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
               <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -932,7 +947,7 @@
         <p class="homework-title">제출해야 할 숙제</p>
         <p class="homework-date-range">8월 25일 ~ 8월 25일 숙제</p>
 
-        <div class="homework-item" onclick="showPage('list')">
+        <div class="homework-item" onclick="openHomeworkList()">
           <div>
             <p class="hw-name">0825 숙제</p>
             <p class="hw-due">제출 기한: 8월 25일</p>
@@ -963,7 +978,7 @@
         <span>홈</span>
       </button>
 
-      <button class="nav-item" data-nav="list" onclick="showPage('list')">
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 6h11M9 12h11M9 18h11"></path>
           <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
@@ -971,7 +986,7 @@
         <span>숙제 목록</span>
       </button>
 
-      <button class="nav-item" data-nav="calendar">
+      <button class="nav-item" data-nav="calendar" onclick="showComingSoon()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -979,7 +994,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="mypage">
+      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -1141,7 +1156,7 @@
         <span>홈</span>
       </button>
 
-      <button class="nav-item" data-nav="list" onclick="showPage('list')">
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 6h11M9 12h11M9 18h11"></path>
           <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
@@ -1149,7 +1164,7 @@
         <span>숙제 목록</span>
       </button>
 
-      <button class="nav-item" data-nav="calendar">
+      <button class="nav-item" data-nav="calendar" onclick="showComingSoon()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -1157,7 +1172,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="mypage">
+      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -1245,17 +1260,6 @@
       <p class="uploaded-count">업로드한 사진 (<span id="photoCount">0</span>)</p>
       <div class="thumb-row" id="thumbRow">
         <span class="thumb-empty">아직 업로드한 사진이 없어요</span>
-      </div>
-
-      <div class="notice-box">
-        <span class="notice-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-        </span>
-        <span class="notice-text">업로드한 숙제는 수정할 수 없습니다</span>
       </div>
 
       <div class="note-section">
@@ -1388,6 +1392,32 @@
     </div>
   </div>
 
+  <!-- 6: 수정/재업로드 시 변경된 내용이 없을 때 -->
+  <div class="modal-overlay" id="noChangesModal">
+    <div class="modal-box">
+      <p class="modal-text">수정 사항이 없어요</p>
+      <div class="modal-actions">
+        <button id="closeNoChangesBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추가: 아직 완성되지 않은 기능 안내 -->
+  <div class="modal-overlay" id="comingSoonModal">
+    <div class="modal-box">
+      <div class="lock-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+        </svg>
+      </div>
+      <p class="modal-text" style="margin-top:14px;">아직 이 기능은<br>완성되지 않았어요</p>
+      <div class="modal-actions">
+        <button id="closeComingSoonBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 사진 크게 보기 -->
   <div class="lightbox-overlay" id="lightbox">
     <img id="lightboxImg" src="" alt="업로드한 사진 크게 보기">
@@ -1397,6 +1427,7 @@
   <!-- 제출/수정/재업로드/이동 완료 화면 -->
   <div class="success-overlay" id="successOverlay">
     <p class="success-title" id="successTitle">0825 숙제가 제출됐어요!</p>
+    <p class="success-subtitle" id="successSubtitle"></p>
 
     <div class="success-circle">
       <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -1406,13 +1437,24 @@
 
     <div class="success-actions">
       <button class="success-btn strong" id="goHomeBtn">홈화면으로 이동하기</button>
-      <button class="success-btn light" id="goPendingBtn">승인대기중 숙제 확인하기</button>
+      <button class="success-btn light" id="goPendingBtn">승인현황 확인하기</button>
     </div>
   </div>
 
 </div>
 
 <script>
+  /* 1: 숙제 목록 진입점은 항상 남은 숙제 탭에서 시작 */
+  function openHomeworkList() {
+    showPage("list");
+    selectTab("remaining");
+  }
+
+  /* 추가: 아직 완성되지 않은 기능 안내 팝업 */
+  function showComingSoon() {
+    document.getElementById("comingSoonModal").classList.add("show");
+  }
+
   /* ===== 화면 전환 ===== */
   function showPage(name) {
     document.querySelectorAll(".page").forEach((p) => {
@@ -1461,7 +1503,7 @@
 
   const bundles = {
     "0819": {
-      name: "0819 숙제", due: "8월 19일 (화)", dday: "D-0일", status: "approved",
+      name: "0819 숙제", due: "8월 19일 (화)", dday: "D-DAY", status: "approved",
       photos: ["placeholder:#93C5FD", "placeholder:#FDBA74"],
       note: "다 풀었습니다! 확인 부탁드려요.", rejectReason: null, movedToPast: false,
     },
@@ -1471,7 +1513,7 @@
       note: "오늘 숙제 제출합니다.", rejectReason: null, movedToPast: false,
     },
     "0822": {
-      name: "0822 숙제", due: "8월 22일 (금)", dday: "D-0일", status: "rejected",
+      name: "0822 숙제", due: "8월 22일 (금)", dday: "D-DAY", status: "rejected",
       photos: ["placeholder:#FCA5A5"],
       note: "다 했어요!", rejectReason: "사진이 흐릿해서 글씨가 안 보여요. 다시 찍어서 올려주세요.", movedToPast: false,
     },
@@ -1628,18 +1670,23 @@
   window.addEventListener("popstate", () => {
     const detailActive = document.getElementById("page-detail").classList.contains("active");
     const statusDetailActive = document.getElementById("page-status-detail").classList.contains("active");
-    const statusIsApproved =
-      statusDetailActive && currentStatusBundleKey && bundles[currentStatusBundleKey].status === "approved";
 
-    const needsGuard = (detailActive || (statusDetailActive && !statusIsApproved)) && !exitModal.classList.contains("show");
+    if (!detailActive && !statusDetailActive) return;
+    if (exitModal.classList.contains("show")) return;
 
-    if (needsGuard) {
+    /* 5: 승인현황 상세는 실제로 바뀐 내용이 있을 때만 나가기 경고를 띄움 */
+    const dirty = detailActive ? true : sdHasChanges();
+
+    if (dirty) {
       history.pushState({ uploadGuard: true }, "");
       showExitModal(
         detailActive
           ? () => showPage("list")
           : () => { showPage("list"); selectTab("pending"); }
       );
+    } else {
+      showPage("list");
+      if (statusDetailActive) selectTab("pending");
     }
   });
 
@@ -1648,6 +1695,14 @@
 
   document.getElementById("closeNoPhotoBtn").addEventListener("click", () => {
     noPhotoModal.classList.remove("show");
+  });
+
+  document.getElementById("closeNoChangesBtn").addEventListener("click", () => {
+    document.getElementById("noChangesModal").classList.remove("show");
+  });
+
+  document.getElementById("closeComingSoonBtn").addEventListener("click", () => {
+    document.getElementById("comingSoonModal").classList.remove("show");
   });
 
   /* ===== 승인현황 목록 / 지난 숙제 목록 렌더링 ===== */
@@ -1756,35 +1811,50 @@
 
     renderSdThumbs();
 
+    /* 4,9: 완료 상태도 뒤로가기 버튼을 항상 보여주고, 이미 지난 숙제로 넘어간
+       항목은 실행 버튼 자리를 없애고 뒤로가기만 남김 */
     const actionBtn = document.getElementById("sdActionBtn");
-    const backBottomBtn = document.getElementById("sdBackBottomBtn");
 
-    if (b.status === "approved") {
-      actionBtn.textContent = "지난 숙제로 이동하기";
-      actionBtn.style.flex = "1 1 100%";
-      backBottomBtn.style.display = "none";
+    if (b.status === "approved" && b.movedToPast) {
+      actionBtn.style.display = "none";
+      document.getElementById("sdBackBottomBtn").style.flex = "1 1 100%";
     } else {
-      actionBtn.textContent = b.status === "rejected" ? "재업로드하기" : "수정하기";
+      actionBtn.style.display = "inline-block";
       actionBtn.style.flex = "1";
-      backBottomBtn.style.display = "block";
+      document.getElementById("sdBackBottomBtn").style.flex = "1";
+
+      if (b.status === "approved") {
+        actionBtn.textContent = "숙제 마무리하기";
+      } else if (b.status === "rejected") {
+        actionBtn.textContent = "재업로드하기";
+      } else {
+        actionBtn.textContent = "수정하기";
+      }
     }
 
     showPage("status-detail");
   }
 
-  document.getElementById("sdBackBtn").addEventListener("click", () => {
+  /* 5: 승인현황 상세에서 실제로 바뀐 내용이 있는지 확인 */
+  function sdHasChanges() {
     const b = bundles[currentStatusBundleKey];
-    if (b.status === "approved") {
+    if (!b) return false;
+    const noteChanged = document.getElementById("sdNote").value !== (b.note || "");
+    const photosChanged = JSON.stringify(sdUploadedPhotos) !== JSON.stringify(b.photos);
+    return noteChanged || photosChanged;
+  }
+
+  function sdGoBack() {
+    if (sdHasChanges()) {
+      showExitModal(() => { showPage("list"); selectTab("pending"); });
+    } else {
       showPage("list");
       selectTab("pending");
-    } else {
-      showExitModal(() => { showPage("list"); selectTab("pending"); });
     }
-  });
+  }
 
-  document.getElementById("sdBackBottomBtn").addEventListener("click", () => {
-    showExitModal(() => { showPage("list"); selectTab("pending"); });
-  });
+  document.getElementById("sdBackBtn").addEventListener("click", sdGoBack);
+  document.getElementById("sdBackBottomBtn").addEventListener("click", sdGoBack);
 
   document.getElementById("sdCameraBtn").addEventListener("click", () => {
     document.getElementById("sdCameraInput").click();
@@ -1812,7 +1882,13 @@
       renderApprovalList();
       renderCounts();
       renderPastList();
-      showCompletionScreen(b.name + "가 지난 숙제로 이동했어요!", "지난 숙제 확인하기", () => selectTab("past"));
+      showCompletionScreen(b.name + "가 마무리됐어요!", "지난 숙제 확인하기", () => selectTab("past"), "수고하셨습니다");
+      return;
+    }
+
+    /* 6: 수정/재업로드인데 실제로 바뀐 게 없으면 안내 팝업만 띄우고 그대로 둠 */
+    if (!sdHasChanges()) {
+      document.getElementById("noChangesModal").classList.add("show");
       return;
     }
 
@@ -1831,7 +1907,7 @@
     renderCounts();
 
     const title = wasRejected ? (b.name + "가 재업로드됐어요!") : (b.name + " 수정이 완료됐어요!");
-    showCompletionScreen(title, "승인대기중 숙제 확인하기", () => selectTab("pending"));
+    showCompletionScreen(title, "승인현황 확인하기", () => selectTab("pending"));
   });
 
   /* ===== 제출/수정/재업로드/이동 완료 화면 (공용) ===== */
@@ -1839,8 +1915,21 @@
   const goPendingBtn = document.getElementById("goPendingBtn");
   let successTimeoutId = null;
 
-  function showCompletionScreen(titleText, secondBtnLabel, onSecondBtn) {
-    document.getElementById("successTitle").textContent = titleText;
+  function showCompletionScreen(titleText, secondBtnLabel, onSecondBtn, subtitleText) {
+    const titleEl = document.getElementById("successTitle");
+    const subtitleEl = document.getElementById("successSubtitle");
+
+    titleEl.textContent = titleText;
+
+    if (subtitleText) {
+      titleEl.style.marginBottom = "4px";
+      subtitleEl.textContent = subtitleText;
+      subtitleEl.style.display = "block";
+    } else {
+      titleEl.style.marginBottom = "22px";
+      subtitleEl.style.display = "none";
+    }
+
     goPendingBtn.textContent = secondBtnLabel;
 
     goPendingBtn.onclick = () => {
@@ -1897,7 +1986,7 @@
     renderApprovalList();
     renderCounts();
 
-    showCompletionScreen(currentBundle.name + "가 제출됐어요!", "승인대기중 숙제 확인하기", () => selectTab("pending"));
+    showCompletionScreen(currentBundle.name + "가 제출됐어요!", "승인현황 확인하기", () => selectTab("pending"));
   });
 
   /* ===== 초기 렌더링 ===== */
