@@ -920,14 +920,356 @@
     background:var(--point-light);
     color:var(--point-strong);
   }
+
+  /* ================= 온보딩(로그인) 화면 ================= */
+  .onboard-top-bar{
+    flex-shrink:0;
+    padding:20px;
+  }
+
+  /* 1,2,3: 시작 화면 */
+  .welcome-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 24px;
+    transform:translateY(-36px);
+  }
+
+  .welcome-title{
+    font-size:30px;
+    font-weight:800;
+    color:var(--point-strong);
+    margin:0;
+    white-space:nowrap;
+  }
+
+  .welcome-brand{
+    font-weight:800;
+    color:#111111;
+    margin:6px 0 0;
+    white-space:nowrap;
+  }
+
+  .welcome-start-btn{
+    margin-top:40px;
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+    padding:16px 48px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* 4,5,6: 학생/선생님 선택 */
+  .role-split{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .role-box{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    cursor:pointer;
+    border-bottom:1px solid #f0f0f0;
+    text-align:center;
+  }
+
+  .role-box:last-child{
+    border-bottom:none;
+  }
+
+  .role-title{
+    font-size:21px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 10px;
+  }
+
+  .role-desc{
+    font-size:13px;
+    color:#888888;
+    line-height:1.6;
+    margin:0;
+    max-width:300px;
+    word-break:keep-all;
+  }
+
+  /* 8,9,10: 이름/코드 입력, 완료 화면 공용 */
+  .onboard-center{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+
+  /* 9: 코드가 확인되면 입력란이 위쪽으로, 아래에 확인 문구가 나오도록 */
+  .onboard-center.code-confirmed{
+    justify-content:flex-start;
+    padding-top:15vh;
+  }
+
+  .onboard-title{
+    font-size:22px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 8px;
+    text-align:center;
+  }
+
+  .onboard-desc{
+    font-size:13px;
+    color:#888888;
+    margin:0 0 22px;
+    text-align:center;
+  }
+
+  .onboard-input{
+    width:100%;
+    max-width:260px;
+    border:1px solid #dddddd;
+    border-radius:14px;
+    padding:14px 16px;
+    font-size:16px;
+    text-align:center;
+    font-family:inherit;
+  }
+
+  .onboard-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+  }
+
+  .onboard-input:disabled{
+    background:#f6f6f6;
+    color:#999999;
+  }
+
+  .onboard-confirm{
+    font-size:13px;
+    color:#666666;
+    min-height:18px;
+    margin:14px 0 20px;
+  }
+
+  .onboard-btn{
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:14px 40px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* 9: 코드 입력 줄 (입력칸 + 엔터 버튼) */
+  .code-input-row{
+    display:flex;
+    gap:8px;
+    width:100%;
+    max-width:260px;
+  }
+
+  .code-input-row .onboard-input{
+    max-width:none;
+  }
+
+  .code-enter-btn{
+    flex-shrink:0;
+    width:48px;
+    height:48px;
+    border-radius:14px;
+    border:none;
+    background:var(--point-strong);
+    color:#ffffff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .code-enter-btn:disabled{
+    background:#cccccc;
+    cursor:default;
+  }
+
+  .code-error{
+    min-height:16px;
+    margin:10px 0 0;
+    font-size:12px;
+    font-weight:700;
+    color:#e4423f;
+    text-align:center;
+  }
+
+  #codeConfirmSection{
+    margin-top:26px;
+    text-align:center;
+  }
+
+  .onboard-confirm-big{
+    font-size:17px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 20px;
+  }
+
+  .onboard-btn-row{
+    display:flex;
+    gap:10px;
+  }
+
+  .onboard-btn-row .secondary-btn,
+  .onboard-btn-row .submit-btn{
+    flex:none;
+    width:auto;
+    padding:13px 20px;
+  }
+
+  /* 10: 온보딩 완료 화면 */
+  .onboard-welcome-text{
+    font-size:20px;
+    font-weight:800;
+    color:#111111;
+    text-align:center;
+    margin:0 0 36px;
+    line-height:1.5;
+  }
+
+  .onboard-final-actions{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:100%;
+    max-width:260px;
+  }
+
+  .onboard-final-actions button{
+    width:100%;
+  }
 </style>
 </head>
 <body>
 
 <div class="app-shell">
 
+  <!-- ================= 1,2,3: 시작 화면 ================= -->
+  <div class="page active" id="page-welcome">
+    <div class="welcome-content">
+      <p class="welcome-title">환영합니다</p>
+      <p class="welcome-brand" id="welcomeBrand">Today English</p>
+      <button class="welcome-start-btn" onclick="showPage('role-select')">시작하기</button>
+    </div>
+  </div>
+
+  <!-- ================= 4,5,6,7: 학생/선생님 선택 ================= -->
+  <div class="page" id="page-role-select">
+    <div class="onboard-top-bar">
+      <button class="back-btn" onclick="showPage('welcome')" aria-label="뒤로가기">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="role-split">
+      <div class="role-box" onclick="showPage('name-input')">
+        <p class="role-title">학생이신가요?</p>
+        <p class="role-desc">학생이라면 여기를 눌러<br>선생님이 배부하신 코드로 시작하세요</p>
+      </div>
+
+      <div class="role-box" onclick="showComingSoon()">
+        <p class="role-title">선생님이신가요?</p>
+        <p class="role-desc">선생님이시라면 여기를 눌러<br>클래스를 만들고 Today Homework와 함께하세요</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 8: 이름 입력 ================= -->
+  <div class="page" id="page-name-input">
+    <div class="onboard-top-bar">
+      <button class="back-btn" onclick="showPage('role-select')" aria-label="뒤로가기">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="onboard-center">
+      <p class="onboard-title">성명을 입력해 주세요!</p>
+      <p class="onboard-desc">원활한 서비스 이용을 위해 실명을 입력하세요</p>
+      <input type="text" id="nameInput" class="onboard-input" placeholder="이름 입력">
+      <p class="onboard-confirm" id="nameConfirmText"></p>
+      <button class="onboard-btn" id="nameConfirmBtn">맞아요</button>
+    </div>
+  </div>
+
+  <!-- ================= 9: 코드 입력 ================= -->
+  <div class="page" id="page-code-input">
+    <div class="onboard-top-bar">
+      <button class="back-btn" onclick="showPage('name-input')" aria-label="뒤로가기">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="onboard-center" id="codeCenter">
+      <div id="codeInputSection">
+        <p class="onboard-title">코드를 입력하세요!</p>
+        <p class="onboard-desc">선생님께서 알려주신 코드 6자리를 입력하세요</p>
+
+        <div class="code-input-row">
+          <input type="text" id="codeInput" class="onboard-input" maxlength="6" placeholder="코드 6자리">
+          <button class="code-enter-btn" id="codeEnterBtn" aria-label="엔터">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14"></path>
+              <path d="M13 6l6 6-6 6"></path>
+            </svg>
+          </button>
+        </div>
+
+        <p class="code-error" id="codeError"></p>
+      </div>
+
+      <div id="codeConfirmSection" style="display:none;">
+        <p class="onboard-confirm-big" id="classConfirmText"></p>
+        <div class="onboard-btn-row">
+          <button class="secondary-btn" id="codeRetryBtn">다시 입력할게요</button>
+          <button class="submit-btn" id="codeOkBtn">맞아요</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 10: 온보딩 완료 ================= -->
+  <div class="page" id="page-onboard-complete">
+    <div class="onboard-center">
+      <p class="onboard-welcome-text" id="onboardWelcomeText">A반의 홍길동님 환영해요</p>
+      <div class="onboard-final-actions">
+        <button class="secondary-btn" id="restartOnboardBtn">처음으로</button>
+        <button class="submit-btn" id="startServiceBtn">서비스 시작하기</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= 홈 화면 ================= -->
-  <div class="page active" id="page-home">
+  <div class="page" id="page-home">
     <div class="home-content">
 
       <div class="top-bar">
@@ -1454,6 +1796,112 @@
   function showComingSoon() {
     document.getElementById("comingSoonModal").classList.add("show");
   }
+
+  /* ===== 온보딩(초기 회원 로그인 UI) ===== */
+  let studentName = "";
+  let selectedClassName = "";
+
+  /* 2: "Today English"의 가로 폭을 "환영합니다"와 맞춤 */
+  function fitWelcomeBrandWidth() {
+    const title = document.querySelector(".welcome-title");
+    const brand = document.getElementById("welcomeBrand");
+    const targetWidth = title.getBoundingClientRect().width;
+
+    let fontSize = 30;
+    brand.style.fontSize = fontSize + "px";
+
+    while (brand.getBoundingClientRect().width > targetWidth && fontSize > 8) {
+      fontSize -= 0.5;
+      brand.style.fontSize = fontSize + "px";
+    }
+  }
+
+  /* 8: 이름 입력 */
+  const nameInput = document.getElementById("nameInput");
+  const nameConfirmText = document.getElementById("nameConfirmText");
+
+  nameInput.addEventListener("input", () => {
+    const val = nameInput.value.trim();
+    nameConfirmText.textContent = val ? val + "님이 맞으신가요?" : "";
+  });
+
+  document.getElementById("nameConfirmBtn").addEventListener("click", () => {
+    const val = nameInput.value.trim();
+    if (!val) {
+      nameInput.focus();
+      return;
+    }
+    studentName = val;
+    showPage("code-input");
+  });
+
+  /* 9: 코드 입력 (데모용 코드 - 실제 반 배정 기능은 아직 없음) */
+  const validClassCodes = {
+    "123456": "A반",
+    "111111": "B반",
+  };
+
+  const codeInput = document.getElementById("codeInput");
+  const codeEnterBtn = document.getElementById("codeEnterBtn");
+  const codeCenter = document.getElementById("codeCenter");
+  const codeConfirmSection = document.getElementById("codeConfirmSection");
+  const codeError = document.getElementById("codeError");
+
+  function submitClassCode() {
+    const val = codeInput.value.trim();
+    const className = validClassCodes[val];
+
+    if (!className) {
+      codeError.textContent = "존재하지 않는 코드에요 다시 확인해주세요";
+      return;
+    }
+
+    selectedClassName = className;
+    codeError.textContent = "";
+    document.getElementById("classConfirmText").textContent = className + "이 맞으신가요?";
+    codeCenter.classList.add("code-confirmed");
+    codeConfirmSection.style.display = "block";
+    codeInput.disabled = true;
+    codeEnterBtn.disabled = true;
+  }
+
+  function resetCodeInput() {
+    codeCenter.classList.remove("code-confirmed");
+    codeConfirmSection.style.display = "none";
+    codeInput.value = "";
+    codeInput.disabled = false;
+    codeEnterBtn.disabled = false;
+    codeError.textContent = "";
+  }
+
+  codeEnterBtn.addEventListener("click", submitClassCode);
+
+  codeInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") submitClassCode();
+  });
+
+  document.getElementById("codeRetryBtn").addEventListener("click", resetCodeInput);
+
+  document.getElementById("codeOkBtn").addEventListener("click", () => {
+    document.getElementById("onboardWelcomeText").textContent =
+      selectedClassName + "의 " + studentName + "님 환영해요";
+    showPage("onboard-complete");
+  });
+
+  /* 10: 온보딩 완료 */
+  document.getElementById("restartOnboardBtn").addEventListener("click", () => {
+    studentName = "";
+    selectedClassName = "";
+    nameInput.value = "";
+    nameConfirmText.textContent = "";
+    resetCodeInput();
+    showPage("welcome");
+  });
+
+  document.getElementById("startServiceBtn").addEventListener("click", () => {
+    document.querySelector("#page-home .user-name").textContent = studentName;
+    showPage("home");
+  });
 
   /* ===== 화면 전환 ===== */
   function showPage(name) {
@@ -1993,6 +2441,7 @@
   renderApprovalList();
   renderCounts();
   renderPastList();
+  fitWelcomeBrandWidth();
 </script>
 
 </body>
