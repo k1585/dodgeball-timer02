@@ -60,68 +60,72 @@
     margin:0;
   }
 
-  /* 3: 숙제 정보 카드 (숙제 목록 카드 재사용, 세로형 + 디데이 아래 + 화살표 없음) */
-  .hw-info-card{
-    border:1px solid #ececec;
-    border-radius:16px;
-    padding:18px;
-    margin-top:20px;
+  /* 2,3: 이 날짜 숙제 묶음 요약 줄 (숙제명 + 제출기한 + D-day) */
+  .bundle-header{
+    margin-top:22px;
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
 
-  .subject-badge{
-    display:inline-block;
-    background:var(--point-light);
-    color:var(--point-strong);
-    font-size:13px;
-    font-weight:800;
-    padding:5px 12px;
-    border-radius:999px;
-    margin-bottom:10px;
-  }
-
-  .hw-name{
+  .bundle-title{
     font-size:20px;
     font-weight:800;
     color:#111111;
-    margin:0 0 6px;
   }
 
-  .hw-due{
+  .bundle-due{
     font-size:13px;
     color:#888888;
-    margin:0;
   }
 
-  .hw-dday{
-    display:inline-block;
+  .bundle-dday{
+    margin-left:auto;
     background:var(--point-light);
     color:var(--point-strong);
     font-weight:800;
     font-size:14px;
     padding:6px 12px;
     border-radius:999px;
-    margin-top:10px;
+    white-space:nowrap;
   }
 
-  /* 4: 숙제 안내 */
-  .section-label{
-    font-size:14px;
-    color:#888888;
-    font-weight:700;
-    margin:22px 0 10px;
+  /* 3,4: 개별 숙제 얇은 카드 목록 (많아지면 이 부분만 스크롤) */
+  .task-list{
+    margin-top:16px;
+    max-height:260px;
+    overflow-y:auto;
+    padding-right:4px;
   }
 
-  .guide-box{
+  .task-card{
     border:1px solid #ececec;
-    border-radius:16px;
-    padding:18px;
+    border-radius:14px;
+    padding:14px 16px;
+    margin-bottom:10px;
   }
 
-  .guide-box p{
-    margin:0;
-    font-size:15px;
-    color:#333333;
-    line-height:1.7;
+  .task-card:last-child{
+    margin-bottom:0;
+  }
+
+  .task-name{
+    font-size:16px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 6px;
+  }
+
+  .task-meta{
+    font-size:12px;
+    color:#888888;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .task-meta .meta-divider{
+    color:#dddddd;
   }
 
   /* 5: 숙제 업로드 영역 */
@@ -389,17 +393,48 @@
     <h1 class="page-title-sm">숙제 업로드</h1>
   </div>
 
-  <div class="hw-info-card">
-    <span class="subject-badge">독해</span>
-    <p class="hw-name">백지T 연습</p>
-    <p class="hw-due">제출 기한: 8월 25일 (월)</p>
-    <div><span class="hw-dday">D-1일</span></div>
+  <div class="bundle-header">
+    <span class="bundle-title">0825 숙제</span>
+    <span class="bundle-due">제출 기한: 8월 25일 (월)</span>
+    <span class="bundle-dday">D-1일</span>
   </div>
 
-  <p class="section-label">숙제 안내</p>
-  <div class="guide-box">
-    <p>102~105p</p>
-    <p>문제풀기 / 채점 / 오답노트</p>
+  <div class="task-list">
+    <div class="task-card">
+      <p class="task-name">듣기 숙제</p>
+      <div class="task-meta">
+        <span>108~112p / 스텝 1,2</span>
+        <span class="meta-divider">|</span>
+        <span>풀기/채점하기/고치기</span>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <p class="task-name">문법 숙제</p>
+      <div class="task-meta">
+        <span>Unit 5 연습문제</span>
+        <span class="meta-divider">|</span>
+        <span>풀기/채점하기</span>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <p class="task-name">독해 숙제</p>
+      <div class="task-meta">
+        <span>지문 3개 분석</span>
+        <span class="meta-divider">|</span>
+        <span>읽기/요약하기/오답노트</span>
+      </div>
+    </div>
+
+    <div class="task-card">
+      <p class="task-name">어휘 숙제</p>
+      <div class="task-meta">
+        <span>단어 30개 암기</span>
+        <span class="meta-divider">|</span>
+        <span>암기/테스트</span>
+      </div>
+    </div>
   </div>
 
   <div class="upload-box">
