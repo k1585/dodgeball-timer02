@@ -1,0 +1,5020 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 숙제</title>
+<style>
+  :root{
+    /* 포인트 색상: 이 값만 바꾸면 전체 화면의 파란색이 한 번에 바뀝니다 */
+    --point-strong:#3F6FF5;  /* 진한 포인트컬러 */
+    --point-light:#E6ECFF;   /* 연한 포인트컬러 */
+    --point-mid:#5C87FF;     /* 로그인 화면 그라데이션용 */
+    --ink:#111318;
+    --sub:#8A8FA3;
+    --line:#EEF0F6;
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  html, body{
+    height:100%;
+    margin:0;
+    overflow:hidden;
+  }
+
+  body{
+    background:#ffffff;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    display:flex;
+    justify-content:center;
+  }
+
+  .app-shell{
+    width:100%;
+    max-width:480px;
+    background:#ffffff;
+    position:relative;
+    overflow:hidden;
+    /* 1: 모바일 브라우저 주소창 때문에 아래가 잘리는 문제 방지 (동적 뷰포트 높이 우선 사용) */
+    height:100vh;
+    height:100dvh;
+  }
+
+  /* 로그인 화면 배경 장식 */
+  .bg-blob{
+    position:absolute;
+    border-radius:50%;
+    filter:blur(50px);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  .bg-blob.b1{
+    width:280px;
+    height:280px;
+    top:-120px;
+    right:-90px;
+    background:radial-gradient(circle, rgba(63,111,245,0.16), rgba(63,111,245,0) 70%);
+  }
+
+  .bg-blob.b2{
+    width:240px;
+    height:240px;
+    bottom:-100px;
+    left:-80px;
+    background:radial-gradient(circle, rgba(92,135,255,0.14), rgba(92,135,255,0) 70%);
+  }
+
+  /* 화면(페이지) 전환 */
+  .page{
+    display:none;
+    flex-direction:column;
+    height:100%;
+    position:relative;
+    z-index:1;
+  }
+
+  .page.active{
+    display:flex;
+    animation:pageIn 0.35s cubic-bezier(.2,.8,.25,1);
+  }
+
+  @keyframes pageIn{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  /* 하단 고정 메뉴 (홈 / 숙제 목록 화면 공용) */
+  .bottom-nav{
+    flex-shrink:0;
+    display:flex;
+    border-top:1px solid #eeeeee;
+    background:#ffffff;
+  }
+
+  .nav-item{
+    flex:1;
+    background:none;
+    border:none;
+    padding:8px 0 9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    color:#9aa0a6;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-0.2px;
+    cursor:pointer;
+  }
+
+  .nav-item svg{
+    width:21px;
+    height:21px;
+  }
+
+  .nav-item.active{
+    color:var(--point-strong);
+  }
+
+  /* ================= 홈 화면 ================= */
+  #page-home .home-content{
+    flex:1;
+    overflow-y:auto;
+    padding:22px 20px 14px;
+  }
+
+  .top-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .greeting{
+    font-size:24px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .greeting .user-name{
+    color:var(--point-strong);
+  }
+
+  .page-label{
+    color:#9aa0a6;
+    font-weight:800;
+    margin-right:6px;
+  }
+
+  .top-icons{
+    display:flex;
+    gap:14px;
+  }
+
+  .icon-btn{
+    width:36px;
+    height:36px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--point-strong);
+  }
+
+  .homework-card{
+    margin-top:20px;
+    background:var(--point-strong);
+    border-radius:24px;
+    padding:18px 20px;
+  }
+
+  .homework-title{
+    color:#ffffff;
+    font-size:22px;
+    font-weight:800;
+    margin:0 0 4px 0;
+  }
+
+  .homework-date-range{
+    color:#ffffff;
+    font-size:15px;
+    opacity:0.9;
+    margin:0 0 14px 0;
+  }
+
+  #page-home .homework-item{
+    background:#ffffff;
+    border-radius:18px;
+    padding:16px 18px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+  }
+
+  #page-home .hw-name{
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 4px;
+  }
+
+  #page-home .hw-due{
+    font-size:12px;
+    color:#888888;
+    margin:0;
+  }
+
+  #page-home .hw-right{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+  }
+
+  #page-home .hw-dday{
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:14px;
+    padding:6px 12px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  #page-home .hw-arrow{
+    color:#c2c2c2;
+    display:flex;
+  }
+
+  .more-link{
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px dashed rgba(255,255,255,0.5);
+    text-align:center;
+    color:#ffffff;
+    font-weight:700;
+    font-size:15px;
+  }
+
+  .blank-section{
+    background:#ffffff;
+    min-height:120px;
+  }
+
+  /* ================= 숙제 목록 화면 ================= */
+  #page-list .list-fixed-top{
+    flex-shrink:0;
+    padding:20px 20px 0;
+  }
+
+  .page-title{
+    font-size:22px;
+    font-weight:800;
+    color:#111111;
+    margin:0;
+  }
+
+  .tabs{
+    display:flex;
+    margin-top:14px;
+    border-bottom:1px solid #eeeeee;
+  }
+
+  .tab{
+    flex:1;
+    background:none;
+    border:none;
+    padding:10px 0;
+    font-size:14px;
+    font-weight:700;
+    color:#9aa0a6;
+    border-bottom:3px solid transparent;
+    margin-bottom:-1px;
+    cursor:pointer;
+  }
+
+  .tab.active{
+    color:var(--point-strong);
+    border-bottom-color:var(--point-strong);
+  }
+
+  .date-range{
+    color:var(--point-strong);
+    font-size:14px;
+    font-weight:800;
+    margin:14px 0 10px;
+  }
+
+  #page-list .list-area{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:0 20px 14px;
+  }
+
+  .tab-content{
+    display:none;
+  }
+
+  .tab-content.active{
+    display:block;
+  }
+
+  #page-list .hw-card,
+  #page-status-detail .hw-card{
+    border:1px solid #ececec;
+    border-radius:14px;
+    padding:14px;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+  }
+
+  .hw-card.disabled{
+    opacity:0.45;
+    cursor:default;
+  }
+
+  .hw-name{
+    font-size:17px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 4px;
+  }
+
+  .hw-name-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:0 0 4px;
+  }
+
+  .hw-name-row .hw-name{
+    margin:0;
+  }
+
+  .hw-dday-inline{
+    font-size:12px;
+    font-weight:800;
+    color:var(--point-strong);
+  }
+
+  .hw-due{
+    font-size:12px;
+    color:#888888;
+  }
+
+  .hw-right{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+  }
+
+  .hw-dday{
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:13px;
+    padding:5px 11px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .hw-arrow{
+    color:#c2c2c2;
+    display:flex;
+  }
+
+  .section-divider{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:#9aa0a6;
+    font-size:12px;
+    font-weight:700;
+    margin:16px 0 10px;
+    white-space:nowrap;
+  }
+
+  .section-divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#e5e5e5;
+  }
+
+  /* 승인 현황 - 상태 요약 3칸 (3: 완료/거절 투톤으로) */
+  .status-row{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+
+  .status-box{
+    flex:1;
+    border-radius:14px;
+    padding:12px 10px;
+  }
+
+  .status-box.pending{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+
+  .status-box.rejected{
+    background:#fde7e7;
+    color:#e4423f;
+  }
+
+  .status-box.approved{
+    background:#e3f5e9;
+    color:#1fa455;
+  }
+
+  .status-label{
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+
+  .status-count{
+    display:block;
+    font-size:18px;
+    font-weight:800;
+  }
+
+  .status-pill{
+    font-weight:800;
+    font-size:13px;
+    padding:5px 11px;
+    border-radius:999px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+
+  .status-pill.pending{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+
+  .status-pill.rejected{
+    background:#fde7e7;
+    color:#e4423f;
+  }
+
+  .status-pill.approved{
+    background:#e3f5e9;
+    color:#1fa455;
+  }
+
+  .empty-state{
+    padding:60px 0;
+    text-align:center;
+    font-size:13px;
+    color:#bbbbbb;
+  }
+
+  /* ================= 숙제 업로드(상세) / 승인현황 상세 공용 ================= */
+  #page-detail .detail-content,
+  #page-status-detail .detail-content{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    padding:16px 18px 12px;
+  }
+
+  .top-bar-sm{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .back-btn{
+    width:28px;
+    height:28px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#111111;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  .page-title-sm{
+    font-size:18px;
+    font-weight:800;
+    color:#111111;
+    margin:0;
+  }
+
+  .bundle-header{
+    margin-top:14px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .bundle-title{
+    font-size:16px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .bundle-due{
+    font-size:11px;
+    color:#888888;
+  }
+
+  .bundle-dday{
+    margin-left:auto;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-weight:800;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  .bundle-desc-box{
+    margin-top:10px;
+    background:#FAFBFF;
+    border:1px solid #ececec;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13px;
+    color:#333333;
+    line-height:1.6;
+  }
+
+  .bundle-desc-box:empty{
+    display:none;
+  }
+
+  .upload-box{
+    margin-top:12px;
+    background:var(--point-light);
+    border-radius:16px;
+    padding:14px 16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+
+  .upload-icon{
+    color:var(--point-strong);
+    margin-bottom:6px;
+  }
+
+  .upload-icon svg{
+    width:24px;
+    height:24px;
+  }
+
+  .upload-text{
+    font-size:12px;
+    font-weight:700;
+    color:#444444;
+    margin:0 0 10px;
+  }
+
+  .upload-actions{
+    display:flex;
+    gap:8px;
+    width:100%;
+  }
+
+  .upload-action-btn{
+    flex:1;
+    background:#ffffff;
+    color:var(--point-strong);
+    border:1px solid var(--point-strong);
+    border-radius:10px;
+    padding:8px 6px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .uploaded-count{
+    margin:10px 0 6px;
+    font-size:12px;
+    font-weight:800;
+    color:#111111;
+  }
+
+  .thumb-row{
+    display:flex;
+    gap:8px;
+    overflow-x:auto;
+    padding-bottom:4px;
+  }
+
+  .thumb{
+    position:relative;
+    flex-shrink:0;
+    width:52px;
+    height:52px;
+    border-radius:10px;
+    overflow:hidden;
+    background:#f0f2f5;
+    cursor:pointer;
+    border:1px solid #eeeeee;
+  }
+
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  /* 4: 업로드한 사진 삭제(X) 버튼 (터치하기 쉽도록 여유 있는 크기로) */
+  .thumb-remove{
+    position:absolute;
+    top:0;
+    right:0;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:rgba(0,0,0,0.65);
+    color:#ffffff;
+    border:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    line-height:1;
+    cursor:pointer;
+  }
+
+  .thumb-empty{
+    font-size:12px;
+    color:#bbbbbb;
+  }
+
+  .notice-box{
+    margin-top:10px;
+    background:var(--point-light);
+    border-radius:10px;
+    padding:8px 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .notice-icon{
+    color:var(--point-strong);
+    flex-shrink:0;
+    display:flex;
+  }
+
+  .notice-icon svg{
+    width:14px;
+    height:14px;
+  }
+
+  .notice-box span.notice-text{
+    font-size:11px;
+    color:#4a4a4a;
+    font-weight:600;
+  }
+
+  .note-section{
+    margin-top:10px;
+  }
+
+  .note-label{
+    font-size:11px;
+    font-weight:700;
+    color:#888888;
+    margin:0 0 5px;
+  }
+
+  .note-input{
+    width:100%;
+    border:1px solid #ececec;
+    border-radius:10px;
+    padding:8px 10px;
+    font-size:12px;
+    font-family:inherit;
+    color:#333333;
+    resize:none;
+  }
+
+  .note-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+  }
+
+  .note-input:disabled{
+    background:#f6f6f6;
+    color:#999999;
+  }
+
+  /* 거절 사유 */
+  .reject-box{
+    margin-top:10px;
+    background:#fff5f5;
+    border:1px solid #ffd6d6;
+    border-radius:10px;
+    padding:8px 12px;
+  }
+
+  .reject-box .note-label{
+    color:#e4423f;
+  }
+
+  .reject-box p{
+    margin:0;
+    font-size:12px;
+    color:#c53030;
+    line-height:1.5;
+  }
+
+  .submit-bar{
+    flex-shrink:0;
+    display:flex;
+    gap:10px;
+    padding:8px 18px 14px;
+    border-top:1px solid #f0f0f0;
+    background:#ffffff;
+  }
+
+  .submit-btn{
+    flex:1;
+    width:100%;
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .secondary-btn{
+    flex:1;
+    background:#f1f2f5;
+    color:#555555;
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  /* 팝업 공통 */
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+
+  .modal-overlay.show{
+    display:flex;
+  }
+
+  .modal-box{
+    background:#ffffff;
+    border-radius:20px;
+    padding:26px 22px;
+    width:100%;
+    max-width:320px;
+    text-align:center;
+  }
+
+  .modal-text{
+    font-size:15px;
+    font-weight:700;
+    color:#222222;
+    margin:0 0 20px;
+    line-height:1.5;
+  }
+
+  .modal-actions{
+    display:flex;
+    gap:10px;
+  }
+
+  .modal-actions button{
+    flex:1;
+    border-radius:12px;
+    padding:13px 8px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    border:none;
+  }
+
+  #cancelExitBtn{
+    background:#f1f2f5;
+    color:#555555;
+  }
+
+  #confirmExitBtn{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  #closeNoPhotoBtn{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  /* 사진 크게 보기 */
+  .lightbox-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    align-items:center;
+    justify-content:center;
+    z-index:110;
+    padding:24px;
+  }
+
+  .lightbox-overlay.show{
+    display:flex;
+  }
+
+  .lightbox-overlay img{
+    max-width:100%;
+    max-height:100%;
+    border-radius:12px;
+  }
+
+  #lightboxColorBox{
+    width:260px;
+    height:260px;
+    max-width:100%;
+    border-radius:16px;
+  }
+
+  /* 제출/수정/재업로드/이동 완료 화면 */
+  .success-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#ffffff;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    overflow-y:auto;
+    z-index:120;
+    padding:24px;
+  }
+
+  .success-overlay.show{
+    display:flex;
+  }
+
+  .success-title{
+    font-size:19px;
+    font-weight:800;
+    color:#111111;
+    margin:0 0 22px;
+    text-align:center;
+  }
+
+  .success-subtitle{
+    display:none;
+    font-size:13px;
+    font-weight:600;
+    color:#9aa0a6;
+    margin:0 0 22px;
+    text-align:center;
+  }
+
+  .lock-icon{
+    color:#9aa0a6;
+    display:flex;
+    justify-content:center;
+  }
+
+  .success-circle{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    background:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+
+  .success-actions{
+    margin-top:52px;
+    width:100%;
+    max-width:320px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .success-btn{
+    width:100%;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .success-btn.strong{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  .success-btn.light{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+
+  /* ================= 온보딩(로그인) 화면 ================= */
+
+  /* 장면마다 요소가 순서대로 떠오르는 공용 등장 애니메이션 */
+  @keyframes fadeInUp{
+    from{ opacity:0; transform:translateY(14px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .ob-anim{
+    animation:fadeInUp 0.5s cubic-bezier(.2,.8,.25,1) both;
+  }
+
+  .ob-anim.d1{ animation-delay:0.05s; }
+  .ob-anim.d2{ animation-delay:0.14s; }
+  .ob-anim.d3{ animation-delay:0.23s; }
+  .ob-anim.d4{ animation-delay:0.32s; }
+
+  /* 입력칸에 숫자가 들어갈 때 살짝 통통 튀는 효과 */
+  @keyframes digitPop{
+    0%{ transform:scale(1); }
+    45%{ transform:scale(1.18); }
+    100%{ transform:scale(1); }
+  }
+
+  .otp-box.pop{
+    animation:digitPop 0.22s ease;
+  }
+
+  /* 완료 화면 색종이 효과 */
+  .confetti-piece{
+    position:absolute;
+    width:7px;
+    height:7px;
+    top:32%;
+    left:50%;
+    border-radius:2px;
+    pointer-events:none;
+    z-index:5;
+    animation:confettiFall 1.1s ease-out forwards;
+  }
+
+  @keyframes confettiFall{
+    0%{ transform:translate(0,0) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity:0; }
+  }
+
+  /* 상단바 (뒤로가기 + 진행 점) - 온보딩 전용, 다른 화면의 top-bar/back-btn과 분리 */
+  .ob-top-bar{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 20px 0;
+  }
+
+  .ob-back-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    border:none;
+    background:#F5F6FA;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+
+  .ob-back-btn:active{
+    transform:scale(0.94);
+  }
+
+  .progress-dots{
+    display:flex;
+    gap:6px;
+  }
+
+  .progress-dots span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--line);
+    transition:background 0.2s, width 0.2s;
+  }
+
+  .progress-dots span.done{
+    background:var(--point-light);
+  }
+
+  .progress-dots span.current{
+    background:var(--point-strong);
+    width:16px;
+    border-radius:4px;
+  }
+
+  /* 시작 화면 */
+  .welcome-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 32px;
+    transform:translateY(-30px);
+  }
+
+  .welcome-title{
+    font-size:26px;
+    font-weight:800;
+    color:var(--point-strong);
+    margin:0;
+    letter-spacing:-0.3px;
+  }
+
+  .welcome-brand{
+    font-weight:800;
+    color:var(--ink);
+    margin:6px 0 0;
+    white-space:nowrap;
+    letter-spacing:-0.3px;
+  }
+
+  .welcome-tagline{
+    font-size:13px;
+    color:var(--sub);
+    margin:10px 0 0;
+    text-align:center;
+  }
+
+  .welcome-start-btn{
+    margin-top:40px;
+    width:100%;
+    max-width:280px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:18px;
+    padding:17px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 12px 24px rgba(63,111,245,0.28);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+
+  .welcome-start-btn:active{
+    transform:scale(0.98);
+  }
+
+  /* 역할 선택 */
+  .role-heading{
+    padding:8px 24px 0;
+    flex-shrink:0;
+  }
+
+  .role-heading h1{
+    font-size:23px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+
+  .role-heading p{
+    font-size:13px;
+    color:var(--sub);
+    margin:0;
+  }
+
+  .role-list{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:14px;
+    padding:20px 24px 24px;
+  }
+
+  .role-card{
+    background:#ffffff;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:22px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(20,25,60,0.05);
+    transition:transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  }
+
+  .role-card:active{
+    transform:scale(0.98);
+    box-shadow:0 3px 10px rgba(20,25,60,0.06);
+  }
+
+  .role-card.student{
+    border-color:rgba(63,111,245,0.18);
+  }
+
+  .role-icon{
+    flex-shrink:0;
+    width:52px;
+    height:52px;
+    border-radius:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .role-card.student .role-icon{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+
+  .role-card.teacher .role-icon{
+    background:#FFF1DB;
+    color:#E08A00;
+  }
+
+  .role-text{
+    flex:1;
+  }
+
+  .role-text h2{
+    font-size:17px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+
+  .role-text p{
+    font-size:12.5px;
+    color:var(--sub);
+    line-height:1.55;
+    margin:0;
+    word-break:keep-all;
+  }
+
+  .role-arrow{
+    flex-shrink:0;
+    color:#C9CCDA;
+  }
+
+  /* 이름/코드 입력 공용 */
+  .onboard-center{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+
+  .onboard-center.shift-up{
+    justify-content:flex-start;
+    padding-top:10vh;
+  }
+
+  .step-icon{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+
+  .onboard-title{
+    font-size:21px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 6px;
+    text-align:center;
+  }
+
+  .onboard-desc{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 26px;
+    text-align:center;
+  }
+
+  .onboard-input-wrap{
+    width:100%;
+    max-width:280px;
+    position:relative;
+  }
+
+  .onboard-input{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:16px;
+    padding:16px 18px;
+    font-size:16px;
+    text-align:center;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--ink);
+    background:#FAFBFF;
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .onboard-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+    box-shadow:0 0 0 4px rgba(63,111,245,0.12);
+    background:#ffffff;
+  }
+
+  .onboard-confirm{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--point-strong);
+    min-height:20px;
+    margin:16px 0 24px;
+    opacity:0;
+    transition:opacity 0.2s;
+  }
+
+  .onboard-confirm.show{
+    opacity:1;
+  }
+
+  .onboard-btn{
+    width:100%;
+    max-width:280px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 10px 20px rgba(63,111,245,0.22);
+    transition:opacity 0.15s, transform 0.1s;
+  }
+
+  .onboard-btn:disabled{
+    background:#E4E6EF;
+    box-shadow:none;
+    color:#AEB2C4;
+    cursor:default;
+  }
+
+  .onboard-btn:not(:disabled):active{
+    transform:scale(0.98);
+  }
+
+  /* 코드 입력 (OTP 스타일) */
+  .otp-row{
+    display:flex;
+    gap:8px;
+  }
+
+  .otp-box{
+    width:42px;
+    height:52px;
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    text-align:center;
+    font-size:20px;
+    font-weight:800;
+    color:var(--ink);
+    background:#FAFBFF;
+    font-family:inherit;
+    transition:border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  .otp-box:focus{
+    outline:none;
+    border-color:var(--point-strong);
+    box-shadow:0 0 0 4px rgba(63,111,245,0.12);
+    background:#ffffff;
+  }
+
+  .otp-row.shake{
+    animation:otpShake 0.4s;
+  }
+
+  .otp-row.shake .otp-box{
+    border-color:#E4423F;
+    background:#FFF4F4;
+  }
+
+  @keyframes otpShake{
+    0%, 100%{ transform:translateX(0); }
+    20%{ transform:translateX(-8px); }
+    40%{ transform:translateX(8px); }
+    60%{ transform:translateX(-6px); }
+    80%{ transform:translateX(6px); }
+  }
+
+  .code-error{
+    min-height:16px;
+    margin:14px 0 0;
+    font-size:12.5px;
+    font-weight:700;
+    color:#E4423F;
+    text-align:center;
+    opacity:0;
+    transition:opacity 0.2s;
+  }
+
+  .code-error.show{
+    opacity:1;
+  }
+
+  .code-hint{
+    margin-top:14px;
+    font-size:11.5px;
+    color:#C4C7D6;
+    text-align:center;
+  }
+
+  #codeConfirmSection{
+    margin-top:30px;
+    text-align:center;
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .confirm-badge{
+    width:44px;
+    height:44px;
+    border-radius:50%;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 14px;
+    animation:popIn 0.45s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  .onboard-confirm-big{
+    font-size:18px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 22px;
+  }
+
+  .onboard-btn-row{
+    display:flex;
+    gap:10px;
+    width:100%;
+    max-width:280px;
+  }
+
+  /* 온보딩 전용 보조 버튼 (앱 전역 .secondary-btn과는 분리) */
+  .ob-secondary-btn{
+    flex:1;
+    background:#F5F6FA;
+    color:var(--sub);
+    border:none;
+    border-radius:16px;
+    padding:15px 10px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+  .ob-secondary-btn:active{
+    transform:scale(0.98);
+  }
+
+  .onboard-btn-row .onboard-btn{
+    flex:1.4;
+  }
+
+  /* 온보딩 완료 화면 */
+  .complete-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+
+  .complete-circle{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 16px 30px rgba(63,111,245,0.30);
+    margin-bottom:26px;
+    animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+
+  @keyframes popIn{
+    0%{ transform:scale(0.4); opacity:0; }
+    100%{ transform:scale(1); opacity:1; }
+  }
+
+  .onboard-welcome-text{
+    font-size:20px;
+    font-weight:800;
+    color:var(--ink);
+    text-align:center;
+    margin:0 0 6px;
+    line-height:1.5;
+  }
+
+  .complete-sub{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 36px;
+    text-align:center;
+  }
+
+  .onboard-final-actions{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    width:100%;
+    max-width:280px;
+  }
+
+  .onboard-final-actions button{
+    width:100%;
+  }
+
+
+  /* ===== 선생님용 화면 스타일 ===== */
+
+  .ob-top-bar{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 20px 0;
+  }
+  .ob-back-btn{
+    width:38px;
+    height:38px;
+    border-radius:12px;
+    border:none;
+    background:#F5F6FA;
+    color:var(--ink);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .ob-back-btn:active{
+    transform:scale(0.94);
+  }
+  .progress-dots{
+    display:flex;
+    gap:6px;
+  }
+  .progress-dots span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--line);
+    transition:background 0.2s, width 0.2s;
+  }
+  .progress-dots span.done{
+    background:var(--point-light);
+  }
+  .progress-dots span.current{
+    background:var(--point-strong);
+    width:16px;
+    border-radius:4px;
+  }
+  .welcome-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 32px;
+    transform:translateY(-30px);
+  }
+  .welcome-title{
+    font-size:26px;
+    font-weight:800;
+    color:var(--point-strong);
+    margin:0;
+    letter-spacing:-0.3px;
+  }
+  .welcome-brand{
+    font-weight:800;
+    color:var(--ink);
+    margin:6px 0 0;
+    white-space:nowrap;
+    letter-spacing:-0.3px;
+  }
+  .welcome-tagline{
+    font-size:13px;
+    color:var(--sub);
+    margin:10px 0 0;
+    text-align:center;
+  }
+  .welcome-start-btn{
+    margin-top:40px;
+    width:100%;
+    max-width:280px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:18px;
+    padding:17px;
+    font-size:16px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 12px 24px rgba(63,111,245,0.28);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .welcome-start-btn:active{
+    transform:scale(0.98);
+  }
+  .onboard-center{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+  .step-icon{
+    width:60px;
+    height:60px;
+    border-radius:18px;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:18px;
+  }
+  .onboard-title{
+    font-size:21px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 6px;
+    text-align:center;
+  }
+  .onboard-desc{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 26px;
+    text-align:center;
+  }
+  .onboard-input-wrap{
+    width:100%;
+    max-width:280px;
+    position:relative;
+  }
+  .onboard-input{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:16px;
+    padding:16px 18px;
+    font-size:16px;
+    text-align:center;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--ink);
+    background:#FAFBFF;
+    transition:border-color 0.15s, box-shadow 0.15s;
+  }
+  .onboard-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+    box-shadow:0 0 0 4px rgba(63,111,245,0.12);
+    background:#ffffff;
+  }
+  .onboard-confirm{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--point-strong);
+    min-height:20px;
+    margin:16px 0 24px;
+    opacity:0;
+    transition:opacity 0.2s;
+    text-align:center;
+  }
+  .onboard-confirm.show{
+    opacity:1;
+  }
+  .onboard-btn{
+    width:100%;
+    max-width:280px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:16px;
+    padding:16px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    box-shadow:0 10px 20px rgba(63,111,245,0.22);
+    transition:opacity 0.15s, transform 0.1s;
+  }
+  .onboard-btn:disabled{
+    background:#E4E6EF;
+    box-shadow:none;
+    color:#AEB2C4;
+    cursor:default;
+  }
+  .onboard-btn:not(:disabled):active{
+    transform:scale(0.98);
+  }
+  .ob-secondary-btn{
+    flex:1;
+    background:#F5F6FA;
+    color:var(--sub);
+    border:none;
+    border-radius:16px;
+    padding:15px 10px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .ob-secondary-btn:active{
+    transform:scale(0.98);
+  }
+  .t-scope .code-display{
+    display:flex;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .t-scope .code-display span{
+    width:42px;
+    height:52px;
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    background:#FAFBFF;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:22px;
+    font-weight:800;
+    color:var(--point-strong);
+    animation:popIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .t-scope .code-display span:nth-child(1){ animation-delay:0.05s; }
+  .t-scope .code-display span:nth-child(2){ animation-delay:0.1s; }
+  .t-scope .code-display span:nth-child(3){ animation-delay:0.15s; }
+  .t-scope .code-display span:nth-child(4){ animation-delay:0.2s; }
+  .t-scope .code-display span:nth-child(5){ animation-delay:0.25s; }
+  .t-scope .code-display span:nth-child(6){ animation-delay:0.3s; }
+  .t-scope .copy-btn{
+    margin-top:18px;
+    background:#ffffff;
+    color:var(--point-strong);
+    border:1.5px solid var(--point-strong);
+    border-radius:14px;
+    padding:12px 24px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .t-scope .copy-btn:active{
+    transform:scale(0.97);
+  }
+  .t-scope .copy-toast{
+    margin-top:12px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--point-strong);
+    opacity:0;
+    transition:opacity 0.2s;
+  }
+  .t-scope .copy-toast.show{
+    opacity:1;
+  }
+  .t-scope .complete-content{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:0 28px;
+  }
+  .complete-circle{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 16px 30px rgba(63,111,245,0.30);
+    margin-bottom:26px;
+    animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+  .onboard-welcome-text{
+    font-size:20px;
+    font-weight:800;
+    color:var(--ink);
+    text-align:center;
+    margin:0 0 6px;
+    line-height:1.5;
+  }
+  .complete-sub{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 36px;
+    text-align:center;
+  }
+  #page-t-home .home-content, #page-t-students .home-content{
+    flex:1;
+    overflow-y:auto;
+    padding:22px 20px 14px;
+    position:relative;
+    z-index:1;
+  }
+  .t-scope .top-bar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .t-scope .greeting{
+    font-size:22px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .t-scope .greeting .user-name{
+    color:var(--point-strong);
+  }
+  .page-label{
+    color:var(--sub);
+    font-weight:800;
+    margin-right:6px;
+  }
+  .icon-btn{
+    width:36px;
+    height:36px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--point-strong);
+  }
+  .t-scope .code-card{
+    margin-top:20px;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    border-radius:24px;
+    padding:22px 20px;
+    color:#ffffff;
+  }
+  .t-scope .code-card-label{
+    font-size:13px;
+    font-weight:700;
+    opacity:0.85;
+    margin:0 0 10px;
+  }
+  .t-scope .code-card-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .t-scope .code-card-value{
+    font-size:30px;
+    font-weight:800;
+    letter-spacing:4px;
+  }
+  .t-scope .code-card-copy{
+    flex-shrink:0;
+    background:rgba(255,255,255,0.2);
+    border:none;
+    color:#ffffff;
+    border-radius:12px;
+    padding:10px 14px;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .t-scope .code-card-copy:active{
+    transform:scale(0.96);
+  }
+  .t-scope .code-card-caption{
+    margin:14px 0 0;
+    font-size:12px;
+    opacity:0.85;
+  }
+  .t-scope .stat-row{
+    display:flex;
+    gap:8px;
+    margin-top:18px;
+  }
+  .t-scope .stat-box{
+    flex:1;
+    border-radius:16px;
+    padding:14px 10px;
+    text-align:center;
+  }
+  .t-scope .stat-box.pending{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+  .t-scope .stat-box.missing{
+    background:#FDE7E7;
+    color:#E4423F;
+  }
+  .t-scope .stat-box.total{
+    background:#EFEFF6;
+    color:#5B5F73;
+  }
+  .t-scope .stat-label{
+    display:block;
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .t-scope .stat-count{
+    display:block;
+    font-size:19px;
+    font-weight:800;
+  }
+  .t-scope .section-title{
+    margin:26px 0 12px;
+    font-size:16px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .t-scope .student-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+  }
+  .t-scope .student-avatar{
+    flex-shrink:0;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:800;
+    font-size:15px;
+  }
+  .t-scope .student-info{
+    flex:1;
+  }
+  .t-scope .student-name{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 3px;
+  }
+  .t-scope .student-meta{
+    font-size:12px;
+    color:var(--sub);
+    margin:0;
+  }
+  .t-scope .status-pill{
+    font-weight:800;
+    font-size:12px;
+    padding:5px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .t-scope .status-pill.approved{
+    background:#E3F5E9;
+    color:#1FA455;
+  }
+  .t-scope .status-pill.pending{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+  .t-scope .status-pill.missing, .t-scope .status-pill.rejected{
+    background:#FDE7E7;
+    color:#E4423F;
+  }
+  .t-scope .empty-class-card{
+    margin-top:16px;
+    border:1.5px dashed var(--line);
+    border-radius:20px;
+    padding:32px 20px;
+    text-align:center;
+  }
+  .t-scope .empty-class-icon{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:var(--point-light);
+    color:var(--point-strong);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 14px;
+  }
+  .t-scope .empty-class-text{
+    font-size:14px;
+    font-weight:700;
+    color:var(--sub);
+    margin:0 0 18px;
+  }
+  .t-scope .add-class-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .t-scope .add-class-btn:active{
+    transform:scale(0.98);
+  }
+  .t-scope .detail-title{
+    font-size:16px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+  }
+  .t-scope .detail-code-chip{
+    flex-shrink:0;
+    margin:14px 20px 0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border-radius:14px;
+    padding:12px 16px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:13px;
+    font-weight:700;
+  }
+  .t-scope .detail-code-chip strong{
+    font-size:15px;
+    letter-spacing:2px;
+    margin-left:4px;
+  }
+  .t-scope .detail-code-copy{
+    background:#ffffff;
+    color:var(--point-strong);
+    border:none;
+    border-radius:10px;
+    padding:8px 14px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .t-scope .detail-code-copy:active{
+    transform:scale(0.96);
+  }
+  #page-t-class-detail .tabs{
+    flex-shrink:0;
+    display:flex;
+    margin:18px 20px 0;
+    border-bottom:1px solid var(--line);
+  }
+  #page-t-class-detail .tab{
+    flex:1;
+    background:none;
+    border:none;
+    padding:12px 0;
+    font-size:14px;
+    font-weight:700;
+    color:var(--sub);
+    border-bottom:3px solid transparent;
+    margin-bottom:-1px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  #page-t-class-detail .tab.active{
+    color:var(--point-strong);
+    border-bottom-color:var(--point-strong);
+  }
+  .t-scope .tab-badge{
+    background:#E4423F;
+    color:#ffffff;
+    font-size:11px;
+    font-weight:800;
+    padding:1px 6px;
+    border-radius:999px;
+  }
+  #page-t-class-detail .detail-content{
+    flex:1;
+    overflow-y:auto;
+    padding:18px 20px 24px;
+  }
+  .tab-content{
+    display:none;
+  }
+  .tab-content.active{
+    display:block;
+  }
+  .t-scope .student-delete-btn{
+    flex-shrink:0;
+    width:30px;
+    height:30px;
+    border:none;
+    background:none;
+    color:var(--sub);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+  }
+  .t-scope .approve-actions{
+    display:flex;
+    gap:6px;
+    flex-shrink:0;
+  }
+  .t-scope .approve-btn, .t-scope .reject-btn{
+    border:none;
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .t-scope .approve-btn{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+  .t-scope .reject-btn{
+    background:#FDE7E7;
+    color:#E4423F;
+  }
+  .t-scope .approve-btn:active, .t-scope .reject-btn:active{
+    transform:scale(0.95);
+  }
+  .t-scope .empty-approval{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--sub);
+    font-size:14px;
+    font-weight:700;
+  }
+  .t-scope .hw-filter-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .t-scope .hw-filter-label{
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .t-scope .toggle-switch{
+    position:relative;
+    width:42px;
+    height:24px;
+    flex-shrink:0;
+  }
+  .t-scope .toggle-switch input{
+    opacity:0;
+    width:0;
+    height:0;
+  }
+  .t-scope .toggle-slider{
+    position:absolute;
+    inset:0;
+    background:#E4E6EF;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+  .t-scope .toggle-slider::before{
+    content:"";
+    position:absolute;
+    width:18px;
+    height:18px;
+    left:3px;
+    top:3px;
+    background:#ffffff;
+    border-radius:50%;
+    transition:transform 0.2s;
+    box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  }
+  .t-scope .toggle-switch input:checked + .toggle-slider{
+    background:var(--point-strong);
+  }
+  .t-scope .toggle-switch input:checked + .toggle-slider::before{
+    transform:translateX(18px);
+  }
+  .t-scope .add-hw-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    background:#F5F6FA;
+    color:var(--ink);
+    border:none;
+    border-radius:14px;
+    padding:13px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+    margin-bottom:14px;
+  }
+  .t-scope .add-hw-btn:active{
+    transform:scale(0.98);
+  }
+  .t-scope .add-hw-form{
+    display:none;
+    flex-direction:column;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .t-scope .add-hw-form.show{
+    display:flex;
+  }
+  .t-scope .add-hw-input, .t-scope .add-hw-textarea{
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:14px;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--ink);
+    background:#FAFBFF;
+    width:100%;
+  }
+  .t-scope .add-hw-textarea{
+    resize:none;
+    min-height:64px;
+    font-weight:500;
+  }
+  .t-scope .add-hw-input:focus, .t-scope .add-hw-textarea:focus{
+    outline:none;
+    border-color:var(--point-strong);
+  }
+  .t-scope .add-hw-form button{
+    background:var(--point-strong);
+    color:#ffffff;
+    border:none;
+    border-radius:12px;
+    padding:13px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .t-scope .add-hw-form button:active{
+    transform:scale(0.98);
+  }
+  .t-scope .hw-manage-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:10px;
+  }
+  .t-scope .hw-manage-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .t-scope .hw-manage-title{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+  }
+  .t-scope .hw-manage-dday{
+    flex-shrink:0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-size:12px;
+    font-weight:800;
+    padding:4px 9px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+  .t-scope .hw-manage-desc{
+    font-size:13px;
+    color:var(--sub);
+    margin:0 0 8px;
+    line-height:1.5;
+  }
+  .t-scope .hw-cal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .t-scope .hw-cal-month{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+  }
+  .t-scope .hw-cal-nav{
+    width:30px;
+    height:30px;
+    border:none;
+    background:#F5F6FA;
+    border-radius:10px;
+    color:var(--ink);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .t-scope .hw-cal-nav:active{
+    transform:scale(0.94);
+  }
+  .t-scope .hw-cal-weekdays{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    text-align:center;
+    font-size:11px;
+    font-weight:800;
+    color:var(--sub);
+    margin-bottom:4px;
+  }
+  .t-scope .hw-cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:2px;
+  }
+  .t-scope .hw-cal-cell{
+    aspect-ratio:1;
+    border:none;
+    background:none;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:700;
+    font-family:inherit;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .t-scope .hw-cal-cell.empty{
+    cursor:default;
+  }
+  .t-scope .hw-cal-cell.is-today{
+    color:var(--point-strong);
+    font-weight:800;
+  }
+  .t-scope .hw-cal-cell.selected{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+  .t-scope .hw-cal-cell.has-hw::after{
+    content:"";
+    position:absolute;
+    bottom:5px;
+    left:50%;
+    transform:translateX(-50%);
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:var(--point-strong);
+  }
+  .t-scope .hw-cal-cell.selected.has-hw::after{
+    background:#ffffff;
+  }
+  .t-scope .hw-manage-delete{
+    background:none;
+    border:none;
+    color:var(--sub);
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+    padding:0;
+    margin-top:10px;
+  }
+  .t-scope .blank-section{
+    background:#ffffff;
+    min-height:80px;
+  }
+  .bottom-nav{
+    flex-shrink:0;
+    display:flex;
+    border-top:1px solid #eeeeee;
+    background:#ffffff;
+    position:relative;
+    z-index:1;
+  }
+  .nav-item{
+    flex:1;
+    background:none;
+    border:none;
+    padding:8px 0 9px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    color:#9aa0a6;
+    font-size:10px;
+    font-weight:700;
+    letter-spacing:-0.2px;
+    cursor:pointer;
+  }
+  .nav-item svg{
+    width:21px;
+    height:21px;
+  }
+  .nav-item.active{
+    color:var(--point-strong);
+  }
+  .modal-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,20,40,0.45);
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+  .modal-overlay.show{
+    display:flex;
+  }
+  .t-scope .modal-box{
+    background:#ffffff;
+    border-radius:22px;
+    padding:30px 24px 24px;
+    width:100%;
+    max-width:300px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(20,25,60,0.18);
+  }
+  .t-scope .lock-icon{
+    color:#B7BBCC;
+    display:flex;
+    justify-content:center;
+    margin-bottom:14px;
+  }
+  .t-scope .modal-text{
+    font-size:15px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 20px;
+    line-height:1.5;
+  }
+  .t-scope .modal-actions button{
+    width:100%;
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
+    color:#ffffff;
+    border:none;
+    border-radius:14px;
+    padding:13px 8px;
+    font-size:14px;
+    font-weight:800;
+    cursor:pointer;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+
+  <!-- ===== 1. 시작 화면 ===== -->
+  <div class="page active" id="page-welcome">
+    <div class="welcome-content">
+      <p class="welcome-title ob-anim d1">환영해요</p>
+      <p class="welcome-brand ob-anim d2" id="welcomeBrand">Today English</p>
+      <p class="welcome-tagline ob-anim d3">오늘의 숙제, Today Homework와 함께해요</p>
+
+      <button class="welcome-start-btn ob-anim d4" onclick="playTapSound(); showPage('role-select')">
+        시작해요
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14"></path>
+          <path d="M13 6l6 6-6 6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== 2. 역할 선택 ===== -->
+  <div class="page" id="page-role-select">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage('welcome')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="current"></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="role-heading ob-anim d1">
+      <h1>만나서 반가워요!</h1>
+      <p>맞는 유형을 선택하고 시작해요</p>
+    </div>
+
+    <div class="role-list">
+      <div class="role-card student ob-anim d2" onclick="playTapSound(); showPage('name-input')">
+        <div class="role-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10L12 5 2 10l10 5 10-5z"></path>
+            <path d="M6 12v5c0 1.66 2.69 3 6 3s6-1.34 6-3v-5"></path>
+          </svg>
+        </div>
+        <div class="role-text">
+          <h2>학생이신가요?</h2>
+          <p>학생이라면 여기를 눌러 선생님이 배부하신 코드로 Today Homework와 함께해요</p>
+        </div>
+        <span class="role-arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </span>
+      </div>
+
+      <div class="role-card teacher ob-anim d3" onclick="playTapSound(); showPage('t-name-input')">
+        <div class="role-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+            <path d="M8 21h8M12 17v4"></path>
+          </svg>
+        </div>
+        <div class="role-text">
+          <h2>선생님이신가요?</h2>
+          <p>선생님이시라면 여기를 눌러 클래스를 만들고 Today Homework와 함께해요</p>
+        </div>
+        <span class="role-arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 3. 이름 입력 ===== -->
+  <div class="page" id="page-name-input">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage('role-select')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="done"></span>
+        <span class="current"></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="onboard-center">
+      <div class="step-icon ob-anim d1">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <p class="onboard-title ob-anim d2">성명을 입력해 주세요!</p>
+      <p class="onboard-desc ob-anim d2">원활한 서비스 이용을 위해 실명을 입력하세요</p>
+
+      <div class="onboard-input-wrap ob-anim d3">
+        <input type="text" id="nameInput" class="onboard-input" placeholder="이름 입력">
+      </div>
+
+      <p class="onboard-confirm" id="nameConfirmText">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+        <span id="nameConfirmLabel"></span>
+      </p>
+
+      <button class="onboard-btn" id="nameConfirmBtn" disabled>맞아요</button>
+    </div>
+  </div>
+
+  <!-- ===== 4. 코드 입력 ===== -->
+  <div class="page" id="page-code-input">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage('name-input')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="done"></span>
+        <span class="done"></span>
+        <span class="current"></span>
+      </div>
+    </div>
+
+    <div class="onboard-center" id="codeCenter">
+      <div id="codeInputSection" style="display:flex; flex-direction:column; align-items:center;">
+        <div class="step-icon ob-anim d1">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <p class="onboard-title ob-anim d2">코드를 입력하세요!</p>
+        <p class="onboard-desc ob-anim d2">선생님께서 알려주신 코드 6자리를 입력하세요</p>
+
+        <div class="otp-row ob-anim d3" id="otpRow">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="0">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="1">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="2">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="3">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="4">
+          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="5">
+        </div>
+
+        <p class="code-error" id="codeError">존재하지 않는 코드에요 다시 확인해주세요</p>
+        <p class="code-hint">테스트용 코드: 123456 · 111111</p>
+      </div>
+
+      <div id="codeConfirmSection" style="display:none;">
+        <div class="confirm-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 6L9 17l-5-5"></path>
+          </svg>
+        </div>
+        <p class="onboard-confirm-big" id="classConfirmText">A반이 맞으신가요?</p>
+        <div class="onboard-btn-row ob-anim d1">
+          <button class="ob-secondary-btn" id="codeRetryBtn">다시 입력할게요</button>
+          <button class="onboard-btn" id="codeOkBtn">맞아요</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 5. 온보딩 완료 ===== -->
+  <div class="page" id="page-onboard-complete">
+    <div class="complete-content">
+      <div class="complete-circle">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+      </div>
+      <p class="onboard-welcome-text ob-anim d1" id="onboardWelcomeText">A반의 홍길동님 환영해요</p>
+      <p class="complete-sub ob-anim d2">이제 Today Homework를 시작할 수 있어요</p>
+
+      <div class="onboard-final-actions ob-anim d3">
+        <button class="onboard-btn" id="startServiceBtn">서비스 시작해요</button>
+        <button class="ob-secondary-btn" id="restartOnboardBtn">처음으로 돌아가요</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 홈 화면 ================= -->
+  <div class="page" id="page-home">
+    <div class="home-content">
+
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
+
+        <div class="top-icons">
+          <button class="icon-btn" aria-label="알림" onclick="showComingSoon()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="homework-card">
+        <p class="homework-title">제출해야 할 숙제</p>
+        <p class="homework-date-range">8월 25일 ~ 8월 25일 숙제</p>
+
+        <div class="homework-item" onclick="openHomeworkList()">
+          <div>
+            <p class="hw-name">0825 숙제</p>
+            <p class="hw-due">제출 기한: 8월 25일</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-1일</span>
+            <span class="hw-arrow">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="more-link">외 0건의 숙제 &gt;</div>
+      </div>
+
+      <div class="blank-section"></div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item" data-nav="calendar" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= 숙제 목록 화면 ================= -->
+  <div class="page" id="page-list">
+
+    <div class="list-fixed-top">
+      <h1 class="page-title"><span class="page-label">숙제목록|</span><span id="listTabName">남은 숙제</span></h1>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="remaining" onclick="selectTab('remaining')">남은 숙제</button>
+        <button class="tab" data-tab="pending" onclick="selectTab('pending')">승인현황</button>
+        <button class="tab" data-tab="past" onclick="selectTab('past')">지난 숙제</button>
+      </div>
+
+      <p class="date-range">8월 24일 ~ 8월 30일</p>
+    </div>
+
+    <div class="list-area">
+
+      <!-- 남은 숙제 -->
+      <div class="tab-content active" id="tab-remaining">
+
+        <div class="hw-card" onclick="openDetailCard(this)">
+          <div>
+            <p class="hw-name">0825 숙제</p>
+            <p class="hw-due">제출 기한: 8월 25일 (월)</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-1일</span>
+            <span class="hw-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="section-divider">8월 26일 이후 숙제</div>
+
+        <div class="hw-card" onclick="openDetailCard(this)">
+          <div>
+            <p class="hw-name">0827 숙제</p>
+            <p class="hw-due">제출 기한: 8월 27일 (수)</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-3일</span>
+            <span class="hw-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="hw-card" onclick="openDetailCard(this)">
+          <div>
+            <p class="hw-name">0828 숙제</p>
+            <p class="hw-due">제출 기한: 8월 28일 (목)</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-4일</span>
+            <span class="hw-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="hw-card" onclick="openDetailCard(this)">
+          <div>
+            <p class="hw-name">0829 숙제</p>
+            <p class="hw-due">제출 기한: 8월 29일 (금)</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-5일</span>
+            <span class="hw-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="hw-card" onclick="openDetailCard(this)">
+          <div>
+            <p class="hw-name">0830 숙제</p>
+            <p class="hw-due">제출 기한: 8월 30일 (토)</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-6일</span>
+            <span class="hw-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+        <div class="hw-card" onclick="openDetailCard(this)">
+          <div>
+            <p class="hw-name">0831 숙제</p>
+            <p class="hw-due">제출 기한: 8월 31일 (일)</p>
+          </div>
+          <div class="hw-right">
+            <span class="hw-dday">D-7일</span>
+            <span class="hw-arrow">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 승인현황 -->
+      <div class="tab-content" id="tab-pending">
+
+        <div class="status-row">
+          <div class="status-box pending">
+            <span class="status-label">승인 대기중</span>
+            <span class="status-count" id="countPending">0건</span>
+          </div>
+          <div class="status-box rejected">
+            <span class="status-label">승인 거절</span>
+            <span class="status-count" id="countRejected">0건</span>
+          </div>
+          <div class="status-box approved">
+            <span class="status-label">승인 완료</span>
+            <span class="status-count" id="countApproved">0건</span>
+          </div>
+        </div>
+
+        <div id="pendingList"></div>
+
+      </div>
+
+      <!-- 지난 숙제 -->
+      <div class="tab-content" id="tab-past">
+        <p class="empty-state">아직 지난 숙제가 없어요</p>
+      </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item" data-nav="calendar" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= 숙제 업로드(상세) 화면 ================= -->
+  <div class="page" id="page-detail">
+
+    <div class="detail-content">
+
+      <div class="top-bar-sm">
+        <button class="back-btn" id="backBtn" aria-label="나가기">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"></path>
+            <path d="M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <h1 class="page-title-sm">숙제 업로드</h1>
+      </div>
+
+      <div class="bundle-header">
+        <span class="bundle-title" id="bundleTitle">0825 숙제</span>
+        <span class="bundle-due" id="bundleDue">제출 기한: 8월 25일 (월)</span>
+        <span class="bundle-dday" id="bundleDday">D-1일</span>
+      </div>
+
+      <div class="bundle-desc-box" id="bundleDescBox"></div>
+
+      <div class="upload-box">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <p class="upload-text">숙제 사진을 업로드하세요</p>
+        <div class="upload-actions">
+          <button class="upload-action-btn" id="cameraBtn">카메라로 촬영</button>
+          <button class="upload-action-btn" id="galleryBtn">갤러리에서 선택</button>
+        </div>
+        <input type="file" id="cameraInput" accept="image/*" capture="environment" hidden>
+        <input type="file" id="galleryInput" accept="image/*" multiple hidden>
+      </div>
+
+      <p class="uploaded-count">업로드한 사진 (<span id="photoCount">0</span>)</p>
+      <div class="thumb-row" id="thumbRow">
+        <span class="thumb-empty">아직 업로드한 사진이 없어요</span>
+      </div>
+
+      <div class="note-section">
+        <p class="note-label">선생님께 보낼 쪽지 (선택)</p>
+        <textarea id="teacherNote" class="note-input" rows="2" placeholder="선생님께 하고 싶은 말을 적어주세요"></textarea>
+      </div>
+
+    </div>
+
+    <div class="submit-bar">
+      <button class="submit-btn" id="submitBtn" style="flex:1;">제출하기</button>
+    </div>
+  </div>
+
+  <!-- ================= 승인현황 상세보기 화면 ================= -->
+  <div class="page" id="page-status-detail">
+
+    <div class="detail-content">
+
+      <div class="top-bar-sm">
+        <button class="back-btn" id="sdBackBtn" aria-label="나가기">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5"></path>
+            <path d="M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <h1 class="page-title-sm">업로드한 숙제 확인</h1>
+        <span class="status-pill pending" id="sdStatusBadge" style="margin-left:auto;">대기중</span>
+      </div>
+
+      <div class="bundle-header">
+        <span class="bundle-title" id="sdBundleTitle">0823 숙제</span>
+        <span class="bundle-due" id="sdBundleDue">제출 기한: 8월 23일 (토)</span>
+        <span class="bundle-dday" id="sdBundleDday">D-2일</span>
+      </div>
+
+      <div class="bundle-desc-box" id="sdBundleDescBox"></div>
+
+      <div class="upload-box" id="sdUploadBox">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <p class="upload-text">사진 추가</p>
+        <div class="upload-actions">
+          <button class="upload-action-btn" id="sdCameraBtn">카메라로 촬영</button>
+          <button class="upload-action-btn" id="sdGalleryBtn">갤러리에서 선택</button>
+        </div>
+        <input type="file" id="sdCameraInput" accept="image/*" capture="environment" hidden>
+        <input type="file" id="sdGalleryInput" accept="image/*" multiple hidden>
+      </div>
+
+      <p class="uploaded-count">업로드한 사진 (<span id="sdPhotoCount">0</span>)</p>
+      <div class="thumb-row" id="sdThumbRow"></div>
+
+      <div class="note-section">
+        <p class="note-label">선생님께 보낼 쪽지 (선택)</p>
+        <textarea id="sdNote" class="note-input" rows="2" placeholder="선생님께 하고 싶은 말을 적어주세요"></textarea>
+      </div>
+
+      <div class="reject-box" id="sdRejectBlock" style="display:none;">
+        <p class="note-label">선생님이 작성하신 거절 사유</p>
+        <p id="sdRejectReason"></p>
+      </div>
+
+    </div>
+
+    <div class="submit-bar">
+      <button class="secondary-btn" id="sdBackBottomBtn">뒤로가기</button>
+      <button class="submit-btn" id="sdActionBtn">수정하기</button>
+    </div>
+  </div>
+
+  <!-- 나가기 확인 팝업 (업로드/승인현황 상세 공용) -->
+  <div class="modal-overlay" id="exitModal">
+    <div class="modal-box">
+      <p class="modal-text">업로드중인 숙제가<br>제출되지 않아요</p>
+      <div class="modal-actions">
+        <button id="cancelExitBtn">취소</button>
+        <button id="confirmExitBtn">뒤로가기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사진 미업로드 팝업 -->
+  <div class="modal-overlay" id="noPhotoModal">
+    <div class="modal-box">
+      <p class="modal-text">사진을 1장 이상<br>업로드해주세요</p>
+      <div class="modal-actions">
+        <button id="closeNoPhotoBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6: 수정/재업로드 시 변경된 내용이 없을 때 -->
+  <div class="modal-overlay" id="noChangesModal">
+    <div class="modal-box">
+      <p class="modal-text">수정 사항이 없어요</p>
+      <div class="modal-actions">
+        <button id="closeNoChangesBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 추가: 아직 완성되지 않은 기능 안내 -->
+  <div class="modal-overlay" id="comingSoonModal">
+    <div class="modal-box">
+      <div class="lock-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="10" rx="2"></rect>
+          <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+        </svg>
+      </div>
+      <p class="modal-text" style="margin-top:14px;">아직 이 기능은<br>완성되지 않았어요</p>
+      <div class="modal-actions">
+        <button id="closeComingSoonBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 사진 크게 보기 -->
+  <div class="lightbox-overlay" id="lightbox">
+    <img id="lightboxImg" src="" alt="업로드한 사진 크게 보기">
+    <div id="lightboxColorBox"></div>
+  </div>
+
+  <!-- 제출/수정/재업로드/이동 완료 화면 -->
+  <div class="success-overlay" id="successOverlay">
+    <p class="success-title" id="successTitle">0825 숙제가 제출됐어요!</p>
+    <p class="success-subtitle" id="successSubtitle"></p>
+
+    <div class="success-circle">
+      <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 6L9 17l-5-5"></path>
+      </svg>
+    </div>
+
+    <div class="success-actions">
+      <button class="success-btn strong" id="goHomeBtn">홈화면으로 이동하기</button>
+      <button class="success-btn light" id="goPendingBtn">승인현황 확인하기</button>
+    </div>
+  </div>
+
+  <!-- ================= 선생님용 화면 ================= -->
+
+<!-- ===== 2. 이름 입력 ===== -->
+  <div class="page t-scope" id="page-t-name-input">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage('role-select')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="current"></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="onboard-center">
+      <div class="step-icon ob-anim d1">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <p class="onboard-title ob-anim d2">성함을 입력해 주세요!</p>
+      <p class="onboard-desc ob-anim d2">학생들에게 보여질 이름이에요</p>
+
+      <div class="onboard-input-wrap ob-anim d3">
+        <input type="text" id="teacherNameInput" class="onboard-input" placeholder="이름 입력">
+      </div>
+
+      <p class="onboard-confirm" id="teacherNameConfirmText">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+        <span id="teacherNameConfirmLabel"></span>
+      </p>
+
+      <button class="onboard-btn" id="teacherNameConfirmBtn" disabled>맞아요</button>
+    </div>
+  </div>
+
+  <!-- ===== 새 반 만들기 1/2: 클래스 이름 입력 ===== -->
+  <div class="page t-scope" id="page-t-class-setup">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage(classSetupReturnPage)" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="current"></span>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="onboard-center">
+      <div class="step-icon ob-anim d1">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+      </div>
+      <p class="onboard-title ob-anim d2">클래스 이름을 알려주세요!</p>
+      <p class="onboard-desc ob-anim d2">학생들이 알아보기 쉬운 이름으로 만들어요</p>
+
+      <div class="onboard-input-wrap ob-anim d3">
+        <input type="text" id="classInput" class="onboard-input" placeholder="예: 중2 심화반">
+      </div>
+
+      <p class="onboard-confirm" id="teacherClassConfirmText">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+        <span id="teacherClassConfirmLabel"></span>
+      </p>
+
+      <button class="onboard-btn" id="classConfirmBtn" disabled>맞아요</button>
+    </div>
+  </div>
+
+  <!-- ===== 새 반 만들기 2/2: 코드 생성 완료 ===== -->
+  <div class="page t-scope" id="page-t-code-reveal">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage('t-class-setup')" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <div class="progress-dots">
+        <span class="done"></span>
+        <span class="current"></span>
+      </div>
+    </div>
+
+    <div class="onboard-center">
+      <div class="step-icon ob-anim d1">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="10" rx="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </div>
+      <p class="onboard-title ob-anim d2">클래스 코드가 만들어졌어요!</p>
+      <p class="onboard-desc ob-anim d2">이 코드를 학생들에게 알려주세요</p>
+
+      <div class="code-display" id="codeDisplay">
+        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+      </div>
+
+      <button class="copy-btn ob-anim d3" id="copyCodeBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        코드 복사하기
+      </button>
+      <p class="copy-toast" id="copyToast">복사했어요</p>
+
+      <button class="onboard-btn ob-anim d4" id="codeNextBtn" style="margin-top:26px;">완료</button>
+    </div>
+  </div>
+
+  <!-- ===== 5. 완료 ===== -->
+  <div class="page t-scope" id="page-t-onboard-complete">
+    <div class="complete-content">
+      <div class="complete-circle">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"></path>
+        </svg>
+      </div>
+      <p class="onboard-welcome-text ob-anim d1" id="teacherOnboardWelcomeText">김선생님, 환영해요</p>
+      <p class="complete-sub ob-anim d2">이제 반을 만들고 학생을 관리할 수 있어요</p>
+
+      <button class="onboard-btn ob-anim d3" id="teacherStartServiceBtn">대시보드로 이동해요</button>
+    </div>
+  </div>
+
+  <!-- ===== 6. 대시보드(홈) ===== -->
+  <div class="page t-scope" id="page-t-home">
+    <div class="home-content">
+
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">홈|</span><span class="user-name" id="teacherNameLabel">김선생님</span> 안녕하세요!</div>
+        <button class="icon-btn" aria-label="알림" onclick="showComingSoon()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div id="homeEmptyState" class="empty-class-card" style="margin-top:20px;display:none;">
+        <div class="empty-class-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+            <path d="M8 21h8M12 17v4"></path>
+          </svg>
+        </div>
+        <p class="empty-class-text">아직 만든 반이 없어요</p>
+        <p class="empty-class-text" style="margin-top:-10px;font-size:12px;">반 관리 탭에서 새 반을 만들어보세요</p>
+      </div>
+
+      <div id="statsSection" style="display:none;">
+        <div class="stat-row">
+          <div class="stat-box pending">
+            <span class="stat-label">승인 대기중</span>
+            <span class="stat-count" id="statPendingCount">0건</span>
+          </div>
+          <div class="stat-box missing">
+            <span class="stat-label">미제출</span>
+            <span class="stat-count" id="statMissingCount">0명</span>
+          </div>
+          <div class="stat-box total">
+            <span class="stat-label">전체 학생</span>
+            <span class="stat-count" id="totalStudentCount">0명</span>
+          </div>
+        </div>
+
+        <p class="section-title">미제출 학생 현황</p>
+
+        <div id="missingStudentList"></div>
+      </div>
+
+      <div class="blank-section"></div>
+
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-nav="t-home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-students" onclick="openStudentsHome()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+        <span>반 관리</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-homework" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 관리</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== 학생 관리 (반 목록) ===== -->
+  <div class="page t-scope" id="page-t-students">
+    <div class="home-content">
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">반 관리|</span>반을 선택하세요</div>
+      </div>
+
+      <p class="section-title" style="margin-top:20px;">내 반 목록</p>
+      <div id="studentsClassList"></div>
+
+      <div class="blank-section"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="t-home" onclick="playTapSound(); showPage('t-home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item active" data-nav="t-students">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+        <span>반 관리</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-homework" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 관리</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== 반 상세 (학생 관리 / 숙제 승인) ===== -->
+  <div class="page t-scope" id="page-t-class-detail">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="closeClassDetail()" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+      <p class="detail-title" id="classDetailTitle">클래스</p>
+      <button class="ob-back-btn" onclick="openClassActions()" aria-label="더보기">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="5" r="1.2" fill="currentColor"></circle>
+          <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
+          <circle cx="12" cy="19" r="1.2" fill="currentColor"></circle>
+        </svg>
+      </button>
+    </div>
+
+    <div class="detail-code-chip">
+      <span>코드 <strong id="classDetailCode">000000</strong></span>
+      <button class="detail-code-copy" id="classDetailCopyBtn" onclick="copyClassCode(classes[currentClassIndex].code, this)">복사</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
+      <button class="tab" data-tab="homework" onclick="switchDetailTab('homework')">숙제 관리</button>
+      <button class="tab" data-tab="approve" onclick="switchDetailTab('approve')">
+        숙제 현황<span class="tab-badge" id="approveBadge" style="display:none;">0</span>
+      </button>
+    </div>
+
+    <div class="detail-content">
+      <div class="tab-content active" id="detailTab-manage">
+        <div id="manageStudentList"></div>
+      </div>
+
+      <div class="tab-content" id="detailTab-homework">
+        <div class="hw-cal-header">
+          <button class="hw-cal-nav" onclick="shiftCalMonth(-1)" aria-label="이전 달">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+          </button>
+          <p class="hw-cal-month" id="hwCalMonthLabel">2026년 8월</p>
+          <button class="hw-cal-nav" onclick="shiftCalMonth(1)" aria-label="다음 달">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+        </div>
+
+        <div class="hw-cal-weekdays">
+          <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+        </div>
+
+        <div class="hw-cal-grid" id="hwCalGrid"></div>
+
+        <p class="section-title" id="hwCalSelectedLabel" style="margin:20px 0 12px;">숙제</p>
+
+        <button class="add-hw-btn" id="addHwToggleBtn" onclick="toggleAddHwForm()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          숙제 만들기
+        </button>
+
+        <div class="add-hw-form" id="addHwForm">
+          <input type="text" id="newHwTitle" class="add-hw-input" placeholder="숙제 이름 입력">
+          <textarea id="newHwDesc" class="add-hw-textarea" placeholder="설명 (선택)"></textarea>
+          <button id="newHwConfirmBtn" onclick="addHomeworkToClass()">만들기</button>
+        </div>
+
+        <div id="hwManageList"></div>
+      </div>
+
+      <div class="tab-content" id="detailTab-approve">
+        <div class="hw-filter-row">
+          <span class="hw-filter-label">승인요청 학생만 보기</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pendingOnlyToggle" onchange="togglePendingOnly()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div id="approveStudentList"></div>
+      </div>
+    </div>
+  </div>
+<!-- 반 관리 액션 -->
+  <div class="modal-overlay t-scope" id="classActionsModal">
+    <div class="modal-box">
+      <p class="modal-text" style="margin-bottom:16px;">반 관리</p>
+      <div class="modal-actions" style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="openRenameClass()">이름 수정</button>
+        <button onclick="openDeleteClassConfirm()" style="background:#FDE7E7;color:#E4423F;">반 삭제</button>
+        <button onclick="closeModal('classActionsModal')" style="background:#F5F6FA;color:var(--sub);">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반 이름 수정 -->
+  <div class="modal-overlay t-scope" id="renameClassModal">
+    <div class="modal-box">
+      <p class="modal-text" style="margin-bottom:14px;">반 이름 수정</p>
+      <input type="text" id="renameClassInput" class="add-hw-input" style="margin-bottom:16px;text-align:center;">
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('renameClassModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmRenameClass()" style="flex:1;width:auto;">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반 삭제 확인 -->
+  <div class="modal-overlay t-scope" id="deleteClassConfirmModal">
+    <div class="modal-box">
+      <p class="modal-text">이 반을 삭제할까요?<br><span style="font-size:12px;color:var(--sub);font-weight:500;">학생과 숙제 정보가 모두 사라져요</span></p>
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('deleteClassConfirmModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmDeleteClass()" style="flex:1;width:auto;background:#E4423F;">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 숙제 반려 사유 -->
+  <div class="modal-overlay t-scope" id="rejectReasonModal">
+    <div class="modal-box">
+      <p class="modal-text" style="margin-bottom:14px;">반려 사유를 입력해주세요</p>
+      <textarea id="rejectReasonInput" class="add-hw-textarea" style="margin-bottom:16px;" placeholder="예: 사진이 흐릿해서 안 보여요"></textarea>
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('rejectReasonModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmRejectSubmission()" style="flex:1;width:auto;background:#E4423F;">반려하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 제출물 미리보기 -->
+  <div class="modal-overlay t-scope" id="submissionPreviewModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" id="previewHwTitle" style="margin-bottom:4px;">숙제 제목</p>
+      <p style="font-size:12px;color:var(--sub);margin:0 0 14px;" id="previewStudentName">학생 이름</p>
+      <div class="thumb-row" id="previewThumbRow" style="justify-content:center;margin-bottom:12px;"></div>
+      <p style="font-size:13px;color:var(--ink);text-align:left;background:#FAFBFF;border-radius:10px;padding:10px 12px;margin:0 0 16px;min-height:20px;" id="previewNote"></p>
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('submissionPreviewModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">닫기</button>
+        <button onclick="approveFromPreview()" style="flex:1;width:auto;">승인</button>
+      </div>
+      <button onclick="rejectFromPreview()" style="width:100%;margin-top:10px;background:#FDE7E7;color:#E4423F;">반려</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /* 1: 숙제 목록 진입점은 항상 남은 숙제 탭에서 시작 */
+  function openHomeworkList() {
+    showPage("list");
+    selectTab("remaining");
+  }
+
+  /* 추가: 아직 완성되지 않은 기능 안내 팝업 */
+  function showComingSoon() {
+    document.getElementById("comingSoonModal").classList.add("show");
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("show");
+  }
+
+  function jsStr(s) {
+    return String(s).replace(/'/g, "\\'");
+  }
+
+  function formatKoreanDate(dateStr) {
+    const d = new Date(dateStr + "T00:00:00");
+    const days = ["일", "월", "화", "수", "목", "금", "토"];
+    return (d.getMonth() + 1) + "월 " + d.getDate() + "일 (" + days[d.getDay()] + ")";
+  }
+
+  function calcDday(dueDateStr) {
+    const due = new Date(dueDateStr + "T23:59:59");
+    const now = new Date();
+    const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+    if (diffDays < 0) return "마감";
+    if (diffDays === 0) return "D-day";
+    return "D-" + diffDays;
+  }
+
+  /* ===== 온보딩(초기 회원 로그인 UI) ===== */
+  let studentName = "";
+  let selectedClassName = "";
+  let joinedClassIndex = null;
+
+  /* 온보딩 효과음 (Web Audio API로 직접 생성 - 별도 파일 없이 재생) */
+  let obAudioCtx = null;
+
+  function getObAudioCtx() {
+    if (!obAudioCtx) obAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (obAudioCtx.state === "suspended") obAudioCtx.resume();
+    return obAudioCtx;
+  }
+
+  function playObTone(freq, duration, type, volume) {
+    try {
+      const ctx = getObAudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(volume || 0.12, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration / 1000);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + duration / 1000);
+    } catch (e) {}
+  }
+
+  function playTapSound() {
+    playObTone(680, 55, "sine", 0.06);
+  }
+
+  function playSuccessChime() {
+    playObTone(660, 110, "sine", 0.1);
+    setTimeout(() => playObTone(880, 140, "sine", 0.1), 90);
+    setTimeout(() => playObTone(1100, 220, "sine", 0.1), 180);
+  }
+
+  function playErrorBuzz() {
+    playObTone(180, 220, "square", 0.08);
+  }
+
+  /* 완료 화면 색종이 효과 (온보딩 완료 화면 id를 인자로 받아 학생/선생님 공용으로 사용) */
+  function launchConfetti(containerId) {
+    const colors = ["#3F6FF5", "#5C87FF", "#FFB86B", "#7BE0A6", "#FF8FA3"];
+    const container = document.getElementById(containerId || "page-onboard-complete");
+
+    for (let i = 0; i < 18; i++) {
+      const el = document.createElement("div");
+      el.className = "confetti-piece";
+      const angle = Math.random() * Math.PI - Math.PI * 1.5;
+      const dist = 80 + Math.random() * 150;
+      const tx = Math.cos(angle) * dist;
+      const ty = Math.sin(angle) * dist + 120;
+      el.style.setProperty("--tx", tx + "px");
+      el.style.setProperty("--ty", ty + "px");
+      el.style.setProperty("--rot", Math.random() * 360 + "deg");
+      el.style.background = colors[Math.floor(Math.random() * colors.length)];
+      el.style.left = 45 + Math.random() * 10 + "%";
+      el.style.animationDelay = Math.random() * 0.15 + "s";
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 1400);
+    }
+  }
+
+  /* "Today English"의 가로 폭을 "환영해요"와 맞춤 */
+  function fitWelcomeBrandWidth() {
+    const title = document.querySelector(".welcome-title");
+    const brand = document.getElementById("welcomeBrand");
+    const targetWidth = title.getBoundingClientRect().width;
+
+    let fontSize = 26;
+    brand.style.fontSize = fontSize + "px";
+
+    while (brand.getBoundingClientRect().width > targetWidth && fontSize > 8) {
+      fontSize -= 0.5;
+      brand.style.fontSize = fontSize + "px";
+    }
+  }
+
+  /* 이름 입력 */
+  const nameInput = document.getElementById("nameInput");
+  const nameConfirmText = document.getElementById("nameConfirmText");
+  const nameConfirmLabel = document.getElementById("nameConfirmLabel");
+  const nameConfirmBtn = document.getElementById("nameConfirmBtn");
+
+  nameInput.addEventListener("input", () => {
+    const val = nameInput.value.trim();
+    if (val) {
+      nameConfirmLabel.textContent = val + "님이 맞으신가요?";
+      nameConfirmText.classList.add("show");
+      nameConfirmBtn.disabled = false;
+    } else {
+      nameConfirmText.classList.remove("show");
+      nameConfirmBtn.disabled = true;
+    }
+  });
+
+  nameConfirmBtn.addEventListener("click", () => {
+    const val = nameInput.value.trim();
+    if (!val) return;
+    playTapSound();
+    studentName = val;
+    showPage("code-input");
+  });
+
+  /* 코드 입력 (OTP 스타일) - 실제로 선생님이 만든 반 코드와 대조 */
+  const otpBoxes = Array.from(document.querySelectorAll(".otp-box"));
+  const otpRow = document.getElementById("otpRow");
+  const codeCenter = document.getElementById("codeCenter");
+  const codeConfirmSection = document.getElementById("codeConfirmSection");
+  const codeError = document.getElementById("codeError");
+
+  otpBoxes.forEach((box, idx) => {
+    box.addEventListener("input", () => {
+      box.value = box.value.replace(/[^0-9]/g, "");
+
+      if (box.value) {
+        box.classList.remove("pop");
+        void box.offsetWidth;
+        box.classList.add("pop");
+      }
+
+      if (box.value && idx < otpBoxes.length - 1) {
+        otpBoxes[idx + 1].focus();
+      }
+      if (box.value && idx === otpBoxes.length - 1) {
+        checkOtpComplete();
+      }
+    });
+
+    box.addEventListener("keydown", (e) => {
+      if (e.key === "Backspace" && !box.value && idx > 0) {
+        otpBoxes[idx - 1].focus();
+      }
+    });
+
+    box.addEventListener("paste", (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData.getData("text") || "").replace(/[^0-9]/g, "").slice(0, 6);
+      text.split("").forEach((ch, i) => {
+        if (otpBoxes[i]) otpBoxes[i].value = ch;
+      });
+      if (text.length === 6) {
+        checkOtpComplete();
+      } else if (otpBoxes[text.length]) {
+        otpBoxes[text.length].focus();
+      }
+    });
+  });
+
+  function checkOtpComplete() {
+    const code = otpBoxes.map((b) => b.value).join("");
+    if (code.length === 6) submitClassCode(code);
+  }
+
+  function submitClassCode(code) {
+    const idx = classes.findIndex((c) => c.code === code);
+
+    if (idx === -1) {
+      playErrorBuzz();
+      codeError.classList.add("show");
+      otpRow.classList.add("shake");
+      setTimeout(() => {
+        otpRow.classList.remove("shake");
+        otpBoxes.forEach((b) => (b.value = ""));
+        otpBoxes[0].focus();
+      }, 400);
+      return;
+    }
+
+    playSuccessChime();
+    joinedClassIndex = idx;
+    selectedClassName = classes[idx].name;
+    codeError.classList.remove("show");
+    document.getElementById("classConfirmText").textContent = selectedClassName + "이 맞으신가요?";
+    codeCenter.classList.add("shift-up");
+    document.getElementById("codeInputSection").style.display = "none";
+    codeConfirmSection.style.display = "flex";
+  }
+
+  function resetCodeInput() {
+    codeCenter.classList.remove("shift-up");
+    codeConfirmSection.style.display = "none";
+    document.getElementById("codeInputSection").style.display = "flex";
+    otpBoxes.forEach((b) => (b.value = ""));
+    codeError.classList.remove("show");
+  }
+
+  document.getElementById("codeRetryBtn").addEventListener("click", () => {
+    playTapSound();
+    resetCodeInput();
+  });
+
+  document.getElementById("codeOkBtn").addEventListener("click", () => {
+    playTapSound();
+    const c = classes[joinedClassIndex];
+    if (!c.students.find((s) => s.name === studentName)) {
+      c.students.push({ name: studentName });
+    }
+    document.getElementById("onboardWelcomeText").textContent =
+      selectedClassName + "의 " + studentName + "님 환영해요";
+    showPage("onboard-complete");
+    launchConfetti("page-onboard-complete");
+    setTimeout(playSuccessChime, 150);
+  });
+
+  /* 온보딩 완료 */
+  document.getElementById("restartOnboardBtn").addEventListener("click", () => {
+    playTapSound();
+    studentName = "";
+    selectedClassName = "";
+    joinedClassIndex = null;
+    nameInput.value = "";
+    nameConfirmText.classList.remove("show");
+    nameConfirmBtn.disabled = true;
+    resetCodeInput();
+    showPage("welcome");
+  });
+
+  document.getElementById("startServiceBtn").addEventListener("click", () => {
+    playTapSound();
+    document.querySelector("#page-home .user-name").textContent = studentName;
+    renderStudentHome();
+    renderRemainingList();
+    renderApprovalList();
+    renderCounts();
+    renderPastList();
+    showPage("home");
+  });
+
+  /* ===== 화면 전환 ===== */
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach((p) => {
+      p.classList.toggle("active", p.id === "page-" + name);
+    });
+
+    document.querySelectorAll(".nav-item").forEach((btn) => {
+      btn.classList.toggle("active", btn.dataset.nav === name);
+    });
+
+    if (name === "detail" || name === "status-detail") {
+      history.pushState({ uploadGuard: true }, "");
+    }
+  }
+
+  /* ===== 숙제 목록 탭 전환 ===== */
+  const tabLabels = {
+    remaining: "남은 숙제",
+    pending: "승인 현황",
+    past: "지난 숙제",
+  };
+
+  function selectTab(tabName) {
+    document.querySelectorAll("#page-list .tab").forEach((t) => {
+      t.classList.toggle("active", t.dataset.tab === tabName);
+    });
+
+    document.querySelectorAll("#page-list .tab-content").forEach((c) => {
+      c.classList.toggle("active", c.id === "tab-" + tabName);
+    });
+
+    document.getElementById("listTabName").textContent = tabLabels[tabName];
+  }
+
+  function statusLabel(status) {
+    if (status === "pending") return "대기중";
+    if (status === "rejected") return "거절";
+    return "완료";
+  }
+
+  /* ===== 학생 홈 화면: 반의 실제 숙제 데이터로 채움 ===== */
+  function mySubmission(hwId) {
+    const c = classes[joinedClassIndex];
+    return c.submissions.find((s) => s.studentName === studentName && s.hwId === hwId);
+  }
+
+  function myRemainingHomeworks() {
+    const c = classes[joinedClassIndex];
+    return c.homeworks
+      .filter((h) => !mySubmission(h.id))
+      .slice()
+      .sort((a, b) => a.due.localeCompare(b.due));
+  }
+
+  function renderStudentHome() {
+    if (joinedClassIndex === null) return;
+    const remaining = myRemainingHomeworks();
+    const card = document.querySelector("#page-home .homework-card");
+    const itemEl = card.querySelector(".homework-item");
+    const moreLink = card.querySelector(".more-link");
+
+    if (remaining.length === 0) {
+      card.querySelector(".homework-date-range").textContent = "지금 제출할 숙제가 없어요";
+      itemEl.style.display = "none";
+      moreLink.style.display = "none";
+      return;
+    }
+
+    card.querySelector(".homework-date-range").textContent = "지금 제출해야 할 숙제";
+    itemEl.style.display = "flex";
+    const first = remaining[0];
+    itemEl.querySelector(".hw-name").textContent = first.title;
+    itemEl.querySelector(".hw-due").textContent = "제출 기한: " + formatKoreanDate(first.due);
+    itemEl.querySelector(".hw-dday").textContent = calcDday(first.due);
+    itemEl.onclick = () => openDetailCard(first.id);
+
+    const rest = remaining.length - 1;
+    if (rest > 0) {
+      moreLink.style.display = "block";
+      moreLink.textContent = "외 " + rest + "건의 숙제 >";
+      moreLink.onclick = openHomeworkList;
+    } else {
+      moreLink.style.display = "none";
+    }
+  }
+
+  /* ===== 남은 숙제 탭: 반에 등록된 숙제 중 아직 제출 안 한 것 ===== */
+  function hwCardHtml(h) {
+    return `
+      <div class="hw-card" onclick="openDetailCard('${jsStr(h.id)}')">
+        <div>
+          <p class="hw-name">${h.title}</p>
+          <p class="hw-due">제출 기한: ${formatKoreanDate(h.due)}</p>
+        </div>
+        <div class="hw-right">
+          <span class="hw-dday">${calcDday(h.due)}</span>
+          <span class="hw-arrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18l6-6-6-6"></path>
+            </svg>
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderRemainingList() {
+    const container = document.getElementById("tab-remaining");
+    if (joinedClassIndex === null) {
+      container.innerHTML = '<p class="empty-state">아직 반에 참여하지 않았어요</p>';
+      return;
+    }
+    const remaining = myRemainingHomeworks();
+
+    if (remaining.length === 0) {
+      container.innerHTML = '<p class="empty-state">아직 남은 숙제가 없어요</p>';
+      return;
+    }
+
+    const minDue = remaining[0].due;
+    const firstGroup = remaining.filter((h) => h.due === minDue);
+    const restGroup = remaining.filter((h) => h.due !== minDue);
+
+    let html = firstGroup.map(hwCardHtml).join("");
+    if (restGroup.length > 0) {
+      html += `<div class="section-divider">${formatKoreanDate(restGroup[0].due)} 이후 숙제</div>`;
+      html += restGroup.map(hwCardHtml).join("");
+    }
+    container.innerHTML = html;
+  }
+
+  /* ===== 남은 숙제 카드 클릭 -> 상세 정보 반영 후 업로드 화면 ===== */
+  let currentBundle = null;
+
+  function openDetailCard(hwId) {
+    const c = classes[joinedClassIndex];
+    const h = c.homeworks.find((x) => x.id === hwId);
+    if (!h) return;
+    currentBundle = h;
+
+    document.getElementById("bundleTitle").textContent = h.title;
+    document.getElementById("bundleDue").textContent = "제출 기한: " + formatKoreanDate(h.due);
+    document.getElementById("bundleDday").textContent = calcDday(h.due);
+    document.getElementById("bundleDescBox").innerHTML = h.desc
+      ? "<p>" + h.desc + "</p>"
+      : '<p style="color:var(--sub);">선생님이 등록한 설명이 없어요</p>';
+
+    showPage("detail");
+  }
+
+  /* ===== 사진 표시(공용): 실제 업로드 사진 / 데모용 색상 placeholder 모두 지원 ===== */
+  function renderPhotoSection(countEl, rowEl, photos, editable, onRemove) {
+    if (countEl) countEl.textContent = photos.length;
+
+    if (photos.length === 0) {
+      rowEl.innerHTML = '<span class="thumb-empty">아직 업로드한 사진이 없어요</span>';
+      return;
+    }
+
+    rowEl.innerHTML = "";
+    photos.forEach((p, idx) => {
+      const thumb = document.createElement("div");
+      thumb.className = "thumb";
+
+      if (typeof p === "string" && p.indexOf("placeholder:") === 0) {
+        const color = p.split(":")[1];
+        const box = document.createElement("div");
+        box.style.cssText = "width:100%;height:100%;background:" + color;
+        thumb.appendChild(box);
+        thumb.addEventListener("click", () => openLightboxColor(color));
+      } else {
+        const img = document.createElement("img");
+        img.src = p;
+        thumb.appendChild(img);
+        thumb.addEventListener("click", () => openLightbox(p));
+      }
+
+      if (editable) {
+        const rm = document.createElement("button");
+        rm.type = "button";
+        rm.className = "thumb-remove";
+        rm.textContent = "×";
+        rm.addEventListener("click", (e) => {
+          e.stopPropagation();
+          onRemove(idx);
+        });
+        thumb.appendChild(rm);
+      }
+
+      rowEl.appendChild(thumb);
+    });
+  }
+
+  /* ===== 숙제 업로드 화면: 사진 업로드 ===== */
+  let uploadedPhotos = [];
+
+  const photoCountEl = document.getElementById("photoCount");
+  const thumbRow = document.getElementById("thumbRow");
+
+  function renderThumbs() {
+    renderPhotoSection(photoCountEl, thumbRow, uploadedPhotos, true, (idx) => {
+      uploadedPhotos.splice(idx, 1);
+      renderThumbs();
+    });
+  }
+
+  function addFiles(fileList) {
+    Array.from(fileList).forEach((file) => {
+      uploadedPhotos.push(URL.createObjectURL(file));
+    });
+    renderThumbs();
+  }
+
+  function resetUploadForm() {
+    uploadedPhotos = [];
+    renderThumbs();
+    document.getElementById("teacherNote").value = "";
+  }
+
+  document.getElementById("cameraBtn").addEventListener("click", () => {
+    document.getElementById("cameraInput").click();
+  });
+
+  document.getElementById("galleryBtn").addEventListener("click", () => {
+    document.getElementById("galleryInput").click();
+  });
+
+  document.getElementById("cameraInput").addEventListener("change", (e) => addFiles(e.target.files));
+  document.getElementById("galleryInput").addEventListener("change", (e) => addFiles(e.target.files));
+
+  /* ===== 사진 크게 보기 (실제 사진 / 데모 색상 둘 다 지원) ===== */
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const lightboxColorBox = document.getElementById("lightboxColorBox");
+
+  function openLightbox(url) {
+    lightboxImg.style.display = "block";
+    lightboxImg.src = url;
+    lightboxColorBox.style.display = "none";
+    lightbox.classList.add("show");
+  }
+
+  function openLightboxColor(color) {
+    lightboxImg.style.display = "none";
+    lightboxColorBox.style.display = "block";
+    lightboxColorBox.style.background = color;
+    lightbox.classList.add("show");
+  }
+
+  lightbox.addEventListener("click", () => {
+    lightbox.classList.remove("show");
+  });
+
+  /* ===== 나가기 확인 팝업 (업로드 화면 + 승인현황 상세 화면 공용) ===== */
+  const exitModal = document.getElementById("exitModal");
+  let exitConfirmAction = () => showPage("list");
+
+  function showExitModal(onConfirm) {
+    exitConfirmAction = onConfirm || (() => showPage("list"));
+    exitModal.classList.add("show");
+  }
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    showExitModal(() => showPage("list"));
+  });
+
+  document.getElementById("cancelExitBtn").addEventListener("click", () => {
+    exitModal.classList.remove("show");
+  });
+
+  document.getElementById("confirmExitBtn").addEventListener("click", () => {
+    exitModal.classList.remove("show");
+    exitConfirmAction();
+  });
+
+  window.addEventListener("popstate", () => {
+    const detailActive = document.getElementById("page-detail").classList.contains("active");
+    const statusDetailActive = document.getElementById("page-status-detail").classList.contains("active");
+
+    if (!detailActive && !statusDetailActive) return;
+    if (exitModal.classList.contains("show")) return;
+
+    /* 5: 승인현황 상세는 실제로 바뀐 내용이 있을 때만 나가기 경고를 띄움 */
+    const dirty = detailActive ? true : sdHasChanges();
+
+    if (dirty) {
+      history.pushState({ uploadGuard: true }, "");
+      showExitModal(
+        detailActive
+          ? () => showPage("list")
+          : () => { showPage("list"); selectTab("pending"); }
+      );
+    } else {
+      showPage("list");
+      if (statusDetailActive) selectTab("pending");
+    }
+  });
+
+  /* ===== 사진 미업로드 팝업 ===== */
+  const noPhotoModal = document.getElementById("noPhotoModal");
+
+  document.getElementById("closeNoPhotoBtn").addEventListener("click", () => {
+    noPhotoModal.classList.remove("show");
+  });
+
+  document.getElementById("closeNoChangesBtn").addEventListener("click", () => {
+    document.getElementById("noChangesModal").classList.remove("show");
+  });
+
+  document.getElementById("closeComingSoonBtn").addEventListener("click", () => {
+    document.getElementById("comingSoonModal").classList.remove("show");
+  });
+
+  /* ===== 승인현황 목록 / 지난 숙제 목록 렌더링 (실제 반 숙제 + 내 제출 기록 기준) ===== */
+  function mySubmissions() {
+    if (joinedClassIndex === null) return [];
+    return classes[joinedClassIndex].submissions.filter((s) => s.studentName === studentName);
+  }
+
+  function renderApprovalList() {
+    const container = document.getElementById("pendingList");
+    container.innerHTML = "";
+    if (joinedClassIndex === null) return;
+    const c = classes[joinedClassIndex];
+    const subs = mySubmissions().filter((s) => !s.movedToPast);
+
+    subs.forEach((s) => {
+      const h = c.homeworks.find((x) => x.id === s.hwId);
+      if (!h) return;
+      const card = document.createElement("div");
+      card.className = "hw-card";
+      card.innerHTML =
+        '<div>' +
+          '<div class="hw-name-row"><span class="hw-name">' + h.title + '</span><span class="hw-dday-inline">' + calcDday(h.due) + '</span></div>' +
+          '<p class="hw-due">제출 기한: ' + formatKoreanDate(h.due) + '</p>' +
+        '</div>' +
+        '<div class="hw-right">' +
+          '<span class="status-pill ' + s.status + '">' + statusLabel(s.status) + '</span>' +
+          '<span class="hw-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span>' +
+        '</div>';
+
+      card.addEventListener("click", () => openStatusDetail(s.hwId));
+      container.appendChild(card);
+    });
+  }
+
+  function renderCounts() {
+    const subs = mySubmissions().filter((s) => !s.movedToPast);
+    document.getElementById("countPending").textContent = subs.filter((s) => s.status === "pending").length + "건";
+    document.getElementById("countRejected").textContent = subs.filter((s) => s.status === "rejected").length + "건";
+    document.getElementById("countApproved").textContent = subs.filter((s) => s.status === "approved").length + "건";
+  }
+
+  function renderPastList() {
+    const container = document.getElementById("tab-past");
+    if (joinedClassIndex === null) {
+      container.innerHTML = '<p class="empty-state">아직 지난 숙제가 없어요</p>';
+      return;
+    }
+    const c = classes[joinedClassIndex];
+    const moved = mySubmissions().filter((s) => s.movedToPast);
+
+    if (moved.length === 0) {
+      container.innerHTML = '<p class="empty-state">아직 지난 숙제가 없어요</p>';
+      return;
+    }
+
+    container.innerHTML = "";
+    moved.forEach((s) => {
+      const h = c.homeworks.find((x) => x.id === s.hwId);
+      if (!h) return;
+      const card = document.createElement("div");
+      card.className = "hw-card";
+      card.innerHTML =
+        '<div>' +
+          '<p class="hw-name">' + h.title + '</p>' +
+          '<p class="hw-due">제출 기한: ' + formatKoreanDate(h.due) + '</p>' +
+        '</div>' +
+        '<span class="status-pill approved">완료</span>';
+
+      card.addEventListener("click", () => openStatusDetail(s.hwId));
+      container.appendChild(card);
+    });
+  }
+
+  /* ===== 승인현황 상세보기 화면 ===== */
+  let currentStatusHwId = null;
+  let sdUploadedPhotos = [];
+
+  function renderSdThumbs() {
+    const s = classes[joinedClassIndex].submissions.find((x) => x.hwId === currentStatusHwId && x.studentName === studentName);
+    renderPhotoSection(
+      document.getElementById("sdPhotoCount"),
+      document.getElementById("sdThumbRow"),
+      sdUploadedPhotos,
+      s.status !== "approved",
+      (idx) => {
+        sdUploadedPhotos.splice(idx, 1);
+        renderSdThumbs();
+      }
+    );
+  }
+
+  function openStatusDetail(hwId) {
+    currentStatusHwId = hwId;
+    const c = classes[joinedClassIndex];
+    const h = c.homeworks.find((x) => x.id === hwId);
+    const s = c.submissions.find((x) => x.hwId === hwId && x.studentName === studentName);
+    sdUploadedPhotos = s.photos.slice();
+
+    document.getElementById("sdBundleTitle").textContent = h.title;
+    document.getElementById("sdBundleDue").textContent = "제출 기한: " + formatKoreanDate(h.due);
+    document.getElementById("sdBundleDday").textContent = calcDday(h.due);
+    document.getElementById("sdBundleDescBox").innerHTML = h.desc
+      ? "<p>" + h.desc + "</p>"
+      : '<p style="color:var(--sub);">선생님이 등록한 설명이 없어요</p>';
+
+    const badge = document.getElementById("sdStatusBadge");
+    badge.className = "status-pill " + s.status;
+    badge.textContent = statusLabel(s.status);
+
+    const rejectBlock = document.getElementById("sdRejectBlock");
+    if (s.status === "rejected") {
+      rejectBlock.style.display = "block";
+      document.getElementById("sdRejectReason").textContent = s.rejectReason || "";
+    } else {
+      rejectBlock.style.display = "none";
+    }
+
+    const noteInput = document.getElementById("sdNote");
+    noteInput.value = s.note || "";
+    noteInput.disabled = s.status === "approved";
+
+    document.getElementById("sdUploadBox").style.display = s.status === "approved" ? "none" : "flex";
+
+    renderSdThumbs();
+
+    /* 4,9: 완료 상태도 뒤로가기 버튼을 항상 보여주고, 이미 지난 숙제로 넘어간
+       항목은 실행 버튼 자리를 없애고 뒤로가기만 남김 */
+    const actionBtn = document.getElementById("sdActionBtn");
+
+    if (s.status === "approved" && s.movedToPast) {
+      actionBtn.style.display = "none";
+      document.getElementById("sdBackBottomBtn").style.flex = "1 1 100%";
+    } else {
+      actionBtn.style.display = "inline-block";
+      actionBtn.style.flex = "1";
+      document.getElementById("sdBackBottomBtn").style.flex = "1";
+
+      if (s.status === "approved") {
+        actionBtn.textContent = "숙제 마무리하기";
+      } else if (s.status === "rejected") {
+        actionBtn.textContent = "재업로드하기";
+      } else {
+        actionBtn.textContent = "수정하기";
+      }
+    }
+
+    showPage("status-detail");
+  }
+
+  /* 5: 승인현황 상세에서 실제로 바뀐 내용이 있는지 확인 */
+  function sdHasChanges() {
+    if (joinedClassIndex === null || !currentStatusHwId) return false;
+    const s = classes[joinedClassIndex].submissions.find((x) => x.hwId === currentStatusHwId && x.studentName === studentName);
+    if (!s) return false;
+    const noteChanged = document.getElementById("sdNote").value !== (s.note || "");
+    const photosChanged = JSON.stringify(sdUploadedPhotos) !== JSON.stringify(s.photos);
+    return noteChanged || photosChanged;
+  }
+
+  function sdGoBack() {
+    if (sdHasChanges()) {
+      showExitModal(() => { showPage("list"); selectTab("pending"); });
+    } else {
+      showPage("list");
+      selectTab("pending");
+    }
+  }
+
+  document.getElementById("sdBackBtn").addEventListener("click", sdGoBack);
+  document.getElementById("sdBackBottomBtn").addEventListener("click", sdGoBack);
+
+  document.getElementById("sdCameraBtn").addEventListener("click", () => {
+    document.getElementById("sdCameraInput").click();
+  });
+
+  document.getElementById("sdGalleryBtn").addEventListener("click", () => {
+    document.getElementById("sdGalleryInput").click();
+  });
+
+  document.getElementById("sdCameraInput").addEventListener("change", (e) => {
+    Array.from(e.target.files).forEach((file) => sdUploadedPhotos.push(URL.createObjectURL(file)));
+    renderSdThumbs();
+  });
+
+  document.getElementById("sdGalleryInput").addEventListener("change", (e) => {
+    Array.from(e.target.files).forEach((file) => sdUploadedPhotos.push(URL.createObjectURL(file)));
+    renderSdThumbs();
+  });
+
+  document.getElementById("sdActionBtn").addEventListener("click", () => {
+    const c = classes[joinedClassIndex];
+    const s = c.submissions.find((x) => x.hwId === currentStatusHwId && x.studentName === studentName);
+    const h = c.homeworks.find((x) => x.id === currentStatusHwId);
+
+    if (s.status === "approved") {
+      s.movedToPast = true;
+      renderApprovalList();
+      renderCounts();
+      renderPastList();
+      renderStudentHome();
+      showCompletionScreen(h.title + "가 마무리됐어요!", "지난 숙제 확인하기", () => selectTab("past"), "수고했어요");
+      return;
+    }
+
+    /* 6: 수정/재업로드인데 실제로 바뀐 게 없으면 안내 팝업만 띄우고 그대로 둠 */
+    if (!sdHasChanges()) {
+      document.getElementById("noChangesModal").classList.add("show");
+      return;
+    }
+
+    if (sdUploadedPhotos.length === 0) {
+      noPhotoModal.classList.add("show");
+      return;
+    }
+
+    const wasRejected = s.status === "rejected";
+    s.photos = sdUploadedPhotos.slice();
+    s.note = document.getElementById("sdNote").value;
+    s.status = "pending";
+    s.rejectReason = null;
+
+    renderApprovalList();
+    renderCounts();
+
+    const title = wasRejected ? (h.title + "가 재업로드됐어요!") : (h.title + " 수정이 완료됐어요!");
+    showCompletionScreen(title, "승인현황 확인하기", () => selectTab("pending"));
+  });
+
+  /* ===== 제출/수정/재업로드/이동 완료 화면 (공용) ===== */
+  const successOverlay = document.getElementById("successOverlay");
+  const goPendingBtn = document.getElementById("goPendingBtn");
+  let successTimeoutId = null;
+
+  function showCompletionScreen(titleText, secondBtnLabel, onSecondBtn, subtitleText) {
+    const titleEl = document.getElementById("successTitle");
+    const subtitleEl = document.getElementById("successSubtitle");
+
+    titleEl.textContent = titleText;
+
+    if (subtitleText) {
+      titleEl.style.marginBottom = "4px";
+      subtitleEl.textContent = subtitleText;
+      subtitleEl.style.display = "block";
+    } else {
+      titleEl.style.marginBottom = "22px";
+      subtitleEl.style.display = "none";
+    }
+
+    goPendingBtn.textContent = secondBtnLabel;
+
+    goPendingBtn.onclick = () => {
+      clearTimeout(successTimeoutId);
+      successOverlay.classList.remove("show");
+      resetUploadForm();
+      showPage("list");
+      onSecondBtn();
+    };
+
+    successOverlay.classList.add("show");
+
+    clearTimeout(successTimeoutId);
+    successTimeoutId = setTimeout(() => {
+      successOverlay.classList.remove("show");
+      resetUploadForm();
+      showPage("home");
+    }, 3000);
+  }
+
+  document.getElementById("goHomeBtn").addEventListener("click", () => {
+    clearTimeout(successTimeoutId);
+    successOverlay.classList.remove("show");
+    resetUploadForm();
+    showPage("home");
+  });
+
+  /* ===== 숙제 업로드 화면의 제출하기 (실제 반 데이터에 제출 기록을 남김) ===== */
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    if (uploadedPhotos.length === 0) {
+      noPhotoModal.classList.add("show");
+      return;
+    }
+
+    if (!currentBundle) return;
+
+    const c = classes[joinedClassIndex];
+    c.submissions.push({
+      studentName: studentName,
+      hwId: currentBundle.id,
+      status: "pending",
+      photos: uploadedPhotos.slice(),
+      note: document.getElementById("teacherNote").value,
+      rejectReason: null,
+      movedToPast: false,
+    });
+
+    renderRemainingList();
+    renderApprovalList();
+    renderCounts();
+    renderStudentHome();
+
+    showCompletionScreen(currentBundle.title + "가 제출됐어요!", "승인현황 확인하기", () => selectTab("pending"));
+  });
+
+  /* ================================================================
+     ===================== 선생님용 로직 시작 =========================
+     ================================================================ */
+
+  /* ===== 온보딩 상태 ===== */
+  let teacherName = "";
+  let className = "";
+  let classCode = "";
+  let classes = [];
+  let currentClassIndex = null;
+  let classDetailReturnPage = "t-home";
+  let classSetupReturnPage = "t-students";
+  let hwCalYear = 0;
+  let hwCalMonth = 0;
+  let hwSelectedDate = "";
+  let hwStatusPendingOnly = false;
+  let nextHwId = 1;
+
+  function newHwId() {
+    return "hw" + (nextHwId++) + "_" + Date.now().toString(36);
+  }
+
+  function demoStudents() {
+    return [
+      { name: "김민준" },
+      { name: "박서연" },
+      { name: "이도윤" },
+    ];
+  }
+
+  function teacherStatusLabel(status) {
+    if (status === "pending") return "승인대기";
+    if (status === "rejected") return "반려됨";
+    if (status === "approved") return "제출완료";
+    return "미제출";
+  }
+
+  function demoHomeworks() {
+    const d = new Date();
+    d.setDate(d.getDate() + 3);
+    return [
+      { id: newHwId(), title: "단어 시험 준비", due: d.toISOString().slice(0, 10), desc: "Unit 5 단어 30개 암기" },
+    ];
+  }
+
+  function demoSubmissions(homeworks) {
+    if (homeworks.length === 0) return [];
+    return [
+      { studentName: "박서연", hwId: homeworks[0].id, status: "pending", photos: ["placeholder:#DDD6FE"], note: "다 했어요! 확인 부탁드려요.", rejectReason: null, movedToPast: false },
+    ];
+  }
+
+  /* 이름 입력 */
+  const teacherNameInput = document.getElementById("teacherNameInput");
+  const teacherNameConfirmText = document.getElementById("teacherNameConfirmText");
+  const teacherNameConfirmLabel = document.getElementById("teacherNameConfirmLabel");
+  const teacherNameConfirmBtn = document.getElementById("teacherNameConfirmBtn");
+
+  teacherNameInput.addEventListener("input", () => {
+    const val = teacherNameInput.value.trim();
+    if (val) {
+      teacherNameConfirmLabel.textContent = val + " 선생님이 맞으신가요?";
+      teacherNameConfirmText.classList.add("show");
+      teacherNameConfirmBtn.disabled = false;
+    } else {
+      teacherNameConfirmText.classList.remove("show");
+      teacherNameConfirmBtn.disabled = true;
+    }
+  });
+
+  teacherNameConfirmBtn.addEventListener("click", () => {
+    const val = teacherNameInput.value.trim();
+    if (!val) return;
+    playTapSound();
+    teacherName = val;
+    document.getElementById("teacherOnboardWelcomeText").textContent = teacherName + " 선생님, 환영해요";
+    showPage("t-onboard-complete");
+    launchConfetti("page-t-onboard-complete");
+    setTimeout(playSuccessChime, 150);
+  });
+
+  /* 클래스 이름 입력 */
+  const classInput = document.getElementById("classInput");
+  const teacherClassConfirmText = document.getElementById("teacherClassConfirmText");
+  const teacherClassConfirmLabel = document.getElementById("teacherClassConfirmLabel");
+  const classConfirmBtn = document.getElementById("classConfirmBtn");
+
+  classInput.addEventListener("input", () => {
+    const val = classInput.value.trim();
+    if (val) {
+      teacherClassConfirmLabel.textContent = val + " 클래스가 맞으신가요?";
+      teacherClassConfirmText.classList.add("show");
+      classConfirmBtn.disabled = false;
+    } else {
+      teacherClassConfirmText.classList.remove("show");
+      classConfirmBtn.disabled = true;
+    }
+  });
+
+  classConfirmBtn.addEventListener("click", () => {
+    const val = classInput.value.trim();
+    if (!val) return;
+    playTapSound();
+    className = val;
+
+    classCode = String(Math.floor(100000 + Math.random() * 900000));
+    const spans = document.querySelectorAll("#codeDisplay span");
+    classCode.split("").forEach((digit, i) => {
+      spans[i].textContent = digit;
+    });
+
+    playSuccessChime();
+    showPage("t-code-reveal");
+  });
+
+  /* 코드 공개 */
+  document.getElementById("copyCodeBtn").addEventListener("click", () => {
+    playTapSound();
+    const toast = document.getElementById("copyToast");
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(classCode).catch(() => {});
+    }
+
+    toast.classList.add("show");
+    setTimeout(() => toast.classList.remove("show"), 1500);
+  });
+
+  document.getElementById("codeNextBtn").addEventListener("click", () => {
+    playTapSound();
+    const newHomeworks = demoHomeworks();
+    classes.push({
+      name: className,
+      code: classCode,
+      students: demoStudents(),
+      homeworks: newHomeworks,
+      submissions: demoSubmissions(newHomeworks),
+    });
+    if (classSetupReturnPage === "t-students") {
+      renderStudentsHome();
+    } else {
+      renderHomeStats();
+    }
+    showPage(classSetupReturnPage);
+    launchConfetti("page-t-code-reveal");
+    setTimeout(playSuccessChime, 150);
+  });
+
+  /* 대시보드로 이동 */
+  document.getElementById("teacherStartServiceBtn").addEventListener("click", () => {
+    playTapSound();
+    document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
+    renderHomeStats();
+    showPage("t-home");
+  });
+
+  /* 새 반 만들기 시작 (반 관리에서 진입) */
+  function startAddClass(returnTo) {
+    playTapSound();
+    classSetupReturnPage = returnTo || "t-students";
+    classInput.value = "";
+    teacherClassConfirmText.classList.remove("show");
+    classConfirmBtn.disabled = true;
+    showPage("t-class-setup");
+  }
+
+  /* 홈 대시보드 통계 렌더링 (반 전체를 통틀어 실제 제출 현황 계산) */
+  function renderHomeStats() {
+    const emptyState = document.getElementById("homeEmptyState");
+    const stats = document.getElementById("statsSection");
+
+    if (classes.length === 0) {
+      emptyState.style.display = "";
+      stats.style.display = "none";
+      return;
+    }
+    emptyState.style.display = "none";
+    stats.style.display = "";
+
+    let totalStudents = 0;
+    let pendingCount = 0;
+    const missingRows = [];
+
+    classes.forEach((c) => {
+      totalStudents += c.students.length;
+      c.students.forEach((s) => {
+        c.homeworks.forEach((h) => {
+          const sub = c.submissions.find((x) => x.studentName === s.name && x.hwId === h.id);
+          const status = sub ? sub.status : "missing";
+          if (status === "pending") pendingCount++;
+          if (status === "missing") {
+            missingRows.push({ name: s.name, className: c.name, hwTitle: h.title });
+          }
+        });
+      });
+    });
+
+    document.getElementById("statPendingCount").textContent = pendingCount + "건";
+    document.getElementById("statMissingCount").textContent = missingRows.length + "건";
+    document.getElementById("totalStudentCount").textContent = totalStudents + "명";
+
+    const listEl = document.getElementById("missingStudentList");
+    if (missingRows.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">미제출인 숙제가 없어요</p>';
+    } else {
+      listEl.innerHTML = missingRows.map((r) => `
+        <div class="student-card" style="cursor:default;">
+          <div class="student-avatar">${r.name[0]}</div>
+          <div class="student-info">
+            <p class="student-name">${r.name}</p>
+            <p class="student-meta">${r.className} · ${r.hwTitle}</p>
+          </div>
+          <span class="status-pill missing">미제출</span>
+        </div>
+      `).join("");
+    }
+  }
+
+  function copyClassCode(code, btn) {
+    playTapSound();
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code).catch(() => {});
+    }
+    if (btn) {
+      const orig = btn.innerHTML;
+      btn.textContent = "복사완료";
+      setTimeout(() => { btn.innerHTML = orig; }, 1200);
+    }
+  }
+
+  /* ===== 반 관리 (반 목록) ===== */
+  function openStudentsHome() {
+    playTapSound();
+    renderStudentsHome();
+    showPage("t-students");
+  }
+
+  function renderStudentsHome() {
+    const container = document.getElementById("studentsClassList");
+
+    if (classes.length === 0) {
+      container.innerHTML = `
+        <div class="empty-class-card">
+          <div class="empty-class-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+              <path d="M8 21h8M12 17v4"></path>
+            </svg>
+          </div>
+          <p class="empty-class-text">아직 만든 반이 없어요</p>
+          <button class="add-class-btn" onclick="startAddClass('t-students')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            새 반 만들기
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    let html = classes.map((c, i) => {
+      const pendingCount = c.submissions.filter((s) => s.status === "pending").length;
+      return `
+        <div class="student-card" onclick="openClassDetail(${i}, 't-students')">
+          <div class="student-avatar">${c.name[0]}</div>
+          <div class="student-info">
+            <p class="student-name">${c.name}</p>
+            <p class="student-meta">학생 ${c.students.length}명</p>
+          </div>
+          ${pendingCount > 0 ? `<span class="status-pill pending">승인대기 ${pendingCount}</span>` : ""}
+        </div>
+      `;
+    }).join("");
+    html += `
+      <button class="add-class-btn" onclick="startAddClass('t-students')" style="margin-top:4px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        새 반 만들기
+      </button>
+    `;
+    container.innerHTML = html;
+  }
+
+  function closeClassDetail() {
+    playTapSound();
+    if (classDetailReturnPage === "t-students") {
+      renderStudentsHome();
+    } else {
+      renderHomeStats();
+    }
+    showPage(classDetailReturnPage);
+  }
+
+  /* ===== 반 상세: 학생 관리 / 숙제 관리 / 숙제 현황 ===== */
+  function openClassDetail(i, returnTo) {
+    playTapSound();
+    currentClassIndex = i;
+    classDetailReturnPage = returnTo || "t-home";
+    const c = classes[i];
+    document.getElementById("classDetailTitle").textContent = c.name;
+    document.getElementById("classDetailCode").textContent = c.code;
+    document.getElementById("newHwTitle").value = "";
+    document.getElementById("newHwDesc").value = "";
+    document.getElementById("addHwForm").classList.remove("show");
+    const today = new Date();
+    hwCalYear = today.getFullYear();
+    hwCalMonth = today.getMonth();
+    hwSelectedDate = today.toISOString().slice(0, 10);
+    hwStatusPendingOnly = false;
+    document.getElementById("pendingOnlyToggle").checked = false;
+    switchDetailTab("manage", true);
+    renderClassDetail();
+    showPage("t-class-detail");
+  }
+
+  function switchDetailTab(tabName, silent) {
+    if (!silent) playTapSound();
+    document.querySelectorAll("#page-t-class-detail .tab").forEach((t) => {
+      t.classList.toggle("active", t.dataset.tab === tabName);
+    });
+    document.querySelectorAll("#page-t-class-detail .tab-content").forEach((c) => {
+      c.classList.toggle("active", c.id === "detailTab-" + tabName);
+    });
+  }
+
+  function renderClassDetail() {
+    const c = classes[currentClassIndex];
+    const manageList = document.getElementById("manageStudentList");
+    const approveList = document.getElementById("approveStudentList");
+    const badge = document.getElementById("approveBadge");
+
+    /* 학생 관리: 순수 명단 (숙제 현황은 여기서 다루지 않음) */
+    if (c.students.length === 0) {
+      manageList.innerHTML = '<p class="empty-approval">아직 참여한 학생이 없어요<br>반 코드를 공유해보세요</p>';
+    } else {
+      manageList.innerHTML = c.students.map((s, i) => `
+        <div class="student-card" style="cursor:default;">
+          <div class="student-avatar">${s.name[0]}</div>
+          <div class="student-info">
+            <p class="student-name">${s.name}</p>
+          </div>
+          <button class="student-delete-btn" onclick="removeStudent(${i})" aria-label="삭제">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"></path>
+            </svg>
+          </button>
+        </div>
+      `).join("");
+    }
+
+    /* 숙제 현황: 학생 x 숙제 조합별 실제 제출 상태 */
+    const rows = [];
+    c.students.forEach((s) => {
+      c.homeworks.forEach((h) => {
+        const sub = c.submissions.find((x) => x.studentName === s.name && x.hwId === h.id);
+        rows.push({
+          studentName: s.name,
+          hwId: h.id,
+          hwTitle: h.title,
+          status: sub ? sub.status : "missing",
+        });
+      });
+    });
+
+    const pendingCount = rows.filter((r) => r.status === "pending").length;
+    if (pendingCount > 0) {
+      badge.style.display = "";
+      badge.textContent = pendingCount;
+    } else {
+      badge.style.display = "none";
+    }
+
+    const statusOrder = { pending: 0, rejected: 1, missing: 2, approved: 3 };
+    let visibleRows = hwStatusPendingOnly ? rows.filter((r) => r.status === "pending") : rows;
+    visibleRows = visibleRows.slice().sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+
+    if (c.homeworks.length === 0) {
+      approveList.innerHTML = '<p class="empty-approval">아직 만든 숙제가 없어요</p>';
+    } else if (visibleRows.length === 0) {
+      approveList.innerHTML = `<p class="empty-approval">${hwStatusPendingOnly ? "승인 대기중인 제출이 없어요" : "아직 참여한 학생이 없어요"}</p>`;
+    } else {
+      approveList.innerHTML = visibleRows.map((r) => {
+        if (r.status === "pending") {
+          return `
+            <div class="student-card" onclick="openSubmissionPreview('${jsStr(r.studentName)}', '${jsStr(r.hwId)}')">
+              <div class="student-avatar">${r.studentName[0]}</div>
+              <div class="student-info">
+                <p class="student-name">${r.studentName}</p>
+                <p class="student-meta">${r.hwTitle}</p>
+              </div>
+              <div class="approve-actions">
+                <button class="approve-btn" onclick="event.stopPropagation(); approveSubmission('${jsStr(r.studentName)}', '${jsStr(r.hwId)}')">승인</button>
+                <button class="reject-btn" onclick="event.stopPropagation(); openRejectReason('${jsStr(r.studentName)}', '${jsStr(r.hwId)}')">반려</button>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="student-card" style="cursor:default;">
+            <div class="student-avatar">${r.studentName[0]}</div>
+            <div class="student-info">
+              <p class="student-name">${r.studentName}</p>
+              <p class="student-meta">${r.hwTitle}</p>
+            </div>
+            <span class="status-pill ${r.status}">${teacherStatusLabel(r.status)}</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    renderHwCalendar();
+    renderHwDayList();
+  }
+
+  /* ===== 숙제 관리 달력 ===== */
+  function renderHwCalendar() {
+    const grid = document.getElementById("hwCalGrid");
+    const monthLabel = document.getElementById("hwCalMonthLabel");
+    monthLabel.textContent = hwCalYear + "년 " + (hwCalMonth + 1) + "월";
+
+    const firstDay = new Date(hwCalYear, hwCalMonth, 1).getDay();
+    const daysInMonth = new Date(hwCalYear, hwCalMonth + 1, 0).getDate();
+    const hwDates = new Set(classes[currentClassIndex].homeworks.map((h) => h.due));
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    let html = "";
+    for (let i = 0; i < firstDay; i++) {
+      html += '<span class="hw-cal-cell empty"></span>';
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = hwCalYear + "-" + String(hwCalMonth + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      let cls = "hw-cal-cell";
+      if (dateStr === hwSelectedDate) cls += " selected";
+      if (dateStr === todayStr) cls += " is-today";
+      if (hwDates.has(dateStr)) cls += " has-hw";
+      html += `<button class="${cls}" onclick="selectCalDay('${dateStr}')">${d}</button>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function selectCalDay(dateStr) {
+    playTapSound();
+    hwSelectedDate = dateStr;
+    document.getElementById("addHwForm").classList.remove("show");
+    renderHwCalendar();
+    renderHwDayList();
+  }
+
+  function shiftCalMonth(delta) {
+    playTapSound();
+    hwCalMonth += delta;
+    if (hwCalMonth < 0) { hwCalMonth = 11; hwCalYear--; }
+    if (hwCalMonth > 11) { hwCalMonth = 0; hwCalYear++; }
+    renderHwCalendar();
+  }
+
+  function renderHwDayList() {
+    const c = classes[currentClassIndex];
+    const label = document.getElementById("hwCalSelectedLabel");
+    label.textContent = formatKoreanDate(hwSelectedDate) + " 숙제";
+
+    const dayHw = c.homeworks.filter((h) => h.due === hwSelectedDate);
+    const listEl = document.getElementById("hwManageList");
+    if (dayHw.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">이 날짜엔 등록된 숙제가 없어요</p>';
+    } else {
+      listEl.innerHTML = dayHw.map((h) => `
+        <div class="hw-manage-card">
+          <div class="hw-manage-top">
+            <p class="hw-manage-title">${h.title}</p>
+            <span class="hw-manage-dday">${calcDday(h.due)}</span>
+          </div>
+          ${h.desc ? `<p class="hw-manage-desc">${h.desc}</p>` : ""}
+          <button class="hw-manage-delete" onclick="removeHomework('${jsStr(h.id)}')">삭제</button>
+        </div>
+      `).join("");
+    }
+  }
+
+  function removeStudent(i) {
+    playTapSound();
+    const c = classes[currentClassIndex];
+    const removed = c.students.splice(i, 1)[0];
+    if (removed) {
+      c.submissions = c.submissions.filter((s) => s.studentName !== removed.name);
+    }
+    renderClassDetail();
+  }
+
+  function togglePendingOnly() {
+    playTapSound();
+    hwStatusPendingOnly = document.getElementById("pendingOnlyToggle").checked;
+    renderClassDetail();
+  }
+
+  function toggleAddHwForm() {
+    playTapSound();
+    const form = document.getElementById("addHwForm");
+    form.classList.toggle("show");
+    if (form.classList.contains("show")) {
+      document.getElementById("newHwTitle").focus();
+    }
+  }
+
+  function addHomeworkToClass() {
+    const titleInput = document.getElementById("newHwTitle");
+    const descInput = document.getElementById("newHwDesc");
+    const title = titleInput.value.trim();
+    if (!title) return;
+    playTapSound();
+    classes[currentClassIndex].homeworks.push({ id: newHwId(), title: title, due: hwSelectedDate, desc: descInput.value.trim() });
+    titleInput.value = "";
+    descInput.value = "";
+    document.getElementById("addHwForm").classList.remove("show");
+    renderClassDetail();
+  }
+
+  function removeHomework(hwId) {
+    playTapSound();
+    const c = classes[currentClassIndex];
+    c.homeworks = c.homeworks.filter((h) => h.id !== hwId);
+    c.submissions = c.submissions.filter((s) => s.hwId !== hwId);
+    renderClassDetail();
+  }
+
+  /* ===== 숙제 현황: 제출물 미리보기 / 승인 / 반려 ===== */
+  let previewStudentName = null;
+  let previewHwId = null;
+
+  function openSubmissionPreview(studentNameArg, hwId) {
+    playTapSound();
+    previewStudentName = studentNameArg;
+    previewHwId = hwId;
+    const c = classes[currentClassIndex];
+    const h = c.homeworks.find((x) => x.id === hwId);
+    const sub = c.submissions.find((x) => x.studentName === studentNameArg && x.hwId === hwId);
+    if (!h || !sub) return;
+
+    document.getElementById("previewHwTitle").textContent = h.title;
+    document.getElementById("previewStudentName").textContent = studentNameArg + " 학생 제출";
+    document.getElementById("previewNote").textContent = sub.note ? sub.note : "(쪽지 없음)";
+    renderPhotoSection(null, document.getElementById("previewThumbRow"), sub.photos, false, () => {});
+
+    document.getElementById("submissionPreviewModal").classList.add("show");
+  }
+
+  function approveSubmission(studentNameArg, hwId) {
+    playSuccessChime();
+    const c = classes[currentClassIndex];
+    const sub = c.submissions.find((x) => x.studentName === studentNameArg && x.hwId === hwId);
+    if (sub) {
+      sub.status = "approved";
+      sub.rejectReason = null;
+    }
+    renderClassDetail();
+  }
+
+  function approveFromPreview() {
+    closeModal("submissionPreviewModal");
+    approveSubmission(previewStudentName, previewHwId);
+  }
+
+  let rejectTargetStudent = null;
+  let rejectTargetHwId = null;
+
+  function openRejectReason(studentNameArg, hwId) {
+    playTapSound();
+    rejectTargetStudent = studentNameArg;
+    rejectTargetHwId = hwId;
+    document.getElementById("rejectReasonInput").value = "";
+    document.getElementById("rejectReasonModal").classList.add("show");
+  }
+
+  function rejectFromPreview() {
+    closeModal("submissionPreviewModal");
+    openRejectReason(previewStudentName, previewHwId);
+  }
+
+  function confirmRejectSubmission() {
+    const reason = document.getElementById("rejectReasonInput").value.trim();
+    playTapSound();
+    const c = classes[currentClassIndex];
+    const sub = c.submissions.find((x) => x.studentName === rejectTargetStudent && x.hwId === rejectTargetHwId);
+    if (sub) {
+      sub.status = "rejected";
+      sub.rejectReason = reason || "선생님이 반려했어요. 다시 확인해주세요.";
+    }
+    closeModal("rejectReasonModal");
+    renderClassDetail();
+  }
+
+  /* ===== 반 이름 수정 / 반 삭제 ===== */
+  function openClassActions() {
+    playTapSound();
+    document.getElementById("classActionsModal").classList.add("show");
+  }
+
+  function openRenameClass() {
+    playTapSound();
+    closeModal("classActionsModal");
+    document.getElementById("renameClassInput").value = classes[currentClassIndex].name;
+    document.getElementById("renameClassModal").classList.add("show");
+  }
+
+  function confirmRenameClass() {
+    const val = document.getElementById("renameClassInput").value.trim();
+    if (!val) return;
+    playTapSound();
+    classes[currentClassIndex].name = val;
+    document.getElementById("classDetailTitle").textContent = val;
+    closeModal("renameClassModal");
+  }
+
+  function openDeleteClassConfirm() {
+    playTapSound();
+    closeModal("classActionsModal");
+    document.getElementById("deleteClassConfirmModal").classList.add("show");
+  }
+
+  function confirmDeleteClass() {
+    classes.splice(currentClassIndex, 1);
+    currentClassIndex = null;
+    closeModal("deleteClassConfirmModal");
+    if (classDetailReturnPage === "t-students") {
+      renderStudentsHome();
+    } else {
+      renderHomeStats();
+    }
+    showPage(classDetailReturnPage);
+  }
+
+  /* ===== 초기 렌더링 ===== */
+  renderApprovalList();
+  renderCounts();
+  renderPastList();
+  fitWelcomeBrandWidth();
+</script>
+
+</body>
+</html>
