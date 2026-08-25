@@ -863,6 +863,62 @@
     font-weight:700;
   }
 
+  .hw-filter-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+  }
+
+  .hw-filter-label{
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  .toggle-switch{
+    position:relative;
+    width:42px;
+    height:24px;
+    flex-shrink:0;
+  }
+
+  .toggle-switch input{
+    opacity:0;
+    width:0;
+    height:0;
+  }
+
+  .toggle-slider{
+    position:absolute;
+    inset:0;
+    background:#E4E6EF;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
+
+  .toggle-slider::before{
+    content:"";
+    position:absolute;
+    width:18px;
+    height:18px;
+    left:3px;
+    top:3px;
+    background:#ffffff;
+    border-radius:50%;
+    transition:transform 0.2s;
+    box-shadow:0 1px 3px rgba(0,0,0,0.2);
+  }
+
+  .toggle-switch input:checked + .toggle-slider{
+    background:var(--point-strong);
+  }
+
+  .toggle-switch input:checked + .toggle-slider::before{
+    transform:translateX(18px);
+  }
+
   .add-hw-btn{
     display:flex;
     align-items:center;
@@ -1493,7 +1549,7 @@
       <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
       <button class="tab" data-tab="homework" onclick="switchDetailTab('homework')">숙제 관리</button>
       <button class="tab" data-tab="approve" onclick="switchDetailTab('approve')">
-        숙제 승인<span class="tab-badge" id="approveBadge" style="display:none;">0</span>
+        숙제 현황<span class="tab-badge" id="approveBadge" style="display:none;">0</span>
       </button>
     </div>
 
@@ -1538,6 +1594,14 @@
       </div>
 
       <div class="tab-content" id="detailTab-approve">
+        <div class="hw-filter-row">
+          <span class="hw-filter-label">승인요청 학생만 보기</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="pendingOnlyToggle" onchange="togglePendingOnly()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
         <div id="approveStudentList"></div>
       </div>
     </div>
@@ -1698,6 +1762,7 @@
   let hwCalYear = 0;
   let hwCalMonth = 0;
   let hwSelectedDate = "";
+  let hwStatusPendingOnly = false;
 
   function demoStudents() {
     return [
@@ -1973,6 +2038,8 @@
     hwCalYear = today.getFullYear();
     hwCalMonth = today.getMonth();
     hwSelectedDate = today.toISOString().slice(0, 10);
+    hwStatusPendingOnly = false;
+    document.getElementById("pendingOnlyToggle").checked = false;
     switchDetailTab("manage", true);
     renderClassDetail();
     showPage("class-detail");
@@ -2002,9 +2069,7 @@
           <div class="student-avatar">${s.name[0]}</div>
           <div class="student-info">
             <p class="student-name">${s.name}</p>
-            <p class="student-meta">최근 제출: ${s.lastSubmit}</p>
           </div>
-          <span class="status-pill ${s.status}">${statusLabel(s.status)}</span>
           <button class="student-delete-btn" onclick="removeStudent(${i})" aria-label="삭제">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"></path>
@@ -2014,30 +2079,51 @@
       `).join("");
     }
 
-    const pending = c.students.map((s, i) => ({ name: s.name, lastSubmit: s.lastSubmit, idx: i })).filter((_, i) => c.students[i].status === "pending");
-    if (pending.length === 0) {
-      approveList.innerHTML = '<p class="empty-approval">승인 대기중인 숙제가 없어요</p>';
-    } else {
-      approveList.innerHTML = pending.map((s) => `
-        <div class="student-card" style="cursor:default;">
-          <div class="student-avatar">${s.name[0]}</div>
-          <div class="student-info">
-            <p class="student-name">${s.name}</p>
-            <p class="student-meta">최근 제출: ${s.lastSubmit}</p>
-          </div>
-          <div class="approve-actions">
-            <button class="approve-btn" onclick="approveStudent(${s.idx})">승인</button>
-            <button class="reject-btn" onclick="rejectStudent(${s.idx})">반려</button>
-          </div>
-        </div>
-      `).join("");
-    }
-
-    if (pending.length > 0) {
+    const pendingCount = c.students.filter((s) => s.status === "pending").length;
+    if (pendingCount > 0) {
       badge.style.display = "";
-      badge.textContent = pending.length;
+      badge.textContent = pendingCount;
     } else {
       badge.style.display = "none";
+    }
+
+    const statusOrder = { pending: 0, missing: 1, done: 2 };
+    let hwStatusStudents = c.students.map((s, i) => ({ ...s, idx: i }));
+    if (hwStatusPendingOnly) {
+      hwStatusStudents = hwStatusStudents.filter((s) => s.status === "pending");
+    }
+    hwStatusStudents.sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
+
+    if (hwStatusStudents.length === 0) {
+      approveList.innerHTML = `<p class="empty-approval">${hwStatusPendingOnly ? "승인 대기중인 학생이 없어요" : "아직 참여한 학생이 없어요"}</p>`;
+    } else {
+      approveList.innerHTML = hwStatusStudents.map((s) => {
+        if (s.status === "pending") {
+          return `
+            <div class="student-card" style="cursor:default;">
+              <div class="student-avatar">${s.name[0]}</div>
+              <div class="student-info">
+                <p class="student-name">${s.name}</p>
+                <p class="student-meta">최근 제출: ${s.lastSubmit}</p>
+              </div>
+              <div class="approve-actions">
+                <button class="approve-btn" onclick="approveStudent(${s.idx})">승인</button>
+                <button class="reject-btn" onclick="rejectStudent(${s.idx})">반려</button>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="student-card" style="cursor:default;">
+            <div class="student-avatar">${s.name[0]}</div>
+            <div class="student-info">
+              <p class="student-name">${s.name}</p>
+              <p class="student-meta">최근 제출: ${s.lastSubmit}</p>
+            </div>
+            <span class="status-pill ${s.status}">${statusLabel(s.status)}</span>
+          </div>
+        `;
+      }).join("");
     }
 
     renderHwCalendar();
@@ -2112,6 +2198,12 @@
   function removeStudent(i) {
     playTapSound();
     classes[currentClassIndex].students.splice(i, 1);
+    renderClassDetail();
+  }
+
+  function togglePendingOnly() {
+    playTapSound();
+    hwStatusPendingOnly = document.getElementById("pendingOnlyToggle").checked;
     renderClassDetail();
   }
 
