@@ -573,9 +573,9 @@
     color:var(--point-strong);
   }
 
-  .stat-box.today{
-    background:#FFF1DB;
-    color:#E08A00;
+  .stat-box.missing{
+    background:#FDE7E7;
+    color:#E4423F;
   }
 
   .stat-box.total{
@@ -813,70 +813,6 @@
     display:block;
   }
 
-  .add-student-btn{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    width:100%;
-    background:#F5F6FA;
-    color:var(--ink);
-    border:none;
-    border-radius:14px;
-    padding:13px;
-    font-size:14px;
-    font-weight:800;
-    cursor:pointer;
-    margin-bottom:14px;
-  }
-
-  .add-student-btn:active{
-    transform:scale(0.98);
-  }
-
-  .add-student-form{
-    display:none;
-    gap:8px;
-    margin-bottom:14px;
-  }
-
-  .add-student-form.show{
-    display:flex;
-  }
-
-  .add-student-input{
-    flex:1;
-    border:1.5px solid var(--line);
-    border-radius:12px;
-    padding:12px 14px;
-    font-size:14px;
-    font-family:inherit;
-    font-weight:700;
-    color:var(--ink);
-    background:#FAFBFF;
-  }
-
-  .add-student-input:focus{
-    outline:none;
-    border-color:var(--point-strong);
-  }
-
-  .add-student-form button{
-    flex-shrink:0;
-    background:var(--point-strong);
-    color:#ffffff;
-    border:none;
-    border-radius:12px;
-    padding:0 18px;
-    font-size:14px;
-    font-weight:800;
-    cursor:pointer;
-  }
-
-  .add-student-form button:active{
-    transform:scale(0.96);
-  }
-
   .student-delete-btn{
     flex-shrink:0;
     width:30px;
@@ -1037,10 +973,97 @@
     line-height:1.5;
   }
 
-  .hw-manage-due{
-    font-size:12px;
-    color:var(--sub);
+  .hw-cal-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+
+  .hw-cal-month{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
     margin:0;
+  }
+
+  .hw-cal-nav{
+    width:30px;
+    height:30px;
+    border:none;
+    background:#F5F6FA;
+    border-radius:10px;
+    color:var(--ink);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .hw-cal-nav:active{
+    transform:scale(0.94);
+  }
+
+  .hw-cal-weekdays{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    text-align:center;
+    font-size:11px;
+    font-weight:800;
+    color:var(--sub);
+    margin-bottom:4px;
+  }
+
+  .hw-cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:2px;
+  }
+
+  .hw-cal-cell{
+    aspect-ratio:1;
+    border:none;
+    background:none;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:700;
+    font-family:inherit;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .hw-cal-cell.empty{
+    cursor:default;
+  }
+
+  .hw-cal-cell.is-today{
+    color:var(--point-strong);
+    font-weight:800;
+  }
+
+  .hw-cal-cell.selected{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  .hw-cal-cell.has-hw::after{
+    content:"";
+    position:absolute;
+    bottom:5px;
+    left:50%;
+    transform:translateX(-50%);
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:var(--point-strong);
+  }
+
+  .hw-cal-cell.selected.has-hw::after{
+    background:#ffffff;
   }
 
   .hw-manage-delete{
@@ -1155,7 +1178,7 @@
   <div class="bg-blob b2"></div>
 
   <!-- ===== 1. 시작 화면 ===== -->
-  <div class="page active" id="page-welcome">
+  <div class="page" id="page-welcome">
     <div class="welcome-content">
       <p class="welcome-title ob-anim d1">환영해요</p>
       <p class="welcome-brand ob-anim d2" id="welcomeBrand">Today English</p>
@@ -1215,7 +1238,7 @@
   <!-- ===== 새 반 만들기 1/2: 클래스 이름 입력 ===== -->
   <div class="page" id="page-class-setup">
     <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="playTapSound(); showPage('home')" aria-label="뒤로가기">
+      <button class="ob-back-btn" onclick="playTapSound(); showPage(classSetupReturnPage)" aria-label="뒤로가기">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5"></path>
           <path d="M12 19l-7-7 7-7"></path>
@@ -1310,7 +1333,7 @@
   </div>
 
   <!-- ===== 6. 대시보드(홈) ===== -->
-  <div class="page" id="page-home">
+  <div class="page active" id="page-home">
     <div class="home-content">
 
       <div class="top-bar">
@@ -1323,62 +1346,36 @@
         </button>
       </div>
 
-      <p class="section-title" style="margin-top:20px;">내 반 목록</p>
-      <div id="classListSection"></div>
+      <div id="homeEmptyState" class="empty-class-card" style="margin-top:20px;display:none;">
+        <div class="empty-class-icon">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+            <path d="M8 21h8M12 17v4"></path>
+          </svg>
+        </div>
+        <p class="empty-class-text">아직 만든 반이 없어요</p>
+        <p class="empty-class-text" style="margin-top:-10px;font-size:12px;">반 관리 탭에서 새 반을 만들어보세요</p>
+      </div>
 
       <div id="statsSection" style="display:none;">
         <div class="stat-row">
           <div class="stat-box pending">
             <span class="stat-label">승인 대기중</span>
-            <span class="stat-count">3건</span>
+            <span class="stat-count" id="statPendingCount">0건</span>
           </div>
-          <div class="stat-box today">
-            <span class="stat-label">오늘 제출 필요</span>
-            <span class="stat-count">8명</span>
+          <div class="stat-box missing">
+            <span class="stat-label">미제출</span>
+            <span class="stat-count" id="statMissingCount">0명</span>
           </div>
           <div class="stat-box total">
             <span class="stat-label">전체 학생</span>
-            <span class="stat-count" id="totalStudentCount">12명</span>
+            <span class="stat-count" id="totalStudentCount">0명</span>
           </div>
         </div>
 
-        <p class="section-title">학생 현황</p>
+        <p class="section-title">미제출 학생 현황</p>
 
-        <div class="student-card" onclick="showComingSoon()">
-          <div class="student-avatar">김</div>
-          <div class="student-info">
-            <p class="student-name">김민준</p>
-            <p class="student-meta">최근 제출: 8월 25일</p>
-          </div>
-          <span class="status-pill done">제출완료</span>
-        </div>
-
-        <div class="student-card" onclick="showComingSoon()">
-          <div class="student-avatar">박</div>
-          <div class="student-info">
-            <p class="student-name">박서연</p>
-            <p class="student-meta">최근 제출: 8월 24일</p>
-          </div>
-          <span class="status-pill pending">승인대기</span>
-        </div>
-
-        <div class="student-card" onclick="showComingSoon()">
-          <div class="student-avatar">이</div>
-          <div class="student-info">
-            <p class="student-name">이도윤</p>
-            <p class="student-meta">최근 제출: 8월 20일</p>
-          </div>
-          <span class="status-pill missing">미제출</span>
-        </div>
-
-        <div class="student-card" onclick="showComingSoon()">
-          <div class="student-avatar">최</div>
-          <div class="student-info">
-            <p class="student-name">최지우</p>
-            <p class="student-meta">최근 제출: 8월 25일</p>
-          </div>
-          <span class="status-pill done">제출완료</span>
-        </div>
+        <div id="missingStudentList"></div>
       </div>
 
       <div class="blank-section"></div>
@@ -1396,12 +1393,10 @@
 
       <button class="nav-item" data-nav="students" onclick="openStudentsHome()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
         </svg>
-        <span>학생 관리</span>
+        <span>반 관리</span>
       </button>
 
       <button class="nav-item" data-nav="homework" onclick="showComingSoon()">
@@ -1426,7 +1421,7 @@
   <div class="page" id="page-students">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">학생 관리|</span>반을 선택하세요</div>
+        <div class="greeting"><span class="page-label">반 관리|</span>반을 선택하세요</div>
       </div>
 
       <p class="section-title" style="margin-top:20px;">내 반 목록</p>
@@ -1446,12 +1441,10 @@
 
       <button class="nav-item active" data-nav="students">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-          <circle cx="9" cy="7" r="4"></circle>
-          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
         </svg>
-        <span>학생 관리</span>
+        <span>반 관리</span>
       </button>
 
       <button class="nav-item" data-nav="homework" onclick="showComingSoon()">
@@ -1482,7 +1475,13 @@
         </svg>
       </button>
       <p class="detail-title" id="classDetailTitle">클래스</p>
-      <span style="width:38px;flex-shrink:0;"></span>
+      <button class="ob-back-btn" onclick="openClassActions()" aria-label="더보기">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="5" r="1.2" fill="currentColor"></circle>
+          <circle cx="12" cy="12" r="1.2" fill="currentColor"></circle>
+          <circle cx="12" cy="19" r="1.2" fill="currentColor"></circle>
+        </svg>
+      </button>
     </div>
 
     <div class="detail-code-chip">
@@ -1500,22 +1499,28 @@
 
     <div class="detail-content">
       <div class="tab-content active" id="detailTab-manage">
-        <button class="add-student-btn" id="addStudentToggleBtn" onclick="toggleAddStudentForm()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 5v14M5 12h14"></path>
-          </svg>
-          학생 추가
-        </button>
-
-        <div class="add-student-form" id="addStudentForm">
-          <input type="text" id="newStudentInput" class="add-student-input" placeholder="학생 이름 입력">
-          <button id="newStudentConfirmBtn" onclick="addStudentToClass()">추가</button>
-        </div>
-
         <div id="manageStudentList"></div>
       </div>
 
       <div class="tab-content" id="detailTab-homework">
+        <div class="hw-cal-header">
+          <button class="hw-cal-nav" onclick="shiftCalMonth(-1)" aria-label="이전 달">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+          </button>
+          <p class="hw-cal-month" id="hwCalMonthLabel">2026년 8월</p>
+          <button class="hw-cal-nav" onclick="shiftCalMonth(1)" aria-label="다음 달">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+          </button>
+        </div>
+
+        <div class="hw-cal-weekdays">
+          <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+        </div>
+
+        <div class="hw-cal-grid" id="hwCalGrid"></div>
+
+        <p class="section-title" id="hwCalSelectedLabel" style="margin:20px 0 12px;">숙제</p>
+
         <button class="add-hw-btn" id="addHwToggleBtn" onclick="toggleAddHwForm()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 5v14M5 12h14"></path>
@@ -1525,7 +1530,6 @@
 
         <div class="add-hw-form" id="addHwForm">
           <input type="text" id="newHwTitle" class="add-hw-input" placeholder="숙제 이름 입력">
-          <input type="date" id="newHwDue" class="add-hw-input">
           <textarea id="newHwDesc" class="add-hw-textarea" placeholder="설명 (선택)"></textarea>
           <button id="newHwConfirmBtn" onclick="addHomeworkToClass()">만들기</button>
         </div>
@@ -1551,6 +1555,41 @@
       <p class="modal-text">아직 이 기능은<br>완성되지 않았어요</p>
       <div class="modal-actions">
         <button id="closeComingSoonBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반 관리 액션 -->
+  <div class="modal-overlay" id="classActionsModal">
+    <div class="modal-box">
+      <p class="modal-text" style="margin-bottom:16px;">반 관리</p>
+      <div class="modal-actions" style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="openRenameClass()">이름 수정</button>
+        <button onclick="openDeleteClassConfirm()" style="background:#FDE7E7;color:#E4423F;">반 삭제</button>
+        <button onclick="closeModal('classActionsModal')" style="background:#F5F6FA;color:var(--sub);">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반 이름 수정 -->
+  <div class="modal-overlay" id="renameClassModal">
+    <div class="modal-box">
+      <p class="modal-text" style="margin-bottom:14px;">반 이름 수정</p>
+      <input type="text" id="renameClassInput" class="add-hw-input" style="margin-bottom:16px;text-align:center;">
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('renameClassModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmRenameClass()" style="flex:1;width:auto;">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반 삭제 확인 -->
+  <div class="modal-overlay" id="deleteClassConfirmModal">
+    <div class="modal-box">
+      <p class="modal-text">이 반을 삭제할까요?<br><span style="font-size:12px;color:var(--sub);font-weight:500;">학생과 숙제 정보가 모두 사라져요</span></p>
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('deleteClassConfirmModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmDeleteClass()" style="flex:1;width:auto;background:#E4423F;">삭제</button>
       </div>
     </div>
   </div>
@@ -1655,6 +1694,10 @@
   let classes = [];
   let currentClassIndex = null;
   let classDetailReturnPage = "home";
+  let classSetupReturnPage = "students";
+  let hwCalYear = 0;
+  let hwCalMonth = 0;
+  let hwSelectedDate = "";
 
   function demoStudents() {
     return [
@@ -1772,8 +1815,12 @@
   document.getElementById("codeNextBtn").addEventListener("click", () => {
     playTapSound();
     classes.push({ name: className, code: classCode, students: demoStudents(), homeworks: demoHomeworks() });
-    renderClassList();
-    showPage("home");
+    if (classSetupReturnPage === "students") {
+      renderStudentsHome();
+    } else {
+      renderHomeStats();
+    }
+    showPage(classSetupReturnPage);
     launchConfetti();
     setTimeout(playSuccessChime, 150);
   });
@@ -1782,74 +1829,56 @@
   document.getElementById("startServiceBtn").addEventListener("click", () => {
     playTapSound();
     document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
-    renderClassList();
+    renderHomeStats();
     showPage("home");
   });
 
-  /* 새 반 만들기 시작 (대시보드에서 진입) */
-  function startAddClass() {
+  /* 새 반 만들기 시작 (반 관리에서 진입) */
+  function startAddClass(returnTo) {
     playTapSound();
+    classSetupReturnPage = returnTo || "students";
     classInput.value = "";
     classConfirmText.classList.remove("show");
     classConfirmBtn.disabled = true;
     showPage("class-setup");
   }
 
-  /* 반 목록 렌더링 */
-  function renderClassList() {
-    const container = document.getElementById("classListSection");
+  /* 홈 대시보드 통계 렌더링 */
+  function renderHomeStats() {
+    const emptyState = document.getElementById("homeEmptyState");
     const stats = document.getElementById("statsSection");
 
     if (classes.length === 0) {
-      container.innerHTML = `
-        <div class="empty-class-card">
-          <div class="empty-class-icon">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="13" rx="2"></rect>
-              <path d="M8 21h8M12 17v4"></path>
-            </svg>
-          </div>
-          <p class="empty-class-text">아직 만든 반이 없어요</p>
-          <button class="add-class-btn" onclick="startAddClass()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 5v14M5 12h14"></path>
-            </svg>
-            새 반 만들기
-          </button>
-        </div>
-      `;
+      emptyState.style.display = "";
       stats.style.display = "none";
       return;
     }
-
-    let html = "";
-    classes.forEach((c, i) => {
-      html += `
-        <div class="code-card" style="cursor:pointer;${i === 0 ? "" : "margin-top:12px;"}" onclick="openClassDetail(${i})">
-          <p class="code-card-label">${c.name}</p>
-          <div class="code-card-row">
-            <span class="code-card-value">${c.code}</span>
-            <button class="code-card-copy" onclick="event.stopPropagation(); copyClassCode('${c.code}', this)">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-              </svg>
-              복사
-            </button>
-          </div>
-        </div>
-      `;
-    });
-    html += `
-      <button class="add-class-btn" onclick="startAddClass()" style="margin-top:12px;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 5v14M5 12h14"></path>
-        </svg>
-        새 반 만들기
-      </button>
-    `;
-    container.innerHTML = html;
+    emptyState.style.display = "none";
     stats.style.display = "";
+
+    const allStudents = classes.flatMap((c) => c.students.map((s) => ({ ...s, className: c.name })));
+    const pendingCount = allStudents.filter((s) => s.status === "pending").length;
+    const missingStudents = allStudents.filter((s) => s.status === "missing");
+
+    document.getElementById("statPendingCount").textContent = pendingCount + "건";
+    document.getElementById("statMissingCount").textContent = missingStudents.length + "명";
+    document.getElementById("totalStudentCount").textContent = allStudents.length + "명";
+
+    const listEl = document.getElementById("missingStudentList");
+    if (missingStudents.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">미제출 학생이 없어요</p>';
+    } else {
+      listEl.innerHTML = missingStudents.map((s) => `
+        <div class="student-card" style="cursor:default;">
+          <div class="student-avatar">${s.name[0]}</div>
+          <div class="student-info">
+            <p class="student-name">${s.name}</p>
+            <p class="student-meta">${s.className} · 최근 제출: ${s.lastSubmit}</p>
+          </div>
+          <span class="status-pill missing">미제출</span>
+        </div>
+      `).join("");
+    }
   }
 
   function copyClassCode(code, btn) {
@@ -1879,18 +1908,23 @@
         <div class="empty-class-card">
           <div class="empty-class-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
+              <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+              <path d="M8 21h8M12 17v4"></path>
             </svg>
           </div>
           <p class="empty-class-text">아직 만든 반이 없어요</p>
-          <button class="add-class-btn" onclick="playTapSound(); showPage('home')">홈에서 반 만들기</button>
+          <button class="add-class-btn" onclick="startAddClass('students')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            새 반 만들기
+          </button>
         </div>
       `;
       return;
     }
 
-    container.innerHTML = classes.map((c, i) => {
+    let html = classes.map((c, i) => {
       const pendingCount = c.students.filter((s) => s.status === "pending").length;
       return `
         <div class="student-card" onclick="openClassDetail(${i}, 'students')">
@@ -1903,6 +1937,15 @@
         </div>
       `;
     }).join("");
+    html += `
+      <button class="add-class-btn" onclick="startAddClass('students')" style="margin-top:4px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        새 반 만들기
+      </button>
+    `;
+    container.innerHTML = html;
   }
 
   function closeClassDetail() {
@@ -1910,7 +1953,7 @@
     if (classDetailReturnPage === "students") {
       renderStudentsHome();
     } else {
-      renderClassList();
+      renderHomeStats();
     }
     showPage(classDetailReturnPage);
   }
@@ -1923,12 +1966,13 @@
     const c = classes[i];
     document.getElementById("classDetailTitle").textContent = c.name;
     document.getElementById("classDetailCode").textContent = c.code;
-    document.getElementById("newStudentInput").value = "";
-    document.getElementById("addStudentForm").classList.remove("show");
     document.getElementById("newHwTitle").value = "";
-    document.getElementById("newHwDue").value = "";
     document.getElementById("newHwDesc").value = "";
     document.getElementById("addHwForm").classList.remove("show");
+    const today = new Date();
+    hwCalYear = today.getFullYear();
+    hwCalMonth = today.getMonth();
+    hwSelectedDate = today.toISOString().slice(0, 10);
     switchDetailTab("manage", true);
     renderClassDetail();
     showPage("class-detail");
@@ -1951,7 +1995,7 @@
     const badge = document.getElementById("approveBadge");
 
     if (c.students.length === 0) {
-      manageList.innerHTML = '<p class="empty-approval">아직 학생이 없어요</p>';
+      manageList.innerHTML = '<p class="empty-approval">아직 참여한 학생이 없어요<br>반 코드를 공유해보세요</p>';
     } else {
       manageList.innerHTML = c.students.map((s, i) => `
         <div class="student-card" style="cursor:default;">
@@ -1996,42 +2040,73 @@
       badge.style.display = "none";
     }
 
-    const hwList = document.getElementById("hwManageList");
-    if (c.homeworks.length === 0) {
-      hwList.innerHTML = '<p class="empty-approval">아직 만든 숙제가 없어요</p>';
+    renderHwCalendar();
+    renderHwDayList();
+  }
+
+  /* ===== 숙제 관리 달력 ===== */
+  function renderHwCalendar() {
+    const grid = document.getElementById("hwCalGrid");
+    const monthLabel = document.getElementById("hwCalMonthLabel");
+    monthLabel.textContent = hwCalYear + "년 " + (hwCalMonth + 1) + "월";
+
+    const firstDay = new Date(hwCalYear, hwCalMonth, 1).getDay();
+    const daysInMonth = new Date(hwCalYear, hwCalMonth + 1, 0).getDate();
+    const hwDates = new Set(classes[currentClassIndex].homeworks.map((h) => h.due));
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    let html = "";
+    for (let i = 0; i < firstDay; i++) {
+      html += '<span class="hw-cal-cell empty"></span>';
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = hwCalYear + "-" + String(hwCalMonth + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      let cls = "hw-cal-cell";
+      if (dateStr === hwSelectedDate) cls += " selected";
+      if (dateStr === todayStr) cls += " is-today";
+      if (hwDates.has(dateStr)) cls += " has-hw";
+      html += `<button class="${cls}" onclick="selectCalDay('${dateStr}')">${d}</button>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function selectCalDay(dateStr) {
+    playTapSound();
+    hwSelectedDate = dateStr;
+    document.getElementById("addHwForm").classList.remove("show");
+    renderHwCalendar();
+    renderHwDayList();
+  }
+
+  function shiftCalMonth(delta) {
+    playTapSound();
+    hwCalMonth += delta;
+    if (hwCalMonth < 0) { hwCalMonth = 11; hwCalYear--; }
+    if (hwCalMonth > 11) { hwCalMonth = 0; hwCalYear++; }
+    renderHwCalendar();
+  }
+
+  function renderHwDayList() {
+    const c = classes[currentClassIndex];
+    const label = document.getElementById("hwCalSelectedLabel");
+    label.textContent = formatKoreanDate(hwSelectedDate) + " 숙제";
+
+    const dayHw = c.homeworks.map((h, i) => ({ ...h, idx: i })).filter((h) => h.due === hwSelectedDate);
+    const listEl = document.getElementById("hwManageList");
+    if (dayHw.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">이 날짜엔 등록된 숙제가 없어요</p>';
     } else {
-      hwList.innerHTML = c.homeworks.map((h, i) => `
+      listEl.innerHTML = dayHw.map((h) => `
         <div class="hw-manage-card">
           <div class="hw-manage-top">
             <p class="hw-manage-title">${h.title}</p>
             <span class="hw-manage-dday">${calcDday(h.due)}</span>
           </div>
           ${h.desc ? `<p class="hw-manage-desc">${h.desc}</p>` : ""}
-          <p class="hw-manage-due">마감: ${formatKoreanDate(h.due)}</p>
-          <button class="hw-manage-delete" onclick="removeHomework(${i})">삭제</button>
+          <button class="hw-manage-delete" onclick="removeHomework(${h.idx})">삭제</button>
         </div>
       `).join("");
     }
-  }
-
-  function toggleAddStudentForm() {
-    playTapSound();
-    const form = document.getElementById("addStudentForm");
-    form.classList.toggle("show");
-    if (form.classList.contains("show")) {
-      document.getElementById("newStudentInput").focus();
-    }
-  }
-
-  function addStudentToClass() {
-    const input = document.getElementById("newStudentInput");
-    const val = input.value.trim();
-    if (!val) return;
-    playTapSound();
-    classes[currentClassIndex].students.push({ name: val, status: "missing", lastSubmit: "-" });
-    input.value = "";
-    document.getElementById("addStudentForm").classList.remove("show");
-    renderClassDetail();
   }
 
   function removeStudent(i) {
@@ -2051,15 +2126,12 @@
 
   function addHomeworkToClass() {
     const titleInput = document.getElementById("newHwTitle");
-    const dueInput = document.getElementById("newHwDue");
     const descInput = document.getElementById("newHwDesc");
     const title = titleInput.value.trim();
-    const due = dueInput.value;
-    if (!title || !due) return;
+    if (!title) return;
     playTapSound();
-    classes[currentClassIndex].homeworks.push({ title: title, due: due, desc: descInput.value.trim() });
+    classes[currentClassIndex].homeworks.push({ title: title, due: hwSelectedDate, desc: descInput.value.trim() });
     titleInput.value = "";
-    dueInput.value = "";
     descInput.value = "";
     document.getElementById("addHwForm").classList.remove("show");
     renderClassDetail();
@@ -2086,6 +2158,59 @@
     s.lastSubmit = "반려됨";
     renderClassDetail();
   }
+
+  /* ===== 반 이름 수정 / 반 삭제 ===== */
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("show");
+  }
+
+  function openClassActions() {
+    playTapSound();
+    document.getElementById("classActionsModal").classList.add("show");
+  }
+
+  function openRenameClass() {
+    playTapSound();
+    closeModal("classActionsModal");
+    document.getElementById("renameClassInput").value = classes[currentClassIndex].name;
+    document.getElementById("renameClassModal").classList.add("show");
+  }
+
+  function confirmRenameClass() {
+    const val = document.getElementById("renameClassInput").value.trim();
+    if (!val) return;
+    playTapSound();
+    classes[currentClassIndex].name = val;
+    document.getElementById("classDetailTitle").textContent = val;
+    closeModal("renameClassModal");
+  }
+
+  function openDeleteClassConfirm() {
+    playTapSound();
+    closeModal("classActionsModal");
+    document.getElementById("deleteClassConfirmModal").classList.add("show");
+  }
+
+  function confirmDeleteClass() {
+    classes.splice(currentClassIndex, 1);
+    currentClassIndex = null;
+    closeModal("deleteClassConfirmModal");
+    if (classDetailReturnPage === "students") {
+      renderStudentsHome();
+    } else {
+      renderHomeStats();
+    }
+    showPage(classDetailReturnPage);
+  }
+
+  /* ===== 테스트 편의: 로그인 화면 건너뛰고 홈에서 시작 ===== */
+  teacherName = "김하늘";
+  classes.push(
+    { name: "중2 심화반", code: String(Math.floor(100000 + Math.random() * 900000)), students: demoStudents(), homeworks: demoHomeworks() },
+    { name: "중3 문법반", code: String(Math.floor(100000 + Math.random() * 900000)), students: demoStudents(), homeworks: demoHomeworks() }
+  );
+  document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
+  renderHomeStats();
 
   fitWelcomeBrandWidth();
 </script>
