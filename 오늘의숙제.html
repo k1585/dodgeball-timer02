@@ -3729,6 +3729,7 @@
     const c = classes[joinedClassIndex];
     if (!c.students.find((s) => s.name === studentName)) {
       c.students.push({ name: studentName });
+      saveState();
     }
     document.getElementById("onboardWelcomeText").textContent =
       selectedClassName + "의 " + studentName + "님 환영해요";
@@ -3967,11 +3968,21 @@
     });
   }
 
-  function addFiles(fileList) {
-    Array.from(fileList).forEach((file) => {
-      uploadedPhotos.push(URL.createObjectURL(file));
+  /* base64로 변환해서 저장: blob URL은 다른 탭/새로고침 후에는 깨지므로,
+     반 데이터를 localStorage로 공유하려면 실제 데이터로 들고 있어야 함 */
+  function readFileAsDataUrl(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
     });
-    renderThumbs();
+  }
+
+  function addFiles(fileList) {
+    Promise.all(Array.from(fileList).map(readFileAsDataUrl)).then((dataUrls) => {
+      uploadedPhotos.push(...dataUrls);
+      renderThumbs();
+    });
   }
 
   function resetUploadForm() {
@@ -4253,13 +4264,17 @@
   });
 
   document.getElementById("sdCameraInput").addEventListener("change", (e) => {
-    Array.from(e.target.files).forEach((file) => sdUploadedPhotos.push(URL.createObjectURL(file)));
-    renderSdThumbs();
+    Promise.all(Array.from(e.target.files).map(readFileAsDataUrl)).then((dataUrls) => {
+      sdUploadedPhotos.push(...dataUrls);
+      renderSdThumbs();
+    });
   });
 
   document.getElementById("sdGalleryInput").addEventListener("change", (e) => {
-    Array.from(e.target.files).forEach((file) => sdUploadedPhotos.push(URL.createObjectURL(file)));
-    renderSdThumbs();
+    Promise.all(Array.from(e.target.files).map(readFileAsDataUrl)).then((dataUrls) => {
+      sdUploadedPhotos.push(...dataUrls);
+      renderSdThumbs();
+    });
   });
 
   document.getElementById("sdActionBtn").addEventListener("click", () => {
@@ -4269,6 +4284,7 @@
 
     if (s.status === "approved") {
       s.movedToPast = true;
+      saveState();
       renderApprovalList();
       renderCounts();
       renderPastList();
@@ -4293,6 +4309,7 @@
     s.note = document.getElementById("sdNote").value;
     s.status = "pending";
     s.rejectReason = null;
+    saveState();
 
     renderApprovalList();
     renderCounts();
@@ -4367,6 +4384,7 @@
       rejectReason: null,
       movedToPast: false,
     });
+    saveState();
 
     renderRemainingList();
     renderApprovalList();
@@ -4380,11 +4398,54 @@
      ===================== 선생님용 로직 시작 =========================
      ================================================================ */
 
+  /* ===== 반 데이터 저장 (같은 브라우저의 여러 탭이 실제로 같은 데이터를 공유하도록
+     localStorage에 저장. 학생 탭/선생님 탭을 각각 열어도 반 코드·학생 이름·제출
+     현황이 실시간으로 서로에게 반영됨) ===== */
+  const STORAGE_KEY = "todayHomeworkClasses";
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
+    } catch (e) {}
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) classes = parsed;
+      }
+    } catch (e) {}
+  }
+
+  function refreshCurrentView() {
+    const activeId = document.querySelector(".page.active")?.id;
+    if (activeId === "page-home") renderStudentHome();
+    if (activeId === "page-list") {
+      renderRemainingList();
+      renderApprovalList();
+      renderCounts();
+      renderPastList();
+    }
+    if (activeId === "page-t-home") renderHomeStats();
+    if (activeId === "page-t-students") renderStudentsHome();
+    if (activeId === "page-t-class-detail" && currentClassIndex !== null) renderClassDetail();
+  }
+
+  window.addEventListener("storage", (e) => {
+    if (e.key === STORAGE_KEY) {
+      loadState();
+      refreshCurrentView();
+    }
+  });
+
   /* ===== 온보딩 상태 ===== */
   let teacherName = "";
   let className = "";
   let classCode = "";
   let classes = [];
+  loadState();
   let currentClassIndex = null;
   let classDetailReturnPage = "t-home";
   let classSetupReturnPage = "t-students";
@@ -4514,6 +4575,7 @@
       homeworks: newHomeworks,
       submissions: demoSubmissions(newHomeworks),
     });
+    saveState();
     if (classSetupReturnPage === "t-students") {
       renderStudentsHome();
     } else {
@@ -4864,6 +4926,7 @@
     if (removed) {
       c.submissions = c.submissions.filter((s) => s.studentName !== removed.name);
     }
+    saveState();
     renderClassDetail();
   }
 
@@ -4889,6 +4952,7 @@
     if (!title) return;
     playTapSound();
     classes[currentClassIndex].homeworks.push({ id: newHwId(), title: title, due: hwSelectedDate, desc: descInput.value.trim() });
+    saveState();
     titleInput.value = "";
     descInput.value = "";
     document.getElementById("addHwForm").classList.remove("show");
@@ -4900,6 +4964,7 @@
     const c = classes[currentClassIndex];
     c.homeworks = c.homeworks.filter((h) => h.id !== hwId);
     c.submissions = c.submissions.filter((s) => s.hwId !== hwId);
+    saveState();
     renderClassDetail();
   }
 
@@ -4932,6 +4997,7 @@
       sub.status = "approved";
       sub.rejectReason = null;
     }
+    saveState();
     renderClassDetail();
   }
 
@@ -4965,6 +5031,7 @@
       sub.status = "rejected";
       sub.rejectReason = reason || "선생님이 반려했어요. 다시 확인해주세요.";
     }
+    saveState();
     closeModal("rejectReasonModal");
     renderClassDetail();
   }
@@ -4987,6 +5054,7 @@
     if (!val) return;
     playTapSound();
     classes[currentClassIndex].name = val;
+    saveState();
     document.getElementById("classDetailTitle").textContent = val;
     closeModal("renameClassModal");
   }
@@ -5000,6 +5068,7 @@
   function confirmDeleteClass() {
     classes.splice(currentClassIndex, 1);
     currentClassIndex = null;
+    saveState();
     closeModal("deleteClassConfirmModal");
     if (classDetailReturnPage === "t-students") {
       renderStudentsHome();
