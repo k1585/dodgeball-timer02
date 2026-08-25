@@ -3278,10 +3278,10 @@
         <span>반 관리</span>
       </button>
 
-      <button class="nav-item" data-nav="t-homework" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="t-homework" onclick="openTeacherHomeworkCalendar()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 6h11M9 12h11M9 18h11"></path>
-          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
         <span>숙제 관리</span>
       </button>
@@ -3326,10 +3326,74 @@
         <span>반 관리</span>
       </button>
 
-      <button class="nav-item" data-nav="t-homework" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="t-homework" onclick="openTeacherHomeworkCalendar()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 6h11M9 12h11M9 18h11"></path>
-          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>숙제 관리</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== 숙제 관리 (전체 반 달력) ===== -->
+  <div class="page t-scope" id="page-t-homework">
+    <div class="home-content">
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">숙제 관리|</span>전체 반 달력</div>
+      </div>
+
+      <div class="hw-cal-header" style="margin-top:20px;">
+        <button class="hw-cal-nav" onclick="shiftTHwCalMonth(-1)" aria-label="이전 달">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </button>
+        <p class="hw-cal-month" id="tHwCalMonthLabel">2026년 8월</p>
+        <button class="hw-cal-nav" onclick="shiftTHwCalMonth(1)" aria-label="다음 달">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+      </div>
+
+      <div class="hw-cal-weekdays">
+        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+      </div>
+
+      <div class="hw-cal-grid" id="tHwCalGrid"></div>
+
+      <p class="section-title" id="tHwCalSelectedLabel" style="margin:20px 0 12px;">숙제</p>
+      <div id="tHwCalList"></div>
+
+      <div class="blank-section"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="t-home" onclick="playTapSound(); showPage('t-home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-students" onclick="openStudentsHome()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+        <span>반 관리</span>
+      </button>
+
+      <button class="nav-item active" data-nav="t-homework">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
         <span>숙제 관리</span>
       </button>
@@ -4454,6 +4518,9 @@
   let hwSelectedDate = "";
   let hwStatusPendingOnly = false;
   let nextHwId = 1;
+  let tHwCalYear = 0;
+  let tHwCalMonth = 0;
+  let tHwSelectedDate = "";
 
   function newHwId() {
     return "hw" + (nextHwId++) + "_" + Date.now().toString(36);
@@ -4727,6 +4794,9 @@
     playTapSound();
     if (classDetailReturnPage === "t-students") {
       renderStudentsHome();
+    } else if (classDetailReturnPage === "t-homework") {
+      renderTHwCalendar();
+      renderTHwDayList();
     } else {
       renderHomeStats();
     }
@@ -4734,7 +4804,7 @@
   }
 
   /* ===== 반 상세: 학생 관리 / 숙제 관리 / 숙제 현황 ===== */
-  function openClassDetail(i, returnTo) {
+  function openClassDetail(i, returnTo, opts) {
     playTapSound();
     currentClassIndex = i;
     classDetailReturnPage = returnTo || "t-home";
@@ -4744,13 +4814,13 @@
     document.getElementById("newHwTitle").value = "";
     document.getElementById("newHwDesc").value = "";
     document.getElementById("addHwForm").classList.remove("show");
-    const today = new Date();
-    hwCalYear = today.getFullYear();
-    hwCalMonth = today.getMonth();
-    hwSelectedDate = today.toISOString().slice(0, 10);
+    const targetDate = (opts && opts.date) ? new Date(opts.date + "T00:00:00") : new Date();
+    hwCalYear = targetDate.getFullYear();
+    hwCalMonth = targetDate.getMonth();
+    hwSelectedDate = (opts && opts.date) ? opts.date : targetDate.toISOString().slice(0, 10);
     hwStatusPendingOnly = false;
     document.getElementById("pendingOnlyToggle").checked = false;
-    switchDetailTab("manage", true);
+    switchDetailTab((opts && opts.tab) || "manage", true);
     renderClassDetail();
     showPage("t-class-detail");
   }
@@ -4914,6 +4984,86 @@
           </div>
           ${h.desc ? `<p class="hw-manage-desc">${h.desc}</p>` : ""}
           <button class="hw-manage-delete" onclick="removeHomework('${jsStr(h.id)}')">삭제</button>
+        </div>
+      `).join("");
+    }
+  }
+
+  /* ===== 숙제 관리 (전체 반 달력) ===== */
+  function openTeacherHomeworkCalendar() {
+    playTapSound();
+    const today = new Date();
+    tHwCalYear = today.getFullYear();
+    tHwCalMonth = today.getMonth();
+    tHwSelectedDate = today.toISOString().slice(0, 10);
+    renderTHwCalendar();
+    renderTHwDayList();
+    showPage("t-homework");
+  }
+
+  function shiftTHwCalMonth(delta) {
+    playTapSound();
+    tHwCalMonth += delta;
+    if (tHwCalMonth < 0) { tHwCalMonth = 11; tHwCalYear--; }
+    if (tHwCalMonth > 11) { tHwCalMonth = 0; tHwCalYear++; }
+    renderTHwCalendar();
+  }
+
+  function selectTHwCalDay(dateStr) {
+    playTapSound();
+    tHwSelectedDate = dateStr;
+    renderTHwCalendar();
+    renderTHwDayList();
+  }
+
+  function renderTHwCalendar() {
+    const grid = document.getElementById("tHwCalGrid");
+    const monthLabel = document.getElementById("tHwCalMonthLabel");
+    monthLabel.textContent = tHwCalYear + "년 " + (tHwCalMonth + 1) + "월";
+
+    const firstDay = new Date(tHwCalYear, tHwCalMonth, 1).getDay();
+    const daysInMonth = new Date(tHwCalYear, tHwCalMonth + 1, 0).getDate();
+    const hwDates = new Set();
+    classes.forEach((c) => c.homeworks.forEach((h) => hwDates.add(h.due)));
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    let html = "";
+    for (let i = 0; i < firstDay; i++) {
+      html += '<span class="hw-cal-cell empty"></span>';
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = tHwCalYear + "-" + String(tHwCalMonth + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      let cls = "hw-cal-cell";
+      if (dateStr === tHwSelectedDate) cls += " selected";
+      if (dateStr === todayStr) cls += " is-today";
+      if (hwDates.has(dateStr)) cls += " has-hw";
+      html += `<button class="${cls}" onclick="selectTHwCalDay('${dateStr}')">${d}</button>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function renderTHwDayList() {
+    const label = document.getElementById("tHwCalSelectedLabel");
+    label.textContent = formatKoreanDate(tHwSelectedDate) + " 숙제";
+
+    const rows = [];
+    classes.forEach((c, ci) => {
+      c.homeworks.forEach((h) => {
+        if (h.due === tHwSelectedDate) rows.push({ classIndex: ci, className: c.name, hw: h });
+      });
+    });
+
+    const listEl = document.getElementById("tHwCalList");
+    if (rows.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">이 날짜엔 등록된 숙제가 없어요</p>';
+    } else {
+      listEl.innerHTML = rows.map((r) => `
+        <div class="hw-manage-card" style="cursor:pointer;" onclick="openClassDetail(${r.classIndex}, 't-homework', {tab:'homework', date:'${jsStr(r.hw.due)}'})">
+          <div class="hw-manage-top">
+            <p class="hw-manage-title">${r.hw.title}</p>
+            <span class="hw-manage-dday">${calcDday(r.hw.due)}</span>
+          </div>
+          <p class="hw-manage-desc">${r.className}${r.hw.desc ? " · " + r.hw.desc : ""}</p>
         </div>
       `).join("");
     }
