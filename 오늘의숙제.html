@@ -2338,6 +2338,19 @@
   .t-scope .hw-cal-cell.selected.has-hw::after{
     background:#ffffff;
   }
+  .t-scope .hw-cal-cell.has-event::before{
+    content:"";
+    position:absolute;
+    top:4px;
+    right:6px;
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:#E08A00;
+  }
+  .t-scope .hw-cal-cell.selected.has-event::before{
+    background:#ffffff;
+  }
   .t-scope .hw-manage-delete{
     background:none;
     border:none;
@@ -3157,7 +3170,7 @@
   <!-- ===== 새 반 만들기 2/2: 코드 생성 완료 ===== -->
   <div class="page t-scope" id="page-t-code-reveal">
     <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="playTapSound(); showPage('t-class-setup')" aria-label="뒤로가기">
+      <button class="ob-back-btn" onclick="cancelPendingClassAndGoBack()" aria-label="뒤로가기">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5"></path>
           <path d="M12 19l-7-7 7-7"></path>
@@ -3283,7 +3296,7 @@
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
-        <span>숙제 관리</span>
+        <span>달력</span>
       </button>
 
       <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
@@ -3331,7 +3344,7 @@
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
-        <span>숙제 관리</span>
+        <span>달력</span>
       </button>
 
       <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
@@ -3348,7 +3361,7 @@
   <div class="page t-scope" id="page-t-homework">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">숙제 관리|</span>전체 반 달력</div>
+        <div class="greeting"><span class="page-label">달력|</span>전체 반 일정</div>
       </div>
 
       <div class="hw-cal-header" style="margin-top:20px;">
@@ -3368,6 +3381,23 @@
       <div class="hw-cal-grid" id="tHwCalGrid"></div>
 
       <p class="section-title" id="tHwCalSelectedLabel" style="margin:20px 0 12px;">숙제</p>
+
+      <button class="add-hw-btn" id="addEventToggleBtn" onclick="toggleAddEventForm()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 5v14M5 12h14"></path>
+        </svg>
+        일정 추가
+      </button>
+
+      <div class="add-hw-form" id="addEventForm">
+        <input type="text" id="newEventTitle" class="add-hw-input" placeholder="일정 이름 (예: 학원 방학)">
+        <label style="font-size:12px;color:var(--sub);font-weight:700;">시작일</label>
+        <input type="date" id="newEventStart" class="add-hw-input">
+        <label style="font-size:12px;color:var(--sub);font-weight:700;">종료일 (비우면 하루 일정)</label>
+        <input type="date" id="newEventEnd" class="add-hw-input">
+        <button id="newEventConfirmBtn" onclick="addEvent()">추가하기</button>
+      </div>
+
       <div id="tHwCalList"></div>
 
       <div class="blank-section"></div>
@@ -3395,7 +3425,7 @@
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
         </svg>
-        <span>숙제 관리</span>
+        <span>달력</span>
       </button>
 
       <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
@@ -3492,6 +3522,40 @@
         <div id="approveStudentList"></div>
       </div>
     </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="t-home" onclick="playTapSound(); renderHomeStats(); showPage('t-home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-students" onclick="openStudentsHome()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+        <span>반 관리</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-homework" onclick="openTeacherHomeworkCalendar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
   </div>
 <!-- 반 관리 액션 -->
   <div class="modal-overlay t-scope" id="classActionsModal">
@@ -4466,6 +4530,7 @@
      localStorage에 저장. 학생 탭/선생님 탭을 각각 열어도 반 코드·학생 이름·제출
      현황이 실시간으로 서로에게 반영됨) ===== */
   const STORAGE_KEY = "todayHomeworkClasses";
+  const STORAGE_KEY_EVENTS = "todayHomeworkEvents";
 
   function saveState() {
     try {
@@ -4483,6 +4548,34 @@
     } catch (e) {}
   }
 
+  function saveEvents() {
+    try {
+      localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
+    } catch (e) {}
+  }
+
+  function loadEvents() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_EVENTS);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) events = parsed;
+      }
+    } catch (e) {}
+  }
+
+  /* 선생님 이름을 기준으로 각자의 반/일정만 보이도록 하는 필터
+     (학생이 코드로 반을 찾는 로직은 classes 전체를 그대로 검색하므로 영향 없음) */
+  function myClasses() {
+    return classes
+      .map((c, i) => ({ c, i }))
+      .filter(({ c }) => c.teacherName === teacherName);
+  }
+
+  function myEvents() {
+    return events.filter((e) => e.teacherName === teacherName);
+  }
+
   function refreshCurrentView() {
     const activeId = document.querySelector(".page.active")?.id;
     if (activeId === "page-home") renderStudentHome();
@@ -4494,12 +4587,20 @@
     }
     if (activeId === "page-t-home") renderHomeStats();
     if (activeId === "page-t-students") renderStudentsHome();
+    if (activeId === "page-t-homework") {
+      renderTHwCalendar();
+      renderTHwDayList();
+    }
     if (activeId === "page-t-class-detail" && currentClassIndex !== null) renderClassDetail();
   }
 
   window.addEventListener("storage", (e) => {
     if (e.key === STORAGE_KEY) {
       loadState();
+      refreshCurrentView();
+    }
+    if (e.key === STORAGE_KEY_EVENTS) {
+      loadEvents();
       refreshCurrentView();
     }
   });
@@ -4510,6 +4611,9 @@
   let classCode = "";
   let classes = [];
   loadState();
+  let events = [];
+  loadEvents();
+  let nextEventId = 1;
   let currentClassIndex = null;
   let classDetailReturnPage = "t-home";
   let classSetupReturnPage = "t-students";
@@ -4603,6 +4707,8 @@
     }
   });
 
+  let pendingClassIndex = null;
+
   classConfirmBtn.addEventListener("click", () => {
     const val = classInput.value.trim();
     if (!val) return;
@@ -4615,9 +4721,33 @@
       spans[i].textContent = digit;
     });
 
+    /* 반은 코드가 만들어지는 즉시 저장 - "완료" 버튼을 안 눌러도 유지되도록 함 */
+    const newHomeworks = demoHomeworks();
+    classes.push({
+      name: className,
+      code: classCode,
+      teacherName: teacherName,
+      students: demoStudents(),
+      homeworks: newHomeworks,
+      submissions: demoSubmissions(newHomeworks),
+    });
+    pendingClassIndex = classes.length - 1;
+    saveState();
+
     playSuccessChime();
     showPage("t-code-reveal");
   });
+
+  /* 코드 생성 화면에서 뒤로가기: 방금 만든 반은 취소(삭제)하고 이전 화면으로 */
+  function cancelPendingClassAndGoBack() {
+    playTapSound();
+    if (pendingClassIndex !== null) {
+      classes.splice(pendingClassIndex, 1);
+      pendingClassIndex = null;
+      saveState();
+    }
+    showPage("t-class-setup");
+  }
 
   /* 코드 공개 */
   document.getElementById("copyCodeBtn").addEventListener("click", () => {
@@ -4634,15 +4764,7 @@
 
   document.getElementById("codeNextBtn").addEventListener("click", () => {
     playTapSound();
-    const newHomeworks = demoHomeworks();
-    classes.push({
-      name: className,
-      code: classCode,
-      students: demoStudents(),
-      homeworks: newHomeworks,
-      submissions: demoSubmissions(newHomeworks),
-    });
-    saveState();
+    pendingClassIndex = null;
     if (classSetupReturnPage === "t-students") {
       renderStudentsHome();
     } else {
@@ -4675,8 +4797,9 @@
   function renderHomeStats() {
     const emptyState = document.getElementById("homeEmptyState");
     const stats = document.getElementById("statsSection");
+    const mine = myClasses();
 
-    if (classes.length === 0) {
+    if (mine.length === 0) {
       emptyState.style.display = "";
       stats.style.display = "none";
       return;
@@ -4688,7 +4811,7 @@
     let pendingCount = 0;
     const missingRows = [];
 
-    classes.forEach((c) => {
+    mine.forEach(({ c }) => {
       totalStudents += c.students.length;
       c.students.forEach((s) => {
         c.homeworks.forEach((h) => {
@@ -4744,8 +4867,9 @@
 
   function renderStudentsHome() {
     const container = document.getElementById("studentsClassList");
+    const mine = myClasses();
 
-    if (classes.length === 0) {
+    if (mine.length === 0) {
       container.innerHTML = `
         <div class="empty-class-card">
           <div class="empty-class-icon">
@@ -4766,7 +4890,7 @@
       return;
     }
 
-    let html = classes.map((c, i) => {
+    let html = mine.map(({ c, i }) => {
       const pendingCount = c.submissions.filter((s) => s.status === "pending").length;
       return `
         <div class="student-card" onclick="openClassDetail(${i}, 't-students')">
@@ -4996,6 +5120,7 @@
     tHwCalYear = today.getFullYear();
     tHwCalMonth = today.getMonth();
     tHwSelectedDate = today.toISOString().slice(0, 10);
+    document.getElementById("addEventForm").classList.remove("show");
     renderTHwCalendar();
     renderTHwDayList();
     showPage("t-homework");
@@ -5024,7 +5149,8 @@
     const firstDay = new Date(tHwCalYear, tHwCalMonth, 1).getDay();
     const daysInMonth = new Date(tHwCalYear, tHwCalMonth + 1, 0).getDate();
     const hwDates = new Set();
-    classes.forEach((c) => c.homeworks.forEach((h) => hwDates.add(h.due)));
+    myClasses().forEach(({ c }) => c.homeworks.forEach((h) => hwDates.add(h.due)));
+    const myEv = myEvents();
     const todayStr = new Date().toISOString().slice(0, 10);
 
     let html = "";
@@ -5037,6 +5163,7 @@
       if (dateStr === tHwSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
       if (hwDates.has(dateStr)) cls += " has-hw";
+      if (myEv.some((e) => dateStr >= e.startDate && dateStr <= e.endDate)) cls += " has-event";
       html += `<button class="${cls}" onclick="selectTHwCalDay('${dateStr}')">${d}</button>`;
     }
     grid.innerHTML = html;
@@ -5044,29 +5171,84 @@
 
   function renderTHwDayList() {
     const label = document.getElementById("tHwCalSelectedLabel");
-    label.textContent = formatKoreanDate(tHwSelectedDate) + " 숙제";
+    label.textContent = formatKoreanDate(tHwSelectedDate);
 
     const rows = [];
-    classes.forEach((c, ci) => {
+    myClasses().forEach(({ c, i }) => {
       c.homeworks.forEach((h) => {
-        if (h.due === tHwSelectedDate) rows.push({ classIndex: ci, className: c.name, hw: h });
+        if (h.due === tHwSelectedDate) rows.push({ classIndex: i, className: c.name, hw: h });
       });
     });
+    const dayEvents = myEvents().filter((e) => tHwSelectedDate >= e.startDate && tHwSelectedDate <= e.endDate);
 
     const listEl = document.getElementById("tHwCalList");
-    if (rows.length === 0) {
-      listEl.innerHTML = '<p class="empty-approval">이 날짜엔 등록된 숙제가 없어요</p>';
-    } else {
-      listEl.innerHTML = rows.map((r) => `
-        <div class="hw-manage-card" style="cursor:pointer;" onclick="openClassDetail(${r.classIndex}, 't-homework', {tab:'homework', date:'${jsStr(r.hw.due)}'})">
-          <div class="hw-manage-top">
-            <p class="hw-manage-title">${r.hw.title}</p>
-            <span class="hw-manage-dday">${calcDday(r.hw.due)}</span>
-          </div>
-          <p class="hw-manage-desc">${r.className}${r.hw.desc ? " · " + r.hw.desc : ""}</p>
-        </div>
-      `).join("");
+    if (rows.length === 0 && dayEvents.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">이 날짜엔 등록된 숙제나 일정이 없어요</p>';
+      return;
     }
+
+    let html = "";
+    html += dayEvents.map((e) => `
+      <div class="hw-manage-card">
+        <div class="hw-manage-top">
+          <p class="hw-manage-title">${e.title}</p>
+          <span class="hw-manage-dday" style="background:#FFF1DB;color:#E08A00;">일정</span>
+        </div>
+        <p class="hw-manage-desc">${formatKoreanDate(e.startDate)}${e.endDate !== e.startDate ? " ~ " + formatKoreanDate(e.endDate) : ""}</p>
+        <button class="hw-manage-delete" onclick="removeEvent('${jsStr(e.id)}')">삭제</button>
+      </div>
+    `).join("");
+    html += rows.map((r) => `
+      <div class="hw-manage-card" style="cursor:pointer;" onclick="openClassDetail(${r.classIndex}, 't-homework', {tab:'homework', date:'${jsStr(r.hw.due)}'})">
+        <div class="hw-manage-top">
+          <p class="hw-manage-title">${r.hw.title}</p>
+          <span class="hw-manage-dday">${calcDday(r.hw.due)}</span>
+        </div>
+        <p class="hw-manage-desc">${r.className}${r.hw.desc ? " · " + r.hw.desc : ""}</p>
+      </div>
+    `).join("");
+    listEl.innerHTML = html;
+  }
+
+  function newEventId() {
+    return "ev" + (nextEventId++) + "_" + Date.now().toString(36);
+  }
+
+  function toggleAddEventForm() {
+    playTapSound();
+    const form = document.getElementById("addEventForm");
+    form.classList.toggle("show");
+    if (form.classList.contains("show")) {
+      document.getElementById("newEventStart").value = tHwSelectedDate;
+      document.getElementById("newEventEnd").value = tHwSelectedDate;
+      document.getElementById("newEventTitle").focus();
+    }
+  }
+
+  function addEvent() {
+    const titleInput = document.getElementById("newEventTitle");
+    const startInput = document.getElementById("newEventStart");
+    const endInput = document.getElementById("newEventEnd");
+    const title = titleInput.value.trim();
+    const start = startInput.value;
+    let end = endInput.value || start;
+    if (!title || !start) return;
+    if (end < start) end = start;
+    playTapSound();
+    events.push({ id: newEventId(), title: title, startDate: start, endDate: end, teacherName: teacherName });
+    saveEvents();
+    titleInput.value = "";
+    document.getElementById("addEventForm").classList.remove("show");
+    renderTHwCalendar();
+    renderTHwDayList();
+  }
+
+  function removeEvent(eventId) {
+    playTapSound();
+    events = events.filter((e) => e.id !== eventId);
+    saveEvents();
+    renderTHwCalendar();
+    renderTHwDayList();
   }
 
   function removeStudent(i) {
