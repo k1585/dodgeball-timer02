@@ -326,6 +326,20 @@
     cursor:default;
   }
 
+  .hw-card.overdue{
+    opacity:0.55;
+  }
+
+  .hw-card.overdue .hw-name,
+  .hw-card.overdue .hw-due{
+    color:#8a8fa3;
+  }
+
+  .hw-card.overdue .hw-dday{
+    background:#EFEFF6;
+    color:#8A8FA3;
+  }
+
   .hw-name{
     font-size:17px;
     font-weight:800;
@@ -393,6 +407,127 @@
     flex:1;
     height:1px;
     background:#e5e5e5;
+  }
+
+  .status-pill.missing{
+    background:#F5F6FA;
+    color:var(--sub);
+  }
+
+  /* ===== 학생 달력 화면 ===== */
+  .cal-page-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+  .cal-nav-btn{
+    width:30px;
+    height:30px;
+    border:none;
+    background:#F5F6FA;
+    border-radius:10px;
+    color:var(--ink);
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cal-nav-btn:active{
+    transform:scale(0.94);
+  }
+  .cal-month-label{
+    font-size:15px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0;
+  }
+  .cal-weekdays{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    text-align:center;
+    font-size:11px;
+    font-weight:800;
+    color:var(--sub);
+    margin-bottom:4px;
+  }
+  .cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7, 1fr);
+    gap:2px;
+  }
+  .cal-cell{
+    aspect-ratio:1;
+    border:none;
+    background:none;
+    border-radius:12px;
+    font-size:13px;
+    font-weight:700;
+    font-family:inherit;
+    color:var(--ink);
+    cursor:pointer;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+  }
+  .cal-cell.empty{
+    cursor:default;
+  }
+  .cal-cell.is-today{
+    color:var(--point-strong);
+    font-weight:800;
+  }
+  .cal-cell.day-all-done{
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
+  .cal-cell.day-all-missing{
+    background:#FDE7E7;
+    color:#E4423F;
+  }
+  .cal-cell.selected{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+  .cal-dot-row{
+    display:flex;
+    gap:2px;
+    justify-content:center;
+  }
+  .cal-dot{
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:var(--sub);
+  }
+  .cal-dot.dot-red{ background:#E4423F; }
+  .cal-dot.dot-blue{ background:var(--point-strong); }
+  .cal-dot.dot-green{ background:#1FA455; }
+  .cal-cell.selected .cal-dot{
+    background:#ffffff;
+  }
+  .cal-legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    font-size:11px;
+    color:var(--sub);
+    font-weight:700;
+    margin:10px 0 4px;
+  }
+  .cal-legend span{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+  }
+  .cal-legend i{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    display:inline-block;
   }
 
   /* 승인 현황 - 상태 요약 3칸 (3: 완료/거절 투톤으로) */
@@ -2701,7 +2836,7 @@
         <span>숙제 목록</span>
       </button>
 
-      <button class="nav-item" data-nav="calendar" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="calendar" onclick="openStudentCalendar()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -2879,7 +3014,81 @@
         <span>숙제 목록</span>
       </button>
 
-      <button class="nav-item" data-nav="calendar" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="calendar" onclick="openStudentCalendar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= 학생 달력 화면 ================= -->
+  <div class="page" id="page-calendar">
+    <div class="home-content">
+
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">달력|</span>숙제 현황</div>
+      </div>
+
+      <div class="cal-page-header" style="margin-top:20px;">
+        <button class="cal-nav-btn" onclick="shiftStudentCalMonth(-1)" aria-label="이전 달">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"></path></svg>
+        </button>
+        <p class="cal-month-label" id="calMonthLabel">2026년 8월</p>
+        <button class="cal-nav-btn" onclick="shiftStudentCalMonth(1)" aria-label="다음 달">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+      </div>
+
+      <div class="cal-weekdays">
+        <span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span>
+      </div>
+
+      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="cal-legend">
+        <span><i style="background:var(--point-light);"></i>그날 숙제 모두 제출</span>
+        <span><i style="background:#FDE7E7;"></i>그날 숙제 모두 미제출</span>
+        <span><i style="background:#1FA455;"></i>승인 완료</span>
+        <span><i style="background:var(--point-strong);"></i>승인 대기중</span>
+        <span><i style="background:#E4423F;"></i>미제출/거절</span>
+      </div>
+
+      <p class="page-title" id="calSelectedLabel" style="font-size:15px;margin:16px 0 10px;">8월 26일 (수)</p>
+
+      <div id="calDayList"></div>
+
+      <div class="blank-section"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item active" data-nav="calendar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -3611,11 +3820,11 @@
       <p style="font-size:12px;color:var(--sub);margin:0 0 14px;" id="previewStudentName">학생 이름</p>
       <div class="thumb-row" id="previewThumbRow" style="justify-content:center;margin-bottom:12px;"></div>
       <p style="font-size:13px;color:var(--ink);text-align:left;background:#FAFBFF;border-radius:10px;padding:10px 12px;margin:0 0 16px;min-height:20px;" id="previewNote"></p>
-      <div class="modal-actions" style="display:flex;gap:10px;">
-        <button onclick="closeModal('submissionPreviewModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">닫기</button>
-        <button onclick="approveFromPreview()" style="flex:1;width:auto;">승인</button>
+      <div class="preview-actions-row" style="display:flex;gap:10px;">
+        <button class="approve-btn" onclick="approveFromPreview()" style="flex:1;width:auto;padding:13px 8px;font-size:14px;">승인</button>
+        <button class="reject-btn" onclick="rejectFromPreview()" style="flex:1;width:auto;padding:13px 8px;font-size:14px;">반려</button>
       </div>
-      <button onclick="rejectFromPreview()" style="width:100%;margin-top:10px;background:#FDE7E7;color:#E4423F;">반려</button>
+      <button onclick="closeModal('submissionPreviewModal')" style="width:100%;margin-top:10px;background:#F5F6FA;color:var(--sub);">닫기</button>
     </div>
   </div>
 
@@ -3641,6 +3850,45 @@
     return String(s).replace(/'/g, "\\'");
   }
 
+  /* 클립보드 복사: navigator.clipboard는 보안 컨텍스트(https)가 아니면 조용히
+     실패할 수 있어서(예: 휴대폰에서 file://로 직접 연 경우) execCommand 기반
+     대체 방법도 함께 시도함 */
+  function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
+    } else {
+      fallbackCopyText(text);
+    }
+  }
+
+  function fallbackCopyText(text) {
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.top = "-9999px";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    } catch (e) {}
+  }
+
+  /* 받침 유무에 따른 조사(이/가, 은/는, 을/를) 자동 선택 */
+  function hasBatchim(str) {
+    const s = (str || "").trim();
+    const lastChar = s.slice(-1);
+    const code = lastChar.charCodeAt(0);
+    if (code < 0xac00 || code > 0xd7a3) return true;
+    return (code - 0xac00) % 28 !== 0;
+  }
+
+  function josaIGa(str) {
+    return hasBatchim(str) ? "이" : "가";
+  }
+
   function formatKoreanDate(dateStr) {
     const d = new Date(dateStr + "T00:00:00");
     const days = ["일", "월", "화", "수", "목", "금", "토"];
@@ -3654,6 +3902,19 @@
     if (diffDays < 0) return "마감";
     if (diffDays === 0) return "D-day";
     return "D-" + diffDays;
+  }
+
+  /* 마감일 기준으로 며칠이 지났는지 (지나지 않았으면 0) */
+  function overdueDays(dueDateStr) {
+    const [dy, dm, dd] = dueDateStr.split("-").map(Number);
+    const due = new Date(dy, dm - 1, dd);
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.max(0, Math.round((today - due) / (1000 * 60 * 60 * 24)));
+  }
+
+  function getTodayDateStr() {
+    return new Date().toISOString().slice(0, 10);
   }
 
   /* ===== 온보딩(초기 회원 로그인 UI) ===== */
@@ -3833,7 +4094,7 @@
     joinedClassIndex = idx;
     selectedClassName = classes[idx].name;
     codeError.classList.remove("show");
-    document.getElementById("classConfirmText").textContent = selectedClassName + "이 맞으신가요?";
+    document.getElementById("classConfirmText").textContent = selectedClassName + josaIGa(selectedClassName) + " 맞으신가요?";
     codeCenter.classList.add("shift-up");
     document.getElementById("codeInputSection").style.display = "none";
     codeConfirmSection.style.display = "flex";
@@ -3900,6 +4161,13 @@
       btn.classList.toggle("active", btn.dataset.nav === name);
     });
 
+    /* 이전 화면에서 입력창 포커스 등으로 app-shell이 스크롤된 채로 남아있으면
+       새 화면(특히 하단 고정 메뉴)이 화면 밖으로 밀려 보이는 문제가 있어
+       페이지 전환마다 스크롤 위치를 초기화함 */
+    const shell = document.querySelector(".app-shell");
+    if (shell) shell.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+
     if (name === "detail" || name === "status-detail") {
       history.pushState({ uploadGuard: true }, "");
     }
@@ -3927,6 +4195,7 @@
   function statusLabel(status) {
     if (status === "pending") return "대기중";
     if (status === "rejected") return "거절";
+    if (status === "missing") return "미제출";
     return "완료";
   }
 
@@ -3940,8 +4209,14 @@
     const c = classes[joinedClassIndex];
     return c.homeworks
       .filter((h) => !mySubmission(h.id))
+      .filter((h) => overdueDays(h.due) <= 5)
       .slice()
-      .sort((a, b) => a.due.localeCompare(b.due));
+      .sort((a, b) => {
+        const aOver = overdueDays(a.due) > 0;
+        const bOver = overdueDays(b.due) > 0;
+        if (aOver !== bOver) return aOver ? 1 : -1;
+        return a.due.localeCompare(b.due);
+      });
   }
 
   function renderStudentHome() {
@@ -3978,11 +4253,13 @@
 
   /* ===== 남은 숙제 탭: 반에 등록된 숙제 중 아직 제출 안 한 것 ===== */
   function hwCardHtml(h) {
+    const overdue = overdueDays(h.due);
+    const isOverdue = overdue > 0;
     return `
-      <div class="hw-card" onclick="openDetailCard('${jsStr(h.id)}')">
+      <div class="hw-card${isOverdue ? " overdue" : ""}" onclick="openDetailCard('${jsStr(h.id)}')">
         <div>
           <p class="hw-name">${h.title}</p>
-          <p class="hw-due">제출 기한: ${formatKoreanDate(h.due)}</p>
+          <p class="hw-due">제출 기한: ${formatKoreanDate(h.due)}${isOverdue ? ` (${overdue}일 지남)` : ""}</p>
         </div>
         <div class="hw-right">
           <span class="hw-dday">${calcDday(h.due)}</span>
@@ -4009,16 +4286,137 @@
       return;
     }
 
-    const minDue = remaining[0].due;
-    const firstGroup = remaining.filter((h) => h.due === minDue);
-    const restGroup = remaining.filter((h) => h.due !== minDue);
+    const upcoming = remaining.filter((h) => overdueDays(h.due) === 0);
+    const overdue = remaining.filter((h) => overdueDays(h.due) > 0);
 
-    let html = firstGroup.map(hwCardHtml).join("");
-    if (restGroup.length > 0) {
-      html += `<div class="section-divider">${formatKoreanDate(restGroup[0].due)} 이후 숙제</div>`;
-      html += restGroup.map(hwCardHtml).join("");
+    let html = "";
+    if (upcoming.length > 0) {
+      const minDue = upcoming[0].due;
+      const firstGroup = upcoming.filter((h) => h.due === minDue);
+      const restGroup = upcoming.filter((h) => h.due !== minDue);
+      html += firstGroup.map(hwCardHtml).join("");
+      if (restGroup.length > 0) {
+        html += `<div class="section-divider">${formatKoreanDate(restGroup[0].due)} 이후 숙제</div>`;
+        html += restGroup.map(hwCardHtml).join("");
+      }
+    }
+    if (overdue.length > 0) {
+      html += `<div class="section-divider">기한이 지난 숙제</div>`;
+      html += overdue.map(hwCardHtml).join("");
     }
     container.innerHTML = html;
+  }
+
+  /* ===== 학생 달력 화면: 당일 전날까지 숙제 제출 현황 표시 ===== */
+  let calYear, calMonth, calSelectedDate;
+
+  function openStudentCalendar() {
+    playTapSound();
+    const today = new Date();
+    calYear = today.getFullYear();
+    calMonth = today.getMonth();
+    calSelectedDate = getTodayDateStr();
+    renderStudentCalendar();
+    renderStudentCalDayList();
+    showPage("calendar");
+  }
+
+  function shiftStudentCalMonth(delta) {
+    playTapSound();
+    calMonth += delta;
+    if (calMonth < 0) { calMonth = 11; calYear--; }
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    renderStudentCalendar();
+  }
+
+  function selectStudentCalDay(dateStr) {
+    playTapSound();
+    calSelectedDate = dateStr;
+    renderStudentCalendar();
+    renderStudentCalDayList();
+  }
+
+  /* 특정 날짜가 마감인 숙제들의 내 제출 상태 (missing/pending/approved/rejected) */
+  function dayHomeworkStatuses(dateStr) {
+    if (joinedClassIndex === null) return [];
+    const c = classes[joinedClassIndex];
+    return c.homeworks
+      .filter((h) => h.due === dateStr)
+      .map((h) => {
+        const sub = c.submissions.find((s) => s.studentName === studentName && s.hwId === h.id);
+        return { hw: h, status: sub ? sub.status : "missing" };
+      });
+  }
+
+  function renderStudentCalendar() {
+    const grid = document.getElementById("calGrid");
+    const monthLabel = document.getElementById("calMonthLabel");
+    monthLabel.textContent = calYear + "년 " + (calMonth + 1) + "월";
+
+    const firstDay = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const todayStr = getTodayDateStr();
+
+    let html = "";
+    for (let i = 0; i < firstDay; i++) {
+      html += '<span class="cal-cell empty"></span>';
+    }
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateStr = calYear + "-" + String(calMonth + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+      let cls = "cal-cell";
+      if (dateStr === calSelectedDate) cls += " selected";
+      if (dateStr === todayStr) cls += " is-today";
+
+      let inner = String(d);
+      if (dateStr < todayStr) {
+        const statuses = dayHomeworkStatuses(dateStr);
+        if (statuses.length > 0) {
+          const allDone = statuses.every((s) => s.status !== "missing");
+          const allMissing = statuses.every((s) => s.status === "missing");
+          if (allDone) {
+            cls += " day-all-done";
+          } else if (allMissing) {
+            cls += " day-all-missing";
+          } else {
+            const dots = statuses.map((s) => {
+              const dotCls = (s.status === "missing" || s.status === "rejected") ? "dot-red"
+                : s.status === "pending" ? "dot-blue" : "dot-green";
+              return `<span class="cal-dot ${dotCls}"></span>`;
+            }).join("");
+            inner = `<span>${d}</span><span class="cal-dot-row">${dots}</span>`;
+          }
+        }
+      }
+      html += `<button class="${cls}" onclick="selectStudentCalDay('${dateStr}')">${inner}</button>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function renderStudentCalDayList() {
+    const label = document.getElementById("calSelectedLabel");
+    label.textContent = formatKoreanDate(calSelectedDate);
+    const listEl = document.getElementById("calDayList");
+
+    if (joinedClassIndex === null) {
+      listEl.innerHTML = '<p class="empty-state">아직 반에 참여하지 않았어요</p>';
+      return;
+    }
+
+    const statuses = dayHomeworkStatuses(calSelectedDate);
+    if (statuses.length === 0) {
+      listEl.innerHTML = '<p class="empty-state">이 날짜엔 등록된 숙제가 없어요</p>';
+      return;
+    }
+
+    listEl.innerHTML = statuses.map(({ hw, status }) => `
+      <div class="hw-card" style="cursor:${status === "missing" ? "pointer" : "default"};" ${status === "missing" ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
+        <div>
+          <p class="hw-name">${hw.title}</p>
+          <p class="hw-due">제출 기한: ${formatKoreanDate(hw.due)}</p>
+        </div>
+        <span class="status-pill ${status}">${statusLabel(status)}</span>
+      </div>
+    `).join("");
   }
 
   /* ===== 남은 숙제 카드 클릭 -> 상세 정보 반영 후 업로드 화면 ===== */
@@ -4511,6 +4909,7 @@
       note: document.getElementById("teacherNote").value,
       rejectReason: null,
       movedToPast: false,
+      lateDays: overdueDays(currentBundle.due),
     });
     saveState();
 
@@ -4584,6 +4983,10 @@
       renderApprovalList();
       renderCounts();
       renderPastList();
+    }
+    if (activeId === "page-calendar") {
+      renderStudentCalendar();
+      renderStudentCalDayList();
     }
     if (activeId === "page-t-home") renderHomeStats();
     if (activeId === "page-t-students") renderStudentsHome();
@@ -4753,11 +5156,7 @@
   document.getElementById("copyCodeBtn").addEventListener("click", () => {
     playTapSound();
     const toast = document.getElementById("copyToast");
-
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(classCode).catch(() => {});
-    }
-
+    copyText(classCode);
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 1500);
   });
@@ -4848,9 +5247,7 @@
 
   function copyClassCode(code, btn) {
     playTapSound();
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(code).catch(() => {});
-    }
+    copyText(code);
     if (btn) {
       const orig = btn.innerHTML;
       btn.textContent = "복사완료";
@@ -4994,6 +5391,7 @@
           hwId: h.id,
           hwTitle: h.title,
           status: sub ? sub.status : "missing",
+          lateDays: sub ? (sub.lateDays || 0) : 0,
         });
       });
     });
@@ -5022,7 +5420,7 @@
               <div class="student-avatar">${r.studentName[0]}</div>
               <div class="student-info">
                 <p class="student-name">${r.studentName}</p>
-                <p class="student-meta">${r.hwTitle}</p>
+                <p class="student-meta">${r.hwTitle}${r.lateDays > 0 ? ` · ${r.lateDays}일 지난 숙제를 제출했어요` : ""}</p>
               </div>
               <div class="approve-actions">
                 <button class="approve-btn" onclick="event.stopPropagation(); approveSubmission('${jsStr(r.studentName)}', '${jsStr(r.hwId)}')">승인</button>
@@ -5036,7 +5434,7 @@
             <div class="student-avatar">${r.studentName[0]}</div>
             <div class="student-info">
               <p class="student-name">${r.studentName}</p>
-              <p class="student-meta">${r.hwTitle}</p>
+              <p class="student-meta">${r.hwTitle}${r.lateDays > 0 ? ` · ${r.lateDays}일 지난 숙제를 제출했어요` : ""}</p>
             </div>
             <span class="status-pill ${r.status}">${teacherStatusLabel(r.status)}</span>
           </div>
@@ -5314,7 +5712,7 @@
     if (!h || !sub) return;
 
     document.getElementById("previewHwTitle").textContent = h.title;
-    document.getElementById("previewStudentName").textContent = studentNameArg + " 학생 제출";
+    document.getElementById("previewStudentName").textContent = studentNameArg + " 학생 제출" + (sub.lateDays > 0 ? ` (기한 ${sub.lateDays}일 지남)` : "");
     document.getElementById("previewNote").textContent = sub.note ? sub.note : "(쪽지 없음)";
     renderPhotoSection(null, document.getElementById("previewThumbRow"), sub.photos, false, () => {});
 
