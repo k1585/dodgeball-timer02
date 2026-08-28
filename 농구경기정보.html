@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>농구 경기 정보</title>
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Malgun Gothic", Arial, sans-serif;
+    background: #101014;
+    color: #fff;
+  }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ---------- 공통 상단 ---------- */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 16px;
+  }
+
+  .backButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: none;
+    background: #2f2f38;
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .topbar h1 {
+    font-size: 20px;
+    margin: 0;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .badge.start { background: #2563eb; }
+  .badge.end { background: #dc2626; }
+
+  /* ---------- 1. 화면 선택 ---------- */
+  .selectWrap {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 8px 20px 20px;
+  }
+
+  .selectCard {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #1c1c22;
+    border: 2px solid #2f2f38;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .selectCard .icon {
+    font-size: 30px;
+  }
+
+  .selectCard .label {
+    font-size: 19px;
+    font-weight: bold;
+  }
+
+  .selectCard .desc {
+    font-size: 13px;
+    color: #9a9aa5;
+    margin-top: 2px;
+  }
+
+  /* ---------- 2. 정보 입력 ---------- */
+  .formWrap {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+  }
+
+  .field { margin-bottom: 18px; }
+
+  .field label {
+    display: block;
+    font-size: 14px;
+    color: #b9b9c2;
+    margin-bottom: 6px;
+  }
+
+  .field input[type="text"],
+  .field input[type="date"],
+  .field input[type="number"],
+  .field select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid #33333d;
+    background: #1c1c22;
+    color: #fff;
+  }
+
+  .teamsRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .teamCol {
+    flex: 1;
+    text-align: center;
+  }
+
+  .teamCol .teamLabel {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+
+  .teamCol.home .teamLabel { color: #4d8dff; }
+  .teamCol.away .teamLabel { color: #ff5b5b; }
+
+  .logoCircle {
+    width: 74px;
+    height: 74px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #33333d;
+  }
+
+  .teamCol input[type="text"] {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .logoButton {
+    width: 100%;
+    padding: 8px;
+    font-size: 13px;
+    border-radius: 10px;
+    border: none;
+    background: #2f2f38;
+    color: #fff;
+  }
+
+  .vsText {
+    font-size: 20px;
+    font-weight: bold;
+    color: #888;
+    padding: 0 4px;
+    margin-top: 30px;
+  }
+
+  .scoreRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .scoreRow .teamCol input[type="number"] {
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .scoreRow .teamCol.home input { color: #4d8dff; }
+  .scoreRow .teamCol.away input { color: #ff5b5b; }
+
+  .scoreDash {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 22px;
+  }
+
+  .doneButton {
+    width: 100%;
+    padding: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    border-radius: 14px;
+    background: #2563eb;
+    color: #fff;
+    margin-top: 8px;
+  }
+
+  .doneButton:active { transform: scale(0.98); }
+
+  /* ---------- 3. 전체 화면 ---------- */
+  #screenDisplay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    background: radial-gradient(circle at 50% 0%, #1b2338 0%, #05070d 70%);
+    padding: 24px;
+  }
+
+  #screenDisplay.active { display: flex; }
+
+  .closeButton {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 20px;
+  }
+
+  .displayTournament {
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: #cfd6ff;
+    margin-bottom: 10px;
+  }
+
+  .displayGameName {
+    font-size: clamp(30px, 7vw, 56px);
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+
+  .displayDate {
+    font-size: 16px;
+    color: #9aa3c2;
+    margin-bottom: 40px;
+  }
+
+  .matchupRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(16px, 5vw, 60px);
+  }
+
+  .matchTeam {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: clamp(120px, 26vw, 220px);
+  }
+
+  .matchLogo {
+    width: clamp(80px, 16vw, 140px);
+    height: clamp(80px, 16vw, 140px);
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    border: 3px solid rgba(255, 255, 255, 0.25);
+  }
+
+  .matchTeam.home .matchLogo { border-color: #4d8dff; }
+  .matchTeam.away .matchLogo { border-color: #ff5b5b; }
+
+  .matchName {
+    font-size: clamp(20px, 4vw, 32px);
+    font-weight: bold;
+  }
+
+  .matchTeam.home .matchName { color: #6fa2ff; }
+  .matchTeam.away .matchName { color: #ff7373; }
+
+  .vsBadge {
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 900;
+    color: #fff;
+  }
+
+  .scoreBadge {
+    font-size: clamp(46px, 10vw, 90px);
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .matchTeam.home .scoreBadge { color: #4d8dff; }
+  .matchTeam.away .scoreBadge { color: #ff5b5b; }
+
+  .resultBadge {
+    margin-top: 36px;
+    display: inline-block;
+    padding: 12px 28px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.12);
+    font-size: clamp(16px, 3vw, 24px);
+    font-weight: bold;
+  }
+
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+  <!-- 1. 화면 선택 -->
+  <div id="screenSelect" class="page active">
+    <div class="topbar"><h1>화면 선택</h1></div>
+    <div class="selectWrap">
+      <div class="selectCard" onclick="goToForm('start')">
+        <div class="icon">▶️</div>
+        <div>
+          <div class="label">처음 화면</div>
+          <div class="desc">경기 시작 전 화면</div>
+        </div>
+      </div>
+      <div class="selectCard" onclick="goToForm('end')">
+        <div class="icon">🏆</div>
+        <div>
+          <div class="label">종료 화면</div>
+          <div class="desc">경기 종료 후 화면</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 정보 입력 -->
+  <div id="screenForm" class="page">
+    <div class="topbar">
+      <button class="backButton" onclick="goToSelect()">&lt;</button>
+      <div>
+        <span id="formBadge" class="badge start">처음 화면</span>
+      </div>
+    </div>
+
+    <div class="formWrap">
+      <div class="field">
+        <label>경기 이름</label>
+        <input id="gameName" type="text" placeholder="예) VS 강남중">
+      </div>
+
+      <div class="field">
+        <label>대회 이름</label>
+        <input id="tourName" type="text" placeholder="예) 2025 전국 중학교 농구대회">
+      </div>
+
+      <div class="field">
+        <label>대회 날짜</label>
+        <input id="tourDate" type="date">
+      </div>
+
+      <div class="field">
+        <label>팀 정보</label>
+        <div class="teamsRow">
+          <div class="teamCol home">
+            <div class="teamLabel">우리 팀</div>
+            <div id="homeLogoPreview" class="logoCircle">🏀</div>
+            <input id="homeName" type="text" placeholder="팀 이름 입력">
+            <button class="logoButton" onclick="homeLogoInput.click()">로고 선택</button>
+            <input id="homeLogoInput" type="file" accept="image/*" class="hidden">
+          </div>
+          <div class="vsText">VS</div>
+          <div class="teamCol away">
+            <div class="teamLabel">상대 팀</div>
+            <div id="awayLogoPreview" class="logoCircle">🏀</div>
+            <input id="awayName" type="text" placeholder="팀 이름 입력">
+            <button class="logoButton" onclick="awayLogoInput.click()">로고 선택</button>
+            <input id="awayLogoInput" type="file" accept="image/*" class="hidden">
+          </div>
+        </div>
+      </div>
+
+      <div id="endOnlyFields" class="hidden">
+        <div class="field">
+          <label>점수</label>
+          <div class="scoreRow">
+            <div class="teamCol home">
+              <input id="homeScore" type="number" value="0" min="0">
+            </div>
+            <div class="scoreDash">-</div>
+            <div class="teamCol away">
+              <input id="awayScore" type="number" value="0" min="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>경기 결과</label>
+          <select id="resultSelect">
+            <option value="">선택하세요</option>
+            <option value="예선 통과">예선 통과</option>
+            <option value="본선 진출">본선 진출</option>
+            <option value="결승 진출">결승 진출</option>
+            <option value="우승">우승</option>
+            <option value="준우승">준우승</option>
+            <option value="예선 탈락">예선 탈락</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>기타 입력 (직접 입력, 선택)</label>
+          <input id="resultCustom" type="text" placeholder="직접 입력 (선택)">
+        </div>
+      </div>
+
+      <button class="doneButton" onclick="showDisplay()">완료</button>
+    </div>
+  </div>
+
+  <!-- 3. 전체 화면 (표시 화면) -->
+  <div id="screenDisplay">
+    <button class="closeButton" onclick="closeDisplay()">&lt;</button>
+
+    <div class="displayTournament" id="dispTour"></div>
+    <div class="displayGameName" id="dispGame"></div>
+    <div class="displayDate" id="dispDate"></div>
+
+    <div class="matchupRow">
+      <div class="matchTeam home">
+        <div id="dispHomeLogo" class="matchLogo">🏀</div>
+        <div class="matchName" id="dispHomeName">우리팀</div>
+        <div class="scoreBadge hidden" id="dispHomeScore">0</div>
+      </div>
+      <div class="vsBadge" id="dispVs">VS</div>
+      <div class="matchTeam away">
+        <div id="dispAwayLogo" class="matchLogo">🏀</div>
+        <div class="matchName" id="dispAwayName">상대팀</div>
+        <div class="scoreBadge hidden" id="dispAwayScore">0</div>
+      </div>
+    </div>
+
+    <div class="resultBadge hidden" id="dispResult"></div>
+  </div>
+
+<script>
+  const STORAGE_KEY = "basketball_game_info_v1";
+
+  let currentType = "start"; // "start" | "end"
+  let homeLogoData = "";
+  let awayLogoData = "";
+
+  const homeLogoInput = document.getElementById("homeLogoInput");
+  const awayLogoInput = document.getElementById("awayLogoInput");
+
+  function goToSelect() {
+    document.getElementById("screenSelect").classList.add("active");
+    document.getElementById("screenForm").classList.remove("active");
+  }
+
+  function goToForm(type) {
+    currentType = type;
+
+    document.getElementById("screenSelect").classList.remove("active");
+    document.getElementById("screenForm").classList.add("active");
+
+    const badge = document.getElementById("formBadge");
+    const endFields = document.getElementById("endOnlyFields");
+
+    if (type === "start") {
+      badge.textContent = "처음 화면";
+      badge.className = "badge start";
+      endFields.classList.add("hidden");
+    } else {
+      badge.textContent = "종료 화면";
+      badge.className = "badge end";
+      endFields.classList.remove("hidden");
+    }
+  }
+
+  function readLogoFile(fileInput, previewEl, onLoaded) {
+    const file = fileInput.files && fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      onLoaded(reader.result);
+      previewEl.style.backgroundImage = "url('" + reader.result + "')";
+      previewEl.textContent = "";
+    };
+    reader.readAsDataURL(file);
+  }
+
+  homeLogoInput.addEventListener("change", () => {
+    readLogoFile(homeLogoInput, document.getElementById("homeLogoPreview"), (data) => { homeLogoData = data; });
+  });
+
+  awayLogoInput.addEventListener("change", () => {
+    readLogoFile(awayLogoInput, document.getElementById("awayLogoPreview"), (data) => { awayLogoData = data; });
+  });
+
+  function formatDate(value) {
+    if (!value) return "";
+    const parts = value.split("-");
+    if (parts.length !== 3) return value;
+    return parts[0] + "." + parts[1] + "." + parts[2];
+  }
+
+  function applyLogo(targetEl, dataUrl) {
+    if (dataUrl) {
+      targetEl.style.backgroundImage = "url('" + dataUrl + "')";
+      targetEl.textContent = "";
+    } else {
+      targetEl.style.backgroundImage = "none";
+      targetEl.textContent = "🏀";
+    }
+  }
+
+  function showDisplay() {
+    const gameName = document.getElementById("gameName").value.trim();
+    const tourName = document.getElementById("tourName").value.trim();
+    const tourDate = document.getElementById("tourDate").value;
+    const homeName = document.getElementById("homeName").value.trim() || "우리팀";
+    const awayName = document.getElementById("awayName").value.trim() || "상대팀";
+
+    document.getElementById("dispTour").textContent = tourName;
+    document.getElementById("dispGame").textContent = gameName;
+    document.getElementById("dispDate").textContent = formatDate(tourDate);
+    document.getElementById("dispHomeName").textContent = homeName;
+    document.getElementById("dispAwayName").textContent = awayName;
+
+    applyLogo(document.getElementById("dispHomeLogo"), homeLogoData);
+    applyLogo(document.getElementById("dispAwayLogo"), awayLogoData);
+
+    const homeScoreEl = document.getElementById("dispHomeScore");
+    const awayScoreEl = document.getElementById("dispAwayScore");
+    const vsEl = document.getElementById("dispVs");
+    const resultEl = document.getElementById("dispResult");
+
+    if (currentType === "end") {
+      const homeScore = document.getElementById("homeScore").value || "0";
+      const awayScore = document.getElementById("awayScore").value || "0";
+
+      homeScoreEl.textContent = homeScore;
+      awayScoreEl.textContent = awayScore;
+      homeScoreEl.classList.remove("hidden");
+      awayScoreEl.classList.remove("hidden");
+      vsEl.textContent = "-";
+
+      const customText = document.getElementById("resultCustom").value.trim();
+      const resultText = customText || document.getElementById("resultSelect").value;
+
+      if (resultText) {
+        resultEl.textContent = resultText;
+        resultEl.classList.remove("hidden");
+      } else {
+        resultEl.classList.add("hidden");
+      }
+    } else {
+      homeScoreEl.classList.add("hidden");
+      awayScoreEl.classList.add("hidden");
+      vsEl.textContent = "VS";
+      resultEl.classList.add("hidden");
+    }
+
+    saveSettings();
+
+    document.getElementById("screenDisplay").classList.add("active");
+
+    const page = document.documentElement;
+    if (page.requestFullscreen) {
+      page.requestFullscreen().catch(() => {});
+    } else if (page.webkitRequestFullscreen) {
+      page.webkitRequestFullscreen();
+    }
+  }
+
+  function closeDisplay() {
+    document.getElementById("screenDisplay").classList.remove("active");
+
+    if (document.fullscreenElement) {
+      document.exitFullscreen().catch(() => {});
+    } else if (document.webkitFullscreenElement) {
+      document.webkitExitFullscreen();
+    }
+
+    goToSelect();
+  }
+
+  function saveSettings() {
+    const data = {
+      tourName: document.getElementById("tourName").value,
+      tourDate: document.getElementById("tourDate").value,
+      homeName: document.getElementById("homeName").value,
+      awayName: document.getElementById("awayName").value,
+      homeLogoData,
+      awayLogoData
+    };
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch (error) {
+      /* 저장 공간 부족 등은 무시 */
+    }
+  }
+
+  function loadSettings() {
+    let data;
+    try {
+      data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    } catch (error) {
+      data = null;
+    }
+    if (!data) return;
+
+    document.getElementById("tourName").value = data.tourName || "";
+    document.getElementById("tourDate").value = data.tourDate || "";
+    document.getElementById("homeName").value = data.homeName || "";
+    document.getElementById("awayName").value = data.awayName || "";
+
+    homeLogoData = data.homeLogoData || "";
+    awayLogoData = data.awayLogoData || "";
+
+    applyLogo(document.getElementById("homeLogoPreview"), homeLogoData);
+    applyLogo(document.getElementById("awayLogoPreview"), awayLogoData);
+  }
+
+  function setDefaultDate() {
+    const dateInput = document.getElementById("tourDate");
+    if (dateInput.value) return;
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    dateInput.value = yyyy + "-" + mm + "-" + dd;
+  }
+
+  loadSettings();
+  setDefaultDate();
+</script>
+</body>
+</html>
