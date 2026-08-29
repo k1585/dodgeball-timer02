@@ -380,6 +380,7 @@
 
   const eventList = document.getElementById("eventList");
   const timelineTrack = document.getElementById("timelineTrack");
+  const timelineScroll = document.querySelector(".timeline-scroll");
 
   function pad(n) {
     return String(n).padStart(2, "0");
@@ -521,7 +522,10 @@
       { seconds: totalSeconds, name: "종료", anchor: true },
     ];
 
-    const trackWidth = Math.max(600, points.length * 130);
+    // 항목이 적을 때는 화면 너비에 맞춰 고르게 가운데로 퍼지도록 하고,
+    // 항목이 많아 한 칸(130px)을 확보할 수 없을 때만 가로 스크롤이 생기게 한다.
+    const availableWidth = timelineScroll.clientWidth || 600;
+    const trackWidth = Math.max(availableWidth, points.length * 130);
     const slotWidth = trackWidth / points.length;
     timelineTrack.style.minWidth = trackWidth + "px";
     timelineTrack.innerHTML = "";
