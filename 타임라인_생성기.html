@@ -18,8 +18,26 @@
   }
 
   .app {
-    max-width: 880px;
+    max-width: 1300px;
     margin: 0 auto;
+  }
+
+  .workspace {
+    display: block;
+  }
+
+  @media (min-width: 900px) {
+    .workspace {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      align-items: start;
+      gap: 20px;
+    }
+
+    #step3 {
+      position: sticky;
+      top: 20px;
+    }
   }
 
   h1 {
@@ -105,10 +123,23 @@
     font-weight: bold;
     background: #3a3a44;
     cursor: pointer;
+    transition: filter 0.12s, transform 0.05s;
+  }
+
+  button:hover {
+    filter: brightness(1.15);
   }
 
   button:active {
     transform: scale(0.98);
+  }
+
+  button:focus-visible,
+  .field input:focus-visible,
+  .field select:focus-visible,
+  #titleInput:focus-visible {
+    outline: 2px solid #7d7dff;
+    outline-offset: 2px;
   }
 
   .btn-primary {
@@ -158,11 +189,21 @@
     color: #999;
     font-weight: bold;
     cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .toggle-btn:hover {
+    background: #34343e;
+    color: #ccc;
   }
 
   .toggle-btn.active {
     background: #4444ff;
     color: white;
+  }
+
+  .toggle-btn.active:hover {
+    filter: brightness(1.1);
   }
 
   #titleInput {
@@ -291,6 +332,11 @@
     padding: 10px 12px;
     border-radius: 10px;
     font-size: 14px;
+    transition: background 0.12s;
+  }
+
+  .event-list li:hover {
+    background: #2b2b34;
   }
 
   .event-list .ev-info {
@@ -330,20 +376,21 @@
     <div class="field-row">
       <div class="field">
         <label>시</label>
-        <input type="number" id="totalHour" min="0" value="0" />
+        <input type="number" id="totalHour" min="0" value="0" onkeydown="if(event.key==='Enter')createTimeline();" />
       </div>
       <div class="field">
         <label>분</label>
-        <input type="number" id="totalMin" min="0" max="59" value="0" />
+        <input type="number" id="totalMin" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')createTimeline();" autofocus />
       </div>
       <div class="field">
         <label>초</label>
-        <input type="number" id="totalSec" min="0" max="59" value="0" />
+        <input type="number" id="totalSec" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')createTimeline();" />
       </div>
       <button class="btn-primary" onclick="createTimeline()">타임라인 만들기</button>
     </div>
   </div>
 
+  <div class="workspace">
   <div class="card hidden" id="step2">
     <div class="top-actions">
       <h2 style="margin:0;">2. 항목 추가</h2>
@@ -359,15 +406,15 @@
       <div class="field-row" id="absoluteFields" style="gap:10px;">
         <div class="field hidden" id="eventHourGroup">
           <label>시</label>
-          <input type="number" id="eventHour" min="0" value="0" />
+          <input type="number" id="eventHour" min="0" value="0" onkeydown="if(event.key==='Enter')addEvent();" />
         </div>
         <div class="field">
           <label>분</label>
-          <input type="number" id="eventMin" min="0" max="59" value="0" />
+          <input type="number" id="eventMin" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')addEvent();" />
         </div>
         <div class="field">
           <label>초</label>
-          <input type="number" id="eventSec" min="0" max="59" value="0" />
+          <input type="number" id="eventSec" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')addEvent();" />
         </div>
       </div>
       <div class="field-row hidden" id="relativeFields" style="gap:10px;">
@@ -377,7 +424,7 @@
         </div>
         <div class="field">
           <label>그 뒤 (초)</label>
-          <input type="number" id="relativeSeconds" min="0" value="0" style="width:90px;" />
+          <input type="number" id="relativeSeconds" min="0" value="0" style="width:90px;" onkeydown="if(event.key==='Enter')addEvent();" />
         </div>
       </div>
       <div class="field grow">
@@ -404,6 +451,7 @@
         <div class="timeline-track" id="timelineTrack"></div>
       </div>
     </div>
+  </div>
   </div>
 </div>
 
@@ -479,6 +527,7 @@
     step3.classList.remove("hidden");
 
     render();
+    eventMinInput.focus();
   }
 
   function changeTotalTime() {
@@ -490,6 +539,7 @@
     step1.classList.remove("hidden");
     step2.classList.add("hidden");
     step3.classList.add("hidden");
+    totalMinInput.focus();
   }
 
   function setAddMode(mode) {
