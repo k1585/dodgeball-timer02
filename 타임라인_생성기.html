@@ -235,7 +235,7 @@
 
   .timeline-track {
     position: relative;
-    height: 260px;
+    height: 300px;
   }
 
   .timeline-line {
@@ -340,6 +340,18 @@
     margin-top: 2px;
   }
 
+  .mark-note-below {
+    width: 130px;
+    font-size: 12px;
+    font-style: italic;
+    color: #f0c96a;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+    margin-top: 4px;
+  }
+
   .event-list {
     list-style: none;
     margin: 16px 0 0;
@@ -384,7 +396,8 @@
     min-width: 64px;
   }
 
-  .event-list .ev-memo {
+  .event-list .ev-memo,
+  .event-list .ev-note-below {
     font-size: 12px;
     font-style: italic;
     color: #f0c96a;
@@ -393,8 +406,14 @@
     white-space: nowrap;
   }
 
+  .event-list .ev-note-below::before {
+    content: "↳ ";
+  }
+
   .event-list .ev-actions {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     gap: 6px;
     flex-shrink: 0;
   }
@@ -560,8 +579,15 @@
 
     <div class="field-row" style="margin-top:10px;">
       <div class="field grow">
-        <label>메모 (선택 - 화면 전환 등 자유롭게)</label>
+        <label>메모 (화살표 위, 선택)</label>
         <input type="text" id="eventMemo" placeholder="예: 컷 전환 - 페이드 인/아웃" onkeydown="if(event.key==='Enter')addEvent();" />
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:10px;">
+      <div class="field grow">
+        <label>메모 (이름 아래, 선택)</label>
+        <input type="text" id="eventNoteBelow" placeholder="예: 자막 - 오늘의 하이라이트" onkeydown="if(event.key==='Enter')addEvent();" />
       </div>
     </div>
 
@@ -629,6 +655,7 @@
   const eventSecInput = document.getElementById("eventSec");
   const eventNameInput = document.getElementById("eventName");
   const eventMemoInput = document.getElementById("eventMemo");
+  const eventNoteBelowInput = document.getElementById("eventNoteBelow");
 
   const eventList = document.getElementById("eventList");
   const timelineTrack = document.getElementById("timelineTrack");
@@ -707,8 +734,9 @@
   function addEvent() {
     const name = eventNameInput.value.trim();
     const memo = eventMemoInput.value.trim();
+    const noteBelow = eventNoteBelowInput.value.trim();
 
-    if (!name && !memo) {
+    if (!name && !memo && !noteBelow) {
       alert("이름 또는 메모 중 하나는 입력하세요.");
       return;
     }
@@ -737,7 +765,7 @@
       return;
     }
 
-    events.push({ seconds, name, memo });
+    events.push({ seconds, name, memo, noteBelow });
     events.sort((a, b) => a.seconds - b.seconds);
 
     eventHourInput.value = 0;
@@ -746,6 +774,7 @@
     relativeSecondsInput.value = 0;
     eventNameInput.value = "";
     eventMemoInput.value = "";
+    eventNoteBelowInput.value = "";
     eventNameInput.focus();
 
     render();
@@ -759,11 +788,22 @@
   function editMemo(index) {
     const current = events[index].memo || "";
     const label = events[index].name || "(메모)";
-    const next = prompt("'" + label + "' 메모 (화면 전환 방법 등)", current);
+    const next = prompt("'" + label + "' 메모 - 화살표 위 (화면 전환 방법 등)", current);
 
     if (next === null) return;
 
     events[index].memo = next.trim();
+    render();
+  }
+
+  function editNoteBelow(index) {
+    const current = events[index].noteBelow || "";
+    const label = events[index].name || "(메모)";
+    const next = prompt("'" + label + "' 메모 - 이름 아래", current);
+
+    if (next === null) return;
+
+    events[index].noteBelow = next.trim();
     render();
   }
 
@@ -919,13 +959,25 @@
         main.appendChild(memo);
       }
 
+      if (ev.noteBelow) {
+        const noteBelow = document.createElement("div");
+        noteBelow.className = "ev-note-below";
+        noteBelow.textContent = ev.noteBelow;
+        main.appendChild(noteBelow);
+      }
+
       const actions = document.createElement("div");
       actions.className = "ev-actions";
 
       const memoBtn = document.createElement("button");
       memoBtn.className = "btn-small btn-memo";
-      memoBtn.textContent = "메모";
+      memoBtn.textContent = "메모(위)";
       memoBtn.onclick = () => editMemo(index);
+
+      const noteBelowBtn = document.createElement("button");
+      noteBelowBtn.className = "btn-small btn-memo";
+      noteBelowBtn.textContent = "메모(아래)";
+      noteBelowBtn.onclick = () => editNoteBelow(index);
 
       const delBtn = document.createElement("button");
       delBtn.className = "btn-danger btn-small";
@@ -933,6 +985,7 @@
       delBtn.onclick = () => deleteEvent(index);
 
       actions.appendChild(memoBtn);
+      actions.appendChild(noteBelowBtn);
       actions.appendChild(delBtn);
 
       li.appendChild(main);
@@ -951,6 +1004,7 @@
         name: ev.name || "(메모)",
         anchor: false,
         memo: ev.memo || "",
+        noteBelow: ev.noteBelow || "",
         noName: !ev.name,
       })),
       { seconds: totalSeconds, name: "종료", anchor: true, memo: endMemo, noName: false },
@@ -1019,6 +1073,13 @@
       nameLabel.className = "mark-name";
       nameLabel.textContent = point.name;
       label.appendChild(nameLabel);
+
+      if (point.noteBelow) {
+        const noteBelowLabel = document.createElement("div");
+        noteBelowLabel.className = "mark-note-below";
+        noteBelowLabel.textContent = point.noteBelow;
+        label.appendChild(noteBelowLabel);
+      }
 
       if (index > 0) {
         const durationLabel = document.createElement("div");
