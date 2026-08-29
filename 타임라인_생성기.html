@@ -81,6 +81,17 @@
     color: white;
   }
 
+  .field select {
+    min-width: 150px;
+    max-width: 220px;
+    font-size: 16px;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: none;
+    background: #2a2a32;
+    color: white;
+  }
+
   .field.grow {
     flex: 1;
   }
@@ -341,7 +352,7 @@
 
     <div class="mode-toggle">
       <button type="button" class="toggle-btn active" id="modeAbsoluteBtn" onclick="setAddMode('absolute')">시각으로 입력</button>
-      <button type="button" class="toggle-btn" id="modeRelativeBtn" onclick="setAddMode('relative')">이전 항목 n초 뒤</button>
+      <button type="button" class="toggle-btn" id="modeRelativeBtn" onclick="setAddMode('relative')">선택 항목 n초 뒤</button>
     </div>
 
     <div class="field-row">
@@ -359,9 +370,15 @@
           <input type="number" id="eventSec" min="0" max="59" value="0" />
         </div>
       </div>
-      <div class="field hidden" id="relativeFields">
-        <label>이전 항목 뒤 (초)</label>
-        <input type="number" id="relativeSeconds" min="0" value="0" style="width:110px;" />
+      <div class="field-row hidden" id="relativeFields" style="gap:10px;">
+        <div class="field">
+          <label>기준 항목</label>
+          <select id="relativeBaseSelect"></select>
+        </div>
+        <div class="field">
+          <label>그 뒤 (초)</label>
+          <input type="number" id="relativeSeconds" min="0" value="0" style="width:90px;" />
+        </div>
       </div>
       <div class="field grow">
         <label>이름</label>
@@ -409,6 +426,7 @@
   const modeRelativeBtn = document.getElementById("modeRelativeBtn");
   const absoluteFields = document.getElementById("absoluteFields");
   const relativeFields = document.getElementById("relativeFields");
+  const relativeBaseSelect = document.getElementById("relativeBaseSelect");
   const relativeSecondsInput = document.getElementById("relativeSeconds");
 
   const eventHourGroup = document.getElementById("eventHourGroup");
@@ -500,8 +518,8 @@
         return;
       }
 
-      const prevSeconds = events.length > 0 ? events[events.length - 1].seconds : 0;
-      seconds = prevSeconds + n;
+      const baseSeconds = Number(relativeBaseSelect.value) || 0;
+      seconds = baseSeconds + n;
     } else {
       const h = eventHourGroup.classList.contains("hidden") ? 0 : (Number(eventHourInput.value) || 0);
       const m = Number(eventMinInput.value) || 0;
@@ -535,6 +553,29 @@
   function render() {
     renderEventList();
     renderTimeline();
+    populateRelativeBaseSelect();
+  }
+
+  function populateRelativeBaseSelect() {
+    const forceHour = totalSeconds > 3600;
+    const prevValue = relativeBaseSelect.value;
+
+    relativeBaseSelect.innerHTML = "";
+
+    const startOption = document.createElement("option");
+    startOption.value = "0";
+    startOption.textContent = "시작 (" + formatTime(0, forceHour) + ")";
+    relativeBaseSelect.appendChild(startOption);
+
+    events.forEach((ev) => {
+      const opt = document.createElement("option");
+      opt.value = String(ev.seconds);
+      opt.textContent = ev.name + " (" + formatTime(ev.seconds, forceHour) + ")";
+      relativeBaseSelect.appendChild(opt);
+    });
+
+    const values = Array.from(relativeBaseSelect.options).map((opt) => opt.value);
+    relativeBaseSelect.value = values.includes(prevValue) ? prevValue : values[values.length - 1];
   }
 
   function renderEventList() {
