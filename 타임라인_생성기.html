@@ -215,10 +215,9 @@
     margin-top: 2px;
   }
 
-  .mark-bottom {
+  .mark-label {
     position: absolute;
-    top: 12px;
-    left: 50%;
+    top: 107px;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
@@ -232,7 +231,7 @@
     color: white;
   }
 
-  .mark.anchor .mark-name {
+  .mark-label.anchor .mark-name {
     color: #9b9bff;
   }
 
@@ -559,25 +558,29 @@
       top.appendChild(arrow);
 
       mark.appendChild(top);
+      timelineTrack.appendChild(mark);
 
-      const bottom = document.createElement("div");
-      bottom.className = "mark-bottom";
+      // 이름/구간 길이는 눈금 바로 아래가 아니라, 이전 눈금과의 사이 간격에 표시한다.
+      const labelLeftPx = index === 0 ? leftPx : index * slotWidth;
+
+      const label = document.createElement("div");
+      label.className = "mark-label" + (point.anchor ? " anchor" : "");
+      label.style.left = labelLeftPx + "px";
 
       const nameLabel = document.createElement("div");
       nameLabel.className = "mark-name";
       nameLabel.textContent = point.name;
-      bottom.appendChild(nameLabel);
+      label.appendChild(nameLabel);
 
       if (index > 0) {
         const durationLabel = document.createElement("div");
         durationLabel.className = "mark-duration";
         const gap = point.seconds - points[index - 1].seconds;
         durationLabel.textContent = "+" + formatTime(gap, forceHour);
-        bottom.appendChild(durationLabel);
+        label.appendChild(durationLabel);
       }
 
-      mark.appendChild(bottom);
-      timelineTrack.appendChild(mark);
+      timelineTrack.appendChild(label);
     });
   }
 
