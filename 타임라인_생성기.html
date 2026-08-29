@@ -132,6 +132,28 @@
     color: #aaa;
   }
 
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .toggle-btn {
+    font-size: 14px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    background: #2a2a32;
+    color: #999;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .toggle-btn.active {
+    background: #4444ff;
+    color: white;
+  }
+
   #titleInput {
     width: 100%;
     background: transparent;
@@ -317,18 +339,29 @@
       <div class="total-badge">총 시간: <span id="totalBadge"></span></div>
     </div>
 
+    <div class="mode-toggle">
+      <button type="button" class="toggle-btn active" id="modeAbsoluteBtn" onclick="setAddMode('absolute')">시각으로 입력</button>
+      <button type="button" class="toggle-btn" id="modeRelativeBtn" onclick="setAddMode('relative')">이전 항목 n초 뒤</button>
+    </div>
+
     <div class="field-row">
-      <div class="field hidden" id="eventHourGroup">
-        <label>시</label>
-        <input type="number" id="eventHour" min="0" value="0" />
+      <div class="field-row" id="absoluteFields" style="gap:10px;">
+        <div class="field hidden" id="eventHourGroup">
+          <label>시</label>
+          <input type="number" id="eventHour" min="0" value="0" />
+        </div>
+        <div class="field">
+          <label>분</label>
+          <input type="number" id="eventMin" min="0" max="59" value="0" />
+        </div>
+        <div class="field">
+          <label>초</label>
+          <input type="number" id="eventSec" min="0" max="59" value="0" />
+        </div>
       </div>
-      <div class="field">
-        <label>분</label>
-        <input type="number" id="eventMin" min="0" max="59" value="0" />
-      </div>
-      <div class="field">
-        <label>초</label>
-        <input type="number" id="eventSec" min="0" max="59" value="0" />
+      <div class="field hidden" id="relativeFields">
+        <label>이전 항목 뒤 (초)</label>
+        <input type="number" id="relativeSeconds" min="0" value="0" style="width:110px;" />
       </div>
       <div class="field grow">
         <label>이름</label>
@@ -361,6 +394,7 @@
 <script>
   let totalSeconds = 0;
   let events = [];
+  let addMode = "absolute";
 
   const step1 = document.getElementById("step1");
   const step2 = document.getElementById("step2");
@@ -370,6 +404,12 @@
   const totalMinInput = document.getElementById("totalMin");
   const totalSecInput = document.getElementById("totalSec");
   const totalBadge = document.getElementById("totalBadge");
+
+  const modeAbsoluteBtn = document.getElementById("modeAbsoluteBtn");
+  const modeRelativeBtn = document.getElementById("modeRelativeBtn");
+  const absoluteFields = document.getElementById("absoluteFields");
+  const relativeFields = document.getElementById("relativeFields");
+  const relativeSecondsInput = document.getElementById("relativeSeconds");
 
   const eventHourGroup = document.getElementById("eventHourGroup");
   const eventHourInput = document.getElementById("eventHour");
@@ -414,6 +454,7 @@
 
     totalBadge.textContent = formatTime(totalSeconds, true);
     eventHourGroup.classList.toggle("hidden", totalSeconds <= 3600);
+    setAddMode("absolute");
 
     step1.classList.add("hidden");
     step2.classList.remove("hidden");
@@ -433,17 +474,39 @@
     step3.classList.add("hidden");
   }
 
-  function addEvent() {
-    const h = eventHourGroup.classList.contains("hidden") ? 0 : (Number(eventHourInput.value) || 0);
-    const m = Number(eventMinInput.value) || 0;
-    const s = Number(eventSecInput.value) || 0;
-    const name = eventNameInput.value.trim();
+  function setAddMode(mode) {
+    addMode = mode;
+    modeAbsoluteBtn.classList.toggle("active", mode === "absolute");
+    modeRelativeBtn.classList.toggle("active", mode === "relative");
+    absoluteFields.classList.toggle("hidden", mode !== "absolute");
+    relativeFields.classList.toggle("hidden", mode !== "relative");
+  }
 
-    const seconds = h * 3600 + m * 60 + s;
+  function addEvent() {
+    const name = eventNameInput.value.trim();
 
     if (!name) {
       alert("이름을 입력하세요.");
       return;
+    }
+
+    let seconds;
+
+    if (addMode === "relative") {
+      const n = Number(relativeSecondsInput.value);
+
+      if (!Number.isFinite(n) || n < 0) {
+        alert("0초 이상으로 입력하세요.");
+        return;
+      }
+
+      const prevSeconds = events.length > 0 ? events[events.length - 1].seconds : 0;
+      seconds = prevSeconds + n;
+    } else {
+      const h = eventHourGroup.classList.contains("hidden") ? 0 : (Number(eventHourInput.value) || 0);
+      const m = Number(eventMinInput.value) || 0;
+      const s = Number(eventSecInput.value) || 0;
+      seconds = h * 3600 + m * 60 + s;
     }
 
     if (seconds < 0 || seconds > totalSeconds) {
@@ -457,6 +520,7 @@
     eventHourInput.value = 0;
     eventMinInput.value = 0;
     eventSecInput.value = 0;
+    relativeSecondsInput.value = 0;
     eventNameInput.value = "";
     eventNameInput.focus();
 
