@@ -235,12 +235,12 @@
 
   .timeline-track {
     position: relative;
-    height: 190px;
+    height: 260px;
   }
 
   .timeline-line {
     position: absolute;
-    top: 95px;
+    top: 150px;
     left: 0;
     right: 0;
     height: 2px;
@@ -249,7 +249,7 @@
 
   .mark {
     position: absolute;
-    top: 95px;
+    top: 150px;
   }
 
   .mark-dot {
@@ -289,9 +289,28 @@
     margin-top: 2px;
   }
 
+  .mark-stem {
+    width: 1px;
+    height: 26px;
+    background: #666;
+    margin: 3px auto 1px;
+  }
+
+  .mark-memo {
+    width: 130px;
+    font-size: 12px;
+    font-style: italic;
+    color: #f0c96a;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
   .mark-label {
     position: absolute;
-    top: 107px;
+    top: 162px;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
@@ -328,6 +347,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
     background: #23232b;
     padding: 10px 12px;
     border-radius: 10px;
@@ -337,6 +357,13 @@
 
   .event-list li:hover {
     background: #2b2b34;
+  }
+
+  .event-list .ev-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
   }
 
   .event-list .ev-info {
@@ -349,6 +376,32 @@
     color: #9b9bff;
     font-variant-numeric: tabular-nums;
     min-width: 64px;
+  }
+
+  .event-list .ev-memo {
+    font-size: 12px;
+    font-style: italic;
+    color: #f0c96a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-list .ev-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .btn-memo {
+    background: #4a4430;
+    color: #f0c96a;
+  }
+
+  .anchor-memo-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
   }
 
   .empty-hint {
@@ -402,6 +455,11 @@
       <button type="button" class="toggle-btn" id="modeRelativeBtn" onclick="setAddMode('relative')">선택 항목 n초 뒤</button>
     </div>
 
+    <div class="anchor-memo-row">
+      <button type="button" class="btn-small btn-memo" onclick="editAnchorMemo('start')">시작 메모</button>
+      <button type="button" class="btn-small btn-memo" onclick="editAnchorMemo('end')">종료 메모</button>
+    </div>
+
     <div class="field-row">
       <div class="field-row" id="absoluteFields" style="gap:10px;">
         <div class="field hidden" id="eventHourGroup">
@@ -434,6 +492,13 @@
       <button class="btn-success" onclick="addEvent()">추가</button>
     </div>
 
+    <div class="field-row" style="margin-top:10px;">
+      <div class="field grow">
+        <label>메모 (선택 - 화면 전환 등 자유롭게)</label>
+        <input type="text" id="eventMemo" placeholder="예: 컷 전환 - 페이드 인/아웃" onkeydown="if(event.key==='Enter')addEvent();" />
+      </div>
+    </div>
+
     <ul class="event-list" id="eventList"></ul>
 
     <button class="btn-danger btn-small" style="margin-top:14px;" onclick="changeTotalTime()">총 시간 다시 설정</button>
@@ -460,6 +525,8 @@
   let totalSeconds = 0;
   let events = [];
   let addMode = "absolute";
+  let startMemo = "";
+  let endMemo = "";
 
   const step1 = document.getElementById("step1");
   const step2 = document.getElementById("step2");
@@ -482,6 +549,7 @@
   const eventMinInput = document.getElementById("eventMin");
   const eventSecInput = document.getElementById("eventSec");
   const eventNameInput = document.getElementById("eventName");
+  const eventMemoInput = document.getElementById("eventMemo");
 
   const eventList = document.getElementById("eventList");
   const timelineTrack = document.getElementById("timelineTrack");
@@ -517,6 +585,8 @@
 
     totalSeconds = total;
     events = [];
+    startMemo = "";
+    endMemo = "";
 
     totalBadge.textContent = formatTime(totalSeconds, true);
     eventHourGroup.classList.toggle("hidden", totalSeconds <= 3600);
@@ -582,7 +652,9 @@
       return;
     }
 
-    events.push({ seconds, name });
+    const memo = eventMemoInput.value.trim();
+
+    events.push({ seconds, name, memo });
     events.sort((a, b) => a.seconds - b.seconds);
 
     eventHourInput.value = 0;
@@ -590,6 +662,7 @@
     eventSecInput.value = 0;
     relativeSecondsInput.value = 0;
     eventNameInput.value = "";
+    eventMemoInput.value = "";
     eventNameInput.focus();
 
     render();
@@ -597,6 +670,32 @@
 
   function deleteEvent(index) {
     events.splice(index, 1);
+    render();
+  }
+
+  function editMemo(index) {
+    const current = events[index].memo || "";
+    const next = prompt("'" + events[index].name + "' 메모 (화면 전환 방법 등)", current);
+
+    if (next === null) return;
+
+    events[index].memo = next.trim();
+    render();
+  }
+
+  function editAnchorMemo(which) {
+    const current = which === "start" ? startMemo : endMemo;
+    const label = which === "start" ? "시작" : "종료";
+    const next = prompt(label + " 지점 메모", current);
+
+    if (next === null) return;
+
+    if (which === "start") {
+      startMemo = next.trim();
+    } else {
+      endMemo = next.trim();
+    }
+
     render();
   }
 
@@ -643,6 +742,9 @@
     events.forEach((ev, index) => {
       const li = document.createElement("li");
 
+      const main = document.createElement("div");
+      main.className = "ev-main";
+
       const info = document.createElement("div");
       info.className = "ev-info";
 
@@ -655,14 +757,33 @@
 
       info.appendChild(time);
       info.appendChild(name);
+      main.appendChild(info);
+
+      if (ev.memo) {
+        const memo = document.createElement("div");
+        memo.className = "ev-memo";
+        memo.textContent = "📝 " + ev.memo;
+        main.appendChild(memo);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "ev-actions";
+
+      const memoBtn = document.createElement("button");
+      memoBtn.className = "btn-small btn-memo";
+      memoBtn.textContent = "메모";
+      memoBtn.onclick = () => editMemo(index);
 
       const delBtn = document.createElement("button");
       delBtn.className = "btn-danger btn-small";
       delBtn.textContent = "삭제";
       delBtn.onclick = () => deleteEvent(index);
 
-      li.appendChild(info);
-      li.appendChild(delBtn);
+      actions.appendChild(memoBtn);
+      actions.appendChild(delBtn);
+
+      li.appendChild(main);
+      li.appendChild(actions);
       eventList.appendChild(li);
     });
   }
@@ -671,9 +792,9 @@
     const forceHour = totalSeconds > 3600;
 
     const points = [
-      { seconds: 0, name: "시작", anchor: true },
-      ...events.map((ev) => ({ seconds: ev.seconds, name: ev.name, anchor: false })),
-      { seconds: totalSeconds, name: "종료", anchor: true },
+      { seconds: 0, name: "시작", anchor: true, memo: startMemo },
+      ...events.map((ev) => ({ seconds: ev.seconds, name: ev.name, anchor: false, memo: ev.memo || "" })),
+      { seconds: totalSeconds, name: "종료", anchor: true, memo: endMemo },
     ];
 
     // 항목이 적을 때는 화면 너비에 맞춰 고르게 가운데로 퍼지도록 하고,
@@ -702,10 +823,23 @@
       const top = document.createElement("div");
       top.className = "mark-top";
 
+      if (point.memo) {
+        const memoLabel = document.createElement("div");
+        memoLabel.className = "mark-memo";
+        memoLabel.textContent = "📝 " + point.memo;
+        top.appendChild(memoLabel);
+      }
+
       const timeLabel = document.createElement("div");
       timeLabel.className = "mark-time";
       timeLabel.textContent = formatTime(point.seconds, forceHour);
       top.appendChild(timeLabel);
+
+      if (point.memo) {
+        const stem = document.createElement("div");
+        stem.className = "mark-stem";
+        top.appendChild(stem);
+      }
 
       const arrow = document.createElement("div");
       arrow.className = "mark-arrow";
