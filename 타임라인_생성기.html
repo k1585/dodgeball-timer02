@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>타임라인 생성기</title>
+
+<style>
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background: #101014;
+    color: white;
+    padding: 24px 16px 60px;
+  }
+
+  .app {
+    max-width: 1300px;
+    margin: 0 auto;
+  }
+
+  .workspace {
+    display: block;
+  }
+
+  @media (min-width: 900px) {
+    .workspace {
+      display: grid;
+      grid-template-columns: 440px 1fr;
+      align-items: start;
+      gap: 20px;
+    }
+
+    #step3 {
+      position: sticky;
+      top: 20px;
+    }
+  }
+
+  h1 {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .card {
+    background: #1a1a20;
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+
+  .card h2 {
+    font-size: 18px;
+    margin: 0 0 16px;
+    color: #ddd;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 13px;
+    color: #999;
+  }
+
+  .field input[type="number"] {
+    width: 78px;
+    font-size: 20px;
+    text-align: center;
+    padding: 10px 6px;
+    border-radius: 12px;
+    border: none;
+    background: #2a2a32;
+    color: white;
+  }
+
+  .field input[type="text"] {
+    width: 100%;
+    min-width: 160px;
+    font-size: 18px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: none;
+    background: #2a2a32;
+    color: white;
+  }
+
+  .field select {
+    min-width: 150px;
+    max-width: 220px;
+    font-size: 16px;
+    padding: 10px 10px;
+    border-radius: 12px;
+    border: none;
+    background: #2a2a32;
+    color: white;
+  }
+
+  .field.grow {
+    flex: 1;
+  }
+
+  button {
+    font-size: 16px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    background: #3a3a44;
+    cursor: pointer;
+    transition: filter 0.12s, transform 0.05s;
+  }
+
+  button:hover {
+    filter: brightness(1.15);
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  button:focus-visible,
+  .field input:focus-visible,
+  .field select:focus-visible,
+  #titleInput:focus-visible {
+    outline: 2px solid #7d7dff;
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: #4444ff;
+  }
+
+  .btn-success {
+    background: #1fa463;
+  }
+
+  .btn-danger {
+    background: #b83b3b;
+  }
+
+  .btn-small {
+    font-size: 13px;
+    padding: 6px 10px;
+    border-radius: 8px;
+  }
+
+  .top-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .total-badge {
+    font-size: 14px;
+    color: #aaa;
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .toggle-btn {
+    font-size: 14px;
+    padding: 8px 14px;
+    border: none;
+    border-radius: 10px;
+    background: #2a2a32;
+    color: #999;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .toggle-btn:hover {
+    background: #34343e;
+    color: #ccc;
+  }
+
+  .toggle-btn.active {
+    background: #4444ff;
+    color: white;
+  }
+
+  .toggle-btn.active:hover {
+    filter: brightness(1.1);
+  }
+
+  #titleInput {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px dashed #444;
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 6px 2px 10px;
+    margin-bottom: 6px;
+  }
+
+  #titleInput::placeholder {
+    color: #666;
+  }
+
+  #exportArea {
+    background: #16161b;
+    border-radius: 16px;
+    padding: 18px 18px 10px;
+  }
+
+  .timeline-scroll {
+    overflow-x: auto;
+    padding: 0 12px 6px;
+  }
+
+  .timeline-track {
+    position: relative;
+    height: 300px;
+  }
+
+  .timeline-line {
+    position: absolute;
+    top: 150px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #555;
+  }
+
+  .mark {
+    position: absolute;
+    top: 150px;
+  }
+
+  .mark-dot {
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #eee;
+  }
+
+  .mark.anchor .mark-dot {
+    background: #6a6aff;
+  }
+
+  .mark-top {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .mark-time {
+    font-size: 14px;
+    color: #f0f0f0;
+  }
+
+  .mark-arrow {
+    font-size: 14px;
+    color: #888;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .mark-stem {
+    width: 1px;
+    height: 26px;
+    background: #666;
+    margin: 3px auto 1px;
+  }
+
+  .mark-memo {
+    width: 130px;
+    font-size: 12px;
+    font-style: italic;
+    color: #f0c96a;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
+  .mark-label {
+    position: absolute;
+    top: 162px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    white-space: nowrap;
+  }
+
+  .mark-name {
+    font-size: 15px;
+    font-weight: bold;
+    color: white;
+  }
+
+  .mark-label.anchor .mark-name {
+    color: #9b9bff;
+  }
+
+  .mark-label.no-name .mark-name {
+    color: #777;
+    font-style: italic;
+    font-weight: normal;
+  }
+
+  .mark-duration {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  .mark-note-below {
+    width: 130px;
+    font-size: 12px;
+    font-style: italic;
+    color: #f0c96a;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+    margin-top: 4px;
+  }
+
+  .event-list {
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .event-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #23232b;
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    transition: background 0.12s;
+  }
+
+  .event-list li:hover {
+    background: #2b2b34;
+  }
+
+  .event-list .ev-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .event-list .ev-info {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+  }
+
+  .event-list .ev-time {
+    color: #9b9bff;
+    font-variant-numeric: tabular-nums;
+    min-width: 64px;
+  }
+
+  .event-list .ev-memo,
+  .event-list .ev-note-below {
+    font-size: 12px;
+    font-style: italic;
+    color: #f0c96a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .event-list .ev-note-below::before {
+    content: "↳ ";
+  }
+
+  .event-list .ev-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .btn-memo {
+    background: #4a4430;
+    color: #f0c96a;
+  }
+
+  .anchor-memo-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .general-memo-box {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed #333;
+  }
+
+  .general-memo-box h3 {
+    font-size: 14px;
+    color: #ccc;
+    margin: 0 0 10px;
+  }
+
+  .general-memo-list {
+    list-style: none;
+    margin: 10px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .general-memo-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #23232b;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #f0c96a;
+  }
+
+  #generalMemoDisplay {
+    margin-top: 8px;
+    padding: 14px 16px;
+    border-top: 1px dashed #333;
+  }
+
+  #generalMemoDisplay h4 {
+    font-size: 13px;
+    color: #999;
+    margin: 0 0 8px;
+    font-weight: normal;
+  }
+
+  #generalMemoDisplay ul {
+    margin: 0;
+    padding-left: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  #generalMemoDisplay li {
+    font-size: 13px;
+    color: #f0c96a;
+    font-style: italic;
+  }
+
+  .empty-hint {
+    color: #777;
+    font-size: 14px;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  #step1 .field-row {
+    margin-bottom: 16px;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>타임라인 생성기</h1>
+
+  <div class="card" id="step1">
+    <h2>1. 총 시간 설정</h2>
+    <div class="field-row">
+      <div class="field">
+        <label>시</label>
+        <input type="number" id="totalHour" min="0" value="0" onkeydown="if(event.key==='Enter')createTimeline();" />
+      </div>
+      <div class="field">
+        <label>분</label>
+        <input type="number" id="totalMin" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')createTimeline();" autofocus />
+      </div>
+      <div class="field">
+        <label>초</label>
+        <input type="number" id="totalSec" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')createTimeline();" />
+      </div>
+      <button class="btn-primary" onclick="createTimeline()">타임라인 만들기</button>
+    </div>
+  </div>
+
+  <div class="workspace">
+  <div class="card hidden" id="step2">
+    <div class="top-actions">
+      <h2 style="margin:0;">2. 항목 추가</h2>
+      <div class="total-badge">총 시간: <span id="totalBadge"></span></div>
+    </div>
+
+    <div class="mode-toggle">
+      <button type="button" class="toggle-btn active" id="modeAbsoluteBtn" onclick="setAddMode('absolute')">시각으로 입력</button>
+      <button type="button" class="toggle-btn" id="modeRelativeBtn" onclick="setAddMode('relative')">선택 항목 n초 뒤</button>
+    </div>
+
+    <div class="anchor-memo-row">
+      <button type="button" class="btn-small btn-memo" onclick="editAnchorMemo('start')">시작 메모</button>
+      <button type="button" class="btn-small btn-memo" onclick="editAnchorMemo('end')">종료 메모</button>
+    </div>
+
+    <div class="field-row">
+      <div class="field-row" id="absoluteFields" style="gap:10px;">
+        <div class="field hidden" id="eventHourGroup">
+          <label>시</label>
+          <input type="number" id="eventHour" min="0" value="0" onkeydown="if(event.key==='Enter')addEvent();" />
+        </div>
+        <div class="field">
+          <label>분</label>
+          <input type="number" id="eventMin" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')addEvent();" />
+        </div>
+        <div class="field">
+          <label>초</label>
+          <input type="number" id="eventSec" min="0" max="59" value="0" onkeydown="if(event.key==='Enter')addEvent();" />
+        </div>
+      </div>
+      <div class="field-row hidden" id="relativeFields" style="gap:10px;">
+        <div class="field">
+          <label>기준 항목</label>
+          <select id="relativeBaseSelect"></select>
+        </div>
+        <div class="field">
+          <label>그 뒤 (초)</label>
+          <input type="number" id="relativeSeconds" min="0" value="0" style="width:90px;" onkeydown="if(event.key==='Enter')addEvent();" />
+        </div>
+      </div>
+      <div class="field grow">
+        <label>이름 (선택 - 비워두면 메모만 있는 지점)</label>
+        <input type="text" id="eventName" placeholder="예: 회의, 득점 장면 ..." onkeydown="if(event.key==='Enter')addEvent();" />
+      </div>
+      <button class="btn-success" onclick="addEvent()">추가</button>
+    </div>
+
+    <div class="field-row" style="margin-top:10px;">
+      <div class="field grow">
+        <label>메모 (화살표 위, 선택)</label>
+        <input type="text" id="eventMemo" placeholder="예: 컷 전환 - 페이드 인/아웃" onkeydown="if(event.key==='Enter')addEvent();" />
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:10px;">
+      <div class="field grow">
+        <label>메모 (이름 아래, 선택)</label>
+        <input type="text" id="eventNoteBelow" placeholder="예: 자막 - 오늘의 하이라이트" onkeydown="if(event.key==='Enter')addEvent();" />
+      </div>
+    </div>
+
+    <ul class="event-list" id="eventList"></ul>
+
+    <div class="general-memo-box">
+      <h3>일반 메모 (시간과 무관)</h3>
+      <div class="field-row">
+        <div class="field grow">
+          <input type="text" id="generalMemoInput" placeholder="예: 전체적으로 밝은 톤 유지" onkeydown="if(event.key==='Enter')addGeneralMemo();" />
+        </div>
+        <button class="btn-success btn-small" onclick="addGeneralMemo()">추가</button>
+      </div>
+      <ul class="general-memo-list" id="generalMemoList"></ul>
+    </div>
+
+    <button class="btn-danger btn-small" style="margin-top:14px;" onclick="changeTotalTime()">총 시간 다시 설정</button>
+  </div>
+
+  <div class="card hidden" id="step3">
+    <div class="top-actions">
+      <h2 style="margin:0;">3. 타임라인</h2>
+      <button class="btn-primary" onclick="exportImage()">이미지로 저장</button>
+    </div>
+
+    <div id="exportArea">
+      <input type="text" id="titleInput" placeholder="제목을 입력하세요 (선택)" />
+      <div class="timeline-scroll">
+        <div class="timeline-track" id="timelineTrack"></div>
+      </div>
+      <div id="generalMemoDisplay" class="hidden"></div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+  let totalSeconds = 0;
+  let events = [];
+  let addMode = "absolute";
+  let startMemo = "";
+  let endMemo = "";
+  let generalMemos = [];
+
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+
+  const totalHourInput = document.getElementById("totalHour");
+  const totalMinInput = document.getElementById("totalMin");
+  const totalSecInput = document.getElementById("totalSec");
+  const totalBadge = document.getElementById("totalBadge");
+
+  const modeAbsoluteBtn = document.getElementById("modeAbsoluteBtn");
+  const modeRelativeBtn = document.getElementById("modeRelativeBtn");
+  const absoluteFields = document.getElementById("absoluteFields");
+  const relativeFields = document.getElementById("relativeFields");
+  const relativeBaseSelect = document.getElementById("relativeBaseSelect");
+  const relativeSecondsInput = document.getElementById("relativeSeconds");
+
+  const eventHourGroup = document.getElementById("eventHourGroup");
+  const eventHourInput = document.getElementById("eventHour");
+  const eventMinInput = document.getElementById("eventMin");
+  const eventSecInput = document.getElementById("eventSec");
+  const eventNameInput = document.getElementById("eventName");
+  const eventMemoInput = document.getElementById("eventMemo");
+  const eventNoteBelowInput = document.getElementById("eventNoteBelow");
+
+  const eventList = document.getElementById("eventList");
+  const timelineTrack = document.getElementById("timelineTrack");
+  const timelineScroll = document.querySelector(".timeline-scroll");
+
+  const generalMemoInput = document.getElementById("generalMemoInput");
+  const generalMemoList = document.getElementById("generalMemoList");
+  const generalMemoDisplay = document.getElementById("generalMemoDisplay");
+
+  function pad(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function formatTime(seconds, forceHour) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+
+    if (forceHour || h > 0) {
+      return h + ":" + pad(m) + ":" + pad(s);
+    }
+
+    return m + ":" + pad(s);
+  }
+
+  function createTimeline() {
+    const h = Number(totalHourInput.value) || 0;
+    const m = Number(totalMinInput.value) || 0;
+    const s = Number(totalSecInput.value) || 0;
+
+    const total = h * 3600 + m * 60 + s;
+
+    if (total <= 0) {
+      alert("총 시간을 1초 이상으로 입력하세요.");
+      return;
+    }
+
+    totalSeconds = total;
+    events = [];
+    startMemo = "";
+    endMemo = "";
+    generalMemos = [];
+
+    totalBadge.textContent = formatTime(totalSeconds, true);
+    eventHourGroup.classList.toggle("hidden", totalSeconds <= 3600);
+    setAddMode("absolute");
+
+    step1.classList.add("hidden");
+    step2.classList.remove("hidden");
+    step3.classList.remove("hidden");
+
+    render();
+    eventMinInput.focus();
+  }
+
+  function changeTotalTime() {
+    if (events.length > 0) {
+      const ok = confirm("총 시간을 다시 설정하면 추가한 항목이 모두 삭제됩니다. 계속할까요?");
+      if (!ok) return;
+    }
+
+    step1.classList.remove("hidden");
+    step2.classList.add("hidden");
+    step3.classList.add("hidden");
+    totalMinInput.focus();
+  }
+
+  function setAddMode(mode) {
+    addMode = mode;
+    modeAbsoluteBtn.classList.toggle("active", mode === "absolute");
+    modeRelativeBtn.classList.toggle("active", mode === "relative");
+    absoluteFields.classList.toggle("hidden", mode !== "absolute");
+    relativeFields.classList.toggle("hidden", mode !== "relative");
+  }
+
+  function addEvent() {
+    const name = eventNameInput.value.trim();
+    const memo = eventMemoInput.value.trim();
+    const noteBelow = eventNoteBelowInput.value.trim();
+
+    if (!name && !memo && !noteBelow) {
+      alert("이름 또는 메모 중 하나는 입력하세요.");
+      return;
+    }
+
+    let seconds;
+
+    if (addMode === "relative") {
+      const n = Number(relativeSecondsInput.value);
+
+      if (!Number.isFinite(n) || n < 0) {
+        alert("0초 이상으로 입력하세요.");
+        return;
+      }
+
+      const baseSeconds = Number(relativeBaseSelect.value) || 0;
+      seconds = baseSeconds + n;
+    } else {
+      const h = eventHourGroup.classList.contains("hidden") ? 0 : (Number(eventHourInput.value) || 0);
+      const m = Number(eventMinInput.value) || 0;
+      const s = Number(eventSecInput.value) || 0;
+      seconds = h * 3600 + m * 60 + s;
+    }
+
+    if (seconds < 0 || seconds > totalSeconds) {
+      alert("총 시간(" + formatTime(totalSeconds, true) + ") 이내로 입력하세요.");
+      return;
+    }
+
+    events.push({ seconds, name, memo, noteBelow });
+    events.sort((a, b) => a.seconds - b.seconds);
+
+    eventHourInput.value = 0;
+    eventMinInput.value = 0;
+    eventSecInput.value = 0;
+    relativeSecondsInput.value = 0;
+    eventNameInput.value = "";
+    eventMemoInput.value = "";
+    eventNoteBelowInput.value = "";
+    eventNameInput.focus();
+
+    render();
+  }
+
+  function deleteEvent(index) {
+    events.splice(index, 1);
+    render();
+  }
+
+  function editMemo(index) {
+    const current = events[index].memo || "";
+    const label = events[index].name || "(메모)";
+    const next = prompt("'" + label + "' 메모 - 화살표 위 (화면 전환 방법 등)", current);
+
+    if (next === null) return;
+
+    events[index].memo = next.trim();
+    render();
+  }
+
+  function editNoteBelow(index) {
+    const current = events[index].noteBelow || "";
+    const label = events[index].name || "(메모)";
+    const next = prompt("'" + label + "' 메모 - 이름 아래", current);
+
+    if (next === null) return;
+
+    events[index].noteBelow = next.trim();
+    render();
+  }
+
+  function editAnchorMemo(which) {
+    const current = which === "start" ? startMemo : endMemo;
+    const label = which === "start" ? "시작" : "종료";
+    const next = prompt(label + " 지점 메모", current);
+
+    if (next === null) return;
+
+    if (which === "start") {
+      startMemo = next.trim();
+    } else {
+      endMemo = next.trim();
+    }
+
+    render();
+  }
+
+  function addGeneralMemo() {
+    const text = generalMemoInput.value.trim();
+
+    if (!text) {
+      alert("메모 내용을 입력하세요.");
+      return;
+    }
+
+    generalMemos.push(text);
+    generalMemoInput.value = "";
+    generalMemoInput.focus();
+
+    render();
+  }
+
+  function deleteGeneralMemo(index) {
+    generalMemos.splice(index, 1);
+    render();
+  }
+
+  function renderGeneralMemoList() {
+    generalMemoList.innerHTML = "";
+
+    generalMemos.forEach((text, index) => {
+      const li = document.createElement("li");
+
+      const span = document.createElement("span");
+      span.textContent = text;
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "btn-danger btn-small";
+      delBtn.textContent = "삭제";
+      delBtn.onclick = () => deleteGeneralMemo(index);
+
+      li.appendChild(span);
+      li.appendChild(delBtn);
+      generalMemoList.appendChild(li);
+    });
+  }
+
+  function renderGeneralMemoDisplay() {
+    generalMemoDisplay.innerHTML = "";
+    generalMemoDisplay.classList.toggle("hidden", generalMemos.length === 0);
+
+    if (generalMemos.length === 0) return;
+
+    const heading = document.createElement("h4");
+    heading.textContent = "일반 메모";
+    generalMemoDisplay.appendChild(heading);
+
+    const ul = document.createElement("ul");
+
+    generalMemos.forEach((text) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      ul.appendChild(li);
+    });
+
+    generalMemoDisplay.appendChild(ul);
+  }
+
+  function render() {
+    renderEventList();
+    renderTimeline();
+    populateRelativeBaseSelect();
+    renderGeneralMemoList();
+    renderGeneralMemoDisplay();
+  }
+
+  function populateRelativeBaseSelect() {
+    const forceHour = totalSeconds > 3600;
+    const prevValue = relativeBaseSelect.value;
+
+    relativeBaseSelect.innerHTML = "";
+
+    const startOption = document.createElement("option");
+    startOption.value = "0";
+    startOption.textContent = "시작 (" + formatTime(0, forceHour) + ")";
+    relativeBaseSelect.appendChild(startOption);
+
+    events.forEach((ev) => {
+      const opt = document.createElement("option");
+      opt.value = String(ev.seconds);
+      opt.textContent = (ev.name || "(메모)") + " (" + formatTime(ev.seconds, forceHour) + ")";
+      relativeBaseSelect.appendChild(opt);
+    });
+
+    const values = Array.from(relativeBaseSelect.options).map((opt) => opt.value);
+    relativeBaseSelect.value = values.includes(prevValue) ? prevValue : values[values.length - 1];
+  }
+
+  function renderEventList() {
+    eventList.innerHTML = "";
+
+    if (events.length === 0) {
+      const hint = document.createElement("li");
+      hint.className = "empty-hint";
+      hint.style.background = "transparent";
+      hint.textContent = "추가된 항목이 없습니다.";
+      eventList.appendChild(hint);
+      return;
+    }
+
+    events.forEach((ev, index) => {
+      const li = document.createElement("li");
+
+      const main = document.createElement("div");
+      main.className = "ev-main";
+
+      const info = document.createElement("div");
+      info.className = "ev-info";
+
+      const time = document.createElement("span");
+      time.className = "ev-time";
+      time.textContent = formatTime(ev.seconds, totalSeconds > 3600);
+
+      const name = document.createElement("span");
+      if (ev.name) {
+        name.textContent = ev.name;
+      } else {
+        name.textContent = "(메모)";
+        name.style.color = "#777";
+        name.style.fontStyle = "italic";
+      }
+
+      info.appendChild(time);
+      info.appendChild(name);
+      main.appendChild(info);
+
+      if (ev.memo) {
+        const memo = document.createElement("div");
+        memo.className = "ev-memo";
+        memo.textContent = ev.memo;
+        main.appendChild(memo);
+      }
+
+      if (ev.noteBelow) {
+        const noteBelow = document.createElement("div");
+        noteBelow.className = "ev-note-below";
+        noteBelow.textContent = ev.noteBelow;
+        main.appendChild(noteBelow);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "ev-actions";
+
+      const memoBtn = document.createElement("button");
+      memoBtn.className = "btn-small btn-memo";
+      memoBtn.textContent = "메모(위)";
+      memoBtn.onclick = () => editMemo(index);
+
+      const noteBelowBtn = document.createElement("button");
+      noteBelowBtn.className = "btn-small btn-memo";
+      noteBelowBtn.textContent = "메모(아래)";
+      noteBelowBtn.onclick = () => editNoteBelow(index);
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "btn-danger btn-small";
+      delBtn.textContent = "삭제";
+      delBtn.onclick = () => deleteEvent(index);
+
+      actions.appendChild(memoBtn);
+      actions.appendChild(noteBelowBtn);
+      actions.appendChild(delBtn);
+
+      li.appendChild(main);
+      li.appendChild(actions);
+      eventList.appendChild(li);
+    });
+  }
+
+  function renderTimeline() {
+    const forceHour = totalSeconds > 3600;
+
+    const points = [
+      { seconds: 0, name: "시작", anchor: true, memo: startMemo, noName: false },
+      ...events.map((ev) => ({
+        seconds: ev.seconds,
+        name: ev.name || "(메모)",
+        anchor: false,
+        memo: ev.memo || "",
+        noteBelow: ev.noteBelow || "",
+        noName: !ev.name,
+      })),
+      { seconds: totalSeconds, name: "종료", anchor: true, memo: endMemo, noName: false },
+    ];
+
+    // 항목이 적을 때는 화면 너비에 맞춰 고르게 가운데로 퍼지도록 하고,
+    // 항목이 많아 한 칸(130px)을 확보할 수 없을 때만 가로 스크롤이 생기게 한다.
+    const availableWidth = timelineScroll.clientWidth || 600;
+    const trackWidth = Math.max(availableWidth, points.length * 130);
+    const slotWidth = trackWidth / points.length;
+    timelineTrack.style.minWidth = trackWidth + "px";
+    timelineTrack.innerHTML = "";
+
+    const line = document.createElement("div");
+    line.className = "timeline-line";
+    timelineTrack.appendChild(line);
+
+    points.forEach((point, index) => {
+      const leftPx = index * slotWidth + slotWidth / 2;
+
+      const mark = document.createElement("div");
+      mark.className = "mark" + (point.anchor ? " anchor" : "");
+      mark.style.left = leftPx + "px";
+
+      const dot = document.createElement("div");
+      dot.className = "mark-dot";
+      mark.appendChild(dot);
+
+      const top = document.createElement("div");
+      top.className = "mark-top";
+
+      if (point.memo) {
+        const memoLabel = document.createElement("div");
+        memoLabel.className = "mark-memo";
+        memoLabel.textContent = point.memo;
+        top.appendChild(memoLabel);
+      }
+
+      const timeLabel = document.createElement("div");
+      timeLabel.className = "mark-time";
+      timeLabel.textContent = formatTime(point.seconds, forceHour);
+      top.appendChild(timeLabel);
+
+      if (point.memo) {
+        const stem = document.createElement("div");
+        stem.className = "mark-stem";
+        top.appendChild(stem);
+      }
+
+      const arrow = document.createElement("div");
+      arrow.className = "mark-arrow";
+      arrow.textContent = "↑";
+      top.appendChild(arrow);
+
+      mark.appendChild(top);
+      timelineTrack.appendChild(mark);
+
+      // 이름/구간 길이는 눈금 바로 아래가 아니라, 이전 눈금과의 사이 간격에 표시한다.
+      const labelLeftPx = index === 0 ? leftPx : index * slotWidth;
+
+      const label = document.createElement("div");
+      label.className = "mark-label" + (point.anchor ? " anchor" : "") + (point.noName ? " no-name" : "");
+      label.style.left = labelLeftPx + "px";
+
+      const nameLabel = document.createElement("div");
+      nameLabel.className = "mark-name";
+      nameLabel.textContent = point.name;
+      label.appendChild(nameLabel);
+
+      if (point.noteBelow) {
+        const noteBelowLabel = document.createElement("div");
+        noteBelowLabel.className = "mark-note-below";
+        noteBelowLabel.textContent = point.noteBelow;
+        label.appendChild(noteBelowLabel);
+      }
+
+      if (index > 0) {
+        const durationLabel = document.createElement("div");
+        durationLabel.className = "mark-duration";
+        const gap = point.seconds - points[index - 1].seconds;
+        durationLabel.textContent = "+" + formatTime(gap, forceHour);
+        label.appendChild(durationLabel);
+      }
+
+      timelineTrack.appendChild(label);
+    });
+  }
+
+  function exportImage() {
+    if (typeof html2canvas === "undefined") {
+      alert("이미지 저장 기능을 불러오지 못했습니다. 인터넷 연결을 확인하고 다시 시도하세요.");
+      return;
+    }
+
+    const exportArea = document.getElementById("exportArea");
+    const scrollBox = document.querySelector(".timeline-scroll");
+    const track = document.getElementById("timelineTrack");
+
+    // 스크롤로 잘려 보이는 영역까지 전부 이미지에 담기도록,
+    // 캡처 직전에만 실제 내용 크기만큼 박스를 넓히고 스크롤 제한을 푼다.
+    const scrollBoxStyle = getComputedStyle(scrollBox);
+    const scrollBoxPadX = parseFloat(scrollBoxStyle.paddingLeft) + parseFloat(scrollBoxStyle.paddingRight);
+    const exportAreaStyle = getComputedStyle(exportArea);
+    const exportAreaPadX = parseFloat(exportAreaStyle.paddingLeft) + parseFloat(exportAreaStyle.paddingRight);
+
+    const neededScrollWidth = track.scrollWidth + scrollBoxPadX;
+    const neededAreaWidth = neededScrollWidth + exportAreaPadX;
+
+    const prev = {
+      overflowX: scrollBox.style.overflowX,
+      scrollWidth: scrollBox.style.width,
+      areaWidth: exportArea.style.width,
+    };
+
+    scrollBox.style.overflowX = "visible";
+
+    if (neededScrollWidth > scrollBox.offsetWidth) {
+      scrollBox.style.width = neededScrollWidth + "px";
+    }
+
+    if (neededAreaWidth > exportArea.offsetWidth) {
+      exportArea.style.width = neededAreaWidth + "px";
+    }
+
+    function restore() {
+      scrollBox.style.overflowX = prev.overflowX;
+      scrollBox.style.width = prev.scrollWidth;
+      exportArea.style.width = prev.areaWidth;
+    }
+
+    html2canvas(exportArea, { backgroundColor: "#16161b", scale: 2 }).then((canvas) => {
+      restore();
+
+      const link = document.createElement("a");
+      const title = document.getElementById("titleInput").value.trim();
+      link.download = (title || "timeline") + ".png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }).catch(() => {
+      restore();
+      alert("이미지 저장 중 오류가 발생했습니다.");
+    });
+  }
+</script>
+</body>
+</html>
