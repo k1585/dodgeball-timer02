@@ -16,10 +16,25 @@
     user-select: none;
   }
 
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 10px;
+    background: #eee;
+  }
+
   .fullscreen-button {
-    position: fixed;
-    top: 10px;
-    right: 10px;
     width: 44px;
     height: 44px;
     border-radius: 12px;
@@ -31,22 +46,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 50;
     padding: 0;
-    opacity: 0.55;
+    flex-shrink: 0;
+    opacity: 0.7;
   }
 
   .fullscreen-button:active { transform: scale(0.95); }
 
   .toolbar {
-    position: fixed;
-    top: 10px;
-    left: 10px;
-    z-index: 50;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    opacity: 0.55;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
   }
 
   .mode-toggle {
@@ -107,8 +118,9 @@
   .now-button:active { transform: translateY(-50%) scale(0.95); }
 
   .slate {
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    flex: 1 1 auto;
+    min-height: 0;
     background: #fff;
     border: 5px solid #000;
     box-sizing: border-box;
@@ -259,18 +271,118 @@
 
   .footer .yt { background: #ff2d2d; }
   .footer .ig { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+
+  /* 폰 모드: 세로화면(테스트용)에 맞춰 라벨을 위로, 내용을 아래로 쌓는 레이아웃 */
+  body.phone-mode {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body.phone-mode .slate {
+    flex: none;
+    height: auto;
+  }
+
+  body.phone-mode .row {
+    flex-direction: column;
+    align-items: stretch;
+    flex: none;
+    padding: 14px 16px;
+  }
+
+  body.phone-mode .label {
+    width: 100%;
+    border-right: none;
+    border-bottom: 3px dashed #000;
+    padding: 0 0 8px 0;
+    margin-bottom: 10px;
+    letter-spacing: 0.15em;
+    font-size: clamp(18px, 6vw, 26px);
+  }
+
+  body.phone-mode .content {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  body.phone-mode #competitionName,
+  body.phone-mode #gameName {
+    padding-left: 0;
+    font-size: clamp(18px, 5.5vw, 26px);
+  }
+
+  body.phone-mode .field-group {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 14px 24px;
+    padding: 0;
+  }
+
+  body.phone-mode .time-row-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  body.phone-mode .now-button {
+    position: static;
+    transform: none;
+  }
+
+  body.phone-mode .split {
+    min-height: 90px;
+  }
+
+  body.phone-mode .half {
+    flex-direction: column;
+    padding: 12px;
+  }
+
+  body.phone-mode .team-name {
+    position: static;
+    width: 100%;
+    text-align: center;
+    font-size: clamp(14px, 4.2vw, 18px);
+    margin-bottom: 4px;
+  }
+
+  body.phone-mode .score-value {
+    font-size: clamp(34px, 15vw, 56px);
+  }
+
+  body.phone-mode .score-unit {
+    font-size: clamp(20px, 7vw, 32px);
+  }
+
+  body.phone-mode .toolbar {
+    max-width: calc(100vw - 64px);
+  }
+
+  body.phone-mode .footer {
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    padding: 10px 8px;
+    font-size: 11px;
+  }
 </style>
 </head>
 <body>
 
-<button class="fullscreen-button" onclick="toggleFullscreen()" title="전체화면">⛶</button>
-
-<div class="toolbar">
-  <div class="mode-toggle">
-    <button id="modeStartBtn" class="mode-btn active" onclick="setMode('start')">시작모드</button>
-    <button id="modeEndBtn" class="mode-btn" onclick="setMode('end')">종료모드</button>
+<div class="topbar">
+  <div class="toolbar">
+    <div class="mode-toggle">
+      <button id="modeStartBtn" class="mode-btn active" onclick="setMode('start')">시작모드</button>
+      <button id="modeEndBtn" class="mode-btn" onclick="setMode('end')">종료모드</button>
+    </div>
+    <div class="mode-toggle">
+      <button id="devicePhoneBtn" class="mode-btn" onclick="setDeviceMode('phone')">폰모드</button>
+      <button id="deviceTabletBtn" class="mode-btn active" onclick="setDeviceMode('tablet')">태블릿모드</button>
+    </div>
+    <button class="reset-button" onclick="resetForNextGame()">다음 경기</button>
   </div>
-  <button class="reset-button" onclick="resetForNextGame()">다음 경기</button>
+  <button class="fullscreen-button" onclick="toggleFullscreen()" title="전체화면">⛶</button>
 </div>
 
 <div class="slate">
@@ -401,13 +513,11 @@
 
   document.querySelectorAll("[data-key]").forEach((el) => {
     el.addEventListener("focus", () => {
-      setTimeout(() => {
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }, 0);
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
     });
 
     el.addEventListener("keydown", (event) => {
@@ -512,6 +622,23 @@
     setMode(savedMode === "end" ? "end" : "start");
   }
 
+  const DEVICE_KEY = "basketball_slate_device_v1";
+  const devicePhoneBtn = document.getElementById("devicePhoneBtn");
+  const deviceTabletBtn = document.getElementById("deviceTabletBtn");
+
+  function setDeviceMode(device) {
+    const isPhone = device === "phone";
+    document.body.classList.toggle("phone-mode", isPhone);
+    devicePhoneBtn.classList.toggle("active", isPhone);
+    deviceTabletBtn.classList.toggle("active", !isPhone);
+    localStorage.setItem(DEVICE_KEY, device);
+  }
+
+  function loadDeviceMode() {
+    const savedDevice = localStorage.getItem(DEVICE_KEY);
+    setDeviceMode(savedDevice === "phone" ? "phone" : "tablet");
+  }
+
   function fillCurrentTime() {
     const now = new Date();
     const hourEl = document.getElementById("hour");
@@ -540,6 +667,7 @@
   setTodayIfEmpty();
   setDefaultHomeTeam();
   loadMode();
+  loadDeviceMode();
   requestWakeLock();
 </script>
 
