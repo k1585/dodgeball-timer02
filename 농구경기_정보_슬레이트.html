@@ -38,6 +38,74 @@
 
   .fullscreen-button:active { transform: scale(0.95); }
 
+  .toolbar {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.55;
+  }
+
+  .mode-toggle {
+    display: flex;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #000;
+  }
+
+  .mode-btn {
+    padding: 10px 14px;
+    font-size: 14px;
+    font-weight: 800;
+    background: #2f2f38;
+    color: #fff;
+    border: none;
+  }
+
+  .mode-btn.active { background: #ff3b3b; }
+
+  .reset-button {
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    background: #2f2f38;
+    color: #fff;
+    border: none;
+  }
+
+  .mode-btn:active, .reset-button:active { transform: scale(0.96); }
+
+  .row.hidden { display: none; }
+
+  .time-row-content {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .now-button {
+    position: absolute;
+    right: 2vw;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(12px, 1.7vw, 16px);
+    font-weight: 800;
+    background: #2f2f38;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5em 0.9em;
+  }
+
+  .now-button:active { transform: translateY(-50%) scale(0.95); }
+
   .slate {
     width: 100vw;
     height: 100vh;
@@ -197,6 +265,14 @@
 
 <button class="fullscreen-button" onclick="toggleFullscreen()" title="전체화면">⛶</button>
 
+<div class="toolbar">
+  <div class="mode-toggle">
+    <button id="modeStartBtn" class="mode-btn active" onclick="setMode('start')">시작모드</button>
+    <button id="modeEndBtn" class="mode-btn" onclick="setMode('end')">종료모드</button>
+  </div>
+  <button class="reset-button" onclick="resetForNextGame()">다음 경기</button>
+</div>
+
 <div class="slate">
 
   <div class="row">
@@ -236,15 +312,18 @@
   <div class="row">
     <div class="label">시작시각</div>
     <div class="content">
-      <div class="field-group">
-        <div class="field-unit">
-          <span id="hour" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="hour" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
-          <span class="unit-label">시</span>
+      <div class="time-row-content">
+        <div class="field-group">
+          <div class="field-unit">
+            <span id="hour" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="hour" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+            <span class="unit-label">시</span>
+          </div>
+          <div class="field-unit">
+            <span id="minute" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="minute" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+            <span class="unit-label">분</span>
+          </div>
         </div>
-        <div class="field-unit">
-          <span id="minute" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="minute" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
-          <span class="unit-label">분</span>
-        </div>
+        <button class="now-button" onclick="fillCurrentTime()">현재시각</button>
       </div>
     </div>
   </div>
@@ -263,7 +342,7 @@
     </div>
   </div>
 
-  <div class="row tall">
+  <div class="row tall" id="scoreRow">
     <div class="label">점&nbsp;&nbsp;&nbsp;&nbsp;수</div>
     <div class="content">
       <div class="split">
@@ -396,9 +475,72 @@
     }
   }
 
+  let wakeLock = null;
+
+  async function requestWakeLock() {
+    try {
+      if ("wakeLock" in navigator) {
+        wakeLock = await navigator.wakeLock.request("screen");
+        wakeLock.addEventListener("release", () => { wakeLock = null; });
+      }
+    } catch (e) {
+      wakeLock = null;
+    }
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      requestWakeLock();
+    }
+  });
+
+  const MODE_KEY = "basketball_slate_mode_v1";
+  const modeStartBtn = document.getElementById("modeStartBtn");
+  const modeEndBtn = document.getElementById("modeEndBtn");
+  const scoreRow = document.getElementById("scoreRow");
+
+  function setMode(mode) {
+    const isEnd = mode === "end";
+    scoreRow.classList.toggle("hidden", !isEnd);
+    modeStartBtn.classList.toggle("active", !isEnd);
+    modeEndBtn.classList.toggle("active", isEnd);
+    localStorage.setItem(MODE_KEY, mode);
+  }
+
+  function loadMode() {
+    const savedMode = localStorage.getItem(MODE_KEY);
+    setMode(savedMode === "end" ? "end" : "start");
+  }
+
+  function fillCurrentTime() {
+    const now = new Date();
+    const hourEl = document.getElementById("hour");
+    const minuteEl = document.getElementById("minute");
+    hourEl.textContent = String(now.getHours()).padStart(2, "0");
+    minuteEl.textContent = String(now.getMinutes()).padStart(2, "0");
+    saveField(hourEl);
+    saveField(minuteEl);
+  }
+
+  function resetForNextGame() {
+    if (!confirm("경기명 / 대진 상대팀 / 시작시각 / 점수를 지우고 다음 경기를 준비할까요?")) {
+      return;
+    }
+
+    ["gameName", "awayTeam", "hour", "minute", "homeScore", "awayScore"].forEach((id) => {
+      const el = document.getElementById(id);
+      el.textContent = "";
+      saveField(el);
+    });
+
+    setMode("start");
+  }
+
   loadFields();
   setTodayIfEmpty();
   setDefaultHomeTeam();
+  loadMode();
+  requestWakeLock();
 </script>
 
 </body>
