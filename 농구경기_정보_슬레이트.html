@@ -90,6 +90,14 @@
 
   .mode-btn:active, .reset-button:active { transform: scale(0.96); }
 
+  body.is-fullscreen .toolbar,
+  body.is-fullscreen .now-button { display: none; }
+
+  body.is-fullscreen .topbar {
+    background: transparent;
+    justify-content: flex-end;
+  }
+
   .row.hidden { display: none; }
 
   .time-row-content {
@@ -273,10 +281,17 @@
   .footer .ig { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
 
   /* 폰 모드: 세로화면(테스트용)에 맞춰 라벨을 위로, 내용을 아래로 쌓는 레이아웃 */
-  body.phone-mode {
+  html.phone-mode {
     height: auto;
     min-height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  body.phone-mode {
+    height: auto;
+    min-height: 100%;
+    overflow-y: visible;
     overflow-x: hidden;
   }
 
@@ -395,13 +410,6 @@
   </div>
 
   <div class="row">
-    <div class="label">경&nbsp;기&nbsp;명</div>
-    <div class="content">
-      <div id="gameName" contenteditable="true" data-placeholder="경기명을 입력하세요" data-key="gameName"></div>
-    </div>
-  </div>
-
-  <div class="row">
     <div class="label">날&nbsp;&nbsp;&nbsp;&nbsp;짜</div>
     <div class="content">
       <div class="field-group">
@@ -418,6 +426,13 @@
           <span class="unit-label">일</span>
         </div>
       </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">경&nbsp;기&nbsp;명</div>
+    <div class="content">
+      <div id="gameName" contenteditable="true" data-placeholder="경기명을 입력하세요" data-key="gameName"></div>
     </div>
   </div>
 
@@ -561,6 +576,14 @@
     }
   }
 
+  function updateFullscreenUi() {
+    const isFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+    document.body.classList.toggle("is-fullscreen", isFullscreen);
+  }
+
+  document.addEventListener("fullscreenchange", updateFullscreenUi);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenUi);
+
   function setTodayIfEmpty() {
     const yearEl = document.getElementById("year");
     const monthEl = document.getElementById("month");
@@ -629,6 +652,7 @@
   function setDeviceMode(device) {
     const isPhone = device === "phone";
     document.body.classList.toggle("phone-mode", isPhone);
+    document.documentElement.classList.toggle("phone-mode", isPhone);
     devicePhoneBtn.classList.toggle("active", isPhone);
     deviceTabletBtn.classList.toggle("active", !isPhone);
     localStorage.setItem(DEVICE_KEY, device);
