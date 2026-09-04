@@ -506,6 +506,19 @@
   .cal-cell.selected.has-hw::after{
     background:#ffffff;
   }
+  .cal-cell.has-event::before{
+    content:"";
+    position:absolute;
+    top:4px;
+    right:6px;
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:#E08A00;
+  }
+  .cal-cell.selected.has-event::before{
+    background:#ffffff;
+  }
   .cal-dot-row{
     display:flex;
     gap:2px;
@@ -3074,6 +3087,7 @@
         <span><i style="background:#1FA455;"></i>승인 완료</span>
         <span><i style="background:var(--point-strong);"></i>승인 대기중</span>
         <span><i style="background:#E4423F;"></i>미제출/거절</span>
+        <span><i style="background:#E08A00;"></i>선생님 일정</span>
       </div>
 
       <p class="page-title" id="calSelectedLabel" style="font-size:15px;margin:16px 0 10px;">8월 26일 (수)</p>
@@ -4365,6 +4379,13 @@
     renderStudentCalDayList();
   }
 
+  /* 내가 속한 반 선생님이 등록한 일정 (선생님 달력에 올린 일정을 학생 달력에도 표시) */
+  function myClassEvents() {
+    if (joinedClassIndex === null) return [];
+    const t = classes[joinedClassIndex].teacherName;
+    return events.filter((e) => e.teacherName === t);
+  }
+
   /* 특정 날짜가 마감인 숙제들의 내 제출 상태 (missing/pending/approved/rejected) */
   function dayHomeworkStatuses(dateStr) {
     if (joinedClassIndex === null) return [];
@@ -4385,6 +4406,7 @@
     const firstDay = new Date(calYear, calMonth, 1).getDay();
     const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
     const todayStr = getTodayDateStr();
+    const classEvents = myClassEvents();
 
     let html = "";
     for (let i = 0; i < firstDay; i++) {
@@ -4395,6 +4417,7 @@
       let cls = "cal-cell";
       if (dateStr === calSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
+      if (classEvents.some((e) => dateStr >= e.startDate && dateStr <= e.endDate)) cls += " has-event";
 
       let inner = String(d);
       const statuses = dayHomeworkStatuses(dateStr);
@@ -4435,12 +4458,24 @@
     }
 
     const statuses = dayHomeworkStatuses(calSelectedDate);
-    if (statuses.length === 0) {
-      listEl.innerHTML = '<p class="empty-state">이 날짜엔 등록된 숙제가 없어요</p>';
+    const dayEvents = myClassEvents().filter((e) => calSelectedDate >= e.startDate && calSelectedDate <= e.endDate);
+
+    if (statuses.length === 0 && dayEvents.length === 0) {
+      listEl.innerHTML = '<p class="empty-state">이 날짜엔 등록된 숙제나 일정이 없어요</p>';
       return;
     }
 
-    listEl.innerHTML = statuses.map(({ hw, status }) => `
+    let html = "";
+    html += dayEvents.map((e) => `
+      <div class="hw-card" style="cursor:default;">
+        <div>
+          <p class="hw-name">${e.title}</p>
+          <p class="hw-due">${formatKoreanDate(e.startDate)}${e.endDate !== e.startDate ? " ~ " + formatKoreanDate(e.endDate) : ""}</p>
+        </div>
+        <span class="hw-dday" style="background:#FFF1DB;color:#E08A00;">일정</span>
+      </div>
+    `).join("");
+    html += statuses.map(({ hw, status }) => `
       <div class="hw-card" style="cursor:${status === "missing" ? "pointer" : "default"};" ${status === "missing" ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
         <div>
           <p class="hw-name">${hw.title}</p>
@@ -4449,6 +4484,7 @@
         <span class="status-pill ${status}">${statusLabel(status)}</span>
       </div>
     `).join("");
+    listEl.innerHTML = html;
   }
 
   /* ===== 남은 숙제 카드 클릭 -> 상세 정보 반영 후 업로드 화면 ===== */
@@ -5065,14 +5101,6 @@
     return "hw" + (nextHwId++) + "_" + Date.now().toString(36);
   }
 
-  function demoStudents() {
-    return [
-      { name: "김민준" },
-      { name: "박서연" },
-      { name: "이도윤" },
-    ];
-  }
-
   function teacherStatusLabel(status) {
     if (status === "pending") return "승인대기";
     if (status === "rejected") return "반려됨";
@@ -5085,13 +5113,6 @@
     d.setDate(d.getDate() + 3);
     return [
       { id: newHwId(), title: "단어 시험 준비", due: d.toISOString().slice(0, 10), desc: "Unit 5 단어 30개 암기" },
-    ];
-  }
-
-  function demoSubmissions(homeworks) {
-    if (homeworks.length === 0) return [];
-    return [
-      { studentName: "박서연", hwId: homeworks[0].id, status: "pending", photos: ["placeholder:#DDD6FE"], note: "다 했어요! 확인 부탁드려요.", rejectReason: null, movedToPast: false },
     ];
   }
 
@@ -5162,9 +5183,9 @@
       name: className,
       code: classCode,
       teacherName: teacherName,
-      students: demoStudents(),
+      students: [],
       homeworks: newHomeworks,
-      submissions: demoSubmissions(newHomeworks),
+      submissions: [],
     });
     pendingClassIndex = classes.length - 1;
     saveState();
