@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>비밀번호 금고</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Malgun Gothic', Arial, sans-serif;
+    background: #101014;
+    color: white;
+  }
+  #app {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 22px 18px 60px;
+    min-height: 100vh;
+  }
+  h1.title {
+    font-size: 26px;
+    text-align: center;
+    margin: 10px 0 28px;
+  }
+  .topbar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+  }
+  .topbar h2 {
+    flex: 1;
+    font-size: 20px;
+    margin: 0;
+    text-align: center;
+    margin-right: 34px;
+  }
+  .back-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #2f2f38;
+    color: white;
+    border: none;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .card {
+    background: #1c1c22;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 16px;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 6px;
+  }
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  input[type="text"], input[type="password"], input[type="email"], textarea {
+    width: 100%;
+    font-size: 17px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #333;
+    background: #26262e;
+    color: white;
+    outline: none;
+  }
+  input:disabled {
+    opacity: 0.6;
+  }
+  textarea { resize: vertical; min-height: 70px; font-family: inherit; }
+  .eye-btn {
+    flex-shrink: 0;
+    width: 52px;
+    border-radius: 12px;
+    border: none;
+    background: #33333c;
+    color: white;
+    font-size: 18px;
+  }
+  .hint { font-size: 12px; color: #888; margin-top: 6px; }
+  .error-box {
+    background: #3a1f1f;
+    color: #ff8787;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 18px;
+    font-size: 15px;
+    color: #ccc;
+  }
+  .checkbox-row input { width: 18px; height: 18px; }
+  button.btn {
+    width: 100%;
+    font-size: 18px;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  button.btn:active { transform: scale(0.98); }
+  .btn-primary { background: #4444ff; }
+  .btn-secondary { background: #3a3a44; }
+  .btn-danger { background: #ff3b3b; }
+  .btn-link {
+    background: none;
+    color: #7d9dff;
+    font-size: 14px;
+    text-decoration: underline;
+    padding: 6px;
+    margin-top: 4px;
+    font-weight: normal;
+  }
+  .choice-row { display: flex; flex-direction: column; gap: 14px; margin-top: 40px; }
+  .choice-btn {
+    padding: 26px;
+    font-size: 20px;
+    border-radius: 18px;
+    border: none;
+    color: white;
+    font-weight: bold;
+  }
+  .choice-btn.first { background: #4444ff; }
+  .choice-btn.already { background: #2f2f38; }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #2c2c34;
+    font-size: 15px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-label { color: #999; }
+  .summary-value { font-weight: bold; word-break: break-all; text-align: right; }
+  .copy-btn {
+    background: #33333c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    padding: 6px 10px;
+    margin-left: 8px;
+  }
+  .entry-item {
+    background: #1c1c22;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .entry-title { font-size: 17px; font-weight: bold; margin-bottom: 4px; }
+  .entry-account { font-size: 14px; color: #aaa; margin-bottom: 10px; }
+  .entry-pw-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #26262e;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+  .entry-pw-text { flex: 1; word-break: break-all; }
+  .entry-extra { font-size: 13px; color: #999; margin-bottom: 4px; }
+  .entry-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .entry-actions button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+    color: white;
+    font-size: 14px;
+  }
+  .empty-msg { text-align: center; color: #777; padding: 30px 10px; }
+  .greeting { text-align: center; font-size: 15px; color: #aaa; margin-bottom: 20px; }
+  .master-badge {
+    display: inline-block;
+    background: #ff9f1c;
+    color: #101014;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 8px;
+    margin-left: 6px;
+  }
+  .settings-note {
+    font-size: 13px;
+    color: #888;
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+  .small-link-row { text-align: center; margin-top: 16px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getDatabase, ref, get, set, update, remove, push } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBsUAj6nR2eihsyZn6BREseo_iH-3I56i0",
+  authDomain: "stopwatch-6bb55.firebaseapp.com",
+  databaseURL: "https://stopwatch-6bb55-default-rtdb.firebaseio.com",
+  projectId: "stopwatch-6bb55",
+  storageBucket: "stopwatch-6bb55.firebasestorage.app",
+  messagingSenderId: "113223681035",
+  appId: "1:113223681035:web:218ded3ff96c995d39b30e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const USERS_PATH = "pwManager/users";
+const MASTER_NAME = "김주원";
+const MASTER_ID = "jw5632779";
+
+const REMEMBER_ID_KEY = "pwm_remember_id";
+const REMEMBER_PW_KEY = "pwm_remember_pw";
+const REMEMBER_NAME_KEY = "pwm_remember_name";
+
+const appEl = document.getElementById("app");
+
+const state = {
+  screen: "loading",
+  error: "",
+  busy: false,
+  signup: { name: "", id: "" },
+  currentUser: null,
+  editingEntryId: null,
+  masterUsers: null,
+  masterViewingId: null,
+};
+
+function escapeHtml(str) {
+  if (str === undefined || str === null) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function validId(id) {
+  return /^[A-Za-z0-9_]{4,20}$/.test(id);
+}
+
+function hasSpecialChar(str) {
+  return /[!@#$%^&*()_+\-=\[\]{}|;:'",.<>\/?`~\\]/.test(str);
+}
+
+function validPassword(pw) {
+  return typeof pw === "string" && pw.length >= 8 && hasSpecialChar(pw);
+}
+
+async function fetchUser(id) {
+  const snap = await get(ref(db, `${USERS_PATH}/${id}`));
+  return snap.exists() ? snap.val() : null;
+}
+
+async function createUser(user) {
+  await set(ref(db, `${USERS_PATH}/${user.id}`), {
+    name: user.name,
+    id: user.id,
+    password: user.password,
+    createdAt: Date.now(),
+  });
+}
+
+async function updateUserPassword(id, newPassword) {
+  await update(ref(db, `${USERS_PATH}/${id}`), { password: newPassword });
+}
+
+async function fetchAllUsers() {
+  const snap = await get(ref(db, USERS_PATH));
+  return snap.exists() ? snap.val() : {};
+}
+
+async function addEntry(userId, entry) {
+  const entryRef = push(ref(db, `${USERS_PATH}/${userId}/entries`));
+  await set(entryRef, { ...entry, updatedAt: Date.now() });
+  return entryRef.key;
+}
+
+async function updateEntry(userId, entryId, entry) {
+  await update(ref(db, `${USERS_PATH}/${userId}/entries/${entryId}`), {
+    ...entry,
+    updatedAt: Date.now(),
+  });
+}
+
+async function deleteEntry(userId, entryId) {
+  await remove(ref(db, `${USERS_PATH}/${userId}/entries/${entryId}`));
+}
+
+function goto(screen) {
+  state.screen = screen;
+  state.error = "";
+  render();
+}
+
+function setError(msg) {
+  state.error = msg;
+  render();
+}
+
+function gotoWithError(screen, msg) {
+  state.screen = screen;
+  state.error = msg;
+  render();
+}
+
+function getRemembered() {
+  try {
+    const id = localStorage.getItem(REMEMBER_ID_KEY);
+    const pw = localStorage.getItem(REMEMBER_PW_KEY);
+    const name = localStorage.getItem(REMEMBER_NAME_KEY);
+    if (id && pw && name) return { id, pw, name };
+  } catch (e) {}
+  return null;
+}
+
+function clearRemembered() {
+  try {
+    localStorage.removeItem(REMEMBER_ID_KEY);
+    localStorage.removeItem(REMEMBER_PW_KEY);
+    localStorage.removeItem(REMEMBER_NAME_KEY);
+  } catch (e) {}
+}
+
+function saveRemembered(id, pw, name) {
+  try {
+    localStorage.setItem(REMEMBER_ID_KEY, id);
+    localStorage.setItem(REMEMBER_PW_KEY, pw);
+    localStorage.setItem(REMEMBER_NAME_KEY, name);
+  } catch (e) {}
+}
+
+function entriesToArray(entriesObj) {
+  if (!entriesObj) return [];
+  return Object.keys(entriesObj)
+    .map((key) => ({ id: key, ...entriesObj[key] }))
+    .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+}
+
+/* ---------- Screens ---------- */
+
+function screenWelcome() {
+  return `
+    <h1 class="title">🔐 비밀번호 금고</h1>
+    <div class="choice-row">
+      <button class="choice-btn first" data-click="chooseSignup">처음 왔어요</button>
+      <button class="choice-btn already" data-click="chooseLogin">이미 사용중이에요</button>
+    </div>
+  `;
+}
+
+function screenQuickLogin() {
+  return `
+    <h1 class="title">🔐 비밀번호 금고</h1>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="quickLogin">
+        <div class="field">
+          <label>이름을 입력하세요</label>
+          <input type="text" name="name" placeholder="이름" autofocus required />
+        </div>
+        <button class="btn btn-primary" type="submit">들어가기</button>
+      </form>
+      <div class="small-link-row">
+        <button class="btn btn-link" data-click="forgetDevice">다른 계정으로 로그인</button>
+      </div>
+    </div>
+  `;
+}
+
+function screenSignupName() {
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="chooseBackToWelcome">←</button>
+      <h2>이름 입력</h2>
+    </div>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="signupName">
+        <div class="field">
+          <label>이름</label>
+          <input type="text" name="name" value="${escapeHtml(state.signup.name)}" placeholder="이름을 입력하세요" autofocus required />
+        </div>
+        <button class="btn btn-primary" type="submit">다음</button>
+      </form>
+    </div>
+  `;
+}
+
+function screenSignupId() {
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="goto:signup-name">←</button>
+      <h2>아이디 생성</h2>
+    </div>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="signupId">
+        <div class="field">
+          <label>아이디 (영문/숫자/_ 4~20자)</label>
+          <input type="text" name="id" value="${escapeHtml(state.signup.id)}" placeholder="아이디" autofocus required />
+        </div>
+        <button class="btn btn-primary" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "확인 중..." : "다음"}</button>
+      </form>
+    </div>
+  `;
+}
+
+function screenSignupPassword() {
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="goto:signup-id">←</button>
+      <h2>비밀번호 설정</h2>
+    </div>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="signupPassword">
+        <div class="field">
+          <label>비밀번호 (8자 이상, 특수문자 포함)</label>
+          <div class="input-row">
+            <input type="password" name="password" id="signupPw" placeholder="비밀번호" required />
+            <button type="button" class="eye-btn" data-toggle="signupPw">👁</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>비밀번호 확인</label>
+          <div class="input-row">
+            <input type="password" name="password2" id="signupPw2" placeholder="비밀번호 확인" required />
+            <button type="button" class="eye-btn" data-toggle="signupPw2">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "생성 중..." : "계정 생성"}</button>
+      </form>
+    </div>
+  `;
+}
+
+function screenSignupDone() {
+  const u = state.currentUser;
+  return `
+    <h1 class="title">🎉 계정 생성 완료</h1>
+    <div class="card">
+      <div class="summary-row"><span class="summary-label">이름</span><span class="summary-value">${escapeHtml(u.name)}</span></div>
+      <div class="summary-row"><span class="summary-label">아이디</span><span class="summary-value">${escapeHtml(u.id)}</span></div>
+      <div class="summary-row"><span class="summary-label">비밀번호</span><span class="summary-value">${escapeHtml(u.password)}</span></div>
+      <div class="hint">아이디와 비밀번호를 꼭 기억해두세요.</div>
+    </div>
+    <button class="btn btn-primary" data-click="finishSignup">시작하기</button>
+  `;
+}
+
+function screenLogin() {
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="chooseBackToWelcome">←</button>
+      <h2>로그인</h2>
+    </div>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="login">
+        <div class="field">
+          <label>이름</label>
+          <input type="text" name="name" placeholder="이름" required />
+        </div>
+        <div class="field">
+          <label>아이디</label>
+          <input type="text" name="id" placeholder="아이디" required />
+        </div>
+        <div class="field">
+          <label>비밀번호</label>
+          <div class="input-row">
+            <input type="password" name="password" id="loginPw" placeholder="비밀번호" required />
+            <button type="button" class="eye-btn" data-toggle="loginPw">👁</button>
+          </div>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" name="remember" id="rememberChk" />
+          <label for="rememberChk">아이디, 비밀번호 기억하기</label>
+        </div>
+        <button class="btn btn-primary" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "확인 중..." : "로그인"}</button>
+      </form>
+      <div class="small-link-row">
+        <button class="btn btn-link" data-click="chooseSignup">처음이신가요? 계정 만들기</button>
+      </div>
+    </div>
+  `;
+}
+
+function screenHome() {
+  const u = state.currentUser;
+  const entries = entriesToArray(u.entries);
+  const list = entries.length
+    ? entries.map(renderEntryItem).join("")
+    : `<div class="empty-msg">아직 저장된 비밀번호가 없어요.<br/>새 비밀번호를 추가해보세요.</div>`;
+
+  return `
+    <div class="topbar">
+      <div style="width:34px"></div>
+      <h2>내 비밀번호 목록</h2>
+      <button class="back-btn" data-click="goto:settings" title="설정">⚙</button>
+    </div>
+    <div class="greeting">${escapeHtml(u.name)}님, 환영합니다</div>
+    <button class="btn btn-primary" data-click="newEntry">＋ 새 비밀번호 설정</button>
+    <button class="btn btn-secondary" data-click="goResetPassword">들어올 때 쓰는 비밀번호 재설정</button>
+    <div style="margin-top:22px">${list}</div>
+  `;
+}
+
+function renderEntryItem(entry) {
+  return `
+    <div class="entry-item">
+      <div class="entry-title">${escapeHtml(entry.title)}</div>
+      <div class="entry-account">아이디: ${escapeHtml(entry.account)}</div>
+      <div class="entry-pw-row">
+        <span class="entry-pw-text" data-real="${escapeHtml(entry.password)}" data-revealed="false">••••••••</span>
+        <button type="button" class="eye-btn reveal-btn">👁</button>
+        <button type="button" class="copy-btn copy-pw-btn">복사</button>
+      </div>
+      ${entry.email ? `<div class="entry-extra">이메일: ${escapeHtml(entry.email)}</div>` : ""}
+      ${entry.memo ? `<div class="entry-extra">메모: ${escapeHtml(entry.memo)}</div>` : ""}
+      <div class="entry-actions">
+        <button class="btn-secondary" data-click="editEntry:${escapeHtml(entry.id)}">수정</button>
+        <button class="btn-danger" data-click="deleteEntry:${escapeHtml(entry.id)}">삭제</button>
+      </div>
+    </div>
+  `;
+}
+
+function screenEntryForm() {
+  const editing = !!state.editingEntryId;
+  let entry = { title: "", account: "", password: "", email: "", memo: "" };
+  if (editing) {
+    const found = entriesToArray(state.currentUser.entries).find((e) => e.id === state.editingEntryId);
+    if (found) entry = found;
+  }
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="goto:home">←</button>
+      <h2>${editing ? "비밀번호 수정" : "새 비밀번호 설정"}</h2>
+    </div>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="saveEntry">
+        <div class="field">
+          <label>비밀번호 이름</label>
+          <input type="text" name="title" value="${escapeHtml(entry.title)}" placeholder="예: 네이버, 은행 앱" required />
+        </div>
+        <div class="field">
+          <label>아이디</label>
+          <input type="text" name="account" value="${escapeHtml(entry.account)}" placeholder="아이디" required />
+        </div>
+        <div class="field">
+          <label>비밀번호</label>
+          <div class="input-row">
+            <input type="password" name="password" id="entryPw" value="${escapeHtml(entry.password)}" placeholder="비밀번호" required />
+            <button type="button" class="eye-btn" data-toggle="entryPw">👁</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>사용 이메일 (선택)</label>
+          <input type="email" name="email" value="${escapeHtml(entry.email || "")}" placeholder="이메일" />
+        </div>
+        <div class="field">
+          <label>메모 (선택)</label>
+          <textarea name="memo" placeholder="메모">${escapeHtml(entry.memo || "")}</textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "저장 중..." : "저장"}</button>
+      </form>
+    </div>
+  `;
+}
+
+function screenResetPassword() {
+  const u = state.currentUser;
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="goto:home">←</button>
+      <h2>비밀번호 재설정</h2>
+    </div>
+    <div class="card">
+      ${state.error ? `<div class="error-box">${escapeHtml(state.error)}</div>` : ""}
+      <form data-action="resetPasswordSubmit">
+        <div class="field">
+          <label>이름</label>
+          <input type="text" value="${escapeHtml(u.name)}" disabled />
+        </div>
+        <div class="field">
+          <label>아이디</label>
+          <input type="text" value="${escapeHtml(u.id)}" disabled />
+        </div>
+        <div class="field">
+          <label>새 비밀번호 (8자 이상, 특수문자 포함)</label>
+          <div class="input-row">
+            <input type="password" name="password" id="resetPw" placeholder="새 비밀번호" required />
+            <button type="button" class="eye-btn" data-toggle="resetPw">👁</button>
+          </div>
+        </div>
+        <div class="field">
+          <label>새 비밀번호 확인</label>
+          <div class="input-row">
+            <input type="password" name="password2" id="resetPw2" placeholder="새 비밀번호 확인" required />
+            <button type="button" class="eye-btn" data-toggle="resetPw2">👁</button>
+          </div>
+        </div>
+        <button class="btn btn-primary" type="submit" ${state.busy ? "disabled" : ""}>${state.busy ? "변경 중..." : "비밀번호 변경"}</button>
+      </form>
+    </div>
+  `;
+}
+
+function screenSettings() {
+  const remembered = getRemembered();
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="goto:home">←</button>
+      <h2>설정</h2>
+    </div>
+    <div class="card">
+      <button class="btn btn-secondary" data-click="logout">로그아웃</button>
+      ${remembered ? `<button class="btn btn-danger" data-click="clearRememberSettings">이 기기에 저장된 로그인 정보 삭제</button>` : ""}
+      <div class="settings-note">추가 설정 기능은 준비 중입니다.</div>
+    </div>
+  `;
+}
+
+function screenMasterHome() {
+  const users = state.masterUsers || {};
+  const ids = Object.keys(users).filter((id) => id !== MASTER_ID);
+  const list = ids.length
+    ? ids
+        .map((id) => {
+          const u = users[id];
+          return `
+          <div class="entry-item" data-click="viewMasterUser:${escapeHtml(id)}" style="cursor:pointer">
+            <div class="entry-title">${escapeHtml(u.name)}</div>
+            <div class="entry-account">아이디: ${escapeHtml(u.id)}</div>
+          </div>
+        `;
+        })
+        .join("")
+    : `<div class="empty-msg">등록된 계정이 없습니다.</div>`;
+
+  return `
+    <div class="topbar">
+      <div style="width:34px"></div>
+      <h2>마스터 모드<span class="master-badge">MASTER</span></h2>
+      <button class="back-btn" data-click="logout" title="로그아웃">←</button>
+    </div>
+    <div class="greeting">전체 계정 ${ids.length}개</div>
+    ${list}
+  `;
+}
+
+function screenMasterUserDetail() {
+  const u = (state.masterUsers || {})[state.masterViewingId];
+  if (!u) return screenMasterHome();
+  const entries = entriesToArray(u.entries);
+  const list = entries.length
+    ? entries
+        .map(
+          (entry) => `
+      <div class="entry-item">
+        <div class="entry-title">${escapeHtml(entry.title)}</div>
+        <div class="entry-account">아이디: ${escapeHtml(entry.account)}</div>
+        <div class="entry-pw-row">
+          <span class="entry-pw-text" data-real="${escapeHtml(entry.password)}" data-revealed="false">••••••••</span>
+          <button type="button" class="eye-btn reveal-btn">👁</button>
+        </div>
+        ${entry.email ? `<div class="entry-extra">이메일: ${escapeHtml(entry.email)}</div>` : ""}
+        ${entry.memo ? `<div class="entry-extra">메모: ${escapeHtml(entry.memo)}</div>` : ""}
+      </div>
+    `
+        )
+        .join("")
+    : `<div class="empty-msg">저장된 비밀번호가 없습니다.</div>`;
+
+  return `
+    <div class="topbar">
+      <button class="back-btn" data-click="goto:master-home">←</button>
+      <h2>${escapeHtml(u.name)} 님</h2>
+    </div>
+    <div class="card">
+      <div class="summary-row"><span class="summary-label">아이디</span><span class="summary-value">${escapeHtml(u.id)}</span></div>
+      <div class="summary-row"><span class="summary-label">로그인 비밀번호</span><span class="summary-value">
+        <span class="entry-pw-text" data-real="${escapeHtml(u.password)}" data-revealed="false">••••••••</span>
+        <button type="button" class="eye-btn reveal-btn" style="width:36px;padding:4px">👁</button>
+      </span></div>
+    </div>
+    <h2 style="font-size:17px;margin:20px 0 10px">저장된 비밀번호 목록</h2>
+    ${list}
+  `;
+}
+
+function render() {
+  let html = "";
+  switch (state.screen) {
+    case "welcome": html = screenWelcome(); break;
+    case "quick-login": html = screenQuickLogin(); break;
+    case "signup-name": html = screenSignupName(); break;
+    case "signup-id": html = screenSignupId(); break;
+    case "signup-password": html = screenSignupPassword(); break;
+    case "signup-done": html = screenSignupDone(); break;
+    case "login": html = screenLogin(); break;
+    case "home": html = screenHome(); break;
+    case "entry-form": html = screenEntryForm(); break;
+    case "reset-password": html = screenResetPassword(); break;
+    case "settings": html = screenSettings(); break;
+    case "master-home": html = screenMasterHome(); break;
+    case "master-user-detail": html = screenMasterUserDetail(); break;
+    default: html = `<div class="empty-msg">불러오는 중...</div>`;
+  }
+  appEl.innerHTML = html;
+  bindDynamicToggles();
+}
+
+function bindDynamicToggles() {
+  appEl.querySelectorAll("[data-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const input = document.getElementById(btn.dataset.toggle);
+      if (!input) return;
+      input.type = input.type === "password" ? "text" : "password";
+    });
+  });
+
+  appEl.querySelectorAll(".reveal-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const span = btn.parentElement.querySelector(".entry-pw-text");
+      if (!span) return;
+      const revealed = span.dataset.revealed === "true";
+      span.textContent = revealed ? "••••••••" : span.dataset.real;
+      span.dataset.revealed = revealed ? "false" : "true";
+    });
+  });
+
+  appEl.querySelectorAll(".copy-pw-btn").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const span = btn.parentElement.querySelector(".entry-pw-text");
+      if (!span) return;
+      try {
+        await navigator.clipboard.writeText(span.dataset.real);
+        btn.textContent = "완료!";
+        setTimeout(() => (btn.textContent = "복사"), 1200);
+      } catch (e) {
+        alert("복사에 실패했습니다.");
+      }
+    });
+  });
+}
+
+/* ---------- Handlers ---------- */
+
+const handlers = {
+  chooseSignup: () => {
+    state.signup = { name: "", id: "" };
+    goto("signup-name");
+  },
+  chooseLogin: () => goto("login"),
+  chooseBackToWelcome: () => goto("welcome"),
+  forgetDevice: () => {
+    clearRemembered();
+    goto("welcome");
+  },
+  finishSignup: () => goto("home"),
+  newEntry: () => {
+    state.editingEntryId = null;
+    goto("entry-form");
+  },
+  goResetPassword: () => goto("reset-password"),
+  logout: () => {
+    state.currentUser = null;
+    state.masterUsers = null;
+    state.masterViewingId = null;
+    goto(getRemembered() ? "quick-login" : "welcome");
+  },
+  clearRememberSettings: () => {
+    clearRemembered();
+    render();
+  },
+
+  "editEntry:*": (id) => {
+    state.editingEntryId = id;
+    goto("entry-form");
+  },
+  "deleteEntry:*": async (id) => {
+    if (!confirm("이 비밀번호를 삭제할까요?")) return;
+    try {
+      await deleteEntry(state.currentUser.id, id);
+      delete state.currentUser.entries[id];
+      render();
+    } catch (e) {
+      alert("삭제에 실패했습니다: " + e.message);
+    }
+  },
+  "viewMasterUser:*": (id) => {
+    state.masterViewingId = id;
+    goto("master-user-detail");
+  },
+  "goto:*": (target) => goto(target),
+};
+
+appEl.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-click]");
+  if (!el) return;
+  const action = el.dataset.click;
+  if (action.includes(":")) {
+    const [prefix, arg] = action.split(/:(.+)/);
+    const fn = handlers[`${prefix}:*`];
+    if (fn) fn(arg);
+  } else if (handlers[action]) {
+    handlers[action]();
+  }
+});
+
+appEl.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const form = e.target;
+  const action = form.dataset.action;
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  if (action === "signupName") {
+    const name = (data.name || "").trim();
+    if (!name) return setError("이름을 입력해주세요.");
+    state.signup.name = name;
+    goto("signup-id");
+    return;
+  }
+
+  if (action === "signupId") {
+    const id = (data.id || "").trim();
+    if (!validId(id)) return setError("아이디는 영문/숫자/_ 4~20자로 입력해주세요.");
+    state.busy = true;
+    render();
+    try {
+      const existing = await fetchUser(id);
+      state.busy = false;
+      if (existing) return setError("이미 사용중인 아이디입니다.");
+      state.signup.id = id;
+      goto("signup-password");
+    } catch (err) {
+      state.busy = false;
+      setError("확인 중 오류가 발생했습니다: " + err.message);
+    }
+    return;
+  }
+
+  if (action === "signupPassword") {
+    const { password, password2 } = data;
+    if (!validPassword(password)) return setError("비밀번호는 8자 이상이며 특수문자를 포함해야 합니다.");
+    if (password !== password2) return setError("비밀번호가 일치하지 않습니다.");
+    state.busy = true;
+    render();
+    try {
+      const newUser = { name: state.signup.name, id: state.signup.id, password };
+      await createUser(newUser);
+      state.busy = false;
+      state.currentUser = { ...newUser, entries: {} };
+      goto("signup-done");
+    } catch (err) {
+      state.busy = false;
+      setError("계정 생성에 실패했습니다: " + err.message);
+    }
+    return;
+  }
+
+  if (action === "login") {
+    const name = (data.name || "").trim();
+    const id = (data.id || "").trim();
+    const password = data.password || "";
+    const remember = data.remember === "on";
+
+    if (name === MASTER_NAME && id === MASTER_ID) {
+      state.busy = true;
+      render();
+      try {
+        state.masterUsers = await fetchAllUsers();
+        state.busy = false;
+        goto("master-home");
+      } catch (err) {
+        state.busy = false;
+        setError("마스터 모드 진입에 실패했습니다: " + err.message);
+      }
+      return;
+    }
+
+    state.busy = true;
+    render();
+    try {
+      const user = await fetchUser(id);
+      state.busy = false;
+      if (!user || user.name !== name || user.password !== password) {
+        return setError("이름, 아이디 또는 비밀번호가 일치하지 않습니다.");
+      }
+      state.currentUser = user;
+      if (remember) saveRemembered(id, password, name);
+      goto("home");
+    } catch (err) {
+      state.busy = false;
+      setError("로그인 중 오류가 발생했습니다: " + err.message);
+    }
+    return;
+  }
+
+  if (action === "quickLogin") {
+    const name = (data.name || "").trim();
+    const remembered = getRemembered();
+    if (!remembered) return goto("welcome");
+    if (name !== remembered.name) return setError("이름이 일치하지 않습니다.");
+    state.busy = true;
+    render();
+    try {
+      const user = await fetchUser(remembered.id);
+      state.busy = false;
+      if (!user || user.password !== remembered.pw || user.name !== remembered.name) {
+        clearRemembered();
+        gotoWithError("login", "저장된 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+        return;
+      }
+      state.currentUser = user;
+      goto("home");
+    } catch (err) {
+      state.busy = false;
+      setError("로그인 중 오류가 발생했습니다: " + err.message);
+    }
+    return;
+  }
+
+  if (action === "saveEntry") {
+    const title = (data.title || "").trim();
+    const account = (data.account || "").trim();
+    const password = data.password || "";
+    const email = (data.email || "").trim();
+    const memo = (data.memo || "").trim();
+    if (!title || !account || !password) return setError("필수 항목을 모두 입력해주세요.");
+
+    const entry = { title, account, password, email, memo };
+    state.busy = true;
+    render();
+    try {
+      if (state.editingEntryId) {
+        await updateEntry(state.currentUser.id, state.editingEntryId, entry);
+        state.currentUser.entries[state.editingEntryId] = {
+          ...state.currentUser.entries[state.editingEntryId],
+          ...entry,
+        };
+      } else {
+        const newId = await addEntry(state.currentUser.id, entry);
+        if (!state.currentUser.entries) state.currentUser.entries = {};
+        state.currentUser.entries[newId] = entry;
+      }
+      state.busy = false;
+      state.editingEntryId = null;
+      goto("home");
+    } catch (err) {
+      state.busy = false;
+      setError("저장에 실패했습니다: " + err.message);
+    }
+    return;
+  }
+
+  if (action === "resetPasswordSubmit") {
+    const { password, password2 } = data;
+    if (!validPassword(password)) return setError("비밀번호는 8자 이상이며 특수문자를 포함해야 합니다.");
+    if (password !== password2) return setError("비밀번호가 일치하지 않습니다.");
+    state.busy = true;
+    render();
+    try {
+      await updateUserPassword(state.currentUser.id, password);
+      state.currentUser.password = password;
+      if (getRemembered()) saveRemembered(state.currentUser.id, password, state.currentUser.name);
+      state.busy = false;
+      goto("home");
+    } catch (err) {
+      state.busy = false;
+      setError("비밀번호 변경에 실패했습니다: " + err.message);
+    }
+    return;
+  }
+});
+
+/* ---------- Init ---------- */
+const remembered = getRemembered();
+goto(remembered ? "quick-login" : "welcome");
+</script>
+</body>
+</html>
