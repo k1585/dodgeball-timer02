@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>농구 경기정보 슬레이트</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: #eee;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .fullscreen-button {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #2f2f38;
+    color: #fff;
+    border: none;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 0;
+    opacity: 0.55;
+  }
+
+  .fullscreen-button:active { transform: scale(0.95); }
+
+  .slate {
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    border: 5px solid #000;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .row {
+    display: flex;
+    border-bottom: 4px solid #000;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .row:last-of-type { border-bottom: none; }
+
+  .row.tall { flex: 1.3; }
+
+  .label {
+    width: 25%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 3vw;
+    font-weight: 900;
+    font-size: clamp(20px, 4.2vw, 46px);
+    letter-spacing: 0.3em;
+    border-right: 3px dashed #000;
+    white-space: nowrap;
+  }
+
+  .content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .field-group {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-evenly;
+    width: 100%;
+    padding: 0 3vw;
+  }
+
+  .field-unit {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4em;
+  }
+
+  .unit-label {
+    font-size: clamp(18px, 3vw, 32px);
+    font-weight: 700;
+    color: #222;
+  }
+
+  .split {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+
+  .half {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .half:first-child { border-right: 3px dashed #000; }
+
+  .team-name {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    right: 12px;
+    font-size: clamp(14px, 2.1vw, 22px);
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .score-value {
+    font-size: clamp(40px, 9vw, 110px);
+    font-weight: 900;
+  }
+
+  .score-unit {
+    font-size: clamp(24px, 5vw, 60px);
+    font-weight: 900;
+    margin-left: 0.15em;
+  }
+
+  [contenteditable="true"] {
+    outline: none;
+    padding: 0.05em 0.25em;
+    border-radius: 6px;
+    min-width: 0.6em;
+    text-align: center;
+    cursor: text;
+  }
+
+  [contenteditable="true"]:empty::before {
+    content: attr(data-placeholder);
+    color: #b0b0b0;
+    font-weight: 400;
+  }
+
+  [contenteditable="true"]:focus {
+    background: #fff3b0;
+    box-shadow: 0 0 0 2px #f5c400;
+  }
+
+  #competitionName, #gameName {
+    width: 100%;
+    text-align: left;
+    padding-left: 1vw;
+    font-size: clamp(22px, 4vw, 44px);
+    font-weight: 700;
+  }
+
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 8px 0;
+    font-size: clamp(11px, 1.6vw, 16px);
+    color: #333;
+    flex: 0 0 auto;
+  }
+
+  .footer .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.9em;
+    font-weight: 900;
+  }
+
+  .footer .yt { background: #ff2d2d; }
+  .footer .ig { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
+</style>
+</head>
+<body>
+
+<button class="fullscreen-button" onclick="toggleFullscreen()" title="전체화면">⛶</button>
+
+<div class="slate">
+
+  <div class="row">
+    <div class="label">대&nbsp;회&nbsp;명</div>
+    <div class="content">
+      <div id="competitionName" contenteditable="true" data-placeholder="대회명을 입력하세요" data-key="competitionName"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">경&nbsp;기&nbsp;명</div>
+    <div class="content">
+      <div id="gameName" contenteditable="true" data-placeholder="경기명을 입력하세요" data-key="gameName"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">날&nbsp;&nbsp;&nbsp;&nbsp;짜</div>
+    <div class="content">
+      <div class="field-group">
+        <div class="field-unit">
+          <span id="year" contenteditable="true" inputmode="numeric" data-placeholder="0000" data-key="year" data-maxlen="4" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+          <span class="unit-label">년</span>
+        </div>
+        <div class="field-unit">
+          <span id="month" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="month" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+          <span class="unit-label">월</span>
+        </div>
+        <div class="field-unit">
+          <span id="day" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="day" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+          <span class="unit-label">일</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">시작시각</div>
+    <div class="content">
+      <div class="field-group">
+        <div class="field-unit">
+          <span id="hour" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="hour" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+          <span class="unit-label">시</span>
+        </div>
+        <div class="field-unit">
+          <span id="minute" contenteditable="true" inputmode="numeric" data-placeholder="00" data-key="minute" data-maxlen="2" style="font-size:clamp(24px,4.5vw,50px);font-weight:800;"></span>
+          <span class="unit-label">분</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row tall">
+    <div class="label">대&nbsp;&nbsp;&nbsp;&nbsp;진</div>
+    <div class="content">
+      <div class="split">
+        <div class="half">
+          <span id="homeTeam" class="team-name" contenteditable="true" data-placeholder="홈팀명" data-key="homeTeam"></span>
+        </div>
+        <div class="half">
+          <span id="awayTeam" class="team-name" contenteditable="true" data-placeholder="어웨이팀명" data-key="awayTeam"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row tall">
+    <div class="label">점&nbsp;&nbsp;&nbsp;&nbsp;수</div>
+    <div class="content">
+      <div class="split">
+        <div class="half">
+          <span id="homeScore" class="score-value" contenteditable="true" inputmode="numeric" data-placeholder="0" data-key="homeScore" data-maxlen="3"></span>
+          <span class="score-unit">점</span>
+        </div>
+        <div class="half">
+          <span id="awayScore" class="score-value" contenteditable="true" inputmode="numeric" data-placeholder="0" data-key="awayScore" data-maxlen="3"></span>
+          <span class="score-unit">점</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="icon yt">▶</span>
+    <span>고려대스포츠아카데미</span>
+    <span class="icon ig">◎</span>
+    <span>kassay4242 | 고려대스포츠아카데미</span>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = "basketball_slate_fields_v1";
+  const numericIds = ["year", "month", "day", "hour", "minute", "homeScore", "awayScore"];
+
+  function loadFields() {
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch (e) {
+      saved = {};
+    }
+
+    document.querySelectorAll("[data-key]").forEach((el) => {
+      const key = el.getAttribute("data-key");
+      if (saved[key]) {
+        el.textContent = saved[key];
+      }
+    });
+  }
+
+  function saveField(el) {
+    const key = el.getAttribute("data-key");
+    let saved = {};
+    try {
+      saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch (e) {
+      saved = {};
+    }
+    saved[key] = el.textContent.trim();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  }
+
+  document.querySelectorAll("[data-key]").forEach((el) => {
+    el.addEventListener("focus", () => {
+      setTimeout(() => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }, 0);
+    });
+
+    el.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        el.blur();
+      }
+    });
+
+    el.addEventListener("input", () => {
+      if (numericIds.includes(el.id)) {
+        const digitsOnly = el.textContent.replace(/[^0-9]/g, "");
+        const maxLen = Number(el.getAttribute("data-maxlen")) || 4;
+        const trimmed = digitsOnly.slice(0, maxLen);
+        if (trimmed !== el.textContent) {
+          el.textContent = trimmed;
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }
+    });
+
+    el.addEventListener("blur", () => {
+      el.textContent = el.textContent.trim();
+      saveField(el);
+    });
+  });
+
+  function toggleFullscreen() {
+    const page = document.documentElement;
+    if (!document.fullscreenElement) {
+      if (page.requestFullscreen) page.requestFullscreen();
+      else if (page.webkitRequestFullscreen) page.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+
+  function setTodayIfEmpty() {
+    const yearEl = document.getElementById("year");
+    const monthEl = document.getElementById("month");
+    const dayEl = document.getElementById("day");
+
+    if (!yearEl.textContent && !monthEl.textContent && !dayEl.textContent) {
+      const now = new Date();
+      yearEl.textContent = String(now.getFullYear());
+      monthEl.textContent = String(now.getMonth() + 1).padStart(2, "0");
+      dayEl.textContent = String(now.getDate()).padStart(2, "0");
+      saveField(yearEl);
+      saveField(monthEl);
+      saveField(dayEl);
+    }
+  }
+
+  function setDefaultHomeTeam() {
+    const homeTeamEl = document.getElementById("homeTeam");
+    if (!homeTeamEl.textContent) {
+      homeTeamEl.textContent = "고려대스포츠아카데미";
+      saveField(homeTeamEl);
+    }
+  }
+
+  loadFields();
+  setTodayIfEmpty();
+  setDefaultHomeTeam();
+</script>
+
+</body>
+</html>
