@@ -2,8 +2,19 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>오늘의 숙제</title>
+
+<!-- 앱으로 설치(PWA) 관련 설정 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1E3A6B">
+<link rel="icon" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="오늘의숙제">
+
 <style>
   :root{
     /* 포인트 색상: 이 값만 바꾸면 전체 화면의 파란색이 한 번에 바뀝니다 */
@@ -3851,6 +3862,15 @@
 </div>
 
 <script>
+  /* 앱으로 설치(PWA)를 위한 서비스워커 등록 - file://로 직접 열었을 때는
+     브라우저가 서비스워커 등록 자체를 막기 때문에 실패해도 조용히 무시함
+     (https로 실제 배포된 주소에서 열었을 때만 정상 동작) */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+
   /* 1: 숙제 목록 진입점은 항상 남은 숙제 탭에서 시작 */
   function openHomeworkList() {
     showPage("list");

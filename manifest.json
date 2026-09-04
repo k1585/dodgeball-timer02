@@ -1,0 +1,19 @@
+{
+  "name": "오늘의 숙제",
+  "short_name": "오늘의숙제",
+  "description": "Today English 숙제 제출/관리 앱 - 학생과 선생님이 함께 쓰는 오늘의 숙제",
+  "id": "/오늘의숙제.html",
+  "start_url": "오늘의숙제.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#1E3A6B",
+  "lang": "ko",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
