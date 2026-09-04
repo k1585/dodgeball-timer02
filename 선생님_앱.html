@@ -1029,6 +1029,12 @@
     line-height:1.5;
   }
 
+  .hw-manage-due{
+    font-size:12px;
+    color:var(--sub);
+    margin:0 0 8px;
+  }
+
   .hw-cal-header{
     display:flex;
     align-items:center;
@@ -1586,6 +1592,7 @@
 
         <div class="add-hw-form" id="addHwForm">
           <input type="text" id="newHwTitle" class="add-hw-input" placeholder="숙제 이름 입력">
+          <input type="date" id="newHwDue" class="add-hw-input">
           <textarea id="newHwDesc" class="add-hw-textarea" placeholder="설명 (선택)"></textarea>
           <button id="newHwConfirmBtn" onclick="addHomeworkToClass()">만들기</button>
         </div>
@@ -2175,19 +2182,20 @@
   function renderHwDayList() {
     const c = classes[currentClassIndex];
     const label = document.getElementById("hwCalSelectedLabel");
-    label.textContent = formatKoreanDate(hwSelectedDate) + " 숙제";
+    label.textContent = "숙제 목록";
 
-    const dayHw = c.homeworks.map((h, i) => ({ ...h, idx: i })).filter((h) => h.due === hwSelectedDate);
+    const allHw = c.homeworks.map((h, i) => ({ ...h, idx: i })).sort((a, b) => new Date(a.due) - new Date(b.due));
     const listEl = document.getElementById("hwManageList");
-    if (dayHw.length === 0) {
-      listEl.innerHTML = '<p class="empty-approval">이 날짜엔 등록된 숙제가 없어요</p>';
+    if (allHw.length === 0) {
+      listEl.innerHTML = '<p class="empty-approval">아직 만든 숙제가 없어요</p>';
     } else {
-      listEl.innerHTML = dayHw.map((h) => `
+      listEl.innerHTML = allHw.map((h) => `
         <div class="hw-manage-card">
           <div class="hw-manage-top">
             <p class="hw-manage-title">${h.title}</p>
             <span class="hw-manage-dday">${calcDday(h.due)}</span>
           </div>
+          <p class="hw-manage-due">${formatKoreanDate(h.due)}</p>
           ${h.desc ? `<p class="hw-manage-desc">${h.desc}</p>` : ""}
           <button class="hw-manage-delete" onclick="removeHomework(${h.idx})">삭제</button>
         </div>
@@ -2212,18 +2220,23 @@
     const form = document.getElementById("addHwForm");
     form.classList.toggle("show");
     if (form.classList.contains("show")) {
+      const today = new Date().toISOString().slice(0, 10);
+      document.getElementById("newHwDue").value = today;
       document.getElementById("newHwTitle").focus();
     }
   }
 
   function addHomeworkToClass() {
     const titleInput = document.getElementById("newHwTitle");
+    const dueInput = document.getElementById("newHwDue");
     const descInput = document.getElementById("newHwDesc");
     const title = titleInput.value.trim();
-    if (!title) return;
+    const due = dueInput.value;
+    if (!title || !due) return;
     playTapSound();
-    classes[currentClassIndex].homeworks.push({ title: title, due: hwSelectedDate, desc: descInput.value.trim() });
+    classes[currentClassIndex].homeworks.push({ title: title, due: due, desc: descInput.value.trim() });
     titleInput.value = "";
+    dueInput.value = "";
     descInput.value = "";
     document.getElementById("addHwForm").classList.remove("show");
     renderClassDetail();
