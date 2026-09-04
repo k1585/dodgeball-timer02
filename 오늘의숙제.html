@@ -492,6 +492,20 @@
     background:var(--point-strong);
     color:#ffffff;
   }
+  .cal-cell.has-hw::after{
+    content:"";
+    position:absolute;
+    bottom:5px;
+    left:50%;
+    transform:translateX(-50%);
+    width:4px;
+    height:4px;
+    border-radius:50%;
+    background:var(--point-strong);
+  }
+  .cal-cell.selected.has-hw::after{
+    background:#ffffff;
+  }
   .cal-dot-row{
     display:flex;
     gap:2px;
@@ -2338,7 +2352,7 @@
   }
   .t-scope input[type="date"].add-hw-input{
     padding:8px 12px;
-    height:38px;
+    min-height:36px;
   }
   .t-scope .add-hw-form label{
     display:block;
@@ -4384,8 +4398,8 @@
       if (dateStr === todayStr) cls += " is-today";
 
       let inner = String(d);
+      const statuses = dayHomeworkStatuses(dateStr);
       if (dateStr < todayStr) {
-        const statuses = dayHomeworkStatuses(dateStr);
         if (statuses.length > 0) {
           const allDone = statuses.every((s) => s.status !== "missing");
           const allMissing = statuses.every((s) => s.status === "missing");
@@ -4402,6 +4416,9 @@
             inner = `<span>${d}</span><span class="cal-dot-row">${dots}</span>`;
           }
         }
+      } else if (statuses.length > 0) {
+        /* 오늘/이후 날짜엔 아직 지난 날이 아니라 색칠은 안 하지만, 숙제가 있다는 건 점으로 표시 */
+        cls += " has-hw";
       }
       html += `<button class="${cls}" onclick="selectStudentCalDay('${dateStr}')">${inner}</button>`;
     }
