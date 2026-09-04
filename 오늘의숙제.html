@@ -957,7 +957,7 @@
     color:#ffffff;
   }
 
-  #closeNoPhotoBtn{
+  #closeNoPhotoBtn, #closeNoChangesBtn, #closeComingSoonBtn{
     background:var(--point-strong);
     color:#ffffff;
   }
@@ -2866,8 +2866,6 @@
         <button class="tab" data-tab="pending" onclick="selectTab('pending')">승인현황</button>
         <button class="tab" data-tab="past" onclick="selectTab('past')">지난 숙제</button>
       </div>
-
-      <p class="date-range">8월 24일 ~ 8월 30일</p>
     </div>
 
     <div class="list-area">
@@ -3891,9 +3889,11 @@
   }
 
   function calcDday(dueDateStr) {
-    const due = new Date(dueDateStr + "T23:59:59");
+    const [dy, dm, dd] = dueDateStr.split("-").map(Number);
+    const due = new Date(dy, dm - 1, dd);
     const now = new Date();
-    const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
     if (diffDays < 0) return "마감";
     if (diffDays === 0) return "D-day";
     return "D-" + diffDays;
