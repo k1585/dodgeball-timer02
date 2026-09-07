@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>농구 경기 슬레이트</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0c0c0e;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  .page {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: #f2f2f0;
+  }
+
+  /* ---------- top controls ---------- */
+  .top-controls {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 4px 6px;
+    background: #000;
+  }
+
+  /* ---------- banner ---------- */
+  .banner {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(100deg, #111 55%, #2b2b2f 100%);
+    padding: clamp(10px, 1.8vh, 22px) clamp(14px, 2vw, 28px);
+    overflow: hidden;
+  }
+
+  .banner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 10px,
+      transparent 10px,
+      transparent 26px
+    );
+    pointer-events: none;
+  }
+
+  .banner-titles {
+    position: relative;
+    z-index: 1;
+    cursor: pointer;
+  }
+
+  .banner-title {
+    color: #fff;
+    font-size: clamp(26px, 5vw, 54px);
+    font-weight: 900;
+    font-style: italic;
+    letter-spacing: 1px;
+    line-height: 1;
+    margin: 0;
+  }
+
+  .banner-underline {
+    width: 92%;
+    height: 4px;
+    background: #e6222c;
+    margin: 6px 0 6px;
+  }
+
+  .banner-subtitle {
+    color: #eee;
+    font-size: clamp(11px, 1.6vw, 20px);
+    font-weight: 700;
+    letter-spacing: 6px;
+    margin: 0;
+  }
+
+  .hoop {
+    position: absolute;
+    right: clamp(10px, 2vw, 40px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: clamp(70px, 9vw, 130px);
+    height: clamp(70px, 9vw, 130px);
+    z-index: 1;
+    opacity: 0.95;
+  }
+
+  /* ---------- main content ---------- */
+  .content {
+    flex: 1 1 auto;
+    display: flex;
+    gap: clamp(6px, 1vw, 14px);
+    padding: clamp(6px, 1vh, 14px);
+    min-height: 0;
+  }
+
+  .left-panel {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3px, 0.7vh, 8px);
+    min-width: 0;
+  }
+
+  .row {
+    flex: 1;
+    display: flex;
+    border: 2px solid #111;
+    min-height: 0;
+  }
+
+  .row-label {
+    flex: 0 0 clamp(84px, 15%, 190px);
+    background: #111;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2px 4px;
+  }
+
+  .row-label .kr {
+    font-size: clamp(11px, 1.7vw, 19px);
+    font-weight: 800;
+  }
+
+  .row-label .en {
+    font-size: clamp(7px, 0.95vw, 11px);
+    letter-spacing: 1px;
+    color: #bbb;
+    margin-top: 2px;
+  }
+
+  .row-value {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 2px 8px;
+    min-width: 0;
+  }
+
+  .row-value .val {
+    font-size: clamp(13px, 2vw, 24px);
+    font-weight: 700;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .row-value .placeholder {
+    color: #bbb;
+    font-weight: 400;
+  }
+
+  .gameno-boxes {
+    display: flex;
+    gap: clamp(3px, 0.8vw, 8px);
+    width: 100%;
+    justify-content: center;
+  }
+
+  .gameno-box {
+    flex: 1;
+    max-width: 60px;
+    aspect-ratio: 1 / 1;
+    border: 2px solid #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(14px, 2.2vw, 24px);
+    font-weight: 800;
+    background: #fff;
+  }
+
+  /* ---------- right panel ---------- */
+  .right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(3px, 0.7vh, 8px);
+    min-width: 0;
+  }
+
+  .team-block {
+    flex: 1.1;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #111;
+    cursor: pointer;
+    min-height: 0;
+  }
+
+  .team-head {
+    background: #111;
+    color: #fff;
+    text-align: center;
+    padding: 4px 0;
+    flex: 0 0 auto;
+  }
+
+  .team-head b {
+    font-size: clamp(15px, 2.4vw, 26px);
+    font-style: italic;
+  }
+
+  .team-head span {
+    font-size: clamp(9px, 1.3vw, 14px);
+    color: #ccc;
+    margin-left: 6px;
+  }
+
+  .team-name {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 8px;
+    min-height: 0;
+  }
+
+  .team-name .val {
+    font-size: clamp(14px, 2.3vw, 26px);
+    font-weight: 800;
+    color: #111;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  .vs-row {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 2px 0;
+  }
+
+  .vs-row .slash {
+    color: #e6222c;
+    font-size: clamp(16px, 2.6vw, 26px);
+    font-weight: 800;
+  }
+
+  .vs-row .vs {
+    font-size: clamp(22px, 4vw, 40px);
+    font-weight: 900;
+    font-style: italic;
+    color: #111;
+  }
+
+  .score-row {
+    flex: 1;
+    display: flex;
+    gap: clamp(3px, 0.8vw, 8px);
+    min-height: 0;
+  }
+
+  .score-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid #e6222c;
+    cursor: pointer;
+    min-height: 0;
+  }
+
+  .score-head {
+    background: #e6222c;
+    color: #fff;
+    text-align: center;
+    font-size: clamp(10px, 1.5vw, 16px);
+    font-weight: 800;
+    padding: 3px 0;
+    flex: 0 0 auto;
+  }
+
+  .score-value {
+    flex: 1;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+
+  .score-value .val {
+    font-size: clamp(26px, 5vw, 56px);
+    font-weight: 900;
+    color: #111;
+  }
+
+  /* ---------- footer ---------- */
+  .footer {
+    flex: 0 0 auto;
+    background: #111;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 2vw, 22px);
+    padding: clamp(6px, 1vh, 12px) clamp(14px, 2vw, 24px);
+  }
+
+  .footer-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  .footer-icon {
+    width: clamp(20px, 2.6vw, 30px);
+    height: clamp(20px, 2.6vw, 30px);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(11px, 1.6vw, 16px);
+    flex: 0 0 auto;
+  }
+
+  .footer-icon.ig {
+    background: radial-gradient(circle at 30% 110%, #ffdb73, #fd5949 30%, #d6249f 60%, #285aeb);
+  }
+
+  .footer-icon.yt {
+    background: #ff0000;
+  }
+
+  .footer-text {
+    font-size: clamp(9px, 1.3vw, 14px);
+    line-height: 1.3;
+  }
+
+  .footer-text .line1 {
+    font-weight: 700;
+  }
+
+  .footer-text .line2 {
+    color: #ccc;
+  }
+
+  .footer-divider {
+    flex: 1;
+    height: 3px;
+    background: repeating-linear-gradient(
+      90deg,
+      #e6222c 0px,
+      #e6222c 12px,
+      transparent 12px,
+      transparent 20px
+    );
+  }
+
+  /* ---------- floating buttons ---------- */
+  .float-btn {
+    width: 30px;
+    height: 26px;
+    border-radius: 7px;
+    background: #2e2e34;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .float-btn:active {
+    transform: scale(0.94);
+  }
+
+  /* ---------- modal ---------- */
+  .modal-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+
+  .modal-bg.open {
+    display: flex;
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 420px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background: #1c1c20;
+    border-radius: 20px;
+    padding: 26px;
+    text-align: center;
+    color: #fff;
+  }
+
+  .modal h2 {
+    margin: 0 0 18px;
+    font-size: 22px;
+  }
+
+  .modal input[type="text"],
+  .modal input[type="date"],
+  .modal input[type="time"],
+  .modal input[type="number"] {
+    width: 100%;
+    font-size: 22px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  .gameno-inputs {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .gameno-inputs input {
+    width: 46px;
+    height: 56px;
+    font-size: 24px;
+    text-align: center;
+    border-radius: 10px;
+    border: none;
+  }
+
+  .score-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 16px;
+  }
+
+  .score-stepper button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #3a3a44;
+    color: #fff;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .score-stepper button:active {
+    transform: scale(0.94);
+  }
+
+  .score-stepper .score-big {
+    font-size: 44px;
+    font-weight: 900;
+    min-width: 70px;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 6px;
+  }
+
+  .modal-buttons button {
+    flex: 1;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+  }
+
+  .btn-confirm {
+    background: #e6222c;
+  }
+
+  .btn-cancel {
+    background: #555;
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <div class="top-controls">
+    <button id="resetBtn" class="float-btn" onclick="resetAll()" title="초기화" aria-label="초기화">↺</button>
+    <button id="fullscreenBtn" class="float-btn" onclick="toggleFullscreen()" title="전체화면" aria-label="전체화면">⛶</button>
+  </div>
+
+  <div class="banner">
+    <div class="banner-titles" onclick="openText('bannerTitle','대회 로고 제목','예: BASKETBALL')">
+      <p class="banner-title" id="bannerTitleText">BASKETBALL</p>
+      <div class="banner-underline"></div>
+      <p class="banner-subtitle" id="bannerSubtitleText">KOREA SPORTS ACADEMY</p>
+    </div>
+
+    <svg class="hoop" viewBox="0 0 120 120" onclick="openText('bannerSubtitle','부제목','예: KOREA SPORTS ACADEMY')">
+      <ellipse cx="60" cy="30" rx="46" ry="12" fill="none" stroke="#ff7a1a" stroke-width="8" />
+      <g stroke="#fff" stroke-width="1.6" opacity="0.9">
+        <line x1="20" y1="32" x2="34" y2="92" />
+        <line x1="35" y1="34" x2="42" y2="96" />
+        <line x1="50" y1="35" x2="52" y2="100" />
+        <line x1="68" y1="35" x2="68" y2="100" />
+        <line x1="85" y1="34" x2="78" y2="96" />
+        <line x1="100" y1="32" x2="86" y2="92" />
+        <line x1="24" y1="46" x2="96" y2="46" />
+        <line x1="28" y1="60" x2="92" y2="60" />
+        <line x1="34" y1="76" x2="86" y2="76" />
+      </g>
+    </svg>
+  </div>
+
+  <div class="content">
+    <div class="left-panel">
+      <div class="row" onclick="openText('tournament','대회명','대회명을 입력하세요')">
+        <div class="row-label"><div class="kr">대회명</div><div class="en">TOURNAMENT</div></div>
+        <div class="row-value"><div class="val" id="tournamentText">&nbsp;</div></div>
+      </div>
+
+      <div class="row" onclick="openText('gameTitle','경기명','경기명을 입력하세요')">
+        <div class="row-label"><div class="kr">경기명</div><div class="en">GAME TITLE</div></div>
+        <div class="row-value"><div class="val" id="gameTitleText">&nbsp;</div></div>
+      </div>
+
+      <div class="row" onclick="openGameNo()">
+        <div class="row-label"><div class="kr">경기고유번호</div><div class="en">GAME NO.</div></div>
+        <div class="row-value">
+          <div class="gameno-boxes" id="gameNoBoxes"></div>
+        </div>
+      </div>
+
+      <div class="row" onclick="openDate()">
+        <div class="row-label"><div class="kr">날짜</div><div class="en">DATE</div></div>
+        <div class="row-value"><div class="val" id="dateText"><span class="placeholder">YYYY . MM . DD</span></div></div>
+      </div>
+
+      <div class="row" onclick="openTime()">
+        <div class="row-label"><div class="kr">경기 시작시간</div><div class="en">START TIME</div></div>
+        <div class="row-value"><div class="val" id="timeText"><span class="placeholder">HH : MM</span></div></div>
+      </div>
+
+      <div class="row" onclick="openText('camera','촬영 카메라','예: CAM 1 / GoPro')">
+        <div class="row-label"><div class="kr">촬영 카메라</div><div class="en">CAMERA</div></div>
+        <div class="row-value"><div class="val" id="cameraText">&nbsp;</div></div>
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="team-block" onclick="openText('homeTeam','홈 팀 이름','예: 고려대스포츠아카데미')">
+        <div class="team-head"><b>HOME</b><span>TEAM</span></div>
+        <div class="team-name"><div class="val" id="homeTeamText">&nbsp;</div></div>
+      </div>
+
+      <div class="vs-row">
+        <span class="slash">/</span><span class="vs">VS</span><span class="slash">/</span>
+      </div>
+
+      <div class="team-block" onclick="openText('awayTeam','원정 팀 이름','예: 상대팀 이름')">
+        <div class="team-head"><b>AWAY</b><span>TEAM</span></div>
+        <div class="team-name"><div class="val" id="awayTeamText">&nbsp;</div></div>
+      </div>
+
+      <div class="score-row">
+        <div class="score-block" onclick="openScore('homeScore')">
+          <div class="score-head">HOME SCORE</div>
+          <div class="score-value"><div class="val" id="homeScoreText">0</div></div>
+        </div>
+        <div class="score-block" onclick="openScore('awayScore')">
+          <div class="score-head">AWAY SCORE</div>
+          <div class="score-value"><div class="val" id="awayScoreText">0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-item" onclick="openText('igHandle','인스타그램 계정','예: @your_instagram')">
+      <div class="footer-icon ig">📷</div>
+      <div class="footer-text">
+        <div class="line1" id="igHandleText">@your_instagram</div>
+        <div class="line2" id="igNameText2">학원명을 입력하세요</div>
+      </div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-item" onclick="openText('ytName','유튜브 채널명','예: 채널명')">
+      <div class="footer-icon yt">▶</div>
+      <div class="footer-text">
+        <div class="line1" id="ytNameText">채널명을 입력하세요</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button id="resetBtn" class="float-btn" onclick="resetAll()" title="초기화" aria-label="초기화">↺</button>
+<button id="fullscreenBtn" class="float-btn" onclick="toggleFullscreen()" title="전체화면" aria-label="전체화면">⛶</button>
+
+<!-- generic text modal -->
+<div id="textModalBg" class="modal-bg">
+  <div class="modal">
+    <h2 id="textModalTitle">입력</h2>
+    <input type="text" id="textModalInput" />
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('textModalBg')">취소</button>
+      <button class="btn-confirm" onclick="confirmText()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- game number modal -->
+<div id="gameNoModalBg" class="modal-bg">
+  <div class="modal">
+    <h2>경기고유번호</h2>
+    <div class="gameno-inputs" id="gameNoInputs"></div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('gameNoModalBg')">취소</button>
+      <button class="btn-confirm" onclick="confirmGameNo()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- date modal -->
+<div id="dateModalBg" class="modal-bg">
+  <div class="modal">
+    <h2>날짜</h2>
+    <input type="date" id="dateModalInput" />
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('dateModalBg')">취소</button>
+      <button class="btn-confirm" onclick="confirmDate()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- time modal -->
+<div id="timeModalBg" class="modal-bg">
+  <div class="modal">
+    <h2>경기 시작시간</h2>
+    <input type="time" id="timeModalInput" />
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('timeModalBg')">취소</button>
+      <button class="btn-confirm" onclick="confirmTime()">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- score modal -->
+<div id="scoreModalBg" class="modal-bg">
+  <div class="modal">
+    <h2 id="scoreModalTitle">점수</h2>
+    <div class="score-stepper">
+      <button onclick="stepScore(-1)">−</button>
+      <div class="score-big" id="scoreModalValue">0</div>
+      <button onclick="stepScore(1)">+</button>
+    </div>
+    <div class="modal-buttons">
+      <button class="btn-cancel" onclick="closeModal('scoreModalBg')">취소</button>
+      <button class="btn-confirm" onclick="confirmScore()">확인</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = "basketball_slate_data";
+
+  const defaultData = {
+    bannerTitle: "BASKETBALL",
+    bannerSubtitle: "KOREA SPORTS ACADEMY",
+    tournament: "",
+    gameTitle: "",
+    gameNo: ["", "", "", "", ""],
+    date: "",
+    time: "",
+    camera: "",
+    homeTeam: "",
+    awayTeam: "",
+    homeScore: 0,
+    awayScore: 0,
+    igHandle: "@your_instagram",
+    igName: "학원명을 입력하세요",
+    ytName: "채널명을 입력하세요"
+  };
+
+  let data = loadData();
+  let currentTextField = null;
+  let currentScoreField = null;
+  let scoreModalTemp = 0;
+
+  function loadData() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (saved) {
+        return Object.assign({}, defaultData, saved);
+      }
+    } catch (e) {}
+    return Object.assign({}, defaultData);
+  }
+
+  function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function render() {
+    document.getElementById("bannerTitleText").textContent = data.bannerTitle || "BASKETBALL";
+    document.getElementById("bannerSubtitleText").textContent = data.bannerSubtitle || "KOREA SPORTS ACADEMY";
+
+    setValueText("tournamentText", data.tournament, "대회명을 입력하세요");
+    setValueText("gameTitleText", data.gameTitle, "경기명을 입력하세요");
+    setValueText("cameraText", data.camera, "촬영 카메라를 입력하세요");
+    setValueText("homeTeamText", data.homeTeam, "HOME TEAM");
+    setValueText("awayTeamText", data.awayTeam, "AWAY TEAM");
+
+    document.getElementById("homeScoreText").textContent = data.homeScore;
+    document.getElementById("awayScoreText").textContent = data.awayScore;
+
+    renderGameNoBoxes();
+
+    const dateEl = document.getElementById("dateText");
+    dateEl.innerHTML = data.date
+      ? formatDateDisplay(data.date)
+      : '<span class="placeholder">YYYY . MM . DD</span>';
+
+    const timeEl = document.getElementById("timeText");
+    timeEl.innerHTML = data.time
+      ? data.time
+      : '<span class="placeholder">HH : MM</span>';
+
+    document.getElementById("igHandleText").textContent = data.igHandle || "@your_instagram";
+    document.getElementById("igNameText2").textContent = data.igName || "학원명을 입력하세요";
+    document.getElementById("ytNameText").textContent = data.ytName || "채널명을 입력하세요";
+  }
+
+  function setValueText(elId, value, placeholder) {
+    const el = document.getElementById(elId);
+    if (value) {
+      el.textContent = value;
+      el.classList.remove("placeholder");
+    } else {
+      el.innerHTML = '<span class="placeholder">' + placeholder + "</span>";
+    }
+  }
+
+  function renderGameNoBoxes() {
+    const box = document.getElementById("gameNoBoxes");
+    box.innerHTML = "";
+    for (let i = 0; i < 5; i++) {
+      const div = document.createElement("div");
+      div.className = "gameno-box";
+      div.textContent = data.gameNo[i] || "";
+      box.appendChild(div);
+    }
+  }
+
+  function formatDateDisplay(isoDate) {
+    const parts = isoDate.split("-");
+    if (parts.length !== 3) return isoDate;
+    return parts[0] + " . " + parts[1] + " . " + parts[2];
+  }
+
+  /* ---------- generic text modal ---------- */
+  function openText(field, title, placeholder) {
+    currentTextField = field;
+    document.getElementById("textModalTitle").textContent = title;
+    const input = document.getElementById("textModalInput");
+    input.value = data[field] || "";
+    input.placeholder = placeholder || "";
+    openModal("textModalBg");
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function confirmText() {
+    const value = document.getElementById("textModalInput").value.trim();
+    data[currentTextField] = value;
+    saveData();
+    render();
+    closeModal("textModalBg");
+  }
+
+  /* ---------- game number modal ---------- */
+  function openGameNo() {
+    const wrap = document.getElementById("gameNoInputs");
+    wrap.innerHTML = "";
+    for (let i = 0; i < 5; i++) {
+      const input = document.createElement("input");
+      input.type = "text";
+      input.inputMode = "numeric";
+      input.maxLength = 1;
+      input.value = data.gameNo[i] || "";
+      input.dataset.idx = i;
+      input.addEventListener("input", (e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, "").slice(0, 1);
+        if (e.target.value && i < 4) {
+          wrap.children[i + 1].focus();
+        }
+      });
+      wrap.appendChild(input);
+    }
+    openModal("gameNoModalBg");
+  }
+
+  function confirmGameNo() {
+    const inputs = document.getElementById("gameNoInputs").children;
+    const newGameNo = [];
+    for (let i = 0; i < inputs.length; i++) {
+      newGameNo.push(inputs[i].value || "");
+    }
+    data.gameNo = newGameNo;
+    saveData();
+    render();
+    closeModal("gameNoModalBg");
+  }
+
+  /* ---------- date modal ---------- */
+  function openDate() {
+    document.getElementById("dateModalInput").value = data.date || "";
+    openModal("dateModalBg");
+  }
+
+  function confirmDate() {
+    data.date = document.getElementById("dateModalInput").value;
+    saveData();
+    render();
+    closeModal("dateModalBg");
+  }
+
+  /* ---------- time modal ---------- */
+  function openTime() {
+    document.getElementById("timeModalInput").value = data.time || "";
+    openModal("timeModalBg");
+  }
+
+  function confirmTime() {
+    data.time = document.getElementById("timeModalInput").value;
+    saveData();
+    render();
+    closeModal("timeModalBg");
+  }
+
+  /* ---------- score modal ---------- */
+  function openScore(field) {
+    currentScoreField = field;
+    scoreModalTemp = Number(data[field]) || 0;
+    document.getElementById("scoreModalTitle").textContent =
+      field === "homeScore" ? "HOME SCORE" : "AWAY SCORE";
+    document.getElementById("scoreModalValue").textContent = scoreModalTemp;
+    openModal("scoreModalBg");
+  }
+
+  function stepScore(delta) {
+    scoreModalTemp = Math.max(0, scoreModalTemp + delta);
+    document.getElementById("scoreModalValue").textContent = scoreModalTemp;
+  }
+
+  function confirmScore() {
+    data[currentScoreField] = scoreModalTemp;
+    saveData();
+    render();
+    closeModal("scoreModalBg");
+  }
+
+  /* ---------- modal helpers ---------- */
+  function openModal(id) {
+    document.getElementById(id).classList.add("open");
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("open");
+  }
+
+  function resetAll() {
+    if (!confirm("모든 항목을 초기화할까요?")) return;
+    data = Object.assign({}, defaultData, { gameNo: ["", "", "", "", ""] });
+    saveData();
+    render();
+  }
+
+  function toggleFullscreen() {
+    const page = document.documentElement;
+    if (!document.fullscreenElement) {
+      if (page.requestFullscreen) page.requestFullscreen();
+      else if (page.webkitRequestFullscreen) page.webkitRequestFullscreen();
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>
