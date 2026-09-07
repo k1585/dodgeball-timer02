@@ -4,6 +4,9 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>농구 경기 슬레이트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Black+Han+Sans&display=swap" rel="stylesheet">
 
 <style>
   * {
@@ -17,9 +20,13 @@
     height: 100%;
     overflow: hidden;
     background: #0c0c0e;
-    font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+    font-family: "Black Han Sans", "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
     user-select: none;
+  }
+
+  .headline {
+    font-family: "Anton", "Malgun Gothic", Arial, sans-serif;
   }
 
   .page {
@@ -46,65 +53,73 @@
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-    background: linear-gradient(100deg, #111 55%, #2b2b2f 100%);
-    padding: clamp(10px, 1.8vh, 22px) clamp(14px, 2vw, 28px);
+    background: linear-gradient(120deg, #dcdcda 0%, #eee 40%, #c9c9c7 100%);
     overflow: hidden;
   }
 
-  .banner::after {
+  .banner::before {
     content: "";
     position: absolute;
     inset: 0;
     background: repeating-linear-gradient(
       115deg,
-      rgba(255, 255, 255, 0.05) 0px,
-      rgba(255, 255, 255, 0.05) 10px,
-      transparent 10px,
-      transparent 26px
+      rgba(255, 255, 255, 0.5) 0px,
+      rgba(255, 255, 255, 0.5) 14px,
+      rgba(0, 0, 0, 0.04) 14px,
+      rgba(0, 0, 0, 0.04) 28px
     );
     pointer-events: none;
   }
 
-  .banner-titles {
+  .banner-black {
     position: relative;
     z-index: 1;
+    flex: 0 0 auto;
+    width: min(68%, 720px);
+    background: linear-gradient(100deg, #0a0a0b 60%, #232327 100%);
+    clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
+    padding: clamp(10px, 1.8vh, 24px) clamp(16px, 3vw, 40px) clamp(10px, 1.8vh, 24px) clamp(14px, 2vw, 28px);
     cursor: pointer;
   }
 
   .banner-title {
     color: #fff;
-    font-size: clamp(26px, 5vw, 54px);
-    font-weight: 900;
+    font-size: clamp(28px, 5.4vw, 58px);
     font-style: italic;
     letter-spacing: 1px;
     line-height: 1;
     margin: 0;
+    white-space: nowrap;
   }
 
   .banner-underline {
-    width: 92%;
+    width: 90%;
     height: 4px;
-    background: #e6222c;
+    background: #e2001a;
     margin: 6px 0 6px;
   }
 
   .banner-subtitle {
     color: #eee;
     font-size: clamp(11px, 1.6vw, 20px);
-    font-weight: 700;
     letter-spacing: 6px;
     margin: 0;
+    white-space: nowrap;
   }
 
-  .hoop {
+  .hoop-wrap {
     position: absolute;
-    right: clamp(10px, 2vw, 40px);
-    top: 50%;
-    transform: translateY(-50%);
-    width: clamp(70px, 9vw, 130px);
-    height: clamp(70px, 9vw, 130px);
+    right: clamp(4px, 2vw, 30px);
+    top: clamp(-18px, -3vw, -6px);
     z-index: 1;
-    opacity: 0.95;
+    width: clamp(90px, 12vw, 170px);
+    height: clamp(90px, 12vw, 170px);
+    cursor: pointer;
+  }
+
+  .hoop-wrap svg {
+    width: 100%;
+    height: 100%;
   }
 
   /* ---------- main content ---------- */
@@ -132,7 +147,7 @@
   }
 
   .row-label {
-    flex: 0 0 clamp(84px, 15%, 190px);
+    flex: 0 0 clamp(96px, 17%, 200px);
     background: #111;
     color: #fff;
     display: flex;
@@ -144,15 +159,16 @@
   }
 
   .row-label .kr {
-    font-size: clamp(11px, 1.7vw, 19px);
-    font-weight: 800;
+    font-size: clamp(10px, 1.5vw, 18px);
+    white-space: nowrap;
   }
 
   .row-label .en {
-    font-size: clamp(7px, 0.95vw, 11px);
+    font-size: clamp(7px, 0.9vw, 11px);
     letter-spacing: 1px;
     color: #bbb;
     margin-top: 2px;
+    white-space: nowrap;
   }
 
   .row-value {
@@ -179,6 +195,32 @@
   .row-value .placeholder {
     color: #bbb;
     font-weight: 400;
+  }
+
+  .underline-value {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: clamp(6px, 1.2vw, 16px);
+    width: 100%;
+  }
+
+  .underline-value .ul-seg {
+    display: inline-block;
+    min-width: 2.6em;
+    text-align: center;
+    color: #111;
+    border-bottom: 2px solid #111;
+    padding-bottom: 2px;
+  }
+
+  .underline-value .ul-seg.empty {
+    color: transparent;
+  }
+
+  .underline-value .ul-dot {
+    color: #111;
+    font-weight: 900;
   }
 
   .gameno-boxes {
@@ -268,7 +310,7 @@
   }
 
   .vs-row .slash {
-    color: #e6222c;
+    color: #e2001a;
     font-size: clamp(16px, 2.6vw, 26px);
     font-weight: 800;
   }
@@ -291,13 +333,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    border: 2px solid #e6222c;
+    border: 2px solid #e2001a;
     cursor: pointer;
     min-height: 0;
   }
 
   .score-head {
-    background: #e6222c;
+    background: #e2001a;
     color: #fff;
     text-align: center;
     font-size: clamp(10px, 1.5vw, 16px);
@@ -323,16 +365,47 @@
 
   /* ---------- footer ---------- */
   .footer {
+    position: relative;
     flex: 0 0 auto;
     background: #111;
     color: #fff;
     display: flex;
     align-items: center;
     gap: clamp(10px, 2vw, 22px);
-    padding: clamp(6px, 1vh, 12px) clamp(14px, 2vw, 24px);
+    padding: clamp(6px, 1vh, 12px) clamp(14px, 2vw, 24px) clamp(9px, 1.4vh, 15px);
+    overflow: hidden;
+  }
+
+  .footer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    right: 30%;
+    background: repeating-linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.06) 0px,
+      rgba(255, 255, 255, 0.06) 10px,
+      transparent 10px,
+      transparent 22px
+    );
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 60%);
+            mask-image: linear-gradient(90deg, transparent, #000 60%);
+    pointer-events: none;
+  }
+
+  .footer::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #e2001a, #ff5b5b 45%, #e2001a);
   }
 
   .footer-item {
+    position: relative;
+    z-index: 1;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -372,12 +445,14 @@
   }
 
   .footer-divider {
+    position: relative;
+    z-index: 1;
     flex: 1;
     height: 3px;
     background: repeating-linear-gradient(
       90deg,
-      #e6222c 0px,
-      #e6222c 12px,
+      #e2001a 0px,
+      #e2001a 12px,
       transparent 12px,
       transparent 20px
     );
@@ -510,7 +585,7 @@
   }
 
   .btn-confirm {
-    background: #e6222c;
+    background: #e2001a;
   }
 
   .btn-cancel {
@@ -527,85 +602,97 @@
   </div>
 
   <div class="banner">
-    <div class="banner-titles" onclick="openText('bannerTitle','대회 로고 제목','예: BASKETBALL')">
-      <p class="banner-title" id="bannerTitleText">BASKETBALL</p>
+    <div class="banner-black" onclick="openText('bannerTitle','대회 로고 제목','예: BASKETBALL')">
+      <p class="banner-title headline" id="bannerTitleText">BASKETBALL</p>
       <div class="banner-underline"></div>
-      <p class="banner-subtitle" id="bannerSubtitleText">KOREA SPORTS ACADEMY</p>
+      <p class="banner-subtitle headline" id="bannerSubtitleText">KOREA SPORTS ACADEMY</p>
     </div>
 
-    <svg class="hoop" viewBox="0 0 120 120" onclick="openText('bannerSubtitle','부제목','예: KOREA SPORTS ACADEMY')">
-      <ellipse cx="60" cy="30" rx="46" ry="12" fill="none" stroke="#ff7a1a" stroke-width="8" />
-      <g stroke="#fff" stroke-width="1.6" opacity="0.9">
-        <line x1="20" y1="32" x2="34" y2="92" />
-        <line x1="35" y1="34" x2="42" y2="96" />
-        <line x1="50" y1="35" x2="52" y2="100" />
-        <line x1="68" y1="35" x2="68" y2="100" />
-        <line x1="85" y1="34" x2="78" y2="96" />
-        <line x1="100" y1="32" x2="86" y2="92" />
-        <line x1="24" y1="46" x2="96" y2="46" />
-        <line x1="28" y1="60" x2="92" y2="60" />
-        <line x1="34" y1="76" x2="86" y2="76" />
-      </g>
-    </svg>
+    <div class="hoop-wrap" onclick="openText('bannerSubtitle','부제목','예: KOREA SPORTS ACADEMY')">
+      <svg viewBox="0 0 140 140">
+        <ellipse cx="70" cy="34" rx="56" ry="13" fill="none" stroke="#ff7a1a" stroke-width="9" />
+        <g stroke="#e8e8e8" stroke-width="1.6" opacity="0.95">
+          <line x1="20" y1="38" x2="36" y2="112" />
+          <line x1="35" y1="40" x2="44" y2="116" />
+          <line x1="52" y1="42" x2="54" y2="120" />
+          <line x1="70" y1="42" x2="70" y2="122" />
+          <line x1="88" y1="42" x2="86" y2="120" />
+          <line x1="105" y1="40" x2="96" y2="116" />
+          <line x1="120" y1="38" x2="104" y2="112" />
+          <line x1="26" y1="54" x2="114" y2="54" />
+          <line x1="30" y1="70" x2="110" y2="70" />
+          <line x1="36" y1="88" x2="104" y2="88" />
+          <line x1="42" y1="104" x2="98" y2="104" />
+        </g>
+      </svg>
+    </div>
   </div>
 
   <div class="content">
     <div class="left-panel">
       <div class="row" onclick="openText('tournament','대회명','대회명을 입력하세요')">
-        <div class="row-label"><div class="kr">대회명</div><div class="en">TOURNAMENT</div></div>
+        <div class="row-label"><div class="kr">대회명</div><div class="en headline">TOURNAMENT</div></div>
         <div class="row-value"><div class="val" id="tournamentText">&nbsp;</div></div>
       </div>
 
       <div class="row" onclick="openText('gameTitle','경기명','경기명을 입력하세요')">
-        <div class="row-label"><div class="kr">경기명</div><div class="en">GAME TITLE</div></div>
+        <div class="row-label"><div class="kr">경기명</div><div class="en headline">GAME TITLE</div></div>
         <div class="row-value"><div class="val" id="gameTitleText">&nbsp;</div></div>
       </div>
 
       <div class="row" onclick="openGameNo()">
-        <div class="row-label"><div class="kr">경기고유번호</div><div class="en">GAME NO.</div></div>
+        <div class="row-label"><div class="kr">경기고유번호</div><div class="en headline">GAME NO.</div></div>
         <div class="row-value">
           <div class="gameno-boxes" id="gameNoBoxes"></div>
         </div>
       </div>
 
       <div class="row" onclick="openDate()">
-        <div class="row-label"><div class="kr">날짜</div><div class="en">DATE</div></div>
-        <div class="row-value"><div class="val" id="dateText"><span class="placeholder">YYYY . MM . DD</span></div></div>
+        <div class="row-label"><div class="kr">날짜</div><div class="en headline">DATE</div></div>
+        <div class="row-value">
+          <div class="val underline-value" id="dateText">
+            <span class="ul-seg" id="dateY">YYYY</span><span class="ul-dot">.</span><span class="ul-seg" id="dateM">MM</span><span class="ul-dot">.</span><span class="ul-seg" id="dateD">DD</span>
+          </div>
+        </div>
       </div>
 
       <div class="row" onclick="openTime()">
-        <div class="row-label"><div class="kr">경기 시작시간</div><div class="en">START TIME</div></div>
-        <div class="row-value"><div class="val" id="timeText"><span class="placeholder">HH : MM</span></div></div>
+        <div class="row-label"><div class="kr">경기 시작시간</div><div class="en headline">START TIME</div></div>
+        <div class="row-value">
+          <div class="val underline-value" id="timeText">
+            <span class="ul-seg" id="timeH">HH</span><span class="ul-dot">:</span><span class="ul-seg" id="timeM">MM</span>
+          </div>
+        </div>
       </div>
 
       <div class="row" onclick="openText('camera','촬영 카메라','예: CAM 1 / GoPro')">
-        <div class="row-label"><div class="kr">촬영 카메라</div><div class="en">CAMERA</div></div>
+        <div class="row-label"><div class="kr">촬영 카메라</div><div class="en headline">CAMERA</div></div>
         <div class="row-value"><div class="val" id="cameraText">&nbsp;</div></div>
       </div>
     </div>
 
     <div class="right-panel">
       <div class="team-block" onclick="openText('homeTeam','홈 팀 이름','예: 고려대스포츠아카데미')">
-        <div class="team-head"><b>HOME</b><span>TEAM</span></div>
+        <div class="team-head"><b class="headline">HOME</b><span class="headline">TEAM</span></div>
         <div class="team-name"><div class="val" id="homeTeamText">&nbsp;</div></div>
       </div>
 
       <div class="vs-row">
-        <span class="slash">/</span><span class="vs">VS</span><span class="slash">/</span>
+        <span class="slash">/</span><span class="vs headline">VS</span><span class="slash">/</span>
       </div>
 
       <div class="team-block" onclick="openText('awayTeam','원정 팀 이름','예: 상대팀 이름')">
-        <div class="team-head"><b>AWAY</b><span>TEAM</span></div>
+        <div class="team-head"><b class="headline">AWAY</b><span class="headline">TEAM</span></div>
         <div class="team-name"><div class="val" id="awayTeamText">&nbsp;</div></div>
       </div>
 
       <div class="score-row">
         <div class="score-block" onclick="openScore('homeScore')">
-          <div class="score-head">HOME SCORE</div>
+          <div class="score-head headline">HOME SCORE</div>
           <div class="score-value"><div class="val" id="homeScoreText">0</div></div>
         </div>
         <div class="score-block" onclick="openScore('awayScore')">
-          <div class="score-head">AWAY SCORE</div>
+          <div class="score-head headline">AWAY SCORE</div>
           <div class="score-value"><div class="val" id="awayScoreText">0</div></div>
         </div>
       </div>
@@ -631,9 +718,6 @@
     </div>
   </div>
 </div>
-
-<button id="resetBtn" class="float-btn" onclick="resetAll()" title="초기화" aria-label="초기화">↺</button>
-<button id="fullscreenBtn" class="float-btn" onclick="toggleFullscreen()" title="전체화면" aria-label="전체화면">⛶</button>
 
 <!-- generic text modal -->
 <div id="textModalBg" class="modal-bg">
@@ -753,16 +837,8 @@
     document.getElementById("awayScoreText").textContent = data.awayScore;
 
     renderGameNoBoxes();
-
-    const dateEl = document.getElementById("dateText");
-    dateEl.innerHTML = data.date
-      ? formatDateDisplay(data.date)
-      : '<span class="placeholder">YYYY . MM . DD</span>';
-
-    const timeEl = document.getElementById("timeText");
-    timeEl.innerHTML = data.time
-      ? data.time
-      : '<span class="placeholder">HH : MM</span>';
+    renderDateSegments();
+    renderTimeSegments();
 
     document.getElementById("igHandleText").textContent = data.igHandle || "@your_instagram";
     document.getElementById("igNameText2").textContent = data.igName || "학원명을 입력하세요";
@@ -790,10 +866,28 @@
     }
   }
 
-  function formatDateDisplay(isoDate) {
-    const parts = isoDate.split("-");
-    if (parts.length !== 3) return isoDate;
-    return parts[0] + " . " + parts[1] + " . " + parts[2];
+  function setSegment(elId, value, placeholder) {
+    const el = document.getElementById(elId);
+    if (value) {
+      el.textContent = value;
+      el.classList.remove("empty");
+    } else {
+      el.textContent = placeholder;
+      el.classList.add("empty");
+    }
+  }
+
+  function renderDateSegments() {
+    const parts = data.date ? data.date.split("-") : ["", "", ""];
+    setSegment("dateY", parts[0], "YYYY");
+    setSegment("dateM", parts[1], "MM");
+    setSegment("dateD", parts[2], "DD");
+  }
+
+  function renderTimeSegments() {
+    const parts = data.time ? data.time.split(":") : ["", ""];
+    setSegment("timeH", parts[0], "HH");
+    setSegment("timeM", parts[1], "MM");
   }
 
   /* ---------- generic text modal ---------- */
