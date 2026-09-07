@@ -76,7 +76,15 @@
     z-index: 1;
     flex: 0 0 auto;
     width: min(68%, 720px);
-    background: linear-gradient(100deg, #0a0a0b 60%, #232327 100%);
+    background:
+      repeating-linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0.045) 0px,
+        rgba(255, 255, 255, 0.045) 10px,
+        transparent 10px,
+        transparent 24px
+      ),
+      linear-gradient(100deg, #0a0a0b 60%, #232327 100%);
     clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%);
     padding: clamp(10px, 1.8vh, 24px) clamp(16px, 3vw, 40px) clamp(10px, 1.8vh, 24px) clamp(14px, 2vw, 28px);
     cursor: pointer;
@@ -419,8 +427,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: clamp(11px, 1.6vw, 16px);
     flex: 0 0 auto;
+  }
+
+  .footer-icon svg {
+    width: 68%;
+    height: 68%;
   }
 
   .footer-icon.ig {
@@ -429,6 +441,7 @@
 
   .footer-icon.yt {
     background: #ff0000;
+    border-radius: 7px;
   }
 
   .footer-text {
@@ -610,7 +623,15 @@
 
     <div class="hoop-wrap" onclick="openText('bannerSubtitle','부제목','예: KOREA SPORTS ACADEMY')">
       <svg viewBox="0 0 140 140">
-        <ellipse cx="70" cy="34" rx="56" ry="13" fill="none" stroke="#ff7a1a" stroke-width="9" />
+        <defs>
+          <linearGradient id="rimGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#ffb066" />
+            <stop offset="45%" stop-color="#ff7a1a" />
+            <stop offset="100%" stop-color="#c9550a" />
+          </linearGradient>
+        </defs>
+        <ellipse cx="70" cy="34" rx="56" ry="13" fill="none" stroke="url(#rimGrad)" stroke-width="10" />
+        <ellipse cx="70" cy="34" rx="56" ry="13" fill="none" stroke="#000" stroke-opacity="0.15" stroke-width="1" />
         <g stroke="#e8e8e8" stroke-width="1.6" opacity="0.95">
           <line x1="20" y1="38" x2="36" y2="112" />
           <line x1="35" y1="40" x2="44" y2="116" />
@@ -701,7 +722,9 @@
 
   <div class="footer">
     <div class="footer-item" onclick="openText('igHandle','인스타그램 계정','예: @your_instagram')">
-      <div class="footer-icon ig">📷</div>
+      <div class="footer-icon ig">
+        <svg viewBox="0 0 24 24" fill="none"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5" stroke="#fff" stroke-width="1.8"/><circle cx="12" cy="12" r="4.6" stroke="#fff" stroke-width="1.8"/><circle cx="17.6" cy="6.4" r="1.15" fill="#fff"/></svg>
+      </div>
       <div class="footer-text">
         <div class="line1" id="igHandleText">@your_instagram</div>
         <div class="line2" id="igNameText2">학원명을 입력하세요</div>
@@ -711,7 +734,9 @@
     <div class="footer-divider"></div>
 
     <div class="footer-item" onclick="openText('ytName','유튜브 채널명','예: 채널명')">
-      <div class="footer-icon yt">▶</div>
+      <div class="footer-icon yt">
+        <svg viewBox="0 0 24 24"><path d="M9.5 8.6L16 12l-6.5 3.4z" fill="#fff"/></svg>
+      </div>
       <div class="footer-text">
         <div class="line1" id="ytNameText">채널명을 입력하세요</div>
       </div>
