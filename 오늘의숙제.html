@@ -2765,9 +2765,31 @@
     letter-spacing:0;
   }
 
-  .t-scope .master-acc-reset{
-    width:100%;
+  .t-scope .master-acc-actions{
+    display:flex;
+    gap:6px;
     margin-top:8px;
+  }
+
+  .t-scope .master-acc-delete{
+    flex:1;
+    background:#FDE7E7;
+    color:#E4423F;
+    border:none;
+    border-radius:10px;
+    padding:9px;
+    font-size:12.5px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+
+  .t-scope .master-acc-delete:active{
+    transform:scale(0.98);
+  }
+
+  .t-scope .master-acc-reset{
+    flex:1;
     background:#F5F6FA;
     color:var(--sub);
     border:none;
@@ -3780,6 +3802,18 @@
     </div>
   </div>
 
+  <!-- 계정 삭제 확인 -->
+  <div class="modal-overlay" id="accDeleteModal">
+    <div class="modal-box">
+      <p class="modal-text"><span id="accDeleteName"></span> <span id="accDeleteRole"></span> 계정을<br>삭제할까요?</p>
+      <p class="modal-sub">이 계정으로는 더 이상 로그인할 수 없어요</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('accDeleteModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button onclick="confirmAccountDelete()" style="background:#E4423F;color:#ffffff;">삭제</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 비밀번호 초기화 확인 -->
   <div class="modal-overlay" id="pwResetModal">
     <div class="modal-box">
@@ -3984,6 +4018,14 @@
 
       <div class="top-bar">
         <div class="greeting"><span class="page-label">홈|</span><span class="user-name" id="teacherNameLabel">김선생님</span> 안녕하세요!</div>
+        <div class="top-icons">
+          <button class="icon-btn" onclick="logoutTeacher()" aria-label="로그아웃">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <path d="M16 17l5-5-5-5M21 12H9"></path>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div id="homeEmptyState" class="empty-class-card" style="margin-top:20px;display:none;">
@@ -4518,6 +4560,7 @@
 
   let users = [];
   let currentAuthRole = "student";
+  let currentUserId = null;   /* 지금 로그인한 계정 (이름이 겹칠 수 있어 id로 가림) */
 
   function loadUsers() {
     try {
@@ -4529,23 +4572,60 @@
     } catch (e) {}
   }
 
+  /* 탭을 여러 개 띄워 쓰면 각 탭이 자기 메모리의 목록을 통째로 덮어써서,
+     다른 탭에서 만든 계정이 통째로 사라졌다. 그래서 저장 직전에 저장소를
+     다시 읽어, 내가 모르는 계정은 그대로 두고 내 것만 반영한다. */
   function saveUsers() {
     try {
+      let stored = [];
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY_USERS);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(parsed)) stored = parsed;
+      } catch (e) {}
+
+      const mine = new Set(users.map((u) => u.id));
+      const merged = users.slice();
+      stored.forEach((u) => {
+        if (u && u.id && !mine.has(u.id)) merged.push(u);
+      });
+
+      users = merged;
       localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-    } catch (e) {}
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /* 계정 삭제나 전체 초기화는 '지우는' 동작이라, 병합하면 지운 게 되살아난다.
+     그래서 이때만 지금 목록을 그대로 저장한다. */
+  function writeUsersExact() {
+    try {
+      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function newUserId() {
+    return "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
   loadUsers();
 
   /* 학생이 반을 여러 개 가질 수 있게 바뀌어서, 반 코드를 하나만 들고 있던
      예전 형식의 계정을 배열 형태로 맞춰 줌 */
-  users.forEach((u) => {
+  users.forEach((u, i) => {
     if (!Array.isArray(u.classCodes)) {
       u.classCodes = u.classCode ? [u.classCode] : [];
     }
     delete u.classCode;
     /* 반마다 다른 이름을 쓸 수 있게 되면서 생긴 칸 */
     if (!u.classNames || typeof u.classNames !== "object") u.classNames = {};
+    /* 같은 이름을 여러 명이 쓸 수 있게 되면서, 이름 대신 이 id로 계정을 가린다 */
+    if (!u.id) u.id = "u" + i + "_" + (u.role || "x") + "_" + Date.now().toString(36);
   });
 
   /* 관리자 화면에서 비밀번호를 확인할 수 있어야 해서 되돌릴 수 있는 형태로도
@@ -4587,6 +4667,25 @@
   /* 같은 이름이라도 학생 계정과 선생님 계정은 서로 다른 계정으로 봄 */
   function findUser(name, role) {
     return users.find((u) => u.name === name && u.role === role) || null;
+  }
+
+  function userById(id) {
+    return users.find((u) => u.id === id) || null;
+  }
+
+  /* 이름이 같은 사람이 여럿일 수 있으므로, 비밀번호까지 맞는 계정을 골라낸다 */
+  function findUserByLogin(name, role, pw) {
+    const hashed = hashPassword(pw);
+    return users.find((u) => u.name === name && u.role === role && u.pw === hashed) || null;
+  }
+
+  /* 같은 이름이 여러 개면 두 번째부터 01, 02를 붙여 구분해 보여 준다
+     (가입 순서 기준, 첫 사람은 이름 그대로) */
+  function displayUserName(user) {
+    const same = users.filter((u) => u.name === user.name && u.role === user.role);
+    if (same.length < 2) return user.name;
+    const idx = same.findIndex((u) => u.id === user.id);
+    return idx <= 0 ? user.name : user.name + String(idx).padStart(2, "0");
   }
 
   /* 비밀번호 규칙: 8자 이상 + 영문 + 숫자 + 특수문자 */
@@ -4671,9 +4770,9 @@
       return;
     }
 
-    const user = findUser(name, role);
+    const user = findUserByLogin(name, role, pw);
     /* 어느 쪽이 틀렸는지 알려주지 않는 편이 계정 노출에 안전함 */
-    if (!user || user.pw !== hashPassword(pw)) {
+    if (!user) {
       showAuthError(f.errorId, "이름 또는 비밀번호가 올바르지 않아요");
       playErrorBuzz();
       document.getElementById(f.pwId).value = "";
@@ -4682,6 +4781,7 @@
 
     clearAuthError(f.errorId);
     playSuccessChime();
+    currentUserId = user.id;
 
     if (role === "teacher") {
       teacherName = user.name;
@@ -4741,12 +4841,6 @@
       playErrorBuzz();
       return;
     }
-    if (findUser(name, currentAuthRole)) {
-      showAuthError("signupError", "이미 같은 이름의 계정이 있어요");
-      playErrorBuzz();
-      return;
-    }
-
     const problem = passwordProblem(pw);
     if (problem) {
       showAuthError("signupError", problem);
@@ -4760,7 +4854,16 @@
       return;
     }
 
+    /* 같은 이름이어도 가입은 되게 하고, 로그인은 비밀번호로 가린다.
+       다만 이름과 비밀번호가 둘 다 같으면 서로를 구분할 방법이 없어 막는다 */
+    if (findUserByLogin(name, currentAuthRole, pw)) {
+      showAuthError("signupError", "이름과 비밀번호가 모두 같은 계정이 있어요");
+      playErrorBuzz();
+      return;
+    }
+
     users.push({
+      id: newUserId(),
       name: name,
       role: currentAuthRole,
       pw: hashPassword(pw),
@@ -4786,7 +4889,7 @@
 
   /* ===== 학생: 내 반 목록 ===== */
   function myStudentAccount() {
-    return findUser(accountName, "student");
+    return userById(currentUserId);
   }
 
   /* 같은 반에 이름이 겹치면 두 번째부터 01, 02...를 붙여 서로 구분함.
@@ -4890,8 +4993,18 @@
     showPage("code-input");
   }
 
+  function logoutTeacher() {
+    playTapSound();
+    currentUserId = null;
+    teacherName = "";
+    currentClassIndex = null;
+    resetLoginForm("teacher");
+    showPage("welcome");
+  }
+
   function logoutStudent() {
     playTapSound();
+    currentUserId = null;
     accountName = "";
     studentName = "";
     selectedClassName = "";
@@ -5992,8 +6105,23 @@
   /* 저장 공간이 꽉 차면 예외가 나는데, 예전엔 이걸 조용히 삼켜서 제출이
      저장되지 않았는데도 성공한 것처럼 보였다. 이제 성공 여부를 돌려주고
      실패하면 화면에서 알려 준다. */
+  /* 반 목록도 계정과 같은 이유로 병합해서 저장한다 */
   function saveState() {
     try {
+      let stored = [];
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(parsed)) stored = parsed;
+      } catch (e) {}
+
+      const mine = new Set(classes.map((c) => c.code));
+      const merged = classes.slice();
+      stored.forEach((c) => {
+        if (c && c.code && !mine.has(c.code)) merged.push(c);
+      });
+
+      classes = merged;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
       return true;
     } catch (e) {
@@ -6067,6 +6195,21 @@
   }
 
   window.addEventListener("storage", (e) => {
+    if (e.key === STORAGE_KEY_USERS) {
+      /* 다른 탭에서 계정이 바뀌면 바로 따라간다 (예전엔 이게 없어서 어긋났음) */
+      loadUsers();
+      if (currentUserId && !users.find((u) => u.id === currentUserId)) {
+        /* 쓰던 계정이 지워졌으면(관리자 삭제/초기화) 로그인 상태를 푼다 */
+        currentUserId = null;
+        accountName = "";
+        studentName = "";
+        teacherName = "";
+        joinedClassIndex = null;
+        showPage("welcome");
+        return;
+      }
+      refreshCurrentView();
+    }
     if (e.key === STORAGE_KEY) {
       loadState();
       refreshCurrentView();
@@ -7029,6 +7172,7 @@
 
   /* --- 계정 관리: 비밀번호 확인 / 초기화 --- */
   let pwResetTarget = null;
+  let accDeleteTarget = null;
   let shownPwKeys = {};   /* 어떤 계정의 비번을 펼쳐 뒀는지 */
 
   function accountKey(u) {
@@ -7054,7 +7198,7 @@
           <div class="master-acc-top">
             <div class="student-avatar">${escHtml(u.name[0])}</div>
             <div class="student-info">
-              <p class="student-name">${escHtml(u.name)}</p>
+              <p class="student-name">${escHtml(displayUserName(u))}</p>
               <p class="student-meta">${roleLabel} 계정</p>
             </div>
             <span class="master-role-pill ${u.role}">${roleLabel}</span>
@@ -7065,7 +7209,10 @@
               ${shown ? EYE_HIDE : EYE_SHOW}
             </button>
           </div>
-          <button class="master-acc-reset" onclick="openPwReset(${i})">비밀번호 초기화</button>
+          <div class="master-acc-actions">
+            <button class="master-acc-reset" onclick="openPwReset('${jsStr(u.id)}')">비밀번호 초기화</button>
+            <button class="master-acc-delete" onclick="openAccountDelete('${jsStr(u.id)}')">계정 삭제</button>
+          </div>
         </div>
       `;
     }).join("");
@@ -7077,24 +7224,56 @@
     renderMasterAccounts();
   }
 
-  function openPwReset(i) {
+  function openPwReset(id) {
     playTapSound();
-    pwResetTarget = i;
-    document.getElementById("pwResetName").textContent = users[i].name;
+    const u = userById(id);
+    if (!u) return;
+    pwResetTarget = id;
+    document.getElementById("pwResetName").textContent = displayUserName(u);
     document.getElementById("pwResetModal").classList.add("show");
   }
 
   function confirmPwReset() {
-    if (pwResetTarget === null) return;
-    const u = users[pwResetTarget];
+    const u = userById(pwResetTarget);
+    pwResetTarget = null;
+    closeModal("pwResetModal");
+    if (!u) return;
     u.pw = hashPassword(RESET_PASSWORD);
     u.pwSaved = encodePw(RESET_PASSWORD);
     saveUsers();
     shownPwKeys[accountKey(u)] = true;
-    pwResetTarget = null;
-    closeModal("pwResetModal");
     playSuccessChime();
     renderMasterAccounts();
+  }
+
+  function openAccountDelete(id) {
+    playTapSound();
+    const u = userById(id);
+    if (!u) return;
+    accDeleteTarget = id;
+    document.getElementById("accDeleteName").textContent = displayUserName(u);
+    document.getElementById("accDeleteRole").textContent = u.role === "teacher" ? "선생님" : "학생";
+    document.getElementById("accDeleteModal").classList.add("show");
+  }
+
+  function confirmAccountDelete() {
+    const id = accDeleteTarget;
+    accDeleteTarget = null;
+    closeModal("accDeleteModal");
+    const idx = users.findIndex((u) => u.id === id);
+    if (idx === -1) return;
+    users.splice(idx, 1);
+    /* 지운 계정이 다른 탭의 저장으로 되살아나지 않도록 통째로 다시 씀 */
+    writeUsersExact();
+    if (currentUserId === id) {
+      currentUserId = null;
+      accountName = "";
+      studentName = "";
+      teacherName = "";
+    }
+    playTapSound();
+    renderMasterAccounts();
+    renderMasterTeachers();
   }
 
   /* --- 2단계: 그 선생님이 만든 반 --- */
@@ -7274,9 +7453,15 @@
     users = [];
     classes = [];
     events = [];
-    saveUsers();
-    saveState();
-    saveEvents();
+    /* 병합 저장을 쓰면 지운 것이 되살아나므로 여기서는 저장소를 그대로 비운다.
+       다른 탭도 storage 이벤트로 이 변화를 받아 함께 비워진다. */
+    try {
+      localStorage.removeItem(STORAGE_KEY_USERS);
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(STORAGE_KEY_EVENTS);
+    } catch (e) {}
+    currentUserId = null;
+    accountName = "";
 
     studentName = "";
     selectedClassName = "";
