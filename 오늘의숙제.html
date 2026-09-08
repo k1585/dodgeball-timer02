@@ -480,61 +480,32 @@
     color:var(--point-strong);
     font-weight:800;
   }
-  .cal-cell.day-all-done{
-    background:var(--point-light);
-    color:var(--point-strong);
-  }
-  .cal-cell.day-all-missing{
-    background:#FDE7E7;
-    color:#E4423F;
-  }
   .cal-cell.selected{
     background:var(--point-strong);
     color:#ffffff;
   }
-  .cal-cell.has-hw::after{
-    content:"";
-    position:absolute;
-    bottom:5px;
-    left:50%;
-    transform:translateX(-50%);
-    width:4px;
-    height:4px;
-    border-radius:50%;
-    background:var(--point-strong);
-  }
-  .cal-cell.selected.has-hw::after{
-    background:#ffffff;
-  }
-  .cal-cell.has-event::before{
-    content:"";
-    position:absolute;
-    top:4px;
-    right:6px;
-    width:4px;
-    height:4px;
-    border-radius:50%;
-    background:#E08A00;
-  }
-  .cal-cell.selected.has-event::before{
-    background:#ffffff;
-  }
+  /* 숙제 하나에 점 하나. 개수가 많으면 줄바꿈해서 칸을 넘지 않게 함 */
   .cal-dot-row{
     display:flex;
+    flex-wrap:wrap;
     gap:2px;
     justify-content:center;
+    max-width:100%;
+    line-height:0;
   }
   .cal-dot{
-    width:4px;
-    height:4px;
+    width:5px;
+    height:5px;
     border-radius:50%;
     background:var(--sub);
   }
   .cal-dot.dot-red{ background:#E4423F; }
   .cal-dot.dot-blue{ background:var(--point-strong); }
   .cal-dot.dot-green{ background:#1FA455; }
+  .cal-dot.dot-yellow{ background:#E08A00; }
+  /* 선택된 날은 배경이 남색이라 점이 묻히므로 흰 테두리를 둘러 줌 */
   .cal-cell.selected .cal-dot{
-    background:#ffffff;
+    box-shadow:0 0 0 1.5px #ffffff;
   }
   .cal-legend{
     display:flex;
@@ -2895,6 +2866,95 @@
     position:relative;
   }
 
+  /* 남은 숙제 카드의 반 전체 제출 현황 */
+  .hw-peer{
+    font-size:12px;
+    font-weight:700;
+    color:var(--sub);
+    margin:4px 0 0;
+  }
+
+  .hw-peer .peer-done{ color:#1FA455; }
+  .hw-peer .peer-missing{ color:#E4423F; }
+
+  /* 숙제 관리 탭: '이날 숙제 현황'으로 넘어가는 버튼 */
+  .t-scope .day-status-btn{
+    width:100%;
+    background:#ffffff;
+    color:var(--point-strong);
+    border:1.5px solid var(--point-strong);
+    border-radius:14px;
+    padding:12px;
+    font-size:14px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    margin-bottom:12px;
+  }
+
+  .t-scope .day-status-btn:active{
+    transform:scale(0.98);
+  }
+
+  /* 숙제 현황 탭: 상태 필터 칩 */
+  .t-scope .hw-chip-row{
+    display:flex;
+    gap:6px;
+    margin-bottom:12px;
+    overflow-x:auto;
+    padding-bottom:2px;
+  }
+
+  .t-scope .hw-chip{
+    flex-shrink:0;
+    background:#F5F6FA;
+    color:var(--sub);
+    border:none;
+    border-radius:999px;
+    padding:8px 14px;
+    font-size:12.5px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+
+  .t-scope .hw-chip.active{
+    background:var(--point-strong);
+    color:#ffffff;
+  }
+
+  /* 숙제 현황 탭: 날짜별로 볼 때의 날짜 선택창 */
+  .t-scope .hw-date-btn{
+    width:100%;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border:none;
+    border-radius:14px;
+    padding:13px 16px;
+    font-size:14px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:14px;
+  }
+
+  .t-scope .hw-date-btn .hw-date-value{
+    flex:1;
+    text-align:left;
+  }
+
+  .t-scope .hw-date-btn:active{
+    transform:scale(0.99);
+  }
+
 </style>
 </head>
 <body>
@@ -3433,11 +3493,9 @@
       <div class="cal-grid" id="calGrid"></div>
 
       <div class="cal-legend">
-        <span><i style="background:var(--point-light);"></i>그날 숙제 모두 제출</span>
-        <span><i style="background:#FDE7E7;"></i>그날 숙제 모두 미제출</span>
-        <span><i style="background:#1FA455;"></i>승인 완료</span>
+        <span><i style="background:#E4423F;"></i>미제출·반려</span>
         <span><i style="background:var(--point-strong);"></i>승인 대기중</span>
-        <span><i style="background:#E4423F;"></i>미제출/거절</span>
+        <span><i style="background:#1FA455;"></i>승인완료</span>
         <span><i style="background:#E08A00;"></i>선생님 일정</span>
       </div>
 
@@ -4196,7 +4254,7 @@
     <div class="tabs">
       <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
       <button class="tab" data-tab="homework" onclick="switchDetailTab('homework')">숙제 관리</button>
-      <button class="tab" data-tab="approve" onclick="switchDetailTab('approve')">
+      <button class="tab" data-tab="approve" onclick="openHwStatusTab()">
         숙제 현황<span class="tab-badge" id="approveBadge" style="display:none;">0</span>
       </button>
     </div>
@@ -4238,16 +4296,61 @@
           <button id="newHwConfirmBtn" onclick="addHomeworkToClass()">만들기</button>
         </div>
 
+        <button class="day-status-btn" onclick="openHwStatusForSelectedDate()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"></path>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+          </svg>
+          이날 숙제 현황
+        </button>
+
         <div id="hwManageList"></div>
       </div>
 
       <div class="tab-content" id="detailTab-approve">
         <div class="hw-filter-row">
-          <span class="hw-filter-label">승인요청 학생만 보기</span>
+          <span class="hw-filter-label">날짜별로 보기</span>
           <label class="toggle-switch">
-            <input type="checkbox" id="pendingOnlyToggle" onchange="togglePendingOnly()">
+            <input type="checkbox" id="hwByDateToggle" onchange="toggleHwByDate()">
             <span class="toggle-slider"></span>
           </label>
+        </div>
+
+        <div class="hw-chip-row">
+          <button class="hw-chip active" data-filter="all" onclick="setHwFilter('all')">전체</button>
+          <button class="hw-chip" data-filter="pending" onclick="setHwFilter('pending')">승인요청</button>
+          <button class="hw-chip" data-filter="missing" onclick="setHwFilter('missing')">미제출</button>
+          <button class="hw-chip" data-filter="approved" onclick="setHwFilter('approved')">제출완료</button>
+        </div>
+
+        <button class="hw-date-btn" id="hwStatusDateBtn" onclick="goPickHwStatusDate()" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <path d="M16 2v4M8 2v4M3 10h18"></path>
+          </svg>
+          <span class="hw-date-value" id="hwStatusDateLabel">날짜 선택</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18l6-6-6-6"></path>
+          </svg>
+        </button>
+
+        <div id="hwStatusStats" style="display:none;">
+          <div class="stat-row">
+            <div class="stat-box pending">
+              <span class="stat-label">승인 대기중</span>
+              <span class="stat-count" id="dayStatPending">0건</span>
+            </div>
+            <div class="stat-box missing">
+              <span class="stat-label">미제출</span>
+              <span class="stat-count" id="dayStatMissing">0명</span>
+            </div>
+            <div class="stat-box total">
+              <span class="stat-label">제출완료</span>
+              <span class="stat-count" id="dayStatDone">0명</span>
+            </div>
+          </div>
+
+          <p class="section-title">숙제 제출 현황</p>
         </div>
 
         <div id="approveStudentList"></div>
@@ -5102,15 +5205,29 @@
     }
   }
 
+  /* 반 전체에서 이 숙제를 낸 사람과 아직 안 낸 사람 수.
+     반려된 제출은 다시 내야 하므로 미제출로 셈 */
+  function hwSubmitCounts(hwId) {
+    if (joinedClassIndex === null) return { done: 0, missing: 0 };
+    const c = classes[joinedClassIndex];
+    const done = c.students.filter((s) => {
+      const sub = c.submissions.find((x) => x.studentName === s.name && x.hwId === hwId);
+      return sub && (sub.status === "pending" || sub.status === "approved");
+    }).length;
+    return { done: done, missing: c.students.length - done };
+  }
+
   /* ===== 남은 숙제 탭: 반에 등록된 숙제 중 아직 제출 안 한 것 ===== */
   function hwCardHtml(h) {
     const overdue = overdueDays(h.due);
     const isOverdue = overdue > 0;
+    const counts = hwSubmitCounts(h.id);
     return `
       <div class="hw-card${isOverdue ? " overdue" : ""}" onclick="openDetailCard('${jsStr(h.id)}')">
         <div>
           <p class="hw-name">${h.title}</p>
           <p class="hw-due">제출 기한: ${formatKoreanDate(h.due)}${isOverdue ? ` (${overdue}일 지남)` : ""}</p>
+          <p class="hw-peer"><span class="peer-done">${counts.done}명 제출</span> · <span class="peer-missing">${counts.missing}명 미제출</span></p>
         </div>
         <div class="hw-right">
           <span class="hw-dday">${calcDday(h.due)}</span>
@@ -5225,31 +5342,20 @@
       let cls = "cal-cell";
       if (dateStr === calSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
-      if (classEvents.some((e) => dateStr >= e.startDate && dateStr <= e.endDate)) cls += " has-event";
 
-      let inner = String(d);
-      const statuses = dayHomeworkStatuses(dateStr);
-      if (dateStr < todayStr) {
-        if (statuses.length > 0) {
-          const allDone = statuses.every((s) => s.status !== "missing");
-          const allMissing = statuses.every((s) => s.status === "missing");
-          if (allDone) {
-            cls += " day-all-done";
-          } else if (allMissing) {
-            cls += " day-all-missing";
-          } else {
-            const dots = statuses.map((s) => {
-              const dotCls = (s.status === "missing" || s.status === "rejected") ? "dot-red"
-                : s.status === "pending" ? "dot-blue" : "dot-green";
-              return `<span class="cal-dot ${dotCls}"></span>`;
-            }).join("");
-            inner = `<span>${d}</span><span class="cal-dot-row">${dots}</span>`;
-          }
-        }
-      } else if (statuses.length > 0) {
-        /* 오늘/이후 날짜엔 아직 지난 날이 아니라 색칠은 안 하지만, 숙제가 있다는 건 점으로 표시 */
-        cls += " has-hw";
-      }
+      /* 그날 숙제 하나에 점 하나씩. 색은 그 숙제의 승인 현황을 그대로 따름 */
+      const dots = dayHomeworkStatuses(dateStr).map((s) => {
+        const dotCls = (s.status === "missing" || s.status === "rejected") ? "dot-red"
+          : s.status === "pending" ? "dot-blue" : "dot-green";
+        return `<span class="cal-dot ${dotCls}"></span>`;
+      });
+      /* 선생님이 올린 일정은 노란 점으로 뒤에 붙임 */
+      const eventCount = classEvents.filter((e) => dateStr >= e.startDate && dateStr <= e.endDate).length;
+      for (let k = 0; k < eventCount; k++) dots.push('<span class="cal-dot dot-yellow"></span>');
+
+      const inner = dots.length > 0
+        ? `<span>${d}</span><span class="cal-dot-row">${dots.join("")}</span>`
+        : String(d);
       html += `<button class="${cls}" onclick="selectStudentCalDay('${dateStr}')">${inner}</button>`;
     }
     grid.innerHTML = html;
@@ -5899,7 +6005,9 @@
   let hwCalYear = 0;
   let hwCalMonth = 0;
   let hwSelectedDate = "";
-  let hwStatusPendingOnly = false;
+  let hwStatusFilter = "all";   /* all | pending | missing | approved */
+  let hwStatusByDate = false;   /* 날짜별로 보기 */
+  let hwStatusDate = "";        /* 날짜별로 볼 때 보고 있는 날짜 */
   let nextHwId = 1;
   let tHwCalYear = 0;
   let tHwCalMonth = 0;
@@ -6176,8 +6284,9 @@
     hwCalYear = targetDate.getFullYear();
     hwCalMonth = targetDate.getMonth();
     hwSelectedDate = (opts && opts.date) ? opts.date : targetDate.toISOString().slice(0, 10);
-    hwStatusPendingOnly = false;
-    document.getElementById("pendingOnlyToggle").checked = false;
+    hwStatusFilter = "all";
+    hwStatusByDate = false;
+    hwStatusDate = hwSelectedDate;
     switchDetailTab((opts && opts.tab) || "manage", true);
     renderClassDetail();
     showPage("t-class-detail");
@@ -6227,6 +6336,7 @@
           studentName: s.name,
           hwId: h.id,
           hwTitle: h.title,
+          due: h.due,
           status: sub ? sub.status : "missing",
           lateDays: sub ? (sub.lateDays || 0) : 0,
         });
@@ -6241,14 +6351,42 @@
       badge.style.display = "none";
     }
 
+    /* 화면 위쪽 컨트롤을 현재 상태에 맞춰 둠 */
+    document.getElementById("hwByDateToggle").checked = hwStatusByDate;
+    document.querySelectorAll("#detailTab-approve .hw-chip").forEach((b) => {
+      b.classList.toggle("active", b.dataset.filter === hwStatusFilter);
+    });
+    const dateBtn = document.getElementById("hwStatusDateBtn");
+    const statsEl = document.getElementById("hwStatusStats");
+    dateBtn.style.display = hwStatusByDate ? "" : "none";
+    statsEl.style.display = hwStatusByDate ? "" : "none";
+
+    /* '날짜별로 보기'가 켜져 있으면 그 날 마감인 숙제만 남기고,
+       그 날의 현황을 위쪽 3칸에 요약해서 보여 줌 */
+    let scopedRows = rows;
+    if (hwStatusByDate) {
+      document.getElementById("hwStatusDateLabel").textContent = formatKoreanDate(hwStatusDate);
+      scopedRows = rows.filter((r) => r.due === hwStatusDate);
+      document.getElementById("dayStatPending").textContent =
+        scopedRows.filter((r) => r.status === "pending").length + "건";
+      document.getElementById("dayStatMissing").textContent =
+        scopedRows.filter((r) => r.status === "missing" || r.status === "rejected").length + "명";
+      document.getElementById("dayStatDone").textContent =
+        scopedRows.filter((r) => r.status === "approved").length + "명";
+    }
+
     const statusOrder = { pending: 0, rejected: 1, missing: 2, approved: 3 };
-    let visibleRows = hwStatusPendingOnly ? rows.filter((r) => r.status === "pending") : rows;
+    let visibleRows = scopedRows.filter(matchesHwFilter);
     visibleRows = visibleRows.slice().sort((a, b) => statusOrder[a.status] - statusOrder[b.status]);
 
     if (c.homeworks.length === 0) {
       approveList.innerHTML = '<p class="empty-approval">아직 만든 숙제가 없어요</p>';
+    } else if (c.students.length === 0) {
+      approveList.innerHTML = '<p class="empty-approval">아직 참여한 학생이 없어요</p>';
+    } else if (hwStatusByDate && scopedRows.length === 0) {
+      approveList.innerHTML = '<p class="empty-approval">이 날짜엔 마감인 숙제가 없어요</p>';
     } else if (visibleRows.length === 0) {
-      approveList.innerHTML = `<p class="empty-approval">${hwStatusPendingOnly ? "승인 대기중인 제출이 없어요" : "아직 참여한 학생이 없어요"}</p>`;
+      approveList.innerHTML = `<p class="empty-approval">${hwFilterEmptyText()}</p>`;
     } else {
       approveList.innerHTML = visibleRows.map((r) => {
         if (r.status === "pending") {
@@ -6497,9 +6635,62 @@
     renderClassDetail();
   }
 
-  function togglePendingOnly() {
+  /* 반려된 제출은 다시 내야 하는 상태라 '미제출' 쪽으로 묶어서 봄 */
+  function matchesHwFilter(r) {
+    if (hwStatusFilter === "all") return true;
+    if (hwStatusFilter === "pending") return r.status === "pending";
+    if (hwStatusFilter === "missing") return r.status === "missing" || r.status === "rejected";
+    if (hwStatusFilter === "approved") return r.status === "approved";
+    return true;
+  }
+
+  function hwFilterEmptyText() {
+    if (hwStatusFilter === "pending") return "승인요청한 학생이 없어요";
+    if (hwStatusFilter === "missing") return "미제출인 학생이 없어요";
+    if (hwStatusFilter === "approved") return "제출완료한 학생이 없어요";
+    return "표시할 현황이 없어요";
+  }
+
+  function setHwFilter(f) {
     playTapSound();
-    hwStatusPendingOnly = document.getElementById("pendingOnlyToggle").checked;
+    hwStatusFilter = f;
+    renderClassDetail();
+  }
+
+  function toggleHwByDate() {
+    playTapSound();
+    hwStatusByDate = document.getElementById("hwByDateToggle").checked;
+    if (hwStatusByDate && !hwStatusDate) hwStatusDate = hwSelectedDate;
+    renderClassDetail();
+  }
+
+  /* 탭을 직접 눌러 들어오면 날짜 구분 없이 전체를 보여 줌 */
+  function openHwStatusTab() {
+    playTapSound();
+    hwStatusByDate = false;
+    hwStatusFilter = "all";
+    switchDetailTab("approve", true);
+    renderClassDetail();
+  }
+
+  /* 숙제 관리 탭의 '이날 숙제 현황' - 보고 있던 날짜 그대로 현황 탭으로 넘어감 */
+  function openHwStatusForSelectedDate() {
+    playTapSound();
+    hwStatusByDate = true;
+    hwStatusDate = hwSelectedDate;
+    hwStatusFilter = "all";
+    switchDetailTab("approve", true);
+    renderClassDetail();
+  }
+
+  /* 날짜 선택창 - 달력이 있는 숙제 관리 탭으로 보내 다시 고르게 함 */
+  function goPickHwStatusDate() {
+    playTapSound();
+    hwSelectedDate = hwStatusDate;
+    const d = new Date(hwStatusDate + "T00:00:00");
+    hwCalYear = d.getFullYear();
+    hwCalMonth = d.getMonth();
+    switchDetailTab("homework", true);
     renderClassDetail();
   }
 
