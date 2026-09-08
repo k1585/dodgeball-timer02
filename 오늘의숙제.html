@@ -2857,6 +2857,44 @@
     margin:8px 0 0;
   }
 
+  /* 비밀번호 보기/숨기기 (눈 버튼) */
+  .pw-eye{
+    position:absolute;
+    top:50%;
+    right:10px;
+    transform:translateY(-50%);
+    width:34px;
+    height:34px;
+    border:none;
+    background:none;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--sub);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+
+  .pw-eye:active{
+    transform:translateY(-50%) scale(0.9);
+  }
+
+  .pw-eye.on{
+    color:var(--point-strong);
+  }
+
+  /* 눈 버튼과 겹치지 않게 좌우 여백을 같이 줘서 가운데 정렬을 유지 */
+  .onboard-input.has-eye,
+  .master-input.has-eye{
+    padding-left:44px;
+    padding-right:44px;
+  }
+
+  .master-pw-wrap{
+    position:relative;
+  }
+
 </style>
 </head>
 <body>
@@ -2968,7 +3006,8 @@
       </div>
 
       <div class="onboard-input-wrap auth-field ob-anim d3">
-        <input type="password" id="stuLoginPw" class="onboard-input" placeholder="비밀번호" autocomplete="off">
+        <input type="password" id="stuLoginPw" class="onboard-input has-eye" placeholder="비밀번호" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('stuLoginPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
       </div>
 
       <p class="auth-error" id="stuLoginError"></p>
@@ -3007,11 +3046,13 @@
       </div>
 
       <div class="onboard-input-wrap auth-field ob-anim d3">
-        <input type="password" id="signupPw" class="onboard-input" placeholder="비밀번호" autocomplete="off">
+        <input type="password" id="signupPw" class="onboard-input has-eye" placeholder="비밀번호" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('signupPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
       </div>
 
       <div class="onboard-input-wrap auth-field ob-anim d3">
-        <input type="password" id="signupPwConfirm" class="onboard-input" placeholder="비밀번호 확인" autocomplete="off">
+        <input type="password" id="signupPwConfirm" class="onboard-input has-eye" placeholder="비밀번호 확인" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('signupPwConfirm', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
       </div>
 
       <p class="auth-error" id="signupError"></p>
@@ -3718,7 +3759,14 @@
   <div class="modal-overlay" id="masterPasswordModal">
     <div class="modal-box">
       <p class="modal-text" style="margin-bottom:16px;">관리자 모드</p>
-      <input type="password" inputmode="numeric" id="masterPasswordInput" class="master-input" placeholder="비밀번호">
+      <div class="master-pw-wrap">
+        <input type="password" inputmode="numeric" id="masterPasswordInput" class="master-input has-eye" placeholder="비밀번호">
+        <button type="button" class="pw-eye" onclick="togglePw('masterPasswordInput', this)" aria-label="비밀번호 표시">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
       <p class="master-error" id="masterPasswordError">비밀번호가 올바르지 않아요</p>
       <div class="modal-actions">
         <button onclick="closeMasterPasswordModal()" style="background:#f1f2f5;color:#555555;">취소</button>
@@ -3804,7 +3852,8 @@
       </div>
 
       <div class="onboard-input-wrap auth-field ob-anim d3">
-        <input type="password" id="tchLoginPw" class="onboard-input" placeholder="비밀번호" autocomplete="off">
+        <input type="password" id="tchLoginPw" class="onboard-input has-eye" placeholder="비밀번호" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('tchLoginPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
       </div>
 
       <p class="auth-error" id="tchLoginError"></p>
@@ -3858,7 +3907,7 @@
   <!-- ===== 새 반 만들기 2/2: 코드 생성 완료 ===== -->
   <div class="page t-scope" id="page-t-code-reveal">
     <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="cancelPendingClassAndGoBack()" aria-label="뒤로가기">
+      <button class="ob-back-btn" onclick="leaveCodeRevealScreen()" aria-label="뒤로가기">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M19 12H5"></path>
           <path d="M12 19l-7-7 7-7"></path>
@@ -4462,6 +4511,33 @@
     })[ch]);
   }
 
+  /* ===== 비밀번호 보기/숨기기 ===== */
+  const EYE_SHOW = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  const EYE_HIDE = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+
+  /* 비밀번호를 잘못 친 건 아닌지 눈으로 확인할 수 있게 함 */
+  function togglePw(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const reveal = input.type === "password";
+    input.type = reveal ? "text" : "password";
+    btn.innerHTML = reveal ? EYE_HIDE : EYE_SHOW;
+    btn.classList.toggle("on", reveal);
+    btn.setAttribute("aria-label", reveal ? "비밀번호 숨기기" : "비밀번호 표시");
+    input.focus();
+  }
+
+  /* 화면을 벗어났다 돌아왔을 때 이전에 켜 둔 '보기' 상태가 남지 않도록 되돌림 */
+  function hidePwField(inputId) {
+    const input = document.getElementById(inputId);
+    input.type = "password";
+    const btn = input.parentElement.querySelector(".pw-eye");
+    if (btn) {
+      btn.innerHTML = EYE_SHOW;
+      btn.classList.remove("on");
+      btn.setAttribute("aria-label", "비밀번호 표시");
+    }
+  }
+
   function showAuthError(id, msg) {
     const el = document.getElementById(id);
     el.textContent = msg;
@@ -4482,6 +4558,7 @@
     const f = LOGIN_FIELDS[role];
     document.getElementById(f.nameId).value = "";
     document.getElementById(f.pwId).value = "";
+    hidePwField(f.pwId);
     clearAuthError(f.errorId);
   }
 
@@ -4549,6 +4626,8 @@
     document.getElementById("signupName").value = "";
     document.getElementById("signupPw").value = "";
     document.getElementById("signupPwConfirm").value = "";
+    hidePwField("signupPw");
+    hidePwField("signupPwConfirm");
     clearAuthError("signupError");
     showPage("signup");
   }
@@ -5894,15 +5973,20 @@
     showPage("t-code-reveal");
   });
 
-  /* 코드 생성 화면에서 뒤로가기: 방금 만든 반은 취소(삭제)하고 이전 화면으로 */
-  function cancelPendingClassAndGoBack() {
+  /* 코드 화면에서 나가기.
+     이 화면에 왔다는 건 반이 이미 만들어지고 코드까지 나왔다는 뜻이라,
+     뒤로가기로 반을 지우면 적어 둔 코드가 갑자기 안 먹는 일이 생김.
+     그래서 뒤로가기도 '완료'와 똑같이 반을 그대로 두고 목록으로 돌아감
+     (반을 없애고 싶으면 반 관리에서 '반 삭제'를 쓰면 됨) */
+  function leaveCodeRevealScreen() {
     playTapSound();
-    if (pendingClassIndex !== null) {
-      classes.splice(pendingClassIndex, 1);
-      pendingClassIndex = null;
-      saveState();
+    pendingClassIndex = null;
+    if (classSetupReturnPage === "t-students") {
+      renderStudentsHome();
+    } else {
+      renderHomeStats();
     }
-    showPage("t-class-setup");
+    showPage(classSetupReturnPage);
   }
 
   /* 코드 공개 */
@@ -6587,6 +6671,7 @@
     playTapSound();
     const input = document.getElementById("masterPasswordInput");
     input.value = "";
+    hidePwField("masterPasswordInput");
     document.getElementById("masterPasswordError").classList.remove("show");
     document.getElementById("masterPasswordModal").classList.add("show");
     setTimeout(() => input.focus(), 50);
