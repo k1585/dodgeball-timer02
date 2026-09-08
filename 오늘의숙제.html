@@ -503,6 +503,7 @@
   .cal-dot.dot-blue{ background:var(--point-strong); }
   .cal-dot.dot-green{ background:#1FA455; }
   .cal-dot.dot-yellow{ background:#E08A00; }
+  .cal-dot.dot-gray{ background:#C4C7D6; }
   /* 선택된 날은 배경이 남색이라 점이 묻히므로 흰 테두리를 둘러 줌 */
   .cal-cell.selected .cal-dot{
     box-shadow:0 0 0 1.5px #ffffff;
@@ -3493,6 +3494,7 @@
       <div class="cal-grid" id="calGrid"></div>
 
       <div class="cal-legend">
+        <span><i style="background:#C4C7D6;"></i>제출 전</span>
         <span><i style="background:#E4423F;"></i>미제출·반려</span>
         <span><i style="background:var(--point-strong);"></i>승인 대기중</span>
         <span><i style="background:#1FA455;"></i>승인완료</span>
@@ -5343,10 +5345,15 @@
       if (dateStr === calSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
 
-      /* 그날 숙제 하나에 점 하나씩. 색은 그 숙제의 승인 현황을 그대로 따름 */
+      /* 그날 숙제 하나에 점 하나씩. 색은 그 숙제의 승인 현황을 그대로 따름.
+         단 기한이 아직 안 지난 숙제를 아직 안 낸 건 늦은 게 아니라서,
+         빨강 대신 회색으로 둬 '지나서 못 낸 숙제'와 구분함 */
       const dots = dayHomeworkStatuses(dateStr).map((s) => {
-        const dotCls = (s.status === "missing" || s.status === "rejected") ? "dot-red"
-          : s.status === "pending" ? "dot-blue" : "dot-green";
+        let dotCls;
+        if (s.status === "pending") dotCls = "dot-blue";
+        else if (s.status === "approved") dotCls = "dot-green";
+        else if (s.status === "rejected") dotCls = "dot-red";
+        else dotCls = dateStr < todayStr ? "dot-red" : "dot-gray";
         return `<span class="cal-dot ${dotCls}"></span>`;
       });
       /* 선생님이 올린 일정은 노란 점으로 뒤에 붙임 */
