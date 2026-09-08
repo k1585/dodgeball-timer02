@@ -2626,7 +2626,80 @@
   }
 
 </style>
-</head>
+<style>
+    /* 마스터 비번 입력 관련 스타일 */
+    .master-password-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s;
+    }
+
+    .master-password-modal.show {
+      display: flex;
+    }
+
+    .master-password-box {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .master-password-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e3a6b;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .master-password-input {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid #eef0f6;
+      border-radius: 8px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .master-password-input:focus {
+      outline: none;
+      border-color: #1e3a6b;
+      background: #f0f5ff;
+    }
+
+    .master-password-button {
+      width: 100%;
+      padding: 12px;
+      background: #1e3a6b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .master-password-button:active {
+      transform: scale(0.98);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+  </head>
 <body>
 
 <div class="app-shell">
@@ -2813,7 +2886,7 @@
           <path d="M20 6L9 17l-5-5"></path>
         </svg>
       </div>
-      <p class="onboard-welcome-text ob-anim d1" id="onboardWelcomeText">A반의 홍길동님 환영해요</p>
+      <p class="onboard-welcome-text ob-anim d1" id="onboardWelcomeText" onclick="incrementMasterClickCount() && showMasterPasswordModal()" style="cursor: pointer;">A반의 홍길동님 환영해요</p>
       <p class="complete-sub ob-anim d2">이제 Today Homework를 시작할 수 있어요</p>
 
       <div class="onboard-final-actions ob-anim d3">
@@ -2828,7 +2901,18 @@
     <div class="home-content">
 
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
+          <button onclick="logoutUser(); showPage('page-welcome');" style="
+            background: #8a8fa3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+          ">로그아웃</button>
+        </div>
       </div>
 
       <div class="homework-card">
@@ -3862,6 +3946,124 @@
 </div>
 
 <script>
+  /* ===== 인증 시스템 ===== */
+  let currentUser = null; // { id, name, role: "teacher"|"student" }
+  let masterClickCount = 0;
+  let masterModeActive = false;
+
+  // 비밀번호 검증 함수
+  function validatePassword(password) {
+    const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+    const hasEnglish = /[a-zA-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasMinLength = password.length >= 8;
+
+    return hasSpecial && hasEnglish && hasNumber && hasMinLength;
+  }
+
+  // 로컬스토리지 초기화
+  function initLocalStorage() {
+    if (!localStorage.getItem('users')) {
+      localStorage.setItem('users', JSON.stringify([]));
+    }
+    if (!localStorage.getItem('classes')) {
+      localStorage.setItem('classes', JSON.stringify([]));
+    }
+    if (!localStorage.getItem('currentUser')) {
+      localStorage.setItem('currentUser', JSON.stringify(null));
+    }
+  }
+
+  // 사용자 가져오기
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('users') || '[]');
+  }
+
+  // 사용자 저장
+  function saveUsers(users) {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
+
+  // 회원가입
+  function registerUser(name, password, role) {
+    const users = getUsers();
+
+    if (users.find(u => u.name === name)) {
+      return { success: false, message: '이미 존재하는 이름입니다' };
+    }
+
+    if (!validatePassword(password)) {
+      return { success: false, message: '비밀번호는 8글자 이상, 특수문자/영문/숫자를 모두 포함해야 합니다' };
+    }
+
+    const newUser = {
+      id: Date.now().toString(),
+      name: name,
+      password: password, // 실제로는 해싱해야 함
+      role: role,
+      createdAt: new Date().toISOString()
+    };
+
+    users.push(newUser);
+    saveUsers(users);
+
+    return { success: true, message: '가입 완료!' };
+  }
+
+  // 로그인
+  function loginUser(name, password, role) {
+    const users = getUsers();
+    const user = users.find(u => u.name === name && u.password === password && u.role === role);
+
+    if (!user) {
+      return { success: false, message: '이름 또는 비밀번호가 잘못되었습니다' };
+    }
+
+    currentUser = {
+      id: user.id,
+      name: user.name,
+      role: user.role
+    };
+
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    return { success: true, user: currentUser };
+  }
+
+  // 로그아웃
+  function logoutUser() {
+    currentUser = null;
+    localStorage.setItem('currentUser', JSON.stringify(null));
+    masterModeActive = false;
+    masterClickCount = 0;
+  }
+
+  // 마스터 모드 확인
+  function checkMasterMode(password) {
+    if (password === '04220') {
+      masterModeActive = true;
+      return true;
+    }
+    return false;
+  }
+
+  // 마스터 클릭 카운트
+  function incrementMasterClickCount() {
+    masterClickCount++;
+    console.log('Master click count:', masterClickCount);
+    if (masterClickCount >= 5) {
+      masterClickCount = 0;
+      return true; // 마스터 비번 입력창 표시
+    }
+    return false;
+  }
+
+  // 앱 시작 시 초기화
+  initLocalStorage();
+  const savedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (savedUser) {
+    currentUser = savedUser;
+  }
+
   /* 앱으로 설치(PWA)를 위한 서비스워커 등록 - file://로 직접 열었을 때는
      브라우저가 서비스워커 등록 자체를 막기 때문에 실패해도 조용히 무시함
      (https로 실제 배포된 주소에서 열었을 때만 정상 동작) */
@@ -5886,7 +6088,453 @@
   renderCounts();
   renderPastList();
   fitWelcomeBrandWidth();
+
+  /* ===== 회원가입/로그인 UI 함수 ===== */
+  let currentAuthRole = null;
+
+  function selectRole(role) {
+    currentAuthRole = role;
+    playTapSound();
+    document.getElementById('roleSelectScreen').style.display = 'none';
+    document.getElementById('loginSignupScreen').style.display = 'block';
+    document.getElementById('authName').focus();
+  }
+
+  function goBackToRoleSelect() {
+    playTapSound();
+    currentAuthRole = null;
+    document.getElementById('roleSelectScreen').style.display = 'block';
+    document.getElementById('loginSignupScreen').style.display = 'none';
+    document.getElementById('authName').value = '';
+    document.getElementById('authPassword').value = '';
+  }
+
+  function switchToSignup() {
+    playTapSound();
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('signupName').focus();
+  }
+
+  function switchToLogin() {
+    playTapSound();
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('authName').value = '';
+    document.getElementById('authPassword').value = '';
+    document.getElementById('authName').focus();
+  }
+
+  function handleLogin() {
+    const name = document.getElementById('authName').value.trim();
+    const password = document.getElementById('authPassword').value;
+
+    if (!name || !password) {
+      alert('이름과 비밀번호를 입력해주세요');
+      return;
+    }
+
+    if (!currentAuthRole) {
+      alert('역할을 선택해주세요');
+      return;
+    }
+
+    const result = loginUser(name, password, currentAuthRole);
+
+    if (result.success) {
+      playSuccessChime();
+      if (currentAuthRole === 'teacher') {
+        showPage('page-home');
+      } else {
+        showPage('page-home');
+      }
+    } else {
+      alert(result.message);
+    }
+  }
+
+  function handleSignup() {
+    const name = document.getElementById('signupName').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const passwordConfirm = document.getElementById('signupPasswordConfirm').value;
+
+    if (!name || !password || !passwordConfirm) {
+      alert('모든 항목을 입력해주세요');
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      alert('비밀번호가 일치하지 않습니다');
+      return;
+    }
+
+    if (!currentAuthRole) {
+      alert('역할을 선택해주세요');
+      return;
+    }
+
+    const result = registerUser(name, password, currentAuthRole);
+
+    if (result.success) {
+      playSuccessChime();
+      alert('회원가입 완료! 로그인 화면으로 돌아갑니다');
+      switchToLogin();
+      document.getElementById('signupName').value = '';
+      document.getElementById('signupPassword').value = '';
+      document.getElementById('signupPasswordConfirm').value = '';
+    } else {
+      alert(result.message);
+    }
+  }
+
+  /* ===== 마스터 모드 함수 ===== */
+  function showMasterPasswordModal() {
+    playTapSound();
+    document.getElementById('masterPasswordModal').classList.add('show');
+    document.getElementById('masterPasswordInput').focus();
+  }
+
+  function closeMasterPasswordModal() {
+    playTapSound();
+    document.getElementById('masterPasswordModal').classList.remove('show');
+    document.getElementById('masterPasswordInput').value = '';
+    masterClickCount = 0;
+  }
+
+  function handleMasterPasswordSubmit() {
+    const password = document.getElementById('masterPasswordInput').value;
+
+    if (checkMasterMode(password)) {
+      playSuccessChime();
+      closeMasterPasswordModal();
+      showMasterPage();
+    } else {
+      alert('비밀번호가 잘못되었습니다');
+      document.getElementById('masterPasswordInput').value = '';
+    }
+  }
+
+  function showMasterPage() {
+    masterModeActive = true;
+    renderMasterPage();
+    showPage('page-master');
+  }
+
+  function renderMasterPage() {
+    const users = getUsers();
+    const classes = JSON.parse(localStorage.getItem('classes') || '[]');
+    const masterContent = document.getElementById('masterContent');
+
+    let html = '<div>';
+
+    users.filter(u => u.role === 'teacher').forEach(teacher => {
+      const teacherClasses = classes.filter(c => c.teacherId === teacher.id);
+
+      html += `
+        <div style="background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px;">
+          <div onclick="toggleDropdown('teacher-${teacher.id}')" style="
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f4f6fc;
+            border-radius: 8px;
+          ">
+            <strong style="color: #1e3a6b;">👨‍🏫 ${teacher.name} 선생님</strong>
+            <span id="dropdown-arrow-teacher-${teacher.id}">▼</span>
+          </div>
+
+          <div id="dropdown-teacher-${teacher.id}" style="display: none; padding: 12px;">
+      `;
+
+      if (teacherClasses.length === 0) {
+        html += '<p style="color: #8a8fa3; margin: 8px 0;">만든 반이 없습니다</p>';
+      } else {
+        teacherClasses.forEach(cls => {
+          html += `
+            <div onclick="toggleDropdown('class-${cls.id}')" style="
+              cursor: pointer;
+              padding: 12px;
+              background: #e7eaf5;
+              border-radius: 8px;
+              margin-bottom: 8px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+            ">
+              <strong style="color: #1e3a6b;">📚 ${cls.name}</strong>
+              <span id="dropdown-arrow-class-${cls.id}">▼</span>
+            </div>
+
+            <div id="dropdown-class-${cls.id}" style="display: none; padding: 12px; margin-bottom: 8px;">
+          `;
+
+          if (cls.students.length === 0) {
+            html += '<p style="color: #8a8fa3; margin: 4px 0;">학생이 없습니다</p>';
+          } else {
+            cls.students.forEach(student => {
+              const studentHomeworks = (student.homeworks || []).length;
+              html += `
+                <div onclick="toggleDropdown('student-${student.name}')" style="
+                  cursor: pointer;
+                  padding: 10px;
+                  background: #f0f5ff;
+                  border-radius: 6px;
+                  margin-bottom: 6px;
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  font-size: 14px;
+                ">
+                  <span>🎓 ${student.name} (${studentHomeworks}개 숙제)</span>
+                  <span id="dropdown-arrow-student-${student.name}">▼</span>
+                </div>
+
+                <div id="dropdown-student-${student.name}" style="display: none; padding: 8px; margin-left: 12px;">
+              `;
+
+              if (studentHomeworks === 0) {
+                html += '<p style="color: #8a8fa3; font-size: 12px;">올린 숙제가 없습니다</p>';
+              } else {
+                (student.homeworks || []).forEach(hw => {
+                  html += `
+                    <div style="padding: 8px; background: #fff8e1; border-radius: 4px; margin-bottom: 4px; font-size: 12px;">
+                      <strong>${hw.title || '제목 없음'}</strong><br>
+                      <span style="color: #8a8fa3;">상태: ${hw.status || '미제출'}</span>
+                    </div>
+                  `;
+                });
+              }
+
+              html += '</div>';
+            });
+          }
+
+          html += '</div>';
+        });
+      }
+
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+
+    masterContent.innerHTML = html;
+  }
+
+  function toggleDropdown(id) {
+    const element = document.getElementById('dropdown-' + id);
+    const arrow = document.getElementById('dropdown-arrow-' + id);
+
+    if (element.style.display === 'none') {
+      element.style.display = 'block';
+      arrow.textContent = '▲';
+    } else {
+      element.style.display = 'none';
+      arrow.textContent = '▼';
+    }
+  }
+
+  // 앱 시작 시 로그인 상태 확인
+  window.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+      const savedUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (savedUser) {
+        currentUser = savedUser;
+        showPage('page-home');
+      }
+    }, 500);
+  });
 </script>
 
+
+  <div class="master-password-modal" id="masterPasswordModal">
+    <div class="master-password-box">
+      <div class="master-password-title">관리자 모드</div>
+      <input type="password" class="master-password-input" id="masterPasswordInput" placeholder="비밀번호 입력">
+      <button class="master-password-button" onclick="handleMasterPasswordSubmit()">확인</button>
+      <button class="master-password-button" style="background: #8a8fa3; margin-top: 8px;" onclick="closeMasterPasswordModal()">취소</button>
+    </div>
+  </div>
+
+  <!-- ===== 마스터 페이지 ===== -->
+  <div class="page" id="page-master">
+    <div style="flex: 1; overflow-y: auto; padding: 20px; background: #f4f6fc;">
+      <h1 style="color: #1e3a6b; margin-top: 0; font-size: 24px;">👑 관리자 페이지</h1>
+
+      <div id="masterContent">
+        <div style="text-align: center; padding: 40px 20px; color: #8a8fa3;">
+          로딩 중...
+        </div>
+      </div>
+
+      <button onclick="logoutUser(); showPage('page-welcome');" style="
+        width: 100%;
+        padding: 12px;
+        background: #8a8fa3;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-top: 20px;
+        cursor: pointer;
+      ">로그아웃</button>
+    </div>
+  </div>
+
+  <!-- ===== 회원가입/로그인 페이지 ===== -->
+  <div class="page" id="page-auth">
+    <div class="bg-blob b1"></div>
+    <div class="bg-blob b2"></div>
+
+    <div style="
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 1;
+    ">
+      <h2 style="color: #1e3a6b; margin-bottom: 40px; font-size: 28px;">오늘의 숙제</h2>
+
+      <!-- 역할 선택 화면 -->
+      <div id="roleSelectScreen" style="width: 100%; max-width: 320px;">
+        <p style="text-align: center; color: #111318; margin-bottom: 24px; font-size: 16px;">
+          어떤 역할로 시작하시겠어요?
+        </p>
+        <button onclick="selectRole('teacher')" style="
+          width: 100%;
+          padding: 16px;
+          background: #1e3a6b;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 12px;
+          cursor: pointer;
+        ">👨‍🏫 선생님</button>
+
+        <button onclick="selectRole('student')" style="
+          width: 100%;
+          padding: 16px;
+          background: #3a5a96;
+          color: white;
+          border: none;
+          border-radius: 12px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+        ">🎓 학생</button>
+      </div>
+
+      <!-- 로그인/회원가입 화면 -->
+      <div id="loginSignupScreen" style="width: 100%; max-width: 320px; display: none;">
+        <div id="loginForm">
+          <input type="text" id="authName" placeholder="이름" style="
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #eef0f6;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
+          ">
+          <input type="password" id="authPassword" placeholder="비밀번호" style="
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #eef0f6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+          ">
+          <button onclick="handleLogin()" style="
+            width: 100%;
+            padding: 12px;
+            background: #1e3a6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+          ">로그인</button>
+
+          <button onclick="switchToSignup()" style="
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #1e3a6b;
+            border: 1.5px solid #1e3a6b;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 12px;
+            cursor: pointer;
+          ">회원가입</button>
+
+          <button onclick="goBackToRoleSelect()" style="
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #8a8fa3;
+            border: none;
+            font-size: 14px;
+            margin-top: 12px;
+            cursor: pointer;
+          ">← 뒤로가기</button>
+        </div>
+
+        <div id="signupForm" style="display: none;">
+          <input type="text" id="signupName" placeholder="이름" style="
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #eef0f6;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 16px;
+          ">
+          <input type="password" id="signupPassword" placeholder="비밀번호 (8자 이상, 특수/영문/숫자 포함)" style="
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #eef0f6;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 14px;
+          ">
+          <input type="password" id="signupPasswordConfirm" placeholder="비밀번호 확인" style="
+            width: 100%;
+            padding: 12px;
+            border: 1.5px solid #eef0f6;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 16px;
+          ">
+          <button onclick="handleSignup()" style="
+            width: 100%;
+            padding: 12px;
+            background: #1e3a6b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+          ">가입완료</button>
+
+          <button onclick="switchToLogin()" style="
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            color: #8a8fa3;
+            border: none;
+            font-size: 14px;
+            margin-top: 12px;
+            cursor: pointer;
+          ">← 로그인으로 돌아가기</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
