@@ -88,37 +88,9 @@
   }
 
   /* 하단 고정 메뉴 (홈 / 숙제 목록 화면 공용) */
-  .bottom-nav{
-    flex-shrink:0;
-    display:flex;
-    border-top:1px solid #eeeeee;
-    background:#ffffff;
-  }
 
-  .nav-item{
-    flex:1;
-    background:none;
-    border:none;
-    padding:8px 0 9px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:3px;
-    color:#9aa0a6;
-    font-size:10px;
-    font-weight:700;
-    letter-spacing:-0.2px;
-    cursor:pointer;
-  }
 
-  .nav-item svg{
-    width:21px;
-    height:21px;
-  }
 
-  .nav-item.active{
-    color:var(--point-strong);
-  }
 
   /* ================= 홈 화면 ================= */
   #page-home .home-content, #page-calendar .home-content{
@@ -143,29 +115,12 @@
     color:var(--point-strong);
   }
 
-  .page-label{
-    color:#9aa0a6;
-    font-weight:800;
-    margin-right:6px;
-  }
 
   .top-icons{
     display:flex;
     gap:14px;
   }
 
-  .icon-btn{
-    width:36px;
-    height:36px;
-    border:none;
-    background:none;
-    padding:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    color:var(--point-strong);
-  }
 
   .homework-card{
     margin-top:20px;
@@ -300,13 +255,7 @@
     padding:0 20px 14px;
   }
 
-  .tab-content{
-    display:none;
-  }
 
-  .tab-content.active{
-    display:block;
-  }
 
   #page-list .hw-card,
   #page-status-detail .hw-card{
@@ -637,22 +586,34 @@
     margin:0;
   }
 
+  /* 제목과 기한을 한 줄에 나란히 두면 제목이 길 때 서로 눌려서
+     세로로 쌓고, D-day만 오른쪽에 둠 */
   .bundle-header{
     margin-top:14px;
     display:flex;
-    align-items:center;
-    gap:8px;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .bundle-header-text{
+    flex:1;
+    min-width:0;
   }
 
   .bundle-title{
-    font-size:16px;
+    display:block;
+    font-size:17px;
     font-weight:800;
     color:#111111;
+    line-height:1.35;
+    word-break:keep-all;
   }
 
   .bundle-due{
-    font-size:11px;
+    display:block;
+    font-size:12px;
     color:#888888;
+    margin-top:3px;
   }
 
   .bundle-dday{
@@ -899,20 +860,7 @@
   }
 
   /* 팝업 공통 */
-  .modal-overlay{
-    display:none;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,0.5);
-    align-items:center;
-    justify-content:center;
-    z-index:100;
-    padding:24px;
-  }
 
-  .modal-overlay.show{
-    display:flex;
-  }
 
   .modal-box{
     background:#ffffff;
@@ -1118,110 +1066,19 @@
   }
 
   /* 상단바 (뒤로가기 + 진행 점) - 온보딩 전용, 다른 화면의 top-bar/back-btn과 분리 */
-  .ob-top-bar{
-    flex-shrink:0;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:20px 20px 0;
-  }
 
-  .ob-back-btn{
-    width:38px;
-    height:38px;
-    border-radius:12px;
-    border:none;
-    background:#F5F6FA;
-    color:var(--ink);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-  }
 
-  .ob-back-btn:active{
-    transform:scale(0.94);
-  }
 
-  .progress-dots{
-    display:flex;
-    gap:6px;
-  }
 
-  .progress-dots span{
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--line);
-    transition:background 0.2s, width 0.2s;
-  }
 
-  .progress-dots span.done{
-    background:var(--point-light);
-  }
 
-  .progress-dots span.current{
-    background:var(--point-strong);
-    width:16px;
-    border-radius:4px;
-  }
 
   /* 시작 화면 */
-  .welcome-content{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:0 32px;
-    transform:translateY(-30px);
-  }
 
-  .welcome-title{
-    font-size:26px;
-    font-weight:800;
-    color:var(--point-strong);
-    margin:0;
-    letter-spacing:-0.3px;
-  }
 
-  .welcome-brand{
-    font-weight:800;
-    color:var(--ink);
-    margin:6px 0 0;
-    white-space:nowrap;
-    letter-spacing:-0.3px;
-  }
 
-  .welcome-tagline{
-    font-size:13px;
-    color:var(--sub);
-    margin:10px 0 0;
-    text-align:center;
-  }
 
-  .welcome-start-btn{
-    margin-top:40px;
-    width:100%;
-    max-width:280px;
-    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
-    color:#ffffff;
-    border:none;
-    border-radius:18px;
-    padding:17px;
-    font-size:16px;
-    font-weight:800;
-    cursor:pointer;
-    box-shadow:0 12px 24px rgba(30,58,107,0.28);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:8px;
-  }
 
-  .welcome-start-btn:active{
-    transform:scale(0.98);
-  }
 
   /* 역할 선택 */
   .role-heading{
@@ -1318,117 +1175,22 @@
   }
 
   /* 이름/코드 입력 공용 */
-  .onboard-center{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:0 28px;
-  }
 
   .onboard-center.shift-up{
     justify-content:flex-start;
     padding-top:10vh;
   }
 
-  .step-icon{
-    width:60px;
-    height:60px;
-    border-radius:18px;
-    background:var(--point-light);
-    color:var(--point-strong);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin-bottom:18px;
-  }
 
-  .onboard-title{
-    font-size:21px;
-    font-weight:800;
-    color:var(--ink);
-    margin:0 0 6px;
-    text-align:center;
-  }
 
-  .onboard-desc{
-    font-size:13px;
-    color:var(--sub);
-    margin:0 0 26px;
-    text-align:center;
-  }
 
-  .onboard-input-wrap{
-    width:100%;
-    max-width:280px;
-    position:relative;
-  }
 
-  .onboard-input{
-    width:100%;
-    border:1.5px solid var(--line);
-    border-radius:16px;
-    padding:16px 18px;
-    font-size:16px;
-    text-align:center;
-    font-family:inherit;
-    font-weight:700;
-    color:var(--ink);
-    background:#FAFBFF;
-    transition:border-color 0.15s, box-shadow 0.15s;
-  }
 
-  .onboard-input:focus{
-    outline:none;
-    border-color:var(--point-strong);
-    box-shadow:0 0 0 4px rgba(30,58,107,0.12);
-    background:#ffffff;
-  }
 
-  .onboard-confirm{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    font-size:13px;
-    font-weight:700;
-    color:var(--point-strong);
-    min-height:20px;
-    margin:16px 0 24px;
-    opacity:0;
-    transition:opacity 0.2s;
-  }
 
-  .onboard-confirm.show{
-    opacity:1;
-  }
 
-  .onboard-btn{
-    width:100%;
-    max-width:280px;
-    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
-    color:#ffffff;
-    border:none;
-    border-radius:16px;
-    padding:16px;
-    font-size:15px;
-    font-weight:800;
-    cursor:pointer;
-    box-shadow:0 10px 20px rgba(30,58,107,0.22);
-    transition:opacity 0.15s, transform 0.1s;
-  }
 
-  .onboard-btn:disabled{
-    background:#E4E6EF;
-    box-shadow:none;
-    color:#AEB2C4;
-    cursor:default;
-  }
 
-  .onboard-btn:not(:disabled):active{
-    transform:scale(0.98);
-  }
 
   /* 코드 입력 (OTP 스타일) */
   .otp-row{
@@ -1533,21 +1295,7 @@
   }
 
   /* 온보딩 전용 보조 버튼 (앱 전역 .secondary-btn과는 분리) */
-  .ob-secondary-btn{
-    flex:1;
-    background:#F5F6FA;
-    color:var(--sub);
-    border:none;
-    border-radius:16px;
-    padding:15px 10px;
-    font-size:14px;
-    font-weight:800;
-    cursor:pointer;
-  }
 
-  .ob-secondary-btn:active{
-    transform:scale(0.98);
-  }
 
   .onboard-btn-row .onboard-btn{
     flex:1.4;
@@ -1563,39 +1311,13 @@
     padding:0 28px;
   }
 
-  .complete-circle{
-    width:88px;
-    height:88px;
-    border-radius:50%;
-    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 16px 30px rgba(30,58,107,0.30);
-    margin-bottom:26px;
-    animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1);
-  }
 
   @keyframes popIn{
     0%{ transform:scale(0.4); opacity:0; }
     100%{ transform:scale(1); opacity:1; }
   }
 
-  .onboard-welcome-text{
-    font-size:20px;
-    font-weight:800;
-    color:var(--ink);
-    text-align:center;
-    margin:0 0 6px;
-    line-height:1.5;
-  }
 
-  .complete-sub{
-    font-size:13px;
-    color:var(--sub);
-    margin:0 0 36px;
-    text-align:center;
-  }
 
   .onboard-final-actions{
     display:flex;
@@ -2203,6 +1925,12 @@
   }
   .tab-content.active{
     display:block;
+    animation:tabIn 0.24s cubic-bezier(.2,.8,.25,1) both;
+  }
+
+  @keyframes tabIn{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
   }
   .t-scope .student-delete-btn{
     flex-shrink:0;
@@ -2551,6 +2279,21 @@
   }
   .modal-overlay.show{
     display:flex;
+    animation:overlayIn 0.18s ease both;
+  }
+
+  .modal-overlay.show .modal-box{
+    animation:modalIn 0.26s cubic-bezier(.34,1.4,.64,1) both;
+  }
+
+  @keyframes overlayIn{
+    from{ opacity:0; }
+    to{ opacity:1; }
+  }
+
+  @keyframes modalIn{
+    from{ opacity:0; transform:translateY(12px) scale(0.94); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
   }
   .t-scope .modal-box{
     background:#ffffff;
@@ -2954,6 +2697,184 @@
 
   .t-scope .hw-date-btn:active{
     transform:scale(0.99);
+  }
+
+  /* 팝업 안의 보조 설명 */
+  .modal-sub{
+    font-size:12.5px;
+    color:var(--sub);
+    font-weight:600;
+    line-height:1.5;
+    margin:-12px 0 20px;
+  }
+
+  .modal-sub b{
+    color:var(--point-strong);
+  }
+
+  /* 관리자: 계정 카드 */
+  .t-scope .master-acc-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    margin-bottom:10px;
+    background:#ffffff;
+  }
+
+  .t-scope .master-acc-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
+  .t-scope .master-acc-pw{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#FAFBFF;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px 6px 8px 12px;
+    margin-top:10px;
+    position:relative;
+  }
+
+  .t-scope .master-acc-pw .pw-eye{
+    position:static;
+    transform:none;
+    width:30px;
+    height:30px;
+    flex-shrink:0;
+  }
+
+  .t-scope .master-acc-pw .pw-eye:active{
+    transform:scale(0.9);
+  }
+
+  .t-scope .master-acc-pw-value{
+    flex:1;
+    font-size:13px;
+    font-weight:700;
+    color:var(--sub);
+    letter-spacing:1px;
+    word-break:break-all;
+  }
+
+  .t-scope .master-acc-pw-value.on{
+    color:var(--point-strong);
+    letter-spacing:0;
+  }
+
+  .t-scope .master-acc-reset{
+    width:100%;
+    margin-top:8px;
+    background:#F5F6FA;
+    color:var(--sub);
+    border:none;
+    border-radius:10px;
+    padding:9px;
+    font-size:12.5px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+  }
+
+  .t-scope .master-acc-reset:active{
+    transform:scale(0.98);
+  }
+
+  /* 목록이 새로 그려질 때 카드가 차례로 떠오르게 함 */
+  @keyframes cardIn{
+    from{ opacity:0; transform:translateY(8px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  #sClassList .student-card,
+  #manageStudentList .student-card,
+  #approveStudentList .student-card,
+  #masterTeacherList .student-card,
+  #masterClassList .student-card,
+  #masterStudentList .student-card,
+  #masterAccountList .master-acc-card,
+  #hwManageList .hw-manage-card,
+  #masterSubsList .master-sub-card,
+  #tab-remaining .hw-card,
+  #tab-approval .hw-card,
+  #tab-past .hw-card,
+  #calDayList .hw-card{
+    animation:cardIn 0.3s cubic-bezier(.2,.8,.25,1) both;
+  }
+
+  #sClassList .student-card:nth-child(1),
+  #approveStudentList .student-card:nth-child(1),
+  #masterTeacherList .student-card:nth-child(1),
+  #tab-remaining .hw-card:nth-child(1){ animation-delay:0.02s; }
+  #sClassList .student-card:nth-child(2),
+  #approveStudentList .student-card:nth-child(2),
+  #masterTeacherList .student-card:nth-child(2),
+  #tab-remaining .hw-card:nth-child(2){ animation-delay:0.06s; }
+  #sClassList .student-card:nth-child(3),
+  #approveStudentList .student-card:nth-child(3),
+  #masterTeacherList .student-card:nth-child(3),
+  #tab-remaining .hw-card:nth-child(3){ animation-delay:0.10s; }
+  #sClassList .student-card:nth-child(n+4),
+  #approveStudentList .student-card:nth-child(n+4),
+  #masterTeacherList .student-card:nth-child(n+4),
+  #tab-remaining .hw-card:nth-child(n+4){ animation-delay:0.14s; }
+
+  /* 눌렀을 때 반응이 없던 카드들에 눌림 표시 */
+  .student-card[onclick]:active,
+  .hw-card[onclick]:active,
+  .role-card:active,
+  .hw-manage-card[onclick]:active{
+    transform:scale(0.985);
+  }
+
+  .student-card,
+  .hw-card,
+  .hw-manage-card{
+    transition:transform 0.12s ease, box-shadow 0.16s ease;
+  }
+
+  /* 탭 밑줄이 미끄러지듯 움직이게 */
+  .tab{
+    transition:color 0.18s ease, border-bottom-color 0.18s ease;
+  }
+
+  /* 필터 칩 전환도 부드럽게 */
+  .t-scope .hw-chip{
+    transition:background 0.18s ease, color 0.18s ease, transform 0.12s ease;
+  }
+
+  .t-scope .hw-chip:active{
+    transform:scale(0.94);
+  }
+
+  /* 하단 메뉴 아이콘이 눌릴 때 살짝 반응 */
+  .nav-item{
+    transition:color 0.16s ease;
+  }
+
+  .nav-item:active svg{
+    transform:scale(0.9);
+  }
+
+  .nav-item svg{
+    transition:transform 0.12s ease;
+  }
+
+  /* 통계 칸도 같이 떠오르게 */
+  .t-scope .stat-row{
+    animation:cardIn 0.3s cubic-bezier(.2,.8,.25,1) both;
+  }
+
+  /* 움직임을 불편해하는 사용자를 위해 시스템 설정을 따름 */
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:0.01ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.01ms !important;
+    }
   }
 
 </style>
@@ -3559,8 +3480,10 @@
       </div>
 
       <div class="bundle-header">
-        <span class="bundle-title" id="bundleTitle">0825 숙제</span>
-        <span class="bundle-due" id="bundleDue">제출 기한: 8월 25일 (월)</span>
+        <div class="bundle-header-text">
+          <span class="bundle-title" id="bundleTitle">0825 숙제</span>
+          <span class="bundle-due" id="bundleDue">제출 기한: 8월 25일 (월)</span>
+        </div>
         <span class="bundle-dday" id="bundleDday">D-1일</span>
       </div>
 
@@ -3616,8 +3539,10 @@
       </div>
 
       <div class="bundle-header">
-        <span class="bundle-title" id="sdBundleTitle">0823 숙제</span>
-        <span class="bundle-due" id="sdBundleDue">제출 기한: 8월 23일 (토)</span>
+        <div class="bundle-header-text">
+          <span class="bundle-title" id="sdBundleTitle">0823 숙제</span>
+          <span class="bundle-due" id="sdBundleDue">제출 기한: 8월 23일 (토)</span>
+        </div>
         <span class="bundle-dday" id="sdBundleDday">D-2일</span>
       </div>
 
@@ -3726,6 +3651,9 @@
       <p class="section-title">가입한 선생님</p>
       <div id="masterTeacherList"></div>
 
+      <p class="section-title" style="margin-top:22px;">계정 관리</p>
+      <div id="masterAccountList"></div>
+
       <p class="section-title" style="margin-top:22px;">데이터 관리</p>
       <button class="master-danger-btn" onclick="openMasterResetConfirm()">전체 데이터 초기화</button>
     </div>
@@ -3831,6 +3759,35 @@
       <div class="modal-actions">
         <button onclick="closeMasterPasswordModal()" style="background:#f1f2f5;color:#555555;">취소</button>
         <button onclick="submitMasterPassword()" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 저장 공간 부족 -->
+  <div class="modal-overlay" id="storageFullModal">
+    <div class="modal-box">
+      <div class="lock-icon" style="margin-bottom:14px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#E4423F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v5M12 16h.01"></path>
+        </svg>
+      </div>
+      <p class="modal-text">저장 공간이 부족해요</p>
+      <p class="modal-sub">사진을 몇 장 지우고 다시 제출해 주세요</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('storageFullModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비밀번호 초기화 확인 -->
+  <div class="modal-overlay" id="pwResetModal">
+    <div class="modal-box">
+      <p class="modal-text"><span id="pwResetName"></span>의 비밀번호를<br>초기화할까요?</p>
+      <p class="modal-sub">새 비밀번호는 <b>@abcd1234</b>가 돼요</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('pwResetModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button onclick="confirmPwReset()" style="background:var(--point-strong);color:#ffffff;">초기화</button>
       </div>
     </div>
   </div>
@@ -4547,7 +4504,8 @@
   }
 
   /* ===== 온보딩(초기 회원 로그인 UI) ===== */
-  let studentName = "";
+  let accountName = "";   /* 로그인한 계정 이름 */
+  let studentName = "";   /* 지금 보고 있는 반에서 쓰는 이름 (동명이인이면 01, 02가 붙음) */
   let selectedClassName = "";
   let joinedClassIndex = null;
 
@@ -4556,7 +4514,7 @@
      비밀번호는 평문 대신 해시로 보관하지만, 서버가 없으므로 실제 서비스 수준의
      보안은 아닙니다. */
   const STORAGE_KEY_USERS = "todayHomeworkUsers";
-  const MASTER_PASSWORD = "04220";
+  const MASTER_PASSWORD = "0422";
 
   let users = [];
   let currentAuthRole = "student";
@@ -4586,7 +4544,37 @@
       u.classCodes = u.classCode ? [u.classCode] : [];
     }
     delete u.classCode;
+    /* 반마다 다른 이름을 쓸 수 있게 되면서 생긴 칸 */
+    if (!u.classNames || typeof u.classNames !== "object") u.classNames = {};
   });
+
+  /* 관리자 화면에서 비밀번호를 확인할 수 있어야 해서 되돌릴 수 있는 형태로도
+     같이 보관한다. localStorage를 열어봤을 때 그대로 읽히지 않게 살짝 섞어 둘
+     뿐이라 암호화는 아니다 - 기기를 가진 사람은 결국 풀 수 있다. */
+  const PW_KEY = "todayhw";
+  const RESET_PASSWORD = "@abcd1234";
+
+  function encodePw(pw) {
+    let out = "";
+    for (let i = 0; i < pw.length; i++) {
+      out += String.fromCharCode(pw.charCodeAt(i) ^ PW_KEY.charCodeAt(i % PW_KEY.length));
+    }
+    try { return btoa(unescape(encodeURIComponent(out))); } catch (e) { return ""; }
+  }
+
+  function decodePw(saved) {
+    if (!saved) return null;
+    try {
+      const raw = decodeURIComponent(escape(atob(saved)));
+      let out = "";
+      for (let i = 0; i < raw.length; i++) {
+        out += String.fromCharCode(raw.charCodeAt(i) ^ PW_KEY.charCodeAt(i % PW_KEY.length));
+      }
+      return out;
+    } catch (e) {
+      return null;
+    }
+  }
 
   function hashPassword(pw) {
     let h = 5381;
@@ -4701,6 +4689,7 @@
       renderHomeStats();
       showPage("t-home");
     } else {
+      accountName = user.name;
       studentName = user.name;
       openStudentClasses();
     }
@@ -4771,7 +4760,14 @@
       return;
     }
 
-    users.push({ name: name, role: currentAuthRole, pw: hashPassword(pw), classCodes: [] });
+    users.push({
+      name: name,
+      role: currentAuthRole,
+      pw: hashPassword(pw),
+      pwSaved: encodePw(pw),
+      classCodes: [],
+      classNames: {},
+    });
     saveUsers();
     clearAuthError("signupError");
     playSuccessChime();
@@ -4790,7 +4786,23 @@
 
   /* ===== 학생: 내 반 목록 ===== */
   function myStudentAccount() {
-    return findUser(studentName, "student");
+    return findUser(accountName, "student");
+  }
+
+  /* 같은 반에 이름이 겹치면 두 번째부터 01, 02...를 붙여 서로 구분함.
+     먼저 들어온 사람 이름은 그대로 둔다. */
+  function nextClassMemberName(c, baseName) {
+    if (!c.students.some((s) => s.name === baseName)) return baseName;
+    let n = 1;
+    while (c.students.some((s) => s.name === baseName + String(n).padStart(2, "0"))) n++;
+    return baseName + String(n).padStart(2, "0");
+  }
+
+  /* 이 학생이 그 반에서 쓰는 이름 (예전에 들어간 반은 기록이 없으니 계정 이름 그대로) */
+  function myNameInClass(code) {
+    const acc = myStudentAccount();
+    if (acc && acc.classNames && acc.classNames[code]) return acc.classNames[code];
+    return accountName;
   }
 
   /* 로그인한 학생이 등록한 반들. 선생님이 반을 지웠으면 자동으로 빠짐 */
@@ -4812,7 +4824,7 @@
   }
 
   function openStudentClasses() {
-    document.getElementById("sClassesName").textContent = studentName;
+    document.getElementById("sClassesName").textContent = accountName;
     renderStudentClassList();
     showPage("s-classes");
   }
@@ -4846,7 +4858,7 @@
           <div class="student-avatar">${escHtml(c.name[0])}</div>
           <div class="student-info">
             <p class="student-name">${escHtml(c.name)}</p>
-            <p class="student-meta">${escHtml(c.teacherName || "")} 선생님 · 코드 ${escHtml(c.code)}</p>
+            <p class="student-meta">${escHtml(c.teacherName || "")} 선생님${myNameInClass(c.code) !== accountName ? ` · ${escHtml(myNameInClass(c.code))}로 참여중` : ""}</p>
           </div>
           ${remaining > 0 ? `<span class="status-pill pending">숙제 ${remaining}</span>` : ""}
         </div>
@@ -4860,7 +4872,8 @@
     playTapSound();
     joinedClassIndex = i;
     selectedClassName = classes[i].name;
-    document.querySelector("#page-home .user-name").textContent = studentName;
+    studentName = myNameInClass(classes[i].code);
+    document.querySelector("#page-home .user-name").textContent = accountName;
     document.getElementById("homeClassLabel").textContent = classes[i].name;
     renderStudentHome();
     renderRemainingList();
@@ -4879,6 +4892,7 @@
 
   function logoutStudent() {
     playTapSound();
+    accountName = "";
     studentName = "";
     selectedClassName = "";
     joinedClassIndex = null;
@@ -5054,14 +5068,21 @@
   document.getElementById("codeOkBtn").addEventListener("click", () => {
     playTapSound();
     const c = classes[joinedClassIndex];
-    if (!c.students.find((s) => s.name === studentName)) {
-      c.students.push({ name: studentName });
+    const stuAcc = myStudentAccount();
+    let alias = (stuAcc && stuAcc.classNames) ? stuAcc.classNames[c.code] : null;
+    if (!alias) {
+      alias = nextClassMemberName(c, accountName);
+      c.students.push({ name: alias });
       saveState();
+      if (stuAcc) {
+        stuAcc.classNames[c.code] = alias;
+        saveUsers();
+      }
     }
+    studentName = alias;
     /* 다음 로그인 때도 이 반이 목록에 남도록 계정에 반 코드를 기록 */
-    const stuAccount = myStudentAccount();
-    if (stuAccount && stuAccount.classCodes.indexOf(c.code) === -1) {
-      stuAccount.classCodes.push(c.code);
+    if (stuAcc && stuAcc.classCodes.indexOf(c.code) === -1) {
+      stuAcc.classCodes.push(c.code);
       saveUsers();
     }
     document.getElementById("onboardWelcomeText").textContent =
@@ -5165,7 +5186,8 @@
     const c = classes[joinedClassIndex];
     return c.homeworks
       .filter((h) => !mySubmission(h.id))
-      .filter((h) => overdueDays(h.due) <= 5)
+      /* 기한이 지나도 한 달 안이면 아직 낼 수 있게 남겨 둠 */
+      .filter((h) => overdueDays(h.due) <= 30)
       .slice()
       .sort((a, b) => {
         const aOver = overdueDays(a.due) > 0;
@@ -5183,13 +5205,17 @@
     const moreLink = card.querySelector(".more-link");
 
     if (remaining.length === 0) {
-      card.querySelector(".homework-date-range").textContent = "지금 제출할 숙제가 없어요";
+      card.querySelector(".homework-date-range").textContent = "지금은 제출할 숙제가 없어요";
       itemEl.style.display = "none";
       moreLink.style.display = "none";
       return;
     }
 
-    card.querySelector(".homework-date-range").textContent = "지금 제출해야 할 숙제";
+    /* 카드 제목이 이미 '제출해야 할 숙제'라 같은 말을 반복하지 않고,
+       몇 건이 남았고 가장 급한 게 언제까지인지를 알려 줌 */
+    const soonest = remaining[0];
+    card.querySelector(".homework-date-range").textContent =
+      remaining.length + "건 남았어요 · 가장 빠른 기한 " + formatKoreanDate(soonest.due);
     itemEl.style.display = "flex";
     const first = remaining[0];
     itemEl.querySelector(".hw-name").textContent = first.title;
@@ -5484,7 +5510,15 @@
   }
 
   /* base64로 변환해서 저장: blob URL은 다른 탭/새로고침 후에는 깨지므로,
-     반 데이터를 localStorage로 공유하려면 실제 데이터로 들고 있어야 함 */
+     반 데이터를 localStorage로 공유하려면 실제 데이터로 들고 있어야 함.
+
+     다만 요즘 폰 사진은 한 장에 3~5MB라 원본 그대로 넣으면 브라우저 저장
+     한도(약 5MB)를 금방 넘겨 제출이 통째로 저장되지 않는다. 그래서 긴 변을
+     1280px로 줄이고 JPEG로 다시 인코딩해서 한 장당 수백 KB로 낮춘다.
+     숙제 사진은 글씨만 읽히면 되므로 이 정도로 충분하다. */
+  const PHOTO_MAX_EDGE = 1280;
+  const PHOTO_QUALITY = 0.72;
+
   function readFileAsDataUrl(file) {
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -5493,8 +5527,36 @@
     });
   }
 
+  function shrinkDataUrl(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const scale = Math.min(1, PHOTO_MAX_EDGE / Math.max(img.width, img.height));
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          /* 투명 배경 PNG가 검게 나오지 않도록 흰 바탕을 깔고 그림 */
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, w, h);
+          ctx.drawImage(img, 0, 0, w, h);
+          const out = canvas.toDataURL("image/jpeg", PHOTO_QUALITY);
+          /* 줄인 결과가 더 크면(작은 이미지 등) 원본을 그대로 씀 */
+          resolve(out.length < dataUrl.length ? out : dataUrl);
+        } catch (e) {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    });
+  }
+
   function addFiles(fileList) {
-    Promise.all(Array.from(fileList).map(readFileAsDataUrl)).then((dataUrls) => {
+    Promise.all(Array.from(fileList).map((f) => readFileAsDataUrl(f).then(shrinkDataUrl))).then((dataUrls) => {
       uploadedPhotos.push(...dataUrls);
       renderThumbs();
     });
@@ -5900,7 +5962,14 @@
       movedToPast: false,
       lateDays: overdueDays(currentBundle.due),
     });
-    saveState();
+    if (!saveState()) {
+      /* 저장이 안 됐으면 낸 걸로 처리하면 안 되므로 방금 추가한 제출을 되돌림 */
+      c.submissions.pop();
+      saveState();
+      playErrorBuzz();
+      showStorageFullModal();
+      return;
+    }
 
     renderRemainingList();
     renderApprovalList();
@@ -5920,10 +5989,21 @@
   const STORAGE_KEY = "todayHomeworkClasses";
   const STORAGE_KEY_EVENTS = "todayHomeworkEvents";
 
+  /* 저장 공간이 꽉 차면 예외가 나는데, 예전엔 이걸 조용히 삼켜서 제출이
+     저장되지 않았는데도 성공한 것처럼 보였다. 이제 성공 여부를 돌려주고
+     실패하면 화면에서 알려 준다. */
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
-    } catch (e) {}
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function showStorageFullModal() {
+    const el = document.getElementById("storageFullModal");
+    if (el) el.classList.add("show");
   }
 
   function loadState() {
@@ -6891,6 +6971,7 @@
     playSuccessChime();
     closeModal("masterPasswordModal");
     renderMasterTeachers();
+    renderMasterAccounts();
     showPage("master");
   }
 
@@ -6944,6 +7025,76 @@
         </div>
       `;
     }).join("");
+  }
+
+  /* --- 계정 관리: 비밀번호 확인 / 초기화 --- */
+  let pwResetTarget = null;
+  let shownPwKeys = {};   /* 어떤 계정의 비번을 펼쳐 뒀는지 */
+
+  function accountKey(u) {
+    return u.role + ":" + u.name;
+  }
+
+  function renderMasterAccounts() {
+    const el = document.getElementById("masterAccountList");
+    if (users.length === 0) {
+      el.innerHTML = '<p class="empty-approval">아직 가입한 계정이 없어요</p>';
+      return;
+    }
+    el.innerHTML = users.map((u, i) => {
+      const key = accountKey(u);
+      const shown = !!shownPwKeys[key];
+      const pw = decodePw(u.pwSaved);
+      const roleLabel = u.role === "teacher" ? "선생님" : "학생";
+      const pwText = shown
+        ? (pw ? escHtml(pw) : "확인할 수 없어요 (이전에 만든 계정)")
+        : "••••••••";
+      return `
+        <div class="master-acc-card">
+          <div class="master-acc-top">
+            <div class="student-avatar">${escHtml(u.name[0])}</div>
+            <div class="student-info">
+              <p class="student-name">${escHtml(u.name)}</p>
+              <p class="student-meta">${roleLabel} 계정</p>
+            </div>
+            <span class="master-role-pill ${u.role}">${roleLabel}</span>
+          </div>
+          <div class="master-acc-pw">
+            <span class="master-acc-pw-value${shown && pw ? " on" : ""}">${pwText}</span>
+            <button type="button" class="pw-eye" onclick="toggleAccountPw('${jsStr(key)}')" aria-label="비밀번호 ${shown ? "숨기기" : "표시"}">
+              ${shown ? EYE_HIDE : EYE_SHOW}
+            </button>
+          </div>
+          <button class="master-acc-reset" onclick="openPwReset(${i})">비밀번호 초기화</button>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function toggleAccountPw(key) {
+    playTapSound();
+    shownPwKeys[key] = !shownPwKeys[key];
+    renderMasterAccounts();
+  }
+
+  function openPwReset(i) {
+    playTapSound();
+    pwResetTarget = i;
+    document.getElementById("pwResetName").textContent = users[i].name;
+    document.getElementById("pwResetModal").classList.add("show");
+  }
+
+  function confirmPwReset() {
+    if (pwResetTarget === null) return;
+    const u = users[pwResetTarget];
+    u.pw = hashPassword(RESET_PASSWORD);
+    u.pwSaved = encodePw(RESET_PASSWORD);
+    saveUsers();
+    shownPwKeys[accountKey(u)] = true;
+    pwResetTarget = null;
+    closeModal("pwResetModal");
+    playSuccessChime();
+    renderMasterAccounts();
   }
 
   /* --- 2단계: 그 선생님이 만든 반 --- */
@@ -7097,6 +7248,7 @@
   function masterBackToTeachers() {
     playTapSound();
     renderMasterTeachers();
+    renderMasterAccounts();
     showPage("master");
   }
 
@@ -7118,6 +7270,7 @@
   }
 
   function confirmMasterReset() {
+    shownPwKeys = {};
     users = [];
     classes = [];
     events = [];
