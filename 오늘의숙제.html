@@ -3473,14 +3473,6 @@
     <div class="home-content">
       <div class="top-bar">
         <div class="greeting"><span class="page-label">내 반|</span><span class="user-name" id="sClassesName">학생</span>님</div>
-        <div class="top-icons">
-          <button class="icon-btn" onclick="logoutStudent()" aria-label="로그아웃">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <path d="M16 17l5-5-5-5M21 12H9"></path>
-            </svg>
-          </button>
-        </div>
       </div>
 
       <div id="sClassList" style="margin-top:20px;"></div>
@@ -3511,14 +3503,6 @@
 
       <div class="top-bar">
         <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
-        <div class="top-icons">
-          <button class="icon-btn" onclick="openStudentClasses()" aria-label="반 바꾸기">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="13" rx="2"></rect>
-              <path d="M8 21h8M12 17v4"></path>
-            </svg>
-          </button>
-        </div>
       </div>
       <p class="home-class-label" id="homeClassLabel"></p>
 
@@ -4441,14 +4425,25 @@
     </div>
   </div>
 
+  <!-- 반은 하나만 -->
+  <div class="modal-overlay" id="oneClassModal">
+    <div class="modal-box">
+      <p class="modal-text">반은 하나만 등록할 수 있어요</p>
+      <p class="modal-sub">다른 반으로 옮기려면 마이페이지에서 지금 반을 탈퇴해 주세요</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('oneClassModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 반 나가기 확인 -->
   <div class="modal-overlay" id="leaveClassModal">
     <div class="modal-box">
-      <p class="modal-text"><span id="leaveClassName"></span>에서<br>나갈까요?</p>
+      <p class="modal-text"><span id="leaveClassName"></span>을(를)<br>탈퇴할까요?</p>
       <p class="modal-sub">이 반에 제출한 숙제와 사진도 함께 지워져요</p>
       <div class="modal-actions">
         <button onclick="closeModal('leaveClassModal')" style="background:#f1f2f5;color:#555555;">취소</button>
-        <button onclick="confirmLeaveClass()" style="background:#E4423F;color:#ffffff;">나가기</button>
+        <button onclick="confirmLeaveClass()" style="background:#E4423F;color:#ffffff;">탈퇴</button>
       </div>
     </div>
   </div>
@@ -4705,7 +4700,12 @@
           </svg>
         </div>
         <p class="empty-class-text">아직 만든 반이 없어요</p>
-        <p class="empty-class-text" style="margin-top:-10px;font-size:12px;">반 관리 탭에서 새 반을 만들어보세요</p>
+        <button class="add-class-btn" onclick="openStudentsHome()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          반 추가하기
+        </button>
       </div>
 
       <div id="statsSection" style="display:none;">
@@ -5481,7 +5481,13 @@
     } else {
       accountName = user.name;
       studentName = user.name;
-      openStudentClasses();
+      /* 반이 하나뿐이라 목록을 거칠 이유가 없다 - 바로 그 반으로 들어감 */
+      const mine = myStudentClasses();
+      if (mine.length > 0) {
+        enterStudentClass(mine[0].i);
+      } else {
+        openStudentClasses();
+      }
     }
   }
 
@@ -5664,14 +5670,14 @@
               <p class="student-meta">${escHtml(c.teacherName || "")} 선생님${myNameInClass(c.code) !== accountName ? " · " + escHtml(myNameInClass(c.code)) : ""}</p>
             </div>
             ${left > 0 ? `<span class="status-pill pending">숙제 ${left}</span>` : ""}
-            <button class="class-action-btn leave" onclick="openLeaveClass('${jsStr(c.code)}')">나가기</button>
+            <button class="class-action-btn leave" onclick="openLeaveClass('${jsStr(c.code)}')">반 탈퇴</button>
           </div>
         `;
-      }).join("") + `
-        <button class="add-class-btn" onclick="startJoinClass()" style="margin-top:4px;">${addIcon} 반 추가하기</button>
-      `;
+      }).join("");
+      /* 학생은 한 번에 한 반만 등록할 수 있어서, 반이 없을 때만 등록 버튼을 낸다 */
       if (mine.length === 0) {
-        listEl.innerHTML = '<p class="empty-approval">아직 등록한 반이 없어요</p>' + listEl.innerHTML;
+        listEl.innerHTML = '<p class="empty-approval">아직 등록한 반이 없어요</p>'
+          + `<button class="add-class-btn" onclick="startJoinClass()" style="margin-top:4px;">${addIcon} 반 등록하기</button>`;
       }
     }
 
@@ -5767,7 +5773,12 @@
     }
 
     playTapSound();
-    renderMyPage();
+    const cur = (document.querySelector(".page.active") || {}).id;
+    if (cur === "page-s-classes") {
+      renderStudentClassList();
+    } else {
+      renderMyPage();
+    }
   }
 
   /* 스토어 정책상 앱 안에서 직접 계정을 지울 수 있어야 한다 */
@@ -5787,8 +5798,9 @@
 
     if (me.role === "teacher") {
       /* 선생님이 나가면 그 선생님이 만든 반은 남겨 둘 이유가 없다 */
-      classes = classes.filter((c) => c.teacherName !== me.name);
-      events = events.filter((e) => e.teacherName !== me.name);
+      const isMine = (x) => (x.teacherId ? x.teacherId === me.id : x.teacherName === me.name);
+      classes = classes.filter((c) => !isMine(c));
+      events = events.filter((e) => !isMine(e));
       /* 사라진 반을 다른 학생 계정이 계속 들고 있지 않게 정리 */
       const liveCodes = new Set(classes.map((c) => c.code));
       users.forEach((u) => {
@@ -5846,7 +5858,11 @@
     /* 같은 이름이어도 가입은 되게 하고, 로그인은 비밀번호로 가린다.
        다만 이름과 비밀번호가 둘 다 같으면 서로를 구분할 방법이 없어 막는다 */
     if (findUserByLogin(name, currentAuthRole, pw)) {
-      showAuthError("signupError", "이름과 비밀번호가 모두 같은 계정이 있어요");
+      /* 이름만 같은 건 괜찮지만, 비밀번호까지 같으면 서로를 구분할 수 없다.
+         뒤에 번호를 붙이면 된다는 걸 알려 준다. */
+      const sameName = users.filter((u) => u.name === name && u.role === currentAuthRole).length;
+      const suggest = name + String(sameName).padStart(2, "0");
+      showAuthError("signupError", `이미 있는 이름이에요. ${suggest}은 가능해요`);
       playErrorBuzz();
       return;
     }
@@ -5956,7 +5972,7 @@
 
     if (mine.length === 0) {
       container.innerHTML = `
-        <div class="empty-class-card">
+        <div class="empty-class-card" onclick="startJoinClass()" style="cursor:pointer;">
           <div class="empty-class-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="4" width="18" height="13" rx="2"></rect>
@@ -5964,7 +5980,7 @@
             </svg>
           </div>
           <p class="empty-class-text">아직 등록한 반이 없어요</p>
-          <button class="add-class-btn" onclick="startJoinClass()">${ADD_ICON} 반 추가하기</button>
+          <button class="add-class-btn" onclick="event.stopPropagation(); startJoinClass()">${ADD_ICON} 반 등록하기</button>
         </div>
       `;
       return;
@@ -5980,11 +5996,10 @@
             <p class="student-meta">${escHtml(c.teacherName || "")} 선생님${myNameInClass(c.code) !== accountName ? ` · ${escHtml(myNameInClass(c.code))}로 참여중` : ""}</p>
           </div>
           ${remaining > 0 ? `<span class="status-pill pending">숙제 ${remaining}</span>` : ""}
+          <button class="class-action-btn leave" onclick="event.stopPropagation(); openLeaveClass('${jsStr(c.code)}')">반 탈퇴</button>
         </div>
       `;
-    }).join("") + `
-      <button class="add-class-btn" onclick="startJoinClass()" style="margin-top:4px;">${ADD_ICON} 반 추가하기</button>
-    `;
+    }).join("");
   }
 
   function enterStudentClass(i) {
@@ -6002,11 +6017,21 @@
     showPage("home");
   }
 
-  /* '반 추가' - 선생님이 알려준 반 코드를 입력받는 화면으로 */
+  /* '반 등록' - 선생님이 알려준 반 코드를 입력받는 화면으로.
+     학생은 한 번에 한 반만 등록할 수 있다. */
   function startJoinClass() {
     playTapSound();
+    if (myStudentClasses().length >= 1) {
+      showOneClassOnlyModal();
+      return;
+    }
     resetCodeInput();
     showPage("code-input");
+  }
+
+  function showOneClassOnlyModal() {
+    const el = document.getElementById("oneClassModal");
+    if (el) el.classList.add("show");
   }
 
   function logoutTeacher() {
@@ -7179,14 +7204,42 @@
 
   /* 선생님 이름을 기준으로 각자의 반/일정만 보이도록 하는 필터
      (학생이 코드로 반을 찾는 로직은 classes 전체를 그대로 검색하므로 영향 없음) */
+  /* 이름이 같은 선생님이 둘일 수 있으므로 반과 일정은 '이름'이 아니라
+     '계정 id'에 묶는다. (예전 데이터는 id가 없어서 이름으로 넘어가되,
+     불러올 때 한 번 id를 채워 준다 - migrateOwnership) */
+  function ownedByMe(x) {
+    if (x.teacherId) return x.teacherId === currentUserId;
+    return !!teacherName && x.teacherName === teacherName;
+  }
+
   function myClasses() {
     return classes
       .map((c, i) => ({ c, i }))
-      .filter(({ c }) => c.teacherName === teacherName);
+      .filter(({ c }) => ownedByMe(c));
   }
 
   function myEvents() {
-    return events.filter((e) => e.teacherName === teacherName);
+    return events.filter(ownedByMe);
+  }
+
+  /* 예전에 만든 반·일정에 주인 계정을 채워 넣음 (같은 이름이 여럿이면 첫 계정) */
+  function migrateOwnership() {
+    const pick = (name) => {
+      const t = users.find((u) => u.role === "teacher" && u.name === name);
+      return t ? t.id : null;
+    };
+    classes.forEach((c) => {
+      if (!c.teacherId && c.teacherName) {
+        const id = pick(c.teacherName);
+        if (id) c.teacherId = id;
+      }
+    });
+    events.forEach((e) => {
+      if (!e.teacherId && e.teacherName) {
+        const id = pick(e.teacherName);
+        if (id) e.teacherId = id;
+      }
+    });
   }
 
   function refreshCurrentView() {
@@ -7245,6 +7298,7 @@
   loadState();
   let events = [];
   loadEvents();
+  migrateOwnership();
   let nextEventId = 1;
   let currentClassIndex = null;
   let classDetailReturnPage = "t-home";
@@ -7317,6 +7371,7 @@
       name: className,
       code: classCode,
       teacherName: teacherName,
+      teacherId: currentUserId,
       students: [],
       homeworks: newHomeworks,
       submissions: [],
@@ -7861,7 +7916,8 @@
     if (!title || !start) return;
     if (end < start) end = start;
     playTapSound();
-    events.push({ id: newEventId(), title: title, startDate: start, endDate: end, teacherName: teacherName });
+    events.push({ id: newEventId(), title: title, startDate: start, endDate: end,
+                  teacherName: teacherName, teacherId: currentUserId });
     saveEvents();
     titleInput.value = "";
     document.getElementById("addEventForm").classList.remove("show");
@@ -8095,6 +8151,7 @@
   let masterTapCount = 0;
   let masterTapTimer = null;
   let masterTeacherName = "";
+  let masterTeacherId = null;
   let masterClassIndex = null;
   let masterStudentName = "";
 
@@ -8152,39 +8209,50 @@
 
   const MASTER_ARROW = '<span class="hw-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span>';
 
-  /* 계정으로 가입한 선생님 + 반에만 이름이 남아 있는 선생님까지 모두 보여줌
-     (어느 쪽도 목록에서 빠지지 않도록) */
-  function allTeacherNames() {
-    const names = users.filter((u) => u.role === "teacher").map((u) => u.name);
+  /* 이름이 같은 선생님이 여럿일 수 있어서 계정 단위로 다룬다.
+     계정이 지워졌는데 반만 남은 경우도 목록에서 빠지지 않게 함께 넣는다. */
+  function classesOfTeacher(t) {
+    return classes.filter((c) =>
+      t.id ? c.teacherId === t.id : (!c.teacherId && c.teacherName === t.name));
+  }
+
+  function allTeachers() {
+    const list = users
+      .filter((u) => u.role === "teacher")
+      .map((u) => ({ id: u.id, name: u.name, label: displayUserName(u) }));
+
     classes.forEach((c) => {
-      if (c.teacherName && names.indexOf(c.teacherName) === -1) names.push(c.teacherName);
+      const has = list.some((t) => (t.id ? c.teacherId === t.id : c.teacherName === t.name));
+      if (!has && c.teacherName && !list.some((t) => !t.id && t.name === c.teacherName)) {
+        list.push({ id: null, name: c.teacherName, label: c.teacherName + " (계정 없음)" });
+      }
     });
-    return names;
+    return list;
   }
 
   /* --- 1단계: 선생님 목록 --- */
   function renderMasterTeachers() {
-    const teacherNames = allTeacherNames();
+    const teachers = allTeachers();
     const studentCount = users.filter((u) => u.role === "student").length;
 
-    document.getElementById("masterTeacherCount").textContent = teacherNames.length + "명";
+    document.getElementById("masterTeacherCount").textContent = teachers.length + "명";
     document.getElementById("masterStudentCount").textContent = studentCount + "명";
     document.getElementById("masterClassCount").textContent = classes.length + "개";
 
     const el = document.getElementById("masterTeacherList");
-    if (teacherNames.length === 0) {
+    if (teachers.length === 0) {
       el.innerHTML = '<p class="empty-approval">아직 가입한 선생님이 없어요</p>';
       return;
     }
 
-    el.innerHTML = teacherNames.map((tname) => {
-      const mine = classes.filter((c) => c.teacherName === tname);
+    el.innerHTML = teachers.map((t) => {
+      const mine = classesOfTeacher(t);
       const joined = mine.reduce((n, c) => n + c.students.length, 0);
       return `
-        <div class="student-card" onclick="openMasterClasses('${jsStr(tname)}')">
-          <div class="student-avatar">${escHtml(tname[0])}</div>
+        <div class="student-card" onclick="openMasterClasses('${jsStr(t.id || "")}', '${jsStr(t.name)}')">
+          <div class="student-avatar">${escHtml(t.name[0])}</div>
           <div class="student-info">
-            <p class="student-name">${escHtml(tname)} 선생님</p>
+            <p class="student-name">${escHtml(t.label)} 선생님</p>
             <p class="student-meta">반 ${mine.length}개 · 학생 ${joined}명</p>
           </div>
           ${MASTER_ARROW}
@@ -8300,19 +8368,22 @@
   }
 
   /* --- 2단계: 그 선생님이 만든 반 --- */
-  function openMasterClasses(tname) {
+  function openMasterClasses(tid, tname) {
     playTapSound();
+    masterTeacherId = tid || null;
     masterTeacherName = tname;
     renderMasterClasses();
     showPage("master-classes");
   }
 
   function renderMasterClasses() {
-    const mine = classes
-      .map((c, i) => ({ c, i }))
-      .filter(({ c }) => c.teacherName === masterTeacherName);
+    const t = { id: masterTeacherId, name: masterTeacherName };
+    const owned = classesOfTeacher(t);
+    const mine = classes.map((c, i) => ({ c, i })).filter(({ c }) => owned.indexOf(c) !== -1);
 
-    document.getElementById("masterClassesTitle").textContent = masterTeacherName + " 선생님";
+    const acc = masterTeacherId ? userById(masterTeacherId) : null;
+    document.getElementById("masterClassesTitle").textContent =
+      (acc ? displayUserName(acc) : masterTeacherName) + " 선생님";
     document.getElementById("masterClassesCrumb").textContent = "만든 반 " + mine.length + "개";
 
     const el = document.getElementById("masterClassList");
@@ -8514,6 +8585,7 @@
     teacherName = "";
     currentClassIndex = null;
     masterTeacherName = "";
+    masterTeacherId = null;
     masterClassIndex = null;
     masterStudentName = "";
 
