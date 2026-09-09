@@ -2621,6 +2621,10 @@
   }
 
   /* 눈 버튼과 겹치지 않게 좌우 여백을 같이 줘서 가운데 정렬을 유지 */
+  .consent-input.has-eye{
+    padding-right:44px;
+  }
+
   .onboard-input.has-eye,
   .master-input.has-eye{
     padding-left:44px;
@@ -3111,6 +3115,110 @@
 
   .privacy-content b{
     color:var(--ink);
+  }
+
+  /* 마이페이지 - 이름 변경 불가 안내 */
+  .t-scope .mypage-lock{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--sub);
+    margin:8px 2px 0;
+  }
+
+  .t-scope .mypage-lock svg{
+    flex-shrink:0;
+  }
+
+  .t-scope .section-count{
+    display:inline-block;
+    min-width:20px;
+    padding:1px 7px;
+    margin-left:4px;
+    border-radius:999px;
+    background:var(--point-light);
+    color:var(--point-strong);
+    font-size:11.5px;
+    font-weight:800;
+    text-align:center;
+  }
+
+  /* 마이페이지 - 값만 보여주는 줄 */
+  .t-scope .mypage-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:15px 16px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    background:#ffffff;
+    margin-bottom:8px;
+  }
+
+  .t-scope .mypage-value{
+    color:var(--sub);
+    font-weight:800;
+  }
+
+  /* 저장공간 막대 */
+  .t-scope .storage-bar{
+    height:6px;
+    border-radius:999px;
+    background:var(--line);
+    overflow:hidden;
+    margin:-2px 2px 0;
+  }
+
+  .t-scope .storage-bar i{
+    display:block;
+    height:100%;
+    width:0%;
+    border-radius:999px;
+    background:var(--point-strong);
+    transition:width 0.35s ease, background 0.2s ease;
+  }
+
+  .t-scope .storage-bar i.warn{ background:#E08A00; }
+  .t-scope .storage-bar i.danger{ background:#E4423F; }
+
+  /* 마이페이지 반 카드의 오른쪽 버튼 */
+  .t-scope .class-action-btn{
+    flex-shrink:0;
+    border:none;
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+    background:#F5F6FA;
+    color:var(--sub);
+  }
+
+  .t-scope .class-action-btn.leave{
+    background:#FDE7E7;
+    color:#E4423F;
+  }
+
+  .t-scope .class-action-btn:active{
+    transform:scale(0.94);
+  }
+
+  /* 비밀번호 변경 입력칸 */
+  .pw-field{
+    position:relative;
+    margin-bottom:8px;
+  }
+
+  .pw-field .consent-input{
+    text-align:left;
+    margin-bottom:0;
   }
 
 </style>
@@ -3739,20 +3847,59 @@
           <p class="student-meta" id="mypageRole">계정</p>
         </div>
       </div>
+      <p class="mypage-lock">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+        </svg>
+        가입할 때 정한 이름은 바꿀 수 없어요
+      </p>
 
-      <p class="section-title" style="margin-top:22px;">약관</p>
-      <button class="mypage-btn" onclick="openPrivacy('mypage')">
-        <span>개인정보처리방침</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
+      <p class="section-title" style="margin-top:22px;">내 활동</p>
+      <div class="stat-row">
+                <div class="stat-box total">
+            <span class="stat-label">제출완료</span>
+            <span class="stat-count" id="mypageStat1">0건</span>
+          </div>
+          <div class="stat-box pending">
+            <span class="stat-label">승인대기</span>
+            <span class="stat-count" id="mypageStat2">0건</span>
+          </div>
+          <div class="stat-box missing">
+            <span class="stat-label">미제출</span>
+            <span class="stat-count" id="mypageStat3">0건</span>
+          </div>
+      </div>
+
+      <p class="section-title" style="margin-top:22px;">내 반 <span class="section-count" id="mypageCount">0</span></p>
+      <div id="mypageClassList"></div>
 
       <p class="section-title" style="margin-top:22px;">계정</p>
+      <button class="mypage-btn" onclick="openPwChange()">
+        <span>비밀번호 변경</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
       <button class="mypage-btn" onclick="logoutStudent()">
         <span>로그아웃</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
       </button>
-      <button class="master-danger-btn" style="margin-top:10px;" onclick="openSelfDelete()">계정 삭제</button>
+      <button class="master-danger-btn" style="margin-top:2px;" onclick="openSelfDelete()">계정 삭제</button>
       <p class="mypage-note">계정을 지우면 내 정보와 제출한 숙제가 모두 사라지고 되돌릴 수 없어요</p>
+
+      <p class="section-title" style="margin-top:22px;">정보</p>
+      <button class="mypage-btn" onclick="openPrivacy('mypage')">
+        <span>개인정보처리방침</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+      <div class="mypage-row">
+        <span>저장공간</span>
+        <span class="mypage-value" id="mypageStorage">-</span>
+      </div>
+      <div class="storage-bar"><i id="mypageStorageBar"></i></div>
+      <p class="mypage-note" id="mypageStorageNote">사진이 많아지면 제출이 저장되지 않을 수 있어요</p>
+      <div class="mypage-row">
+        <span>앱 버전</span>
+        <span class="mypage-value" id="mypageVersion">1.0</span>
+      </div>
     </div>
     <nav class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="showPage('home')">
@@ -3803,20 +3950,59 @@
           <p class="student-meta" id="t-mypageRole">계정</p>
         </div>
       </div>
+      <p class="mypage-lock">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+        </svg>
+        가입할 때 정한 이름은 바꿀 수 없어요
+      </p>
 
-      <p class="section-title" style="margin-top:22px;">약관</p>
-      <button class="mypage-btn" onclick="openPrivacy('t-mypage')">
-        <span>개인정보처리방침</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
+      <p class="section-title" style="margin-top:22px;">내 현황</p>
+      <div class="stat-row">
+                <div class="stat-box pending">
+            <span class="stat-label">반</span>
+            <span class="stat-count" id="t-mypageStat1">0개</span>
+          </div>
+          <div class="stat-box total">
+            <span class="stat-label">학생</span>
+            <span class="stat-count" id="t-mypageStat2">0명</span>
+          </div>
+          <div class="stat-box missing">
+            <span class="stat-label">승인대기</span>
+            <span class="stat-count" id="t-mypageStat3">0건</span>
+          </div>
+      </div>
+
+      <p class="section-title" style="margin-top:22px;">내 반 <span class="section-count" id="t-mypageCount">0</span></p>
+      <div id="t-mypageClassList"></div>
 
       <p class="section-title" style="margin-top:22px;">계정</p>
+      <button class="mypage-btn" onclick="openPwChange()">
+        <span>비밀번호 변경</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
       <button class="mypage-btn" onclick="logoutTeacher()">
         <span>로그아웃</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
       </button>
-      <button class="master-danger-btn" style="margin-top:10px;" onclick="openSelfDelete()">계정 삭제</button>
+      <button class="master-danger-btn" style="margin-top:2px;" onclick="openSelfDelete()">계정 삭제</button>
       <p class="mypage-note">계정을 지우면 내 정보와 제출한 숙제가 모두 사라지고 되돌릴 수 없어요</p>
+
+      <p class="section-title" style="margin-top:22px;">정보</p>
+      <button class="mypage-btn" onclick="openPrivacy('t-mypage')">
+        <span>개인정보처리방침</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+      <div class="mypage-row">
+        <span>저장공간</span>
+        <span class="mypage-value" id="t-mypageStorage">-</span>
+      </div>
+      <div class="storage-bar"><i id="t-mypageStorageBar"></i></div>
+      <p class="mypage-note" id="t-mypageStorageNote">사진이 많아지면 제출이 저장되지 않을 수 있어요</p>
+      <div class="mypage-row">
+        <span>앱 버전</span>
+        <span class="mypage-value" id="t-mypageVersion">1.0</span>
+      </div>
     </div>
     <nav class="bottom-nav">
       <button class="nav-item" data-nav="t-home" onclick="playTapSound(); showPage('t-home')">
@@ -4223,6 +4409,46 @@
       <p class="modal-sub">사진을 몇 장 지우고 다시 제출해 주세요</p>
       <div class="modal-actions">
         <button onclick="closeModal('storageFullModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 비밀번호 변경 -->
+  <div class="modal-overlay" id="pwChangeModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" style="margin-bottom:16px;">비밀번호 변경</p>
+
+      <div class="pw-field">
+        <input type="password" id="curPw" class="consent-input has-eye" placeholder="현재 비밀번호" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('curPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+      </div>
+      <div class="pw-field">
+        <input type="password" id="newPw" class="consent-input has-eye" placeholder="새 비밀번호" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('newPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+      </div>
+      <div class="pw-field">
+        <input type="password" id="newPw2" class="consent-input has-eye" placeholder="새 비밀번호 확인" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('newPw2', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+      </div>
+
+      <p class="master-error" id="pwChangeMsg"></p>
+      <p class="mypage-note" style="margin:0 0 16px;text-align:left;">8자 이상, 영문·숫자·특수문자를 모두 포함해야 해요</p>
+
+      <div class="modal-actions">
+        <button onclick="closeModal('pwChangeModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button onclick="confirmPwChange()" style="background:var(--point-strong);color:#ffffff;">변경</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 반 나가기 확인 -->
+  <div class="modal-overlay" id="leaveClassModal">
+    <div class="modal-box">
+      <p class="modal-text"><span id="leaveClassName"></span>에서<br>나갈까요?</p>
+      <p class="modal-sub">이 반에 제출한 숙제와 사진도 함께 지워져요</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('leaveClassModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button onclick="confirmLeaveClass()" style="background:#E4423F;color:#ffffff;">나가기</button>
       </div>
     </div>
   </div>
@@ -5327,16 +5553,221 @@
     showPage(privacyReturnPage);
   }
 
+  const APP_VERSION = "1.0";
+
+  /* 저장소를 얼마나 쓰고 있는지. 브라우저 한도가 보통 5MB라, 사진이 쌓여
+     한도에 가까워지면 제출이 저장되지 않으므로 미리 보여 준다. */
+  const STORAGE_LIMIT_BYTES = 5 * 1024 * 1024;
+
+  function storageUsedBytes() {
+    let total = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        total += (k.length + (localStorage.getItem(k) || "").length) * 2;
+      }
+    } catch (e) {}
+    return total;
+  }
+
+  function formatMB(bytes) {
+    return (bytes / 1024 / 1024).toFixed(1) + "MB";
+  }
+
+  /* 내가 속한 모든 반을 합친 내 숙제 현황 (반려는 다시 내야 하므로 미제출로 셈) */
+  function myOverallStats() {
+    let done = 0, pending = 0, missing = 0;
+    myStudentClasses().forEach(({ c }) => {
+      const alias = myNameInClass(c.code);
+      c.homeworks.forEach((h) => {
+        const sub = c.submissions.find((s) => s.studentName === alias && s.hwId === h.id);
+        const st = sub ? sub.status : "missing";
+        if (st === "approved") done++;
+        else if (st === "pending") pending++;
+        else missing++;
+      });
+    });
+    return { done: done, pending: pending, missing: missing };
+  }
+
   function openMyPage() {
     playTapSound();
+    renderMyPage();
+    showPage(teacherName ? "t-mypage" : "mypage");
+  }
+
+  function renderMyPage() {
     const isTeacher = !!teacherName;
     const pid = isTeacher ? "t-mypage" : "mypage";
     const name = isTeacher ? teacherName : accountName;
+    const me = userById(currentUserId);
+
     document.getElementById(pid + "Name").textContent = name;
     document.getElementById(pid + "Name2").textContent = name;
     document.getElementById(pid + "Avatar").textContent = name ? name[0] : "?";
-    document.getElementById(pid + "Role").textContent = isTeacher ? "선생님 계정" : "학생 계정";
-    showPage(pid);
+
+    let role = isTeacher ? "선생님 계정" : "학생 계정";
+    if (me && me.agreedAt) {
+      const d = new Date(me.agreedAt);
+      if (!isNaN(d)) role += " · " + d.getFullYear() + "." + (d.getMonth() + 1) + "." + d.getDate() + " 가입";
+    }
+    document.getElementById(pid + "Role").textContent = role;
+
+    const listEl = document.getElementById(pid + "ClassList");
+    const addIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>';
+
+    if (isTeacher) {
+      const mine = myClasses();
+      const students = mine.reduce((n, { c }) => n + c.students.length, 0);
+      const waiting = mine.reduce(
+        (n, { c }) => n + c.submissions.filter((s) => s.status === "pending").length, 0);
+      document.getElementById(pid + "Stat1").textContent = mine.length + "개";
+      document.getElementById(pid + "Stat2").textContent = students + "명";
+      document.getElementById(pid + "Stat3").textContent = waiting + "건";
+      document.getElementById(pid + "Count").textContent = mine.length;
+
+      listEl.innerHTML = mine.map(({ c, i }) => {
+        const p = c.submissions.filter((s) => s.status === "pending").length;
+        return `
+          <div class="student-card" style="cursor:default;">
+            <div class="student-avatar">${escHtml(c.name[0])}</div>
+            <div class="student-info">
+              <p class="student-name">${escHtml(c.name)}</p>
+              <p class="student-meta">학생 ${c.students.length}명 · 코드 ${escHtml(c.code)}</p>
+            </div>
+            ${p > 0 ? `<span class="status-pill pending">대기 ${p}</span>` : ""}
+            <button class="class-action-btn" onclick="openClassDetail(${i}, 't-mypage')">관리</button>
+          </div>
+        `;
+      }).join("") + `
+        <button class="add-class-btn" onclick="startAddClass('t-mypage')" style="margin-top:4px;">${addIcon} 새 반 만들기</button>
+      `;
+      if (mine.length === 0) {
+        listEl.innerHTML = '<p class="empty-approval">아직 만든 반이 없어요</p>' + listEl.innerHTML;
+      }
+    } else {
+      const st = myOverallStats();
+      document.getElementById(pid + "Stat1").textContent = st.done + "건";
+      document.getElementById(pid + "Stat2").textContent = st.pending + "건";
+      document.getElementById(pid + "Stat3").textContent = st.missing + "건";
+
+      const mine = myStudentClasses();
+      document.getElementById(pid + "Count").textContent = mine.length;
+
+      listEl.innerHTML = mine.map(({ c }) => {
+        const left = remainingCountFor(c);
+        return `
+          <div class="student-card" style="cursor:default;">
+            <div class="student-avatar">${escHtml(c.name[0])}</div>
+            <div class="student-info">
+              <p class="student-name">${escHtml(c.name)}</p>
+              <p class="student-meta">${escHtml(c.teacherName || "")} 선생님${myNameInClass(c.code) !== accountName ? " · " + escHtml(myNameInClass(c.code)) : ""}</p>
+            </div>
+            ${left > 0 ? `<span class="status-pill pending">숙제 ${left}</span>` : ""}
+            <button class="class-action-btn leave" onclick="openLeaveClass('${jsStr(c.code)}')">나가기</button>
+          </div>
+        `;
+      }).join("") + `
+        <button class="add-class-btn" onclick="startJoinClass()" style="margin-top:4px;">${addIcon} 반 추가하기</button>
+      `;
+      if (mine.length === 0) {
+        listEl.innerHTML = '<p class="empty-approval">아직 등록한 반이 없어요</p>' + listEl.innerHTML;
+      }
+    }
+
+    const used = storageUsedBytes();
+    const pct = Math.min(100, Math.round((used / STORAGE_LIMIT_BYTES) * 100));
+    document.getElementById(pid + "Storage").textContent = formatMB(used) + " / 약 5MB";
+    const bar = document.getElementById(pid + "StorageBar");
+    bar.style.width = Math.max(2, pct) + "%";
+    bar.classList.toggle("warn", pct >= 60 && pct < 85);
+    bar.classList.toggle("danger", pct >= 85);
+    document.getElementById(pid + "StorageNote").textContent = pct >= 85
+      ? "공간이 거의 찼어요. 지난 숙제의 사진을 정리해 주세요"
+      : "사진이 많아지면 제출이 저장되지 않을 수 있어요";
+    document.getElementById(pid + "Version").textContent = APP_VERSION;
+  }
+
+  /* ===== 비밀번호 변경 ===== */
+  function openPwChange() {
+    playTapSound();
+    ["curPw", "newPw", "newPw2"].forEach((id) => {
+      document.getElementById(id).value = "";
+      hidePwField(id);
+    });
+    document.getElementById("pwChangeMsg").classList.remove("show");
+    document.getElementById("pwChangeModal").classList.add("show");
+  }
+
+  function confirmPwChange() {
+    const msg = document.getElementById("pwChangeMsg");
+    const fail = (text) => {
+      msg.textContent = text;
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+    };
+
+    const me = userById(currentUserId);
+    if (!me) { fail("로그인 정보를 찾을 수 없어요"); return; }
+
+    const cur = document.getElementById("curPw").value;
+    const a = document.getElementById("newPw").value;
+    const b = document.getElementById("newPw2").value;
+
+    if (me.pw !== hashPassword(cur)) { fail("현재 비밀번호가 올바르지 않아요"); return; }
+    const problem = passwordProblem(a);
+    if (problem) { fail(problem); return; }
+    if (a !== b) { fail("새 비밀번호가 서로 달라요"); return; }
+    if (a === cur) { fail("지금 쓰는 비밀번호와 같아요"); return; }
+
+    me.pw = hashPassword(a);
+    me.pwSaved = encodePw(a);
+    saveUsers();
+    closeModal("pwChangeModal");
+    playSuccessChime();
+  }
+
+  /* ===== 반 나가기 (학생) ===== */
+  let leaveClassCode = null;
+
+  function openLeaveClass(code) {
+    playTapSound();
+    const c = classes.find((x) => x.code === code);
+    if (!c) return;
+    leaveClassCode = code;
+    document.getElementById("leaveClassName").textContent = c.name;
+    document.getElementById("leaveClassModal").classList.add("show");
+  }
+
+  function confirmLeaveClass() {
+    const code = leaveClassCode;
+    leaveClassCode = null;
+    closeModal("leaveClassModal");
+
+    const me = myStudentAccount();
+    const c = classes.find((x) => x.code === code);
+    if (!me || !c) return;
+
+    /* 나가면서 이 반에 낸 숙제와 사진도 같이 지운다 */
+    const alias = myNameInClass(code);
+    c.students = c.students.filter((s) => s.name !== alias);
+    c.submissions = c.submissions.filter((s) => s.studentName !== alias);
+
+    me.classCodes = me.classCodes.filter((x) => x !== code);
+    if (me.classNames) delete me.classNames[code];
+
+    writeUsersExact();
+    writeClassesExact();
+
+    /* 방금 나간 반을 보고 있었다면 그 상태를 끊는다 */
+    if (joinedClassIndex !== null && classes[joinedClassIndex] && classes[joinedClassIndex].code === code) {
+      joinedClassIndex = null;
+      studentName = accountName;
+    }
+
+    playTapSound();
+    renderMyPage();
   }
 
   /* 스토어 정책상 앱 안에서 직접 계정을 지울 수 있어야 한다 */
@@ -5503,9 +5934,11 @@
       .filter(Boolean);
   }
 
+  /* 반마다 내가 쓰는 이름이 다를 수 있어(동명이인 번호), 그 반 기준으로 센다 */
   function remainingCountFor(c) {
+    const alias = myNameInClass(c.code);
     return c.homeworks.filter(
-      (h) => !c.submissions.find((s) => s.studentName === studentName && s.hwId === h.id)
+      (h) => !c.submissions.find((s) => s.studentName === alias && s.hwId === h.id)
     ).length;
   }
 
@@ -5823,6 +6256,7 @@
     if (name === "name-input") resetLoginForm("student");
     if (name === "t-name-input") resetLoginForm("teacher");
     if (name === "s-classes") renderStudentClassList();
+    if (name === "mypage" || name === "t-mypage") renderMyPage();
     if (name === "home") renderStudentHome();
     if (name === "list") {
       renderRemainingList();
@@ -6904,6 +7338,8 @@
     pendingClassIndex = null;
     if (classSetupReturnPage === "t-students") {
       renderStudentsHome();
+    } else if (classSetupReturnPage === "t-mypage") {
+      renderMyPage();
     } else {
       renderHomeStats();
     }
@@ -6924,6 +7360,8 @@
     pendingClassIndex = null;
     if (classSetupReturnPage === "t-students") {
       renderStudentsHome();
+    } else if (classSetupReturnPage === "t-mypage") {
+      renderMyPage();
     } else {
       renderHomeStats();
     }
@@ -7073,6 +7511,8 @@
     playTapSound();
     if (classDetailReturnPage === "t-students") {
       renderStudentsHome();
+    } else if (classDetailReturnPage === "t-mypage") {
+      renderMyPage();
     } else if (classDetailReturnPage === "t-homework") {
       renderTHwCalendar();
       renderTHwDayList();
