@@ -1622,7 +1622,8 @@
     margin:0 0 36px;
     text-align:center;
   }
-  #page-t-home .home-content, #page-t-students .home-content, #page-t-homework .home-content{
+  #page-t-home .home-content, #page-t-students .home-content, #page-t-homework .home-content,
+  #page-mypage .home-content, #page-t-mypage .home-content{
     flex:1;
     overflow-y:auto;
     padding:22px 20px 14px;
@@ -2899,6 +2900,199 @@
     }
   }
 
+  /* 회원가입 동의 영역 */
+  .consent-box{
+    width:100%;
+    max-width:280px;
+    margin-top:18px;
+    padding:14px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#FAFBFF;
+    text-align:left;
+  }
+
+  .consent-title{
+    font-size:12.5px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 8px;
+  }
+
+  .age-row{
+    display:flex;
+    gap:6px;
+    margin-bottom:10px;
+  }
+
+  .age-btn{
+    flex:1;
+    background:#ffffff;
+    color:var(--sub);
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:9px 4px;
+    font-size:12px;
+    font-weight:800;
+    font-family:inherit;
+    cursor:pointer;
+    transition:background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+  }
+
+  .age-btn.active{
+    background:var(--point-strong);
+    border-color:var(--point-strong);
+    color:#ffffff;
+  }
+
+  .consent-note{
+    font-size:11.5px;
+    color:#E08A00;
+    font-weight:700;
+    margin:0 0 8px;
+    line-height:1.5;
+  }
+
+  .consent-input{
+    width:100%;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:13px;
+    font-family:inherit;
+    color:var(--ink);
+    background:#ffffff;
+    margin-bottom:8px;
+  }
+
+  .consent-input:focus{
+    outline:none;
+    border-color:var(--point-strong);
+  }
+
+  .consent-check{
+    display:flex;
+    align-items:flex-start;
+    gap:8px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.45;
+    cursor:pointer;
+    margin-top:6px;
+  }
+
+  .consent-check input{
+    width:17px;
+    height:17px;
+    flex-shrink:0;
+    margin:0;
+    accent-color:var(--point-strong);
+  }
+
+  .consent-link{
+    background:none;
+    border:none;
+    padding:4px 0 0 25px;
+    font-size:11.5px;
+    font-family:inherit;
+    font-weight:700;
+    color:var(--point-strong);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  /* 마이페이지 */
+  .t-scope .mypage-card{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:20px;
+    padding:16px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#ffffff;
+  }
+
+  .t-scope .mypage-btn{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    background:#ffffff;
+    color:var(--ink);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:15px 16px;
+    font-size:14px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    margin-bottom:8px;
+  }
+
+  .t-scope .mypage-btn:active{
+    transform:scale(0.99);
+    background:#FAFBFF;
+  }
+
+  .t-scope .mypage-btn svg{
+    color:#C9CCDA;
+    flex-shrink:0;
+  }
+
+  .t-scope .mypage-note{
+    font-size:11.5px;
+    color:var(--sub);
+    line-height:1.55;
+    margin:10px 0 0;
+  }
+
+  /* 개인정보처리방침 화면 */
+  .privacy-content{
+    flex:1;
+    overflow-y:auto;
+    padding:8px 22px 28px;
+  }
+
+  .privacy-title{
+    font-size:22px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+
+  .privacy-updated{
+    font-size:12px;
+    color:var(--sub);
+    margin:0 0 20px;
+  }
+
+  .privacy-content h2{
+    font-size:14.5px;
+    font-weight:800;
+    color:var(--point-strong);
+    margin:20px 0 6px;
+  }
+
+  .privacy-content p,
+  .privacy-content li{
+    font-size:13px;
+    color:#444444;
+    line-height:1.7;
+    margin:0 0 6px;
+  }
+
+  .privacy-content ul{
+    margin:0 0 6px;
+    padding-left:18px;
+  }
+
+  .privacy-content b{
+    color:var(--ink);
+  }
+
 </style>
 </head>
 <body>
@@ -3059,11 +3253,36 @@
         <button type="button" class="pw-eye" onclick="togglePw('signupPwConfirm', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
       </div>
 
+      <p class="auth-hint ob-anim d4" style="margin-top:12px;">비밀번호는 8자 이상, 영문·숫자·특수문자를 모두 포함해야 해요</p>
+
+      <div class="consent-box ob-anim d4">
+        <p class="consent-title">나이 확인</p>
+        <div class="age-row">
+          <button type="button" class="age-btn active" id="ageAdultBtn" onclick="setSignupAge(false)">만 14세 이상</button>
+          <button type="button" class="age-btn" id="ageMinorBtn" onclick="setSignupAge(true)">만 14세 미만</button>
+        </div>
+
+        <div id="guardianBox" style="display:none;">
+          <p class="consent-note">만 14세 미만은 법에 따라 보호자 동의가 필요해요</p>
+          <input type="text" id="guardianName" class="consent-input" placeholder="보호자 성함" autocomplete="off">
+          <input type="text" id="guardianContact" class="consent-input" placeholder="보호자 연락처" autocomplete="off">
+        </div>
+
+        <label class="consent-check">
+          <input type="checkbox" id="agreeTerms">
+          <span>(필수) 개인정보 수집·이용에 동의합니다</span>
+        </label>
+        <button type="button" class="consent-link" onclick="openPrivacy('signup')">개인정보처리방침 보기</button>
+
+        <label class="consent-check" id="guardianCheckRow" style="display:none;">
+          <input type="checkbox" id="agreeGuardian">
+          <span>(필수) 보호자에게 동의를 받았습니다</span>
+        </label>
+      </div>
+
       <p class="auth-error" id="signupError"></p>
 
       <button class="onboard-btn auth-submit ob-anim d4" onclick="doSignup()">가입 완료</button>
-
-      <p class="auth-hint ob-anim d4">비밀번호는 8자 이상, 영문·숫자·특수문자를 모두 포함해야 해요</p>
     </div>
   </div>
 
@@ -3226,7 +3445,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -3402,7 +3621,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -3476,7 +3695,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -3484,6 +3703,177 @@
         <span>마이페이지</span>
       </button>
     </nav>
+  </div>
+
+  <!-- ===== 마이페이지 (학생) ===== -->
+  <div class="page t-scope" id="page-mypage">
+    <div class="home-content">
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">마이페이지|</span><span class="user-name" id="mypageName">이름</span></div>
+      </div>
+
+      <div class="mypage-card">
+        <div class="student-avatar" id="mypageAvatar">이</div>
+        <div class="student-info">
+          <p class="student-name" id="mypageName2">이름</p>
+          <p class="student-meta" id="mypageRole">계정</p>
+        </div>
+      </div>
+
+      <p class="section-title" style="margin-top:22px;">약관</p>
+      <button class="mypage-btn" onclick="openPrivacy('mypage')">
+        <span>개인정보처리방침</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+
+      <p class="section-title" style="margin-top:22px;">계정</p>
+      <button class="mypage-btn" onclick="logoutStudent()">
+        <span>로그아웃</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
+      </button>
+      <button class="master-danger-btn" style="margin-top:10px;" onclick="openSelfDelete()">계정 삭제</button>
+      <p class="mypage-note">계정을 지우면 내 정보와 제출한 숙제가 모두 사라지고 되돌릴 수 없어요</p>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item active" data-nav="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage" onclick="openMyPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== 마이페이지 (선생님) ===== -->
+  <div class="page t-scope" id="page-t-mypage">
+    <div class="home-content">
+      <div class="top-bar">
+        <div class="greeting"><span class="page-label">마이페이지|</span><span class="user-name" id="t-mypageName">이름</span></div>
+      </div>
+
+      <div class="mypage-card">
+        <div class="student-avatar" id="t-mypageAvatar">이</div>
+        <div class="student-info">
+          <p class="student-name" id="t-mypageName2">이름</p>
+          <p class="student-meta" id="t-mypageRole">계정</p>
+        </div>
+      </div>
+
+      <p class="section-title" style="margin-top:22px;">약관</p>
+      <button class="mypage-btn" onclick="openPrivacy('t-mypage')">
+        <span>개인정보처리방침</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+      </button>
+
+      <p class="section-title" style="margin-top:22px;">계정</p>
+      <button class="mypage-btn" onclick="logoutTeacher()">
+        <span>로그아웃</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
+      </button>
+      <button class="master-danger-btn" style="margin-top:10px;" onclick="openSelfDelete()">계정 삭제</button>
+      <p class="mypage-note">계정을 지우면 내 정보와 제출한 숙제가 모두 사라지고 되돌릴 수 없어요</p>
+    </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="t-home" onclick="playTapSound(); showPage('t-home')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-students" onclick="openStudentsHome()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="13" rx="2"></rect>
+          <path d="M8 21h8M12 17v4"></path>
+        </svg>
+        <span>반 관리</span>
+      </button>
+
+      <button class="nav-item active" data-nav="t-homework">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="t-mypage" onclick="openMyPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== 개인정보처리방침 ===== -->
+  <div class="page" id="page-privacy">
+    <div class="ob-top-bar">
+      <button class="ob-back-btn" onclick="closePrivacy()" aria-label="뒤로가기">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5"></path>
+          <path d="M12 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="privacy-content">
+      <h1 class="privacy-title">개인정보처리방침</h1>
+      <p class="privacy-updated">최종 수정일: 2026년 9월 8일</p>
+
+      <h2>1. 수집하는 항목</h2>
+      <p>이 앱은 아래 정보를 이용자의 기기 안에만 저장합니다.</p>
+      <ul>
+        <li>이름, 비밀번호 (계정 구분용)</li>
+        <li>참여한 반 정보</li>
+        <li>숙제 제출 사진과 선생님께 보내는 쪽지</li>
+        <li>만 14세 미만인 경우: 보호자 성함과 연락처</li>
+      </ul>
+
+      <h2>2. 이용 목적</h2>
+      <p>숙제를 내고 제출하고 확인하는 기능을 제공하기 위해서만 씁니다. 광고나 분석에는 쓰지 않습니다.</p>
+
+      <h2>3. 보관 위치와 기간</h2>
+      <p>모든 정보는 <b>이용자 기기의 브라우저 저장소에만</b> 보관되며 외부 서버로 전송되지 않습니다. 계정을 삭제하거나 앱 데이터를 지우면 즉시 사라집니다.</p>
+
+      <h2>4. 제3자 제공</h2>
+      <p>누구에게도 제공하지 않습니다.</p>
+
+      <h2>5. 만 14세 미만 이용자</h2>
+      <p>만 14세 미만은 가입할 때 보호자 동의를 받아야 하며, 보호자는 언제든 자녀의 정보 열람·정정·삭제를 요청할 수 있습니다.</p>
+
+      <h2>6. 이용자의 권리</h2>
+      <p>마이페이지 &gt; 계정 삭제로 언제든 직접 지울 수 있습니다. 삭제하면 제출한 숙제와 사진도 함께 지워집니다.</p>
+
+      <h2>7. 문의</h2>
+      <p id="privacyContact">문의: (여기에 연락처를 넣어 주세요)</p>
+    </div>
   </div>
 
   <!-- ================= 숙제 업로드(상세) 화면 ================= -->
@@ -3676,6 +4066,13 @@
       <p class="section-title" style="margin-top:22px;">계정 관리</p>
       <div id="masterAccountList"></div>
 
+      <p class="section-title" style="margin-top:22px;">관리자 비밀번호</p>
+      <div class="master-acc-card">
+        <input type="password" inputmode="numeric" id="newMasterPw" class="consent-input" placeholder="새 관리자 비밀번호" autocomplete="off" style="margin-bottom:6px;">
+        <p class="master-error" id="masterPwChangeMsg">바꿨어요</p>
+        <button class="master-acc-reset" onclick="changeMasterPassword()">비밀번호 변경</button>
+      </div>
+
       <p class="section-title" style="margin-top:22px;">데이터 관리</p>
       <button class="master-danger-btn" onclick="openMasterResetConfirm()">전체 데이터 초기화</button>
     </div>
@@ -3798,6 +4195,24 @@
       <p class="modal-sub">사진을 몇 장 지우고 다시 제출해 주세요</p>
       <div class="modal-actions">
         <button onclick="closeModal('storageFullModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 내 계정 삭제 확인 -->
+  <div class="modal-overlay" id="selfDeleteModal">
+    <div class="modal-box">
+      <div class="lock-icon" style="margin-bottom:14px;">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#E4423F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 8v5M12 16h.01"></path>
+        </svg>
+      </div>
+      <p class="modal-text">정말 계정을 삭제할까요?</p>
+      <p class="modal-sub" id="selfDeleteWhat"></p>
+      <div class="modal-actions">
+        <button onclick="closeModal('selfDeleteModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button onclick="confirmSelfDelete()" style="background:#E4423F;color:#ffffff;">삭제</button>
       </div>
     </div>
   </div>
@@ -4089,7 +4504,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="t-mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -4137,7 +4552,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="t-mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -4218,7 +4633,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="t-mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -4383,7 +4798,7 @@
         <span>달력</span>
       </button>
 
-      <button class="nav-item" data-nav="t-mypage" onclick="showComingSoon()">
+      <button class="nav-item" data-nav="t-mypage" onclick="openMyPage()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"></circle>
           <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
@@ -4556,7 +4971,19 @@
      비밀번호는 평문 대신 해시로 보관하지만, 서버가 없으므로 실제 서비스 수준의
      보안은 아닙니다. */
   const STORAGE_KEY_USERS = "todayHomeworkUsers";
-  const MASTER_PASSWORD = "0422";
+  /* 관리자 비밀번호는 소스에 그대로 두면 앱을 뜯었을 때 바로 보이므로 해시만 둔다.
+     다만 네 자리 숫자는 해시여도 금방 맞춰볼 수 있으니, 이건 '지나가다 눌러보는
+     사람을 막는' 수준이지 진짜 잠금이 아니다. 제대로 막으려면 서버가 필요하다. */
+  const STORAGE_KEY_MASTER = "todayHomeworkMasterPw";
+  const DEFAULT_MASTER_HASH = "hyjalcd";
+
+  function masterHash() {
+    try {
+      return localStorage.getItem(STORAGE_KEY_MASTER) || DEFAULT_MASTER_HASH;
+    } catch (e) {
+      return DEFAULT_MASTER_HASH;
+    }
+  }
 
   let users = [];
   let currentAuthRole = "student";
@@ -4603,6 +5030,15 @@
   function writeUsersExact() {
     try {
       localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function writeClassesExact() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
       return true;
     } catch (e) {
       return false;
@@ -4822,6 +5258,11 @@
     document.getElementById("signupPwConfirm").value = "";
     hidePwField("signupPw");
     hidePwField("signupPwConfirm");
+    document.getElementById("agreeTerms").checked = false;
+    document.getElementById("agreeGuardian").checked = false;
+    document.getElementById("guardianName").value = "";
+    document.getElementById("guardianContact").value = "";
+    setSignupAge(false, true);
     clearAuthError("signupError");
     showPage("signup");
   }
@@ -4829,6 +5270,95 @@
   function closeSignup() {
     playTapSound();
     showPage(currentAuthRole === "teacher" ? "t-name-input" : "name-input");
+  }
+
+  /* 만 14세 미만은 개인정보보호법상 보호자 동의가 필요해서 입력칸을 더 띄운다 */
+  let signupIsMinor = false;
+
+  function setSignupAge(isMinor, silent) {
+    if (!silent) playTapSound();
+    signupIsMinor = isMinor;
+    document.getElementById("ageAdultBtn").classList.toggle("active", !isMinor);
+    document.getElementById("ageMinorBtn").classList.toggle("active", isMinor);
+    document.getElementById("guardianBox").style.display = isMinor ? "" : "none";
+    document.getElementById("guardianCheckRow").style.display = isMinor ? "" : "none";
+    clearAuthError("signupError");
+  }
+
+  /* 개인정보처리방침은 가입 화면과 마이페이지 양쪽에서 열려서, 왔던 곳으로 돌아감 */
+  let privacyReturnPage = "welcome";
+
+  function openPrivacy(from) {
+    playTapSound();
+    privacyReturnPage = from === "signup" ? "signup" : from;
+    showPage("privacy");
+  }
+
+  function closePrivacy() {
+    playTapSound();
+    showPage(privacyReturnPage);
+  }
+
+  function openMyPage() {
+    playTapSound();
+    const isTeacher = !!teacherName;
+    const pid = isTeacher ? "t-mypage" : "mypage";
+    const name = isTeacher ? teacherName : accountName;
+    document.getElementById(pid + "Name").textContent = name;
+    document.getElementById(pid + "Name2").textContent = name;
+    document.getElementById(pid + "Avatar").textContent = name ? name[0] : "?";
+    document.getElementById(pid + "Role").textContent = isTeacher ? "선생님 계정" : "학생 계정";
+    showPage(pid);
+  }
+
+  /* 스토어 정책상 앱 안에서 직접 계정을 지울 수 있어야 한다 */
+  function openSelfDelete() {
+    playTapSound();
+    const isTeacher = !!teacherName;
+    document.getElementById("selfDeleteWhat").textContent = isTeacher
+      ? "내가 만든 반과 그 반의 숙제·제출물이 모두 사라져요"
+      : "참여한 반에서 빠지고 제출한 숙제와 사진이 모두 사라져요";
+    document.getElementById("selfDeleteModal").classList.add("show");
+  }
+
+  function confirmSelfDelete() {
+    closeModal("selfDeleteModal");
+    const me = userById(currentUserId);
+    if (!me) return;
+
+    if (me.role === "teacher") {
+      /* 선생님이 나가면 그 선생님이 만든 반은 남겨 둘 이유가 없다 */
+      classes = classes.filter((c) => c.teacherName !== me.name);
+      events = events.filter((e) => e.teacherName !== me.name);
+      /* 사라진 반을 다른 학생 계정이 계속 들고 있지 않게 정리 */
+      const liveCodes = new Set(classes.map((c) => c.code));
+      users.forEach((u) => {
+        if (!Array.isArray(u.classCodes)) return;
+        u.classCodes = u.classCodes.filter((code) => liveCodes.has(code));
+      });
+    } else {
+      /* 학생은 반 명단과 제출물에서 자기 흔적을 지운다 */
+      const aliases = me.classNames || {};
+      classes.forEach((c) => {
+        const alias = aliases[c.code] || me.name;
+        c.students = c.students.filter((s) => s.name !== alias);
+        c.submissions = c.submissions.filter((s) => s.studentName !== alias);
+      });
+    }
+
+    users = users.filter((u) => u.id !== me.id);
+    writeUsersExact();
+    writeClassesExact();
+    saveEvents();
+
+    currentUserId = null;
+    accountName = "";
+    studentName = "";
+    teacherName = "";
+    joinedClassIndex = null;
+    currentClassIndex = null;
+    playSuccessChime();
+    showPage("welcome");
   }
 
   function doSignup() {
@@ -4862,6 +5392,27 @@
       return;
     }
 
+    if (!document.getElementById("agreeTerms").checked) {
+      showAuthError("signupError", "개인정보 수집·이용에 동의해 주세요");
+      playErrorBuzz();
+      return;
+    }
+
+    const guardianName = document.getElementById("guardianName").value.trim();
+    const guardianContact = document.getElementById("guardianContact").value.trim();
+    if (signupIsMinor) {
+      if (!guardianName || !guardianContact) {
+        showAuthError("signupError", "보호자 성함과 연락처를 입력해 주세요");
+        playErrorBuzz();
+        return;
+      }
+      if (!document.getElementById("agreeGuardian").checked) {
+        showAuthError("signupError", "보호자 동의를 확인해 주세요");
+        playErrorBuzz();
+        return;
+      }
+    }
+
     users.push({
       id: newUserId(),
       name: name,
@@ -4870,6 +5421,10 @@
       pwSaved: encodePw(pw),
       classCodes: [],
       classNames: {},
+      agreedAt: new Date().toISOString(),
+      isMinor: signupIsMinor,
+      guardianName: signupIsMinor ? guardianName : "",
+      guardianContact: signupIsMinor ? guardianContact : "",
     });
     saveUsers();
     clearAuthError("signupError");
@@ -7105,7 +7660,7 @@
 
   function submitMasterPassword() {
     const input = document.getElementById("masterPasswordInput");
-    if (input.value !== MASTER_PASSWORD) {
+    if (hashPassword(input.value) !== masterHash()) {
       playErrorBuzz();
       document.getElementById("masterPasswordError").classList.add("show");
       input.value = "";
@@ -7443,6 +7998,27 @@
     showPage("master-students");
   }
 
+  function changeMasterPassword() {
+    const input = document.getElementById("newMasterPw");
+    const msg = document.getElementById("masterPwChangeMsg");
+    const val = input.value.trim();
+    if (val.length < 4) {
+      msg.textContent = "4자 이상으로 정해 주세요";
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+      return;
+    }
+    try {
+      localStorage.setItem(STORAGE_KEY_MASTER, hashPassword(val));
+    } catch (e) {}
+    input.value = "";
+    msg.textContent = "관리자 비밀번호를 바꿨어요";
+    msg.style.color = "#1FA455";
+    msg.classList.add("show");
+    playSuccessChime();
+  }
+
   function openMasterResetConfirm() {
     playTapSound();
     document.getElementById("masterResetModal").classList.add("show");
@@ -7459,6 +8035,7 @@
       localStorage.removeItem(STORAGE_KEY_USERS);
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(STORAGE_KEY_EVENTS);
+      localStorage.removeItem(STORAGE_KEY_MASTER);
     } catch (e) {}
     currentUserId = null;
     accountName = "";
