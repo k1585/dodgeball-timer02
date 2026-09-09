@@ -91,7 +91,6 @@
 
 
 
-
   /* ================= 홈 화면 ================= */
   #page-home .home-content, #page-calendar .home-content{
     flex:1;
@@ -115,12 +114,10 @@
     color:var(--point-strong);
   }
 
-
   .top-icons{
     display:flex;
     gap:14px;
   }
-
 
   .homework-card{
     margin-top:20px;
@@ -241,20 +238,12 @@
     border-bottom-color:var(--point-strong);
   }
 
-  .date-range{
-    color:var(--point-strong);
-    font-size:14px;
-    font-weight:800;
-    margin:14px 0 10px;
-  }
-
   #page-list .list-area{
     flex:1;
     min-height:0;
     overflow-y:auto;
     padding:0 20px 14px;
   }
-
 
 
   #page-list .hw-card,
@@ -268,11 +257,6 @@
     align-items:center;
     gap:10px;
     cursor:pointer;
-  }
-
-  .hw-card.disabled{
-    opacity:0.45;
-    cursor:default;
   }
 
   .hw-card.overdue{
@@ -746,32 +730,7 @@
     color:#bbbbbb;
   }
 
-  .notice-box{
-    margin-top:10px;
-    background:var(--point-light);
-    border-radius:10px;
-    padding:8px 12px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
 
-  .notice-icon{
-    color:var(--point-strong);
-    flex-shrink:0;
-    display:flex;
-  }
-
-  .notice-icon svg{
-    width:14px;
-    height:14px;
-  }
-
-  .notice-box span.notice-text{
-    font-size:11px;
-    color:#4a4a4a;
-    font-weight:600;
-  }
 
   .note-section{
     margin-top:10px;
@@ -861,7 +820,6 @@
 
   /* 팝업 공통 */
 
-
   .modal-box{
     background:#ffffff;
     border-radius:20px;
@@ -904,7 +862,7 @@
     color:#ffffff;
   }
 
-  #closeNoPhotoBtn, #closeNoChangesBtn, #closeComingSoonBtn{
+  #closeNoPhotoBtn, #closeNoChangesBtn{
     background:var(--point-strong);
     color:#ffffff;
   }
@@ -1071,11 +1029,7 @@
 
 
 
-
-
   /* 시작 화면 */
-
-
 
 
 
@@ -1188,10 +1142,6 @@
 
 
 
-
-
-
-
   /* 코드 입력 (OTP 스타일) */
   .otp-row{
     display:flex;
@@ -1251,13 +1201,6 @@
     opacity:1;
   }
 
-  .code-hint{
-    margin-top:14px;
-    font-size:11.5px;
-    color:#C4C7D6;
-    text-align:center;
-  }
-
   #codeConfirmSection{
     margin-top:30px;
     text-align:center;
@@ -1296,7 +1239,6 @@
 
   /* 온보딩 전용 보조 버튼 (앱 전역 .secondary-btn과는 분리) */
 
-
   .onboard-btn-row .onboard-btn{
     flex:1.4;
   }
@@ -1311,12 +1253,10 @@
     padding:0 28px;
   }
 
-
   @keyframes popIn{
     0%{ transform:scale(0.4); opacity:0; }
     100%{ transform:scale(1); opacity:1; }
   }
-
 
 
   .onboard-final-actions{
@@ -1330,7 +1270,6 @@
   .onboard-final-actions button{
     width:100%;
   }
-
 
   /* ===== 선생님용 화면 스타일 ===== */
 
@@ -1680,51 +1619,8 @@
     cursor:pointer;
     color:var(--point-strong);
   }
-  .t-scope .code-card{
-    margin-top:20px;
-    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
-    border-radius:24px;
-    padding:22px 20px;
-    color:#ffffff;
-  }
-  .t-scope .code-card-label{
-    font-size:13px;
-    font-weight:700;
-    opacity:0.85;
-    margin:0 0 10px;
-  }
-  .t-scope .code-card-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-  }
-  .t-scope .code-card-value{
-    font-size:30px;
-    font-weight:800;
-    letter-spacing:4px;
-  }
-  .t-scope .code-card-copy{
-    flex-shrink:0;
-    background:rgba(255,255,255,0.2);
-    border:none;
-    color:#ffffff;
-    border-radius:12px;
-    padding:10px 14px;
-    font-size:13px;
-    font-weight:800;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
   .t-scope .code-card-copy:active{
     transform:scale(0.96);
-  }
-  .t-scope .code-card-caption{
-    margin:14px 0 0;
-    font-size:12px;
-    opacity:0.85;
   }
   .t-scope .stat-row{
     display:flex;
@@ -3477,6 +3373,39 @@
 
       <div id="sClassList" style="margin-top:20px;"></div>
     </div>
+    <nav class="bottom-nav">
+      <button class="nav-item" data-nav="home" onclick="openStudentHomeNav()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 11l9-8 9 8"></path>
+          <path d="M5 10v10h14V10"></path>
+        </svg>
+        <span>홈</span>
+      </button>
+
+      <button class="nav-item" data-nav="list" onclick="openHomeworkList()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6h11M9 12h11M9 18h11"></path>
+          <path d="M4 6h.01M4 12h.01M4 18h.01"></path>
+        </svg>
+        <span>숙제 목록</span>
+      </button>
+
+      <button class="nav-item" data-nav="calendar" onclick="openStudentCalendar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+          <path d="M16 2v4M8 2v4M3 10h18"></path>
+        </svg>
+        <span>달력</span>
+      </button>
+
+      <button class="nav-item" data-nav="mypage" onclick="openMyPage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+        <span>마이페이지</span>
+      </button>
+    </nav>
   </div>
 
   <!-- ===== 5. 온보딩 완료 ===== -->
@@ -3508,15 +3437,15 @@
 
       <div class="homework-card">
         <p class="homework-title">제출해야 할 숙제</p>
-        <p class="homework-date-range">8월 25일 ~ 8월 25일 숙제</p>
+        <p class="homework-date-range"></p>
 
-        <div class="homework-item" onclick="openHomeworkList()">
+        <div class="homework-item" style="display:none;" onclick="openHomeworkList()">
           <div>
-            <p class="hw-name">0825 숙제</p>
-            <p class="hw-due">제출 기한: 8월 25일</p>
+            <p class="hw-name"></p>
+            <p class="hw-due"></p>
           </div>
           <div class="hw-right">
-            <span class="hw-dday">D-1일</span>
+            <span class="hw-dday"></span>
             <span class="hw-arrow">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 18l6-6-6-6"></path>
@@ -3525,7 +3454,7 @@
           </div>
         </div>
 
-        <div class="more-link">외 0건의 숙제 &gt;</div>
+        <div class="more-link" style="display:none;"></div>
       </div>
 
       <div class="blank-section"></div>
@@ -3533,7 +3462,7 @@
     </div>
 
     <nav class="bottom-nav">
-      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+      <button class="nav-item" data-nav="home" onclick="openStudentHomeNav()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l9-8 9 8"></path>
           <path d="M5 10v10h14V10"></path>
@@ -3585,97 +3514,10 @@
       <!-- 남은 숙제 -->
       <div class="tab-content active" id="tab-remaining">
 
-        <div class="hw-card" onclick="openDetailCard(this)">
-          <div>
-            <p class="hw-name">0825 숙제</p>
-            <p class="hw-due">제출 기한: 8월 25일 (월)</p>
-          </div>
-          <div class="hw-right">
-            <span class="hw-dday">D-1일</span>
-            <span class="hw-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18l6-6-6-6"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
-
         <div class="section-divider">8월 26일 이후 숙제</div>
 
-        <div class="hw-card" onclick="openDetailCard(this)">
-          <div>
-            <p class="hw-name">0827 숙제</p>
-            <p class="hw-due">제출 기한: 8월 27일 (수)</p>
-          </div>
-          <div class="hw-right">
-            <span class="hw-dday">D-3일</span>
-            <span class="hw-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18l6-6-6-6"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
 
-        <div class="hw-card" onclick="openDetailCard(this)">
-          <div>
-            <p class="hw-name">0828 숙제</p>
-            <p class="hw-due">제출 기한: 8월 28일 (목)</p>
-          </div>
-          <div class="hw-right">
-            <span class="hw-dday">D-4일</span>
-            <span class="hw-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18l6-6-6-6"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
 
-        <div class="hw-card" onclick="openDetailCard(this)">
-          <div>
-            <p class="hw-name">0829 숙제</p>
-            <p class="hw-due">제출 기한: 8월 29일 (금)</p>
-          </div>
-          <div class="hw-right">
-            <span class="hw-dday">D-5일</span>
-            <span class="hw-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18l6-6-6-6"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
-
-        <div class="hw-card" onclick="openDetailCard(this)">
-          <div>
-            <p class="hw-name">0830 숙제</p>
-            <p class="hw-due">제출 기한: 8월 30일 (토)</p>
-          </div>
-          <div class="hw-right">
-            <span class="hw-dday">D-6일</span>
-            <span class="hw-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18l6-6-6-6"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
-
-        <div class="hw-card" onclick="openDetailCard(this)">
-          <div>
-            <p class="hw-name">0831 숙제</p>
-            <p class="hw-due">제출 기한: 8월 31일 (일)</p>
-          </div>
-          <div class="hw-right">
-            <span class="hw-dday">D-7일</span>
-            <span class="hw-arrow">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M9 18l6-6-6-6"></path>
-              </svg>
-            </span>
-          </div>
-        </div>
 
       </div>
 
@@ -3709,7 +3551,7 @@
     </div>
 
     <nav class="bottom-nav">
-      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+      <button class="nav-item" data-nav="home" onclick="openStudentHomeNav()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l9-8 9 8"></path>
           <path d="M5 10v10h14V10"></path>
@@ -3783,7 +3625,7 @@
     </div>
 
     <nav class="bottom-nav">
-      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+      <button class="nav-item" data-nav="home" onclick="openStudentHomeNav()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l9-8 9 8"></path>
           <path d="M5 10v10h14V10"></path>
@@ -3799,7 +3641,7 @@
         <span>숙제 목록</span>
       </button>
 
-      <button class="nav-item active" data-nav="calendar">
+      <button class="nav-item" data-nav="calendar" onclick="openStudentCalendar()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -3886,7 +3728,7 @@
       </div>
     </div>
     <nav class="bottom-nav">
-      <button class="nav-item" data-nav="home" onclick="showPage('home')">
+      <button class="nav-item" data-nav="home" onclick="openStudentHomeNav()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 11l9-8 9 8"></path>
           <path d="M5 10v10h14V10"></path>
@@ -3902,7 +3744,7 @@
         <span>숙제 목록</span>
       </button>
 
-      <button class="nav-item active" data-nav="calendar">
+      <button class="nav-item" data-nav="calendar" onclick="openStudentCalendar()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -4005,7 +3847,7 @@
         <span>반 관리</span>
       </button>
 
-      <button class="nav-item active" data-nav="t-homework">
+      <button class="nav-item" data-nav="t-homework" onclick="openTeacherHomeworkCalendar()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"></rect>
           <path d="M16 2v4M8 2v4M3 10h18"></path>
@@ -4497,21 +4339,6 @@
       <div class="modal-actions">
         <button onclick="closeModal('masterResetModal')" style="background:#f1f2f5;color:#555555;">취소</button>
         <button onclick="confirmMasterReset()" style="background:#E4423F;color:#ffffff;">초기화</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="comingSoonModal">
-    <div class="modal-box">
-      <div class="lock-icon">
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="11" width="16" height="10" rx="2"></rect>
-          <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-        </svg>
-      </div>
-      <p class="modal-text" style="margin-top:14px;">아직 이 기능은<br>완성되지 않았어요</p>
-      <div class="modal-actions">
-        <button id="closeComingSoonBtn">확인</button>
       </div>
     </div>
   </div>
@@ -5127,16 +4954,28 @@
 
 <script>
   /* 1: 숙제 목록 진입점은 항상 남은 숙제 탭에서 시작 */
+  /* 반을 등록하기 전에는 홈·숙제목록·달력에 볼 것이 없어서,
+     하단 메뉴를 눌러도 내 반 화면에 머무르게 한다 */
+  function needsClass() {
+    if (joinedClassIndex === null) {
+      openStudentClasses();
+      return true;
+    }
+    return false;
+  }
+
+  function openStudentHomeNav() {
+    if (needsClass()) return;
+    showPage("home");
+  }
+
   function openHomeworkList() {
+    if (needsClass()) return;
     showPage("list");
     selectTab("remaining");
   }
 
   /* 추가: 아직 완성되지 않은 기능 안내 팝업 */
-  function showComingSoon() {
-    document.getElementById("comingSoonModal").classList.add("show");
-  }
-
   function closeModal(id) {
     document.getElementById(id).classList.remove("show");
   }
@@ -5174,6 +5013,7 @@
   /* 받침 유무에 따른 조사(이/가, 은/는, 을/를) 자동 선택 */
   function hasBatchim(str) {
     const s = (str || "").trim();
+    if (!s) return true;
     const lastChar = s.slice(-1);
     const code = lastChar.charCodeAt(0);
     if (code < 0xac00 || code > 0xd7a3) return true;
@@ -5210,8 +5050,18 @@
     return Math.max(0, Math.round((today - due) / (1000 * 60 * 60 * 24)));
   }
 
+  /* toISOString은 UTC라 한국 시간 새벽에는 하루 전 날짜가 나온다.
+     D-day 계산(calcDday/overdueDays)은 로컬 기준이라 서로 어긋나므로,
+     날짜 문자열은 전부 이 함수로 만든다. */
+  function toLocalDateStr(date) {
+    const d = date || new Date();
+    return d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
+  }
+
   function getTodayDateStr() {
-    return new Date().toISOString().slice(0, 10);
+    return toLocalDateStr();
   }
 
   /* ===== 온보딩(초기 회원 로그인 UI) ===== */
@@ -5352,11 +5202,6 @@
       h = ((h << 5) + h + pw.charCodeAt(i)) >>> 0;
     }
     return "h" + h.toString(36);
-  }
-
-  /* 같은 이름이라도 학생 계정과 선생님 계정은 서로 다른 계정으로 봄 */
-  function findUser(name, role) {
-    return users.find((u) => u.name === name && u.role === role) || null;
   }
 
   function userById(id) {
@@ -6408,7 +6253,7 @@
     return `
       <div class="hw-card${isOverdue ? " overdue" : ""}" onclick="openDetailCard('${jsStr(h.id)}')">
         <div>
-          <p class="hw-name">${h.title}</p>
+          <p class="hw-name">${escHtml(h.title)}</p>
           <p class="hw-due">제출 기한: ${formatKoreanDate(h.due)}${isOverdue ? ` (${overdue}일 지남)` : ""}</p>
           <p class="hw-peer"><span class="peer-done">${counts.done}명 제출</span> · <span class="peer-missing">${counts.missing}명 미제출</span></p>
         </div>
@@ -6462,6 +6307,7 @@
   let calYear, calMonth, calSelectedDate;
 
   function openStudentCalendar() {
+    if (needsClass()) return;
     playTapSound();
     const today = new Date();
     calYear = today.getFullYear();
@@ -6488,10 +6334,13 @@
   }
 
   /* 내가 속한 반 선생님이 등록한 일정 (선생님 달력에 올린 일정을 학생 달력에도 표시) */
+  /* 이름이 같은 선생님이 있을 수 있어 반의 주인 계정으로 맞춘다
+     (예전 데이터는 id가 없으므로 이름으로 넘어감 - ownedByMe와 같은 방식) */
   function myClassEvents() {
     if (joinedClassIndex === null) return [];
-    const t = classes[joinedClassIndex].teacherName;
-    return events.filter((e) => e.teacherName === t);
+    const c = classes[joinedClassIndex];
+    return events.filter((e) =>
+      (c.teacherId && e.teacherId) ? e.teacherId === c.teacherId : e.teacherName === c.teacherName);
   }
 
   /* 특정 날짜가 마감인 숙제들의 내 제출 상태 (missing/pending/approved/rejected) */
@@ -6571,7 +6420,7 @@
     html += dayEvents.map((e) => `
       <div class="hw-card" style="cursor:default;">
         <div>
-          <p class="hw-name">${e.title}</p>
+          <p class="hw-name">${escHtml(e.title)}</p>
           <p class="hw-due">${formatKoreanDate(e.startDate)}${e.endDate !== e.startDate ? " ~ " + formatKoreanDate(e.endDate) : ""}</p>
         </div>
         <span class="hw-dday" style="background:#FFF1DB;color:#E08A00;">일정</span>
@@ -6580,7 +6429,7 @@
     html += statuses.map(({ hw, status }) => `
       <div class="hw-card" style="cursor:${status === "missing" ? "pointer" : "default"};" ${status === "missing" ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
         <div>
-          <p class="hw-name">${hw.title}</p>
+          <p class="hw-name">${escHtml(hw.title)}</p>
           <p class="hw-due">제출 기한: ${formatKoreanDate(hw.due)}</p>
         </div>
         <span class="status-pill ${status}">${statusLabel(status)}</span>
@@ -6602,7 +6451,7 @@
     document.getElementById("bundleDue").textContent = "제출 기한: " + formatKoreanDate(h.due);
     document.getElementById("bundleDday").textContent = calcDday(h.due);
     document.getElementById("bundleDescBox").innerHTML = h.desc
-      ? "<p>" + h.desc + "</p>"
+      ? "<p>" + escHtml(h.desc) + "</p>"
       : '<p style="color:var(--sub);">선생님이 등록한 설명이 없어요</p>';
 
     showPage("detail");
@@ -6813,10 +6662,6 @@
     document.getElementById("noChangesModal").classList.remove("show");
   });
 
-  document.getElementById("closeComingSoonBtn").addEventListener("click", () => {
-    document.getElementById("comingSoonModal").classList.remove("show");
-  });
-
   /* ===== 승인현황 목록 / 지난 숙제 목록 렌더링 (실제 반 숙제 + 내 제출 기록 기준) ===== */
   function mySubmissions() {
     if (joinedClassIndex === null) return [];
@@ -6837,7 +6682,7 @@
       card.className = "hw-card";
       card.innerHTML =
         '<div>' +
-          '<div class="hw-name-row"><span class="hw-name">' + h.title + '</span><span class="hw-dday-inline">' + calcDday(h.due) + '</span></div>' +
+          '<div class="hw-name-row"><span class="hw-name">' + escHtml(h.title) + '</span><span class="hw-dday-inline">' + calcDday(h.due) + '</span></div>' +
           '<p class="hw-due">제출 기한: ' + formatKoreanDate(h.due) + '</p>' +
         '</div>' +
         '<div class="hw-right">' +
@@ -6879,7 +6724,7 @@
       card.className = "hw-card";
       card.innerHTML =
         '<div>' +
-          '<p class="hw-name">' + h.title + '</p>' +
+          '<p class="hw-name">' + escHtml(h.title) + '</p>' +
           '<p class="hw-due">제출 기한: ' + formatKoreanDate(h.due) + '</p>' +
         '</div>' +
         '<span class="status-pill approved">완료</span>';
@@ -6918,7 +6763,7 @@
     document.getElementById("sdBundleDue").textContent = "제출 기한: " + formatKoreanDate(h.due);
     document.getElementById("sdBundleDday").textContent = calcDday(h.due);
     document.getElementById("sdBundleDescBox").innerHTML = h.desc
-      ? "<p>" + h.desc + "</p>"
+      ? "<p>" + escHtml(h.desc) + "</p>"
       : '<p style="color:var(--sub);">선생님이 등록한 설명이 없어요</p>';
 
     const badge = document.getElementById("sdStatusBadge");
@@ -6995,18 +6840,22 @@
     document.getElementById("sdGalleryInput").click();
   });
 
+  /* 처음 제출할 때(addFiles)와 똑같이 1280px로 줄여서 넣는다.
+     여기만 원본을 넣으면 재업로드 몇 번에 저장 공간이 꽉 찬다. */
+  function addSdFiles(fileList) {
+    Promise.all(Array.from(fileList).map((f) => readFileAsDataUrl(f).then(shrinkDataUrl)))
+      .then((dataUrls) => {
+        sdUploadedPhotos.push(...dataUrls);
+        renderSdThumbs();
+      });
+  }
+
   document.getElementById("sdCameraInput").addEventListener("change", (e) => {
-    Promise.all(Array.from(e.target.files).map(readFileAsDataUrl)).then((dataUrls) => {
-      sdUploadedPhotos.push(...dataUrls);
-      renderSdThumbs();
-    });
+    addSdFiles(e.target.files);
   });
 
   document.getElementById("sdGalleryInput").addEventListener("change", (e) => {
-    Promise.all(Array.from(e.target.files).map(readFileAsDataUrl)).then((dataUrls) => {
-      sdUploadedPhotos.push(...dataUrls);
-      renderSdThumbs();
-    });
+    addSdFiles(e.target.files);
   });
 
   document.getElementById("sdActionBtn").addEventListener("click", () => {
@@ -7016,7 +6865,12 @@
 
     if (s.status === "approved") {
       s.movedToPast = true;
-      saveState();
+      if (!saveState()) {
+        s.movedToPast = false;
+        playErrorBuzz();
+        showStorageFullModal();
+        return;
+      }
       renderApprovalList();
       renderCounts();
       renderPastList();
@@ -7037,11 +6891,27 @@
     }
 
     const wasRejected = s.status === "rejected";
+    /* 저장이 안 되면 낸 걸로 처리하면 안 되므로 바꾸기 전 상태를 들고 있는다 */
+    const before = {
+      photos: s.photos.slice(),
+      note: s.note,
+      status: s.status,
+      rejectReason: s.rejectReason,
+    };
     s.photos = sdUploadedPhotos.slice();
     s.note = document.getElementById("sdNote").value;
     s.status = "pending";
     s.rejectReason = null;
-    saveState();
+    if (!saveState()) {
+      s.photos = before.photos;
+      s.note = before.note;
+      s.status = before.status;
+      s.rejectReason = before.rejectReason;
+      saveState();
+      playErrorBuzz();
+      showStorageFullModal();
+      return;
+    }
 
     renderApprovalList();
     renderCounts();
@@ -7325,14 +7195,6 @@
     return "미제출";
   }
 
-  function demoHomeworks() {
-    const d = new Date();
-    d.setDate(d.getDate() + 3);
-    return [
-      { id: newHwId(), title: "단어 시험 준비", due: d.toISOString().slice(0, 10), desc: "Unit 5 단어 30개 암기" },
-    ];
-  }
-
   /* 반 이름 입력 */
   const classInput = document.getElementById("classInput");
   const teacherClassConfirmText = document.getElementById("teacherClassConfirmText");
@@ -7366,14 +7228,13 @@
     });
 
     /* 반은 코드가 만들어지는 즉시 저장 - "완료" 버튼을 안 눌러도 유지되도록 함 */
-    const newHomeworks = demoHomeworks();
     classes.push({
       name: className,
       code: classCode,
       teacherName: teacherName,
       teacherId: currentUserId,
       students: [],
-      homeworks: newHomeworks,
+      homeworks: [],
       submissions: [],
     });
     pendingClassIndex = classes.length - 1;
@@ -7485,10 +7346,10 @@
     } else {
       listEl.innerHTML = missingRows.map((r) => `
         <div class="student-card" style="cursor:default;">
-          <div class="student-avatar">${r.name[0]}</div>
+          <div class="student-avatar">${escHtml(r.name[0])}</div>
           <div class="student-info">
-            <p class="student-name">${r.name}</p>
-            <p class="student-meta">${r.className} · ${r.hwTitle}</p>
+            <p class="student-name">${escHtml(r.name)}</p>
+            <p class="student-meta">${escHtml(r.className)} · ${escHtml(r.hwTitle)}</p>
           </div>
           <span class="status-pill missing">미제출</span>
         </div>
@@ -7542,9 +7403,9 @@
       const pendingCount = c.submissions.filter((s) => s.status === "pending").length;
       return `
         <div class="student-card" onclick="openClassDetail(${i}, 't-students')">
-          <div class="student-avatar">${c.name[0]}</div>
+          <div class="student-avatar">${escHtml(c.name[0])}</div>
           <div class="student-info">
-            <p class="student-name">${c.name}</p>
+            <p class="student-name">${escHtml(c.name)}</p>
             <p class="student-meta">학생 ${c.students.length}명</p>
           </div>
           ${pendingCount > 0 ? `<span class="status-pill pending">승인대기 ${pendingCount}</span>` : ""}
@@ -7591,7 +7452,7 @@
     const targetDate = (opts && opts.date) ? new Date(opts.date + "T00:00:00") : new Date();
     hwCalYear = targetDate.getFullYear();
     hwCalMonth = targetDate.getMonth();
-    hwSelectedDate = (opts && opts.date) ? opts.date : targetDate.toISOString().slice(0, 10);
+    hwSelectedDate = (opts && opts.date) ? opts.date : toLocalDateStr(targetDate);
     hwStatusFilter = "all";
     hwStatusByDate = false;
     hwStatusDate = hwSelectedDate;
@@ -7622,9 +7483,9 @@
     } else {
       manageList.innerHTML = c.students.map((s, i) => `
         <div class="student-card" style="cursor:default;">
-          <div class="student-avatar">${s.name[0]}</div>
+          <div class="student-avatar">${escHtml(s.name[0])}</div>
           <div class="student-info">
-            <p class="student-name">${s.name}</p>
+            <p class="student-name">${escHtml(s.name)}</p>
           </div>
           <button class="student-delete-btn" onclick="removeStudent(${i})" aria-label="삭제">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -7700,10 +7561,10 @@
         if (r.status === "pending") {
           return `
             <div class="student-card" onclick="openSubmissionPreview('${jsStr(r.studentName)}', '${jsStr(r.hwId)}')">
-              <div class="student-avatar">${r.studentName[0]}</div>
+              <div class="student-avatar">${escHtml(r.studentName[0])}</div>
               <div class="student-info">
-                <p class="student-name">${r.studentName}</p>
-                <p class="student-meta">${r.hwTitle}${r.lateDays > 0 ? ` · ${r.lateDays}일 지난 숙제를 제출했어요` : ""}</p>
+                <p class="student-name">${escHtml(r.studentName)}</p>
+                <p class="student-meta">${escHtml(r.hwTitle)}${r.lateDays > 0 ? ` · ${r.lateDays}일 지난 숙제를 제출했어요` : ""}</p>
               </div>
               <div class="approve-actions">
                 <button class="approve-btn" onclick="event.stopPropagation(); approveSubmission('${jsStr(r.studentName)}', '${jsStr(r.hwId)}')">승인</button>
@@ -7714,10 +7575,10 @@
         }
         return `
           <div class="student-card" style="cursor:default;">
-            <div class="student-avatar">${r.studentName[0]}</div>
+            <div class="student-avatar">${escHtml(r.studentName[0])}</div>
             <div class="student-info">
-              <p class="student-name">${r.studentName}</p>
-              <p class="student-meta">${r.hwTitle}${r.lateDays > 0 ? ` · ${r.lateDays}일 지난 숙제를 제출했어요` : ""}</p>
+              <p class="student-name">${escHtml(r.studentName)}</p>
+              <p class="student-meta">${escHtml(r.hwTitle)}${r.lateDays > 0 ? ` · ${r.lateDays}일 지난 숙제를 제출했어요` : ""}</p>
             </div>
             <span class="status-pill ${r.status}">${teacherStatusLabel(r.status)}</span>
           </div>
@@ -7738,7 +7599,7 @@
     const firstDay = new Date(hwCalYear, hwCalMonth, 1).getDay();
     const daysInMonth = new Date(hwCalYear, hwCalMonth + 1, 0).getDate();
     const hwDates = new Set(classes[currentClassIndex].homeworks.map((h) => h.due));
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = getTodayDateStr();
 
     let html = "";
     for (let i = 0; i < firstDay; i++) {
@@ -7784,10 +7645,10 @@
       listEl.innerHTML = dayHw.map((h) => `
         <div class="hw-manage-card">
           <div class="hw-manage-top">
-            <p class="hw-manage-title">${h.title}</p>
+            <p class="hw-manage-title">${escHtml(h.title)}</p>
             <span class="hw-manage-dday">${calcDday(h.due)}</span>
           </div>
-          ${h.desc ? `<p class="hw-manage-desc">${h.desc}</p>` : ""}
+          ${h.desc ? `<p class="hw-manage-desc">${escHtml(h.desc)}</p>` : ""}
           <button class="hw-manage-delete" onclick="removeHomework('${jsStr(h.id)}')">삭제</button>
         </div>
       `).join("");
@@ -7800,7 +7661,7 @@
     const today = new Date();
     tHwCalYear = today.getFullYear();
     tHwCalMonth = today.getMonth();
-    tHwSelectedDate = today.toISOString().slice(0, 10);
+    tHwSelectedDate = toLocalDateStr(today);
     document.getElementById("addEventForm").classList.remove("show");
     renderTHwCalendar();
     renderTHwDayList();
@@ -7832,7 +7693,7 @@
     const hwDates = new Set();
     myClasses().forEach(({ c }) => c.homeworks.forEach((h) => hwDates.add(h.due)));
     const myEv = myEvents();
-    const todayStr = new Date().toISOString().slice(0, 10);
+    const todayStr = getTodayDateStr();
 
     let html = "";
     for (let i = 0; i < firstDay; i++) {
@@ -7872,7 +7733,7 @@
     html += dayEvents.map((e) => `
       <div class="hw-manage-card">
         <div class="hw-manage-top">
-          <p class="hw-manage-title">${e.title}</p>
+          <p class="hw-manage-title">${escHtml(e.title)}</p>
           <span class="hw-manage-dday" style="background:#FFF1DB;color:#E08A00;">일정</span>
         </div>
         <p class="hw-manage-desc">${formatKoreanDate(e.startDate)}${e.endDate !== e.startDate ? " ~ " + formatKoreanDate(e.endDate) : ""}</p>
@@ -7882,10 +7743,10 @@
     html += rows.map((r) => `
       <div class="hw-manage-card" style="cursor:pointer;" onclick="openClassDetail(${r.classIndex}, 't-homework', {tab:'homework', date:'${jsStr(r.hw.due)}'})">
         <div class="hw-manage-top">
-          <p class="hw-manage-title">${r.hw.title}</p>
+          <p class="hw-manage-title">${escHtml(r.hw.title)}</p>
           <span class="hw-manage-dday">${calcDday(r.hw.due)}</span>
         </div>
-        <p class="hw-manage-desc">${r.className}${r.hw.desc ? " · " + r.hw.desc : ""}</p>
+        <p class="hw-manage-desc">${escHtml(r.className)}${r.hw.desc ? " · " + escHtml(r.hw.desc) : ""}</p>
       </div>
     `).join("");
     listEl.innerHTML = html;
@@ -8135,7 +7996,9 @@
   function confirmDeleteClass() {
     classes.splice(currentClassIndex, 1);
     currentClassIndex = null;
-    saveState();
+    /* saveState는 저장소에 있는 반을 다시 합쳐 넣기 때문에 방금 지운 반이
+       되살아난다. 지우는 동작은 병합 없이 그대로 덮어써야 한다. */
+    writeClassesExact();
     closeModal("deleteClassConfirmModal");
     if (classDetailReturnPage === "t-students") {
       renderStudentsHome();
@@ -8266,8 +8129,9 @@
   let accDeleteTarget = null;
   let shownPwKeys = {};   /* 어떤 계정의 비번을 펼쳐 뒀는지 */
 
+  /* 이름이 같은 계정이 여럿일 수 있어 계정 id로 구분한다 */
   function accountKey(u) {
-    return u.role + ":" + u.name;
+    return u.id;
   }
 
   function renderMasterAccounts() {
