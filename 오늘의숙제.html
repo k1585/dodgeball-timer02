@@ -1425,13 +1425,33 @@
   .welcome-start-btn:active{
     transform:scale(0.98);
   }
+  /* 내용이 화면보다 길어지면(예: 만 14세 미만 가입 - 보호자 입력칸이 더 붙음)
+     아래가 잘리고 스크롤도 안 되던 문제가 있었다.
+     overflow-y만 켜면 justify-content:center 때문에 이번엔 위가 잘리므로,
+     가운데 정렬은 위아래 auto 여백으로 대신한다. 짧으면 가운데, 길면 스크롤. */
   .onboard-center{
     flex:1;
+    min-height:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    padding:0 28px;
+    justify-content:flex-start;
+    padding:16px 28px 28px;
+  }
+
+  .onboard-center::before,
+  .onboard-center::after{
+    content:"";
+    margin:auto;
+    flex-shrink:0;
+  }
+
+  /* 코드 입력 화면은 일부러 위로 붙이는 모드라 auto 여백을 끔 */
+  .onboard-center.shift-up::before,
+  .onboard-center.shift-up::after{
+    margin:0;
   }
   .step-icon{
     width:60px;
@@ -3851,6 +3871,7 @@
       <p>이 앱은 아래 정보를 이용자의 기기 안에만 저장합니다.</p>
       <ul>
         <li>이름, 비밀번호 (계정 구분용)</li>
+        <li>가입일시·동의일시 (동의 사실 기록용)</li>
         <li>참여한 반 정보</li>
         <li>숙제 제출 사진과 선생님께 보내는 쪽지</li>
         <li>만 14세 미만인 경우: 보호자 성함과 연락처</li>
@@ -3871,8 +3892,15 @@
       <h2>6. 이용자의 권리</h2>
       <p>마이페이지 &gt; 계정 삭제로 언제든 직접 지울 수 있습니다. 삭제하면 제출한 숙제와 사진도 함께 지워집니다.</p>
 
-      <h2>7. 문의</h2>
-      <p id="privacyContact">문의: (여기에 연락처를 넣어 주세요)</p>
+      <h2>7. 파기 절차 및 방법</h2>
+      <p>계정을 삭제하거나 앱 데이터를 지우는 즉시 기기에서 파기되며 복구할 수 없습니다. 따로 보관 기간을 두지 않습니다.</p>
+
+      <h2>8. 자동 수집 장치</h2>
+      <p>광고나 분석을 위한 쿠키·추적 식별자를 쓰지 않습니다. 로그인 상태를 기억하기 위한 기기 저장소만 사용하며 기기 밖으로 나가지 않습니다.</p>
+
+      <h2>9. 개인정보 보호책임자 및 문의</h2>
+      <p id="privacyContact">김주원 · kimnui2012@gmail.com</p>
+      <p style="font-size:12px;color:#8A8FA3;">개인정보침해 상담: 개인정보침해신고센터 (국번없이 118)</p>
     </div>
   </div>
 
