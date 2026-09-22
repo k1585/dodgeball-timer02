@@ -7185,6 +7185,19 @@
     return "hw" + (nextHwId++) + "_" + Date.now().toString(36);
   }
 
+  /* 반 코드는 이 코드만 알면 반에 들어올 수 있는 열쇠라, 추측하기 어려운 난수를 쓴다.
+     Math.random()은 값이 예측될 수 있어 브라우저가 제공하는 암호학적 난수를 먼저 쓰고,
+     지원하지 않는 아주 오래된 환경에서만 기존 방식으로 물러선다. */
+  function newClassCode() {
+    try {
+      const buf = new Uint32Array(1);
+      crypto.getRandomValues(buf);
+      return String(100000 + (buf[0] % 900000));
+    } catch (e) {
+      return String(Math.floor(100000 + Math.random() * 900000));
+    }
+  }
+
   function teacherStatusLabel(status) {
     if (status === "pending") return "승인대기";
     if (status === "rejected") return "반려됨";
@@ -7218,7 +7231,7 @@
     playTapSound();
     className = val;
 
-    classCode = String(Math.floor(100000 + Math.random() * 900000));
+    classCode = newClassCode();
     const spans = document.querySelectorAll("#codeDisplay span");
     classCode.split("").forEach((digit, i) => {
       spans[i].textContent = digit;
