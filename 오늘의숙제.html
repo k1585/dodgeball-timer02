@@ -5067,6 +5067,78 @@
   let selectedClassName = "";
   let joinedClassIndex = null;
 
+  /* ===== 저장소 어댑터 =====
+     앱의 모든 저장/불러오기는 이 Store 한 곳만 거친다.
+     지금은 브라우저 저장소(localStorage)를 쓰지만, 나중에 서버(파이어베이스)로
+     옮길 때 바깥 코드를 건드리지 않고 이 안쪽만 바꾸면 되도록 입구를 모아 둔 것이다.
+     시크릿 모드처럼 저장소를 쓸 수 없는 환경에서도 앱이 멈추지 않도록,
+     읽기는 항상 기본값을 돌려주고 쓰기는 성공 여부를 돌려준다. */
+  const Store = {
+    readArray(key) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    },
+    writeArray(key, arr) {
+      try {
+        localStorage.setItem(key, JSON.stringify(arr));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+    readText(key, fallback) {
+      try {
+        return localStorage.getItem(key) || fallback;
+      } catch (e) {
+        return fallback;
+      }
+    },
+    writeText(key, val) {
+      try {
+        localStorage.setItem(key, val);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+    remove(keys) {
+      try {
+        keys.forEach((k) => localStorage.removeItem(k));
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+    usedBytes() {
+      let total = 0;
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          total += (k.length + (localStorage.getItem(k) || "").length) * 2;
+        }
+      } catch (e) {}
+      return total;
+    },
+  };
+
+  /* 저장 직전에 저장소를 다시 읽어, 이 탭이 모르는 항목(다른 탭에서 만든 것)은
+     그대로 두고 내 것만 반영한다. 탭을 여러 개 띄워 써도 서로 덮어쓰지 않게 하려는 것.
+     반대로 '지우는' 동작은 병합하면 지운 게 되살아나므로 write...Exact를 쓴다. */
+  function mergeKeeping(mine, stored, field) {
+    const has = new Set(mine.map((x) => x[field]));
+    const merged = mine.slice();
+    stored.forEach((x) => {
+      if (x && x[field] && !has.has(x[field])) merged.push(x);
+    });
+    return merged;
+  }
+
   /* ===== 계정(회원가입/로그인) =====
      이름과 비밀번호를 브라우저(localStorage)에만 저장하는 데모용 저장소입니다.
      비밀번호는 평문 대신 해시로 보관하지만, 서버가 없으므로 실제 서비스 수준의
@@ -5079,11 +5151,7 @@
   const DEFAULT_MASTER_HASH = "hyjalcd";
 
   function masterHash() {
-    try {
-      return localStorage.getItem(STORAGE_KEY_MASTER) || DEFAULT_MASTER_HASH;
-    } catch (e) {
-      return DEFAULT_MASTER_HASH;
-    }
+    return Store.readText(STORAGE_KEY_MASTER, DEFAULT_MASTER_HASH);
   }
 
   let users = [];
@@ -5091,59 +5159,25 @@
   let currentUserId = null;   /* 지금 로그인한 계정 (이름이 겹칠 수 있어 id로 가림) */
 
   function loadUsers() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY_USERS);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) users = parsed;
-      }
-    } catch (e) {}
+    users = Store.readArray(STORAGE_KEY_USERS);
   }
 
   /* 탭을 여러 개 띄워 쓰면 각 탭이 자기 메모리의 목록을 통째로 덮어써서,
      다른 탭에서 만든 계정이 통째로 사라졌다. 그래서 저장 직전에 저장소를
      다시 읽어, 내가 모르는 계정은 그대로 두고 내 것만 반영한다. */
   function saveUsers() {
-    try {
-      let stored = [];
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY_USERS);
-        const parsed = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(parsed)) stored = parsed;
-      } catch (e) {}
-
-      const mine = new Set(users.map((u) => u.id));
-      const merged = users.slice();
-      stored.forEach((u) => {
-        if (u && u.id && !mine.has(u.id)) merged.push(u);
-      });
-
-      users = merged;
-      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-      return true;
-    } catch (e) {
-      return false;
-    }
+    users = mergeKeeping(users, Store.readArray(STORAGE_KEY_USERS), "id");
+    return Store.writeArray(STORAGE_KEY_USERS, users);
   }
 
   /* 계정 삭제나 전체 초기화는 '지우는' 동작이라, 병합하면 지운 게 되살아난다.
      그래서 이때만 지금 목록을 그대로 저장한다. */
   function writeUsersExact() {
-    try {
-      localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return Store.writeArray(STORAGE_KEY_USERS, users);
   }
 
   function writeClassesExact() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
-      return true;
-    } catch (e) {
-      return false;
-    }
+    return Store.writeArray(STORAGE_KEY, classes);
   }
 
   function newUserId() {
@@ -5408,14 +5442,7 @@
   const STORAGE_LIMIT_BYTES = 5 * 1024 * 1024;
 
   function storageUsedBytes() {
-    let total = 0;
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        total += (k.length + (localStorage.getItem(k) || "").length) * 2;
-      }
-    } catch (e) {}
-    return total;
+    return Store.usedBytes();
   }
 
   function formatMB(bytes) {
@@ -7016,26 +7043,8 @@
      실패하면 화면에서 알려 준다. */
   /* 반 목록도 계정과 같은 이유로 병합해서 저장한다 */
   function saveState() {
-    try {
-      let stored = [];
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        const parsed = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(parsed)) stored = parsed;
-      } catch (e) {}
-
-      const mine = new Set(classes.map((c) => c.code));
-      const merged = classes.slice();
-      stored.forEach((c) => {
-        if (c && c.code && !mine.has(c.code)) merged.push(c);
-      });
-
-      classes = merged;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(classes));
-      return true;
-    } catch (e) {
-      return false;
-    }
+    classes = mergeKeeping(classes, Store.readArray(STORAGE_KEY), "code");
+    return Store.writeArray(STORAGE_KEY, classes);
   }
 
   function showStorageFullModal() {
@@ -7044,29 +7053,15 @@
   }
 
   function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) classes = parsed;
-      }
-    } catch (e) {}
+    classes = Store.readArray(STORAGE_KEY);
   }
 
   function saveEvents() {
-    try {
-      localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(events));
-    } catch (e) {}
+    return Store.writeArray(STORAGE_KEY_EVENTS, events);
   }
 
   function loadEvents() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY_EVENTS);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) events = parsed;
-      }
-    } catch (e) {}
+    events = Store.readArray(STORAGE_KEY_EVENTS);
   }
 
   /* 선생님 이름을 기준으로 각자의 반/일정만 보이도록 하는 필터
@@ -8422,9 +8417,7 @@
       playErrorBuzz();
       return;
     }
-    try {
-      localStorage.setItem(STORAGE_KEY_MASTER, hashPassword(val));
-    } catch (e) {}
+    Store.writeText(STORAGE_KEY_MASTER, hashPassword(val));
     input.value = "";
     msg.textContent = "관리자 비밀번호를 바꿨어요";
     msg.style.color = "#1FA455";
@@ -8444,12 +8437,7 @@
     events = [];
     /* 병합 저장을 쓰면 지운 것이 되살아나므로 여기서는 저장소를 그대로 비운다.
        다른 탭도 storage 이벤트로 이 변화를 받아 함께 비워진다. */
-    try {
-      localStorage.removeItem(STORAGE_KEY_USERS);
-      localStorage.removeItem(STORAGE_KEY);
-      localStorage.removeItem(STORAGE_KEY_EVENTS);
-      localStorage.removeItem(STORAGE_KEY_MASTER);
-    } catch (e) {}
+    Store.remove([STORAGE_KEY_USERS, STORAGE_KEY, STORAGE_KEY_EVENTS, STORAGE_KEY_MASTER]);
     currentUserId = null;
     accountName = "";
 
