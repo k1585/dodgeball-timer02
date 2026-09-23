@@ -60,7 +60,10 @@ service cloud.firestore {
         allow get: if isTeacherOf(cid) || resource.data.studentUid == uid();
         allow list: if isTeacherOf(cid);
         allow create: if isStudentOf(cid) && request.resource.data.studentUid == uid();
-        allow update: if isTeacherOf(cid) || resource.data.studentUid == uid();
+        allow update: if isTeacherOf(cid)
+          || (resource.data.studentUid == uid()
+              && request.resource.data.studentUid == uid()
+              && request.resource.data.status == 'pending');
         allow delete: if isTeacherOf(cid);
 
         match /photos/{pid} {
