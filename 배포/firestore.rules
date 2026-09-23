@@ -1,0 +1,82 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function uid() { return request.auth.uid; }
+
+    function isTeacherOf(cid) {
+      return signedIn()
+        && get(/databases/$(db)/documents/classes/$(cid)).data.teacherId == uid();
+    }
+    function isStudentOf(cid) {
+      return signedIn()
+        && exists(/databases/$(db)/documents/classes/$(cid)/students/$(uid()));
+    }
+    function isMemberOf(cid) {
+      return isTeacherOf(cid) || isStudentOf(cid);
+    }
+    function subOwner(cid, sid) {
+      return get(/databases/$(db)/documents/classes/$(cid)/submissions/$(sid)).data.studentUid;
+    }
+
+    match /users/{userId} {
+      allow get: if signedIn() && (
+        uid() == userId
+        || (resource.data.role == 'student'
+            && resource.data.classId is string
+            && isTeacherOf(resource.data.classId))
+      );
+      allow list: if false;
+      allow create, update, delete: if signedIn() && uid() == userId;
+    }
+
+    match /classCodes/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn() && request.resource.data.teacherId == uid();
+      allow update, delete: if signedIn() && resource.data.teacherId == uid();
+    }
+
+    match /classes/{cid} {
+      allow get: if isMemberOf(cid);
+      allow list: if false;
+      allow create: if signedIn() && request.resource.data.teacherId == uid();
+      allow update, delete: if isTeacherOf(cid);
+
+      match /students/{sid} {
+        allow read: if isMemberOf(cid);
+        allow create: if signedIn() && (uid() == sid || isTeacherOf(cid));
+        allow update, delete: if isTeacherOf(cid) || uid() == sid;
+      }
+
+      match /homeworks/{hid} {
+        allow read: if isMemberOf(cid);
+        allow write: if isTeacherOf(cid);
+      }
+
+      match /submissions/{sid} {
+        allow get: if isTeacherOf(cid) || resource.data.studentUid == uid();
+        allow list: if isTeacherOf(cid);
+        allow create: if isStudentOf(cid) && request.resource.data.studentUid == uid();
+        allow update: if isTeacherOf(cid)
+          || (resource.data.studentUid == uid()
+              && request.resource.data.studentUid == uid()
+              && request.resource.data.status == 'pending');
+        allow delete: if isTeacherOf(cid);
+
+        match /photos/{pid} {
+          allow read: if isTeacherOf(cid) || subOwner(cid, sid) == uid();
+          allow write: if isStudentOf(cid) && subOwner(cid, sid) == uid();
+        }
+      }
+    }
+
+    match /events/{eid} {
+      allow get, list: if signedIn();
+      allow create: if signedIn() && request.resource.data.teacherId == uid();
+      allow update, delete: if signedIn() && resource.data.teacherId == uid();
+    }
+  }
+}
