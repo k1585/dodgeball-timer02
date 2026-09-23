@@ -1,0 +1,119 @@
+rules_version = '2';
+
+/*
+  「오늘의 숙제」 Firestore 보안 규칙
+
+  핵심 원칙
+  - 로그인하지 않으면 아무것도 못 읽고 못 쓴다.
+  - 학생은 자기 제출물과 사진만 볼 수 있다. 다른 학생 것은 못 본다.
+  - 선생님은 자기가 만든 반의 것만 볼 수 있다. 남의 반은 못 본다.
+  - 반 목록을 통째로 훑는 것(나열)은 막는다. 코드를 아는 사람만 그 반을 찾는다.
+*/
+
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function uid()      { return request.auth.uid; }
+
+    function classOf(cid) {
+      return get(/databases/$(db)/documents/classes/$(cid)).data;
+    }
+    function isTeacherOf(cid) {
+      return signedIn() && classOf(cid).teacherId == uid();
+    }
+    function isStudentOf(cid) {
+      return signedIn() &&
+        exists(/databases/$(db)/documents/classes/$(cid)/students/$(uid()));
+    }
+    function isMemberOf(cid) {
+      return isTeacherOf(cid) || isStudentOf(cid);
+    }
+
+    /* ── 계정 ───────────────────────────────────────────────
+       본인은 자기 것을 읽고 쓴다.
+       선생님은 자기 반 학생의 계정 정보를 읽을 수 있다(명단 표시용).
+       전체 나열은 막는다. */
+    match /users/{userId} {
+      allow get: if signedIn() && (
+        uid() == userId ||
+        (resource.data.role == 'student'
+          && resource.data.classId is string
+          && isTeacherOf(resource.data.classId))
+      );
+      allow list: if false;
+
+      allow create: if signedIn() && uid() == userId;
+      allow update: if signedIn() && uid() == userId;
+      allow delete: if signedIn() && uid() == userId;
+    }
+
+    /* ── 반 코드 찾기 ────────────────────────────────────────
+       학생이 코드를 넣어 반을 찾는 통로.
+       코드를 정확히 알아야 읽을 수 있고, 목록 나열은 막혀 있어
+       코드를 하나씩 대입해 훑을 수 없다. */
+    match /classCodes/{code} {
+      allow get:    if signedIn();
+      allow list:   if false;
+      allow create: if signedIn() && request.resource.data.teacherId == uid();
+      allow update: if signedIn() && resource.data.teacherId == uid();
+      allow delete: if signedIn() && resource.data.teacherId == uid();
+    }
+
+    /* ── 반 ─────────────────────────────────────────────── */
+    match /classes/{cid} {
+      allow get:  if isMemberOf(cid);
+      allow list: if false;
+
+      allow create: if signedIn() && request.resource.data.teacherId == uid();
+      allow update: if isTeacherOf(cid);
+      allow delete: if isTeacherOf(cid);
+
+      /* 반 학생 명단 — 같은 반 사람끼리만 보인다 */
+      match /students/{sid} {
+        allow read:   if isMemberOf(cid);
+        allow create: if signedIn() && (uid() == sid || isTeacherOf(cid));
+        allow update: if isTeacherOf(cid) || uid() == sid;
+        allow delete: if isTeacherOf(cid) || uid() == sid;
+      }
+
+      /* 숙제 — 반 사람은 읽고, 선생님만 만들고 고친다 */
+      match /homeworks/{hid} {
+        allow read:  if isMemberOf(cid);
+        allow write: if isTeacherOf(cid);
+      }
+
+      /* 제출물 — 본인과 담당 선생님만.
+         학생은 자기 것만 내고 고칠 수 있고, 승인·반려는 선생님만 한다. */
+      match /submissions/{subId} {
+        allow get:  if isTeacherOf(cid) || resource.data.studentUid == uid();
+        allow list: if isTeacherOf(cid);
+
+        allow create: if isStudentOf(cid)
+                      && request.resource.data.studentUid == uid();
+        allow update: if isTeacherOf(cid)
+                      || (resource.data.studentUid == uid()
+                          && request.resource.data.studentUid == uid());
+        allow delete: if isTeacherOf(cid);
+
+        /* 사진 — 목록 화면에서는 읽지 않고, 눌러서 볼 때만 읽는다 */
+        match /photos/{pid} {
+          function subOwner() {
+            return get(/databases/$(db)/documents/classes/$(cid)/submissions/$(subId))
+                     .data.studentUid;
+          }
+          allow read:  if isTeacherOf(cid) || subOwner() == uid();
+          allow write: if isStudentOf(cid) && subOwner() == uid();
+        }
+      }
+    }
+
+    /* ── 선생님 일정 ─────────────────────────────────────── */
+    match /events/{eid} {
+      allow get, list: if signedIn();
+      allow create: if signedIn() && request.resource.data.teacherId == uid();
+      allow update: if signedIn() && resource.data.teacherId == uid();
+      allow delete: if signedIn() && resource.data.teacherId == uid();
+    }
+  }
+}

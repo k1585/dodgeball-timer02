@@ -4949,6 +4949,52 @@
 
 </div>
 
+<!-- ===== 파이어베이스 연결 =====
+     이 앱은 버튼에 onclick을 직접 달아 쓰기 때문에 전체를 모듈로 바꿀 수 없다.
+     그래서 이 작은 모듈만 파이어베이스를 불러와 window.FB에 얹어 두고,
+     아래 본 스크립트가 그것을 가져다 쓴다. -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import {
+    getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+    signOut, onAuthStateChanged, updatePassword, deleteUser
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
+  import {
+    getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+    collection, query, where, onSnapshot, writeBatch, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+  /* apiKey는 비밀이 아니다. 어느 프로젝트인지 가리키는 주소표일 뿐이고,
+     실제 접근 통제는 Firestore 보안 규칙이 한다. */
+  const firebaseConfig = {
+    apiKey: "AIzaSyCD1t64W6TE0uknmHuoK4NyhNYkAnT7veI",
+    authDomain: "today-homework.firebaseapp.com",
+    projectId: "today-homework",
+    storageBucket: "today-homework.firebasestorage.app",
+    messagingSenderId: "790935402559",
+    appId: "1:790935402559:web:e6b2a1247bd240d029208a",
+  };
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    window.FB = {
+      auth: getAuth(app),
+      db: getFirestore(app),
+      signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
+      onAuthStateChanged, updatePassword, deleteUser,
+      doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
+      collection, query, where, onSnapshot, writeBatch, serverTimestamp,
+    };
+    window.FB_ERROR = null;
+  } catch (e) {
+    /* 인터넷이 끊겼거나 차단된 경우. 본 스크립트가 이걸 보고 안내를 띄운다. */
+    window.FB = null;
+    window.FB_ERROR = e && e.message ? e.message : "연결 실패";
+  }
+  window.FB_READY = true;
+  window.dispatchEvent(new Event("fb-ready"));
+</script>
+
 <script>
   /* 1: 숙제 목록 진입점은 항상 남은 숙제 탭에서 시작 */
   /* 반을 등록하기 전에는 홈·숙제목록·달력에 볼 것이 없어서,
