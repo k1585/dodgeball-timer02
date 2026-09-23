@@ -2267,6 +2267,29 @@
     opacity:1;
   }
 
+  .issued-list{
+    max-height:240px;
+    overflow-y:auto;
+    text-align:left;
+    background:#FAFBFF;
+    border:1px solid #EAEEF7;
+    border-radius:10px;
+    padding:10px 12px;
+    margin-bottom:6px;
+  }
+  .issued-row{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding:7px 0;
+    border-bottom:1px solid #EEF1F8;
+    font-size:14px;
+  }
+  .issued-row:last-child{ border-bottom:none; }
+  .issued-row b{ color:var(--point-strong); }
+  .issued-row span{ color:#5A6072; font-variant-numeric:tabular-nums; }
+  .issued-fail{ color:#E4423F; font-size:13px; margin-top:6px; }
+
   .auth-hint{
     margin:14px 0 0;
     max-width:280px;
@@ -3221,7 +3244,7 @@
       <p class="onboard-desc ob-anim d2">이름과 비밀번호를 입력해 주세요</p>
 
       <div class="onboard-input-wrap ob-anim d3">
-        <input type="text" id="stuLoginName" class="onboard-input" placeholder="이름" autocomplete="off">
+        <input type="text" id="stuLoginName" class="onboard-input" placeholder="아이디" autocomplete="off" autocapitalize="off" spellcheck="false">
       </div>
 
       <div class="onboard-input-wrap auth-field ob-anim d3">
@@ -3233,8 +3256,8 @@
 
       <button class="onboard-btn auth-submit ob-anim d4" onclick="doLogin('student')">로그인</button>
 
-      <div class="auth-divider ob-anim d4"><span>아직 계정이 없나요?</span></div>
-      <button class="auth-signup-btn ob-anim d4" onclick="openSignup('student')">회원가입</button>
+      <div class="auth-divider ob-anim d4"><span>계정은 선생님께 받아요</span></div>
+      <p class="auth-hint ob-anim d4">선생님이 알려주신 아이디와 비밀번호로 로그인하세요</p>
     </div>
   </div>
 
@@ -4220,6 +4243,21 @@
   </div>
 
   <!-- 저장 공간 부족 -->
+  <!-- 학생 계정 발급 결과 -->
+  <div class="modal-overlay" id="issuedModal">
+    <div class="modal-box" style="max-width:360px;">
+      <p class="modal-text" style="margin-bottom:6px;">학생 계정을 만들었어요</p>
+      <p class="modal-sub" style="margin-bottom:12px;">
+        아래 내용을 학생에게 알려주세요. 이 창을 닫으면 비밀번호는 다시 볼 수 없어요.
+      </p>
+      <div id="issuedList" class="issued-list"></div>
+      <div class="modal-actions" style="gap:8px;">
+        <button onclick="copyIssued()" style="background:var(--point-light);color:var(--point-strong);">복사하기</button>
+        <button onclick="closeModal('issuedModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="storageFullModal">
     <div class="modal-box">
       <div class="lock-icon" style="margin-bottom:14px;">
@@ -4228,8 +4266,8 @@
           <path d="M12 8v5M12 16h.01"></path>
         </svg>
       </div>
-      <p class="modal-text">저장 공간이 부족해요</p>
-      <p class="modal-sub">사진을 몇 장 지우고 다시 제출해 주세요</p>
+      <p class="modal-text" id="storageFullTitle">저장하지 못했어요</p>
+      <p class="modal-sub" id="storageFullText">인터넷 연결을 확인하고 다시 시도해 주세요</p>
       <div class="modal-actions">
         <button onclick="closeModal('storageFullModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
       </div>
@@ -4755,6 +4793,15 @@
 
     <div class="detail-content">
       <div class="tab-content active" id="detailTab-manage">
+        <button class="add-hw-btn" id="addStuToggleBtn" onclick="toggleAddStuForm()">
+          + 학생 계정 만들기
+        </button>
+        <div class="add-hw-form" id="addStuForm">
+          <p class="auth-hint" style="margin:0 0 8px;">학생 이름을 한 줄에 한 명씩 적어 주세요</p>
+          <textarea id="newStuNames" class="add-hw-textarea" rows="4"
+                    placeholder="이준호&#10;박지민&#10;최유나"></textarea>
+          <button id="newStuConfirmBtn" onclick="issueStudentAccounts()">계정 만들기</button>
+        </div>
         <div id="manageStudentList"></div>
       </div>
 
@@ -4954,7 +5001,7 @@
      그래서 이 작은 모듈만 파이어베이스를 불러와 window.FB에 얹어 두고,
      아래 본 스크립트가 그것을 가져다 쓴다. -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import {
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
     signOut, onAuthStateChanged, updatePassword, deleteUser
@@ -4984,6 +5031,19 @@
       onAuthStateChanged, updatePassword, deleteUser,
       doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
       collection, query, where, onSnapshot, writeBatch, serverTimestamp,
+
+      /* 선생님이 학생 계정을 만들 때 쓰는 보조 연결.
+         계정을 만들면 그 계정으로 로그인돼 버리는데, 보조 연결에서 하면
+         선생님이 쓰던 로그인은 그대로 유지된다. */
+      makeSecondary() {
+        const name = "issuer-" + Date.now();
+        const app2 = initializeApp(firebaseConfig, name);
+        return {
+          auth: getAuth(app2),
+          db: getFirestore(app2),
+          close: async () => { try { await deleteApp(app2); } catch (e) {} },
+        };
+      },
     };
     window.FB_ERROR = null;
   } catch (e) {
@@ -5185,6 +5245,489 @@
     return merged;
   }
 
+  /* ===== 서버(파이어베이스) 연결 층 =====
+     화면 코드는 예전처럼 users / classes / events 배열을 동기로 읽는다.
+     이 층이 서버의 변화를 실시간으로 받아 그 배열을 계속 최신으로 맞춰 주고,
+     바뀐 것만 골라 서버로 올린다. 그래서 렌더 함수는 손대지 않아도 된다. */
+
+  /* 학생은 이메일이 없어도 되게, 아이디를 내부에서만 이메일 꼴로 바꿔 쓴다.
+     화면에는 '이메일'이라는 말이 나오지 않는다. */
+  const LOGIN_DOMAIN = "todayhw.app";
+  function idToEmail(loginId) {
+    const v = String(loginId || "").trim().toLowerCase();
+    return v.indexOf("@") >= 0 ? v : v + "@" + LOGIN_DOMAIN;
+  }
+
+  let cloudReadyResolve;
+  const cloudFirstLoad = new Promise((r) => { cloudReadyResolve = r; });
+
+  const Cloud = {
+    uid: null,
+    me: null,          /* 내 계정 문서 */
+    unsubs: [],        /* 실시간 구독 해제 함수들 */
+    classUnsubs: {},   /* 반별 구독 */
+    mirror: {},        /* 서버에서 마지막으로 받은 모습 (무엇이 바뀌었는지 가리기 위함) */
+    pending: 0,
+    failed: false,
+
+    ready() { return !!(window.FB && this.uid); },
+
+    /* 로그아웃하는 순간 구독이 끊기며 권한 오류가 나는 건 정상이다.
+       받아주지 않으면 페이지 오류로 튀므로 여기서 조용히 흘려보낸다. */
+    quiet(e) {
+      const code = e && e.code;
+      if (code !== "permission-denied" && code !== "cancelled") {
+        console.warn("구독 끊김:", code, e && e.message);
+      }
+    },
+
+    /* 자료가 막 만들어지는 중이면 구독이 한 번 거부될 수 있다. 그때는 다시 걸어 준다. */
+    retryClass(cid) {
+      const self = this;
+      setTimeout(() => {
+        if (!self.uid) return;
+        const had = self.classUnsubs[cid];
+        if (had) { had.forEach((u) => { try { u(); } catch (e) {} }); delete self.classUnsubs[cid]; }
+        self.watchClass(cid);
+      }, 1500);
+    },
+
+    /* 가입 중에는 잠깐 로그인 상태가 되는데, 그때 자동으로 앱에 들어가면 안 된다 */
+    signingUp: false,
+
+    /* ---- 로그인 ---- */
+    async signIn(loginId, pw) {
+      const cred = await window.FB.signInWithEmailAndPassword(
+        window.FB.auth, idToEmail(loginId), pw);
+      return cred.user.uid;
+    },
+    async signUp(loginId, pw) {
+      const cred = await window.FB.createUserWithEmailAndPassword(
+        window.FB.auth, idToEmail(loginId), pw);
+      return cred.user.uid;
+    },
+    async signOutNow() {
+      this.stop();
+      try { await window.FB.signOut(window.FB.auth); } catch (e) {}
+    },
+
+    /* ---- 내 계정 문서 ---- */
+    async writeMe(data) {
+      const F = window.FB;
+      await F.setDoc(F.doc(F.db, "users", this.uid), data, { merge: true });
+    },
+    async readMe() {
+      const F = window.FB;
+      const snap = await F.getDoc(F.doc(F.db, "users", this.uid));
+      return snap.exists() ? snap.data() : null;
+    },
+
+    /* ---- 실시간으로 듣기 시작 ---- */
+    async start(uid) {
+      const F = window.FB;
+      this.stop();
+      this.uid = uid;
+
+      const meDoc = await this.readMe();
+      if (!meDoc) return false;
+      this.me = meDoc;
+
+      /* 화면 코드가 보는 users 배열에는 '나'만 담는다.
+         보안 규칙상 남의 계정은 못 읽고, 화면도 내 것만 있으면 된다. */
+      users = [this.toAppUser(uid, meDoc)];
+
+      const ids = meDoc.role === "teacher"
+        ? (meDoc.classIds || [])
+        : (meDoc.classId ? [meDoc.classId] : []);
+
+      classes = [];
+      const waits = ids.map((cid) => this.watchClass(cid));
+      this.watchEvents();
+
+      /* 반 자료가 실제로 도착할 때까지 기다린다. 먹통이 되지 않게 8초에서 끊는다. */
+      if (waits.length) {
+        await Promise.race([
+          Promise.all(waits),
+          new Promise((r) => setTimeout(r, 8000)),
+        ]);
+      }
+      cloudReadyResolve && cloudReadyResolve();
+      return true;
+    },
+
+    stop() {
+      this.unsubs.forEach((u) => { try { u(); } catch (e) {} });
+      this.unsubs = [];
+      Object.values(this.classUnsubs).forEach((arr) =>
+        arr.forEach((u) => { try { u(); } catch (e) {} }));
+      this.classUnsubs = {};
+      this.uid = null;
+      this.me = null;
+      this.mirror = {};
+      users = [];
+      classes = [];
+      events = [];
+    },
+
+    toAppUser(uid, d) {
+      return {
+        id: uid,
+        name: d.name || "",
+        role: d.role || "student",
+        loginId: d.loginId || "",
+        classCodes: d.classCodes || [],
+        classNames: d.classNames || {},
+        agreedAt: d.agreedAt || "",
+        isMinor: !!d.isMinor,
+        guardianName: d.guardianName || "",
+        guardianContact: d.guardianContact || "",
+      };
+    },
+
+    /* ---- 반 하나를 통째로 듣기 ---- */
+    watchClass(cid) {
+      const F = window.FB;
+      const self = this;
+      if (self.classUnsubs[cid]) return Promise.resolve();
+      self.classUnsubs[cid] = [];
+
+      let arrived;
+      const firstLoad = new Promise((r) => { arrived = r; });
+      let gotClass = false, gotHw = false;
+      const maybeDone = () => { if (gotClass && gotHw) arrived(); };
+
+      function slot() {
+        let c = classes.find((x) => x.id === cid);
+        if (!c) {
+          c = { id: cid, name: "", code: "", teacherId: "", teacherName: "",
+                students: [], homeworks: [], submissions: [] };
+          classes.push(c);
+        }
+        return c;
+      }
+
+      self.classUnsubs[cid].push(F.onSnapshot(F.doc(F.db, "classes", cid), (snap) => {
+        if (!snap.exists()) return;
+        const c = slot(), d = snap.data();
+        c.name = d.name || ""; c.code = d.code || "";
+        c.teacherId = d.teacherId || ""; c.teacherName = d.teacherName || "";
+        self.snapshotMirror(cid, "_meta");
+        gotClass = true; maybeDone();
+        self.refresh();
+      }, self.quiet));
+
+      self.classUnsubs[cid].push(F.onSnapshot(F.collection(F.db, "classes", cid, "students"), (qs) => {
+        const c = slot();
+        c.students = qs.docs.map((s) => ({ uid: s.id, name: s.data().name || "" }));
+        self.snapshotMirror(cid, "students");
+        self.refresh();
+      }, self.quiet));
+
+      self.classUnsubs[cid].push(F.onSnapshot(F.collection(F.db, "classes", cid, "homeworks"), (qs) => {
+        const c = slot();
+        c.homeworks = qs.docs.map((s) => Object.assign({ id: s.id }, s.data()));
+        self.snapshotMirror(cid, "homeworks");
+        gotHw = true; maybeDone();
+        self.refresh();
+      }, self.quiet));
+
+      /* 제출물: 선생님은 반 전체를, 학생은 자기 것만 볼 수 있다(보안 규칙).
+         그래서 학생일 때는 목록을 훑지 않고 내 것만 골라 읽는다. */
+      if (self.me && self.me.role === "teacher") {
+        self.classUnsubs[cid].push(
+          F.onSnapshot(F.collection(F.db, "classes", cid, "submissions"), (qs) => {
+            const c = slot();
+            c.submissions = qs.docs.map((s) => self.toAppSub(s.id, s.data()));
+            self.snapshotMirror(cid, "submissions");
+            self.refresh();
+          }, self.quiet));
+      } else {
+        self.watchMySubs(cid, slot);
+      }
+      return firstLoad;
+    },
+
+    /* 학생용: 내 제출물만 하나씩 듣는다 */
+    watchMySubs(cid, slot) {
+      const F = window.FB, self = this;
+      const seen = {};
+      const tick = () => {
+        const c = slot();
+        (c.homeworks || []).forEach((h) => {
+          const sid = h.id + "_" + self.uid;
+          if (seen[sid]) return;
+          seen[sid] = true;
+          self.classUnsubs[cid].push(
+            F.onSnapshot(F.doc(F.db, "classes", cid, "submissions", sid), (snap) => {
+              const cc = slot();
+              cc.submissions = cc.submissions.filter((s) => s._id !== sid);
+              if (snap.exists()) cc.submissions.push(self.toAppSub(sid, snap.data()));
+              self.snapshotMirror(cid, "submissions");
+              self.refresh();
+            }, () => {}));
+        });
+      };
+      self.classUnsubs[cid].push(
+        F.onSnapshot(F.collection(F.db, "classes", cid, "homeworks"), tick, self.quiet));
+    },
+
+    toAppSub(id, d) {
+      return {
+        _id: id,
+        hwId: d.hwId || "",
+        studentUid: d.studentUid || "",
+        studentName: d.studentName || "",
+        status: d.status || "pending",
+        note: d.note || "",
+        rejectReason: d.rejectReason || null,
+        movedToPast: !!d.movedToPast,
+        lateDays: d.lateDays || 0,
+        photoCount: d.photoCount || 0,
+        photos: [],        /* 사진은 무거워서 눌렀을 때만 받아 온다 */
+        photosLoaded: false,
+      };
+    },
+
+    watchEvents() {
+      const F = window.FB, self = this;
+      self.unsubs.push(F.onSnapshot(F.collection(F.db, "events"), (qs) => {
+        events = qs.docs.map((s) => Object.assign({ id: s.id }, s.data()));
+        self.refresh();
+      }, () => {}));
+    },
+
+    /* 서버에서 받은 모습을 기억해 둔다. 나중에 무엇이 바뀌었는지 이걸로 가린다.
+       반드시 '방금 서버에서 받은 그 부분'만 기록한다. 통째로 찍으면 아직 올리지 않은
+       로컬 변경까지 서버 모습으로 오인해, 저장해야 할 것을 건너뛰게 된다. */
+    snapshotMirror(cid, part) {
+      const c = classes.find((x) => x.id === cid);
+      if (!c) return;
+      const m = this.mirror[cid] || (this.mirror[cid] = {});
+      const copy = (v) => JSON.parse(JSON.stringify(v));
+      if (part === "_meta") {
+        m._meta = copy({ name: c.name, code: c.code, teacherId: c.teacherId, teacherName: c.teacherName });
+      } else if (part === "students") {
+        m.students = copy(c.students);
+      } else if (part === "homeworks") {
+        m.homeworks = copy(c.homeworks);
+      } else if (part === "submissions") {
+        m.submissions = copy(c.submissions.map((s) => {
+          const t = Object.assign({}, s); delete t.photos; delete t.photosLoaded; return t;
+        }));
+      }
+    },
+
+    /* 자료가 바뀌면 지금 보고 있는 화면을 다시 그린다 */
+    refresh() {
+      if (typeof refreshCurrentView === "function") {
+        try { refreshCurrentView(); } catch (e) {}
+      }
+    },
+  };
+
+  /* ---- 서버로 올리기 ----
+     화면에서는 예전처럼 메모리 배열을 고친 뒤 save...()를 부른다.
+     여기서 '서버에서 받은 모습'과 비교해 달라진 것만 골라 올린다.
+     올리기에 실패하면 서버가 보내 주는 값으로 화면이 곧 제자리를 찾는다. */
+  Object.assign(Cloud, {
+    note(msg) {
+      const el = document.getElementById("storageFullModal");
+      const t = document.getElementById("storageFullText");
+      if (t && msg) t.textContent = msg;
+      if (el) el.classList.add("show");
+    },
+
+    run(promise) {
+      const self = this;
+      self.pending++;
+      return promise.then(
+        () => { self.pending--; },
+        (e) => {
+          self.pending--;
+          self.failed = true;
+          self.note("저장하지 못했어요. 인터넷 연결을 확인해 주세요.");
+          console.error("저장 실패:", e && e.code, e && e.message);
+        });
+    },
+
+    pushMyUser() {
+      if (!this.ready()) return false;
+      const F = window.FB;
+      const u = users.find((x) => x.id === this.uid);
+      if (!u) return false;
+      /* Firestore는 undefined를 거부하므로, 역할에 맞는 값만 담는다 */
+      const body = { name: u.name, role: u.role, classNames: u.classNames || {} };
+      if (u.role === "teacher") {
+        body.classIds = classes.map((c) => c.id).filter(Boolean);
+      } else {
+        body.classId = classes[0] && classes[0].id ? classes[0].id : null;
+      }
+      try {
+        this.run(F.setDoc(F.doc(F.db, "users", this.uid), body, { merge: true }));
+      } catch (e) {
+        console.error("계정 저장 실패:", e && e.message);
+        return false;
+      }
+      return true;
+    },
+
+    /* 반/학생/숙제/제출물 중 달라진 것만 올린다 */
+    pushClasses() {
+      if (!this.ready()) return false;
+      const F = window.FB, self = this;
+      const batch = F.writeBatch(F.db);
+      let n = 0;
+      const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+      const iAmTeacher = self.me && self.me.role === "teacher";
+
+      classes.forEach((c) => {
+        if (!c.id) return;
+        const old = self.mirror[c.id] || { students: [], homeworks: [], submissions: [] };
+        const mine = iAmTeacher && c.teacherId === self.uid;
+
+        /* 반 자체 — 담당 선생님만 고칠 수 있다 */
+        const meta = { name: c.name, code: c.code, teacherId: c.teacherId, teacherName: c.teacherName };
+        if (mine && (!old._meta || !eq(old._meta, meta))) {
+          batch.set(F.doc(F.db, "classes", c.id), meta, { merge: true }); n++;
+        }
+
+        /* 학생 명단 — 선생님만 */
+        if (mine) c.students.forEach((s) => {
+          if (!s.uid) return;
+          const was = (old.students || []).find((x) => x.uid === s.uid);
+          if (!was || was.name !== s.name) {
+            batch.set(F.doc(F.db, "classes", c.id, "students", s.uid), { name: s.name }, { merge: true }); n++;
+          }
+        });
+        if (mine) (old.students || []).forEach((s) => {
+          if (!c.students.some((x) => x.uid === s.uid)) {
+            batch.delete(F.doc(F.db, "classes", c.id, "students", s.uid)); n++;
+          }
+        });
+
+        /* 숙제 — 선생님만 */
+        if (mine) c.homeworks.forEach((h) => {
+          const was = (old.homeworks || []).find((x) => x.id === h.id);
+          const body = { title: h.title || "", due: h.due || "", desc: h.desc || "" };
+          if (!was || !eq({ title: was.title || "", due: was.due || "", desc: was.desc || "" }, body)) {
+            batch.set(F.doc(F.db, "classes", c.id, "homeworks", h.id), body, { merge: true }); n++;
+          }
+        });
+        if (mine) (old.homeworks || []).forEach((h) => {
+          if (!c.homeworks.some((x) => x.id === h.id)) {
+            batch.delete(F.doc(F.db, "classes", c.id, "homeworks", h.id)); n++;
+          }
+        });
+
+        /* 제출물 (사진은 따로 올린다) */
+        c.submissions.forEach((s) => {
+          const sid = s._id || (s.hwId + "_" + (s.studentUid || self.uid));
+          s._id = sid;
+          /* 학생은 자기 제출물만 건드릴 수 있다 */
+          if (!mine && (s.studentUid || self.uid) !== self.uid) return;
+          const body = {
+            hwId: s.hwId, studentUid: s.studentUid || self.uid,
+            studentName: s.studentName || "", status: s.status,
+            note: s.note || "", rejectReason: s.rejectReason || null,
+            movedToPast: !!s.movedToPast, lateDays: s.lateDays || 0,
+            photoCount: s.photosLoaded ? s.photos.length : (s.photoCount || 0),
+          };
+          const was = (old.submissions || []).find((x) => x._id === sid);
+          const wasBody = was && {
+            hwId: was.hwId, studentUid: was.studentUid, studentName: was.studentName,
+            status: was.status, note: was.note, rejectReason: was.rejectReason,
+            movedToPast: was.movedToPast, lateDays: was.lateDays, photoCount: was.photoCount,
+          };
+          if (!was || !eq(wasBody, body)) {
+            batch.set(F.doc(F.db, "classes", c.id, "submissions", sid), body, { merge: true }); n++;
+          }
+        });
+        if (mine) (old.submissions || []).forEach((s) => {
+          if (!c.submissions.some((x) => (x._id || "") === s._id)) {
+            batch.delete(F.doc(F.db, "classes", c.id, "submissions", s._id)); n++;
+          }
+        });
+      });
+
+      if (n > 0) this.run(batch.commit());
+      return true;
+    },
+
+    pushEvents() {
+      if (!this.ready()) return false;
+      const F = window.FB;
+      const batch = F.writeBatch(F.db);
+      let n = 0;
+      events.forEach((e) => {
+        if (!e.id) return;
+        batch.set(F.doc(F.db, "events", e.id), {
+          title: e.title || "", startDate: e.startDate || "", endDate: e.endDate || "",
+          teacherId: e.teacherId || this.uid, teacherName: e.teacherName || "",
+        }, { merge: true }); n++;
+      });
+      if (n > 0) this.run(batch.commit());
+      return true;
+    },
+
+    deleteEvent(id) {
+      if (!this.ready()) return;
+      const F = window.FB;
+      this.run(F.deleteDoc(F.doc(F.db, "events", id)));
+    },
+
+    /* ---- 사진: 목록에서는 읽지 않고, 눌러서 볼 때만 받아 온다 ---- */
+    async loadPhotos(cid, sub) {
+      if (!this.ready() || !sub || sub.photosLoaded) return;
+      const F = window.FB;
+      try {
+        const qs = await F.getDocs(
+          F.collection(F.db, "classes", cid, "submissions", sub._id, "photos"));
+        const arr = qs.docs
+          .map((d) => ({ i: parseInt(d.id, 10) || 0, data: d.data().data }))
+          .sort((a, b) => a.i - b.i)
+          .map((x) => x.data);
+        sub.photos = arr;
+        sub.photosLoaded = true;
+        sub.photoCount = arr.length;
+      } catch (e) {
+        console.error("사진 읽기 실패:", e && e.code);
+      }
+    },
+
+    /* 올리는 중인 것이 끝날 때까지 기다린다 */
+    async settle(ms) {
+      const until = Date.now() + (ms || 8000);
+      while (this.pending > 0 && Date.now() < until) {
+        await new Promise((r) => setTimeout(r, 120));
+      }
+    },
+
+    async savePhotos(cid, sub, photos) {
+      if (!this.ready()) return false;
+      const F = window.FB;
+      /* 사진 권한은 '제출물의 주인'을 보고 판단하므로,
+         제출물 문서가 서버에 자리잡기 전에 올리면 거부된다. */
+      await this.settle();
+      try {
+        const col = F.collection(F.db, "classes", cid, "submissions", sub._id, "photos");
+        const existing = await F.getDocs(col);
+        const batch = F.writeBatch(F.db);
+        existing.docs.forEach((d) => batch.delete(d.ref));
+        photos.forEach((p, i) => batch.set(F.doc(col, String(i)), { data: p }));
+        await batch.commit();
+        sub.photos = photos.slice();
+        sub.photosLoaded = true;
+        sub.photoCount = photos.length;
+        return true;
+      } catch (e) {
+        console.error("사진 저장 실패:", e && e.code, e && e.message);
+        this.note("사진을 저장하지 못했어요. 인터넷 연결을 확인해 주세요.");
+        return false;
+      }
+    },
+  });
+
   /* ===== 계정(회원가입/로그인) =====
      이름과 비밀번호를 브라우저(localStorage)에만 저장하는 데모용 저장소입니다.
      비밀번호는 평문 대신 해시로 보관하지만, 서버가 없으므로 실제 서비스 수준의
@@ -5204,26 +5747,24 @@
   let currentAuthRole = "student";
   let currentUserId = null;   /* 지금 로그인한 계정 (이름이 겹칠 수 있어 id로 가림) */
 
-  function loadUsers() {
-    users = Store.readArray(STORAGE_KEY_USERS);
-  }
+  /* 불러오기는 Cloud가 실시간으로 대신한다. 남겨 둔 건 부르는 곳이 여럿이라서다. */
+  function loadUsers() {}
 
   /* 탭을 여러 개 띄워 쓰면 각 탭이 자기 메모리의 목록을 통째로 덮어써서,
      다른 탭에서 만든 계정이 통째로 사라졌다. 그래서 저장 직전에 저장소를
      다시 읽어, 내가 모르는 계정은 그대로 두고 내 것만 반영한다. */
   function saveUsers() {
-    users = mergeKeeping(users, Store.readArray(STORAGE_KEY_USERS), "id");
-    return Store.writeArray(STORAGE_KEY_USERS, users);
+    return Cloud.pushMyUser();
   }
 
   /* 계정 삭제나 전체 초기화는 '지우는' 동작이라, 병합하면 지운 게 되살아난다.
      그래서 이때만 지금 목록을 그대로 저장한다. */
   function writeUsersExact() {
-    return Store.writeArray(STORAGE_KEY_USERS, users);
+    return Cloud.pushMyUser();
   }
 
   function writeClassesExact() {
-    return Store.writeArray(STORAGE_KEY, classes);
+    return Cloud.pushClasses();
   }
 
   function newUserId() {
@@ -5366,50 +5907,90 @@
     clearAuthError(f.errorId);
   }
 
-  function doLogin(role) {
+  /* 선생님은 이름으로 로그인한다. 파이어베이스는 이메일 꼴을 요구하므로
+     이름을 영문·숫자로 바꿔 내부에서만 쓴다(한글이 그대로 들어가면 거부당한다).
+     같은 이름이면 같은 값이 나오므로 이름 중복은 가입 단계에서 걸러진다. */
+  function nameToLoginId(name, role) {
+    const bytes = new TextEncoder().encode(String(name || "").trim().toLowerCase());
+    let hex = "";
+    bytes.forEach((b) => { hex += b.toString(16).padStart(2, "0"); });
+    return (role === "teacher" ? "t" : "s") + hex.slice(0, 56);
+  }
+
+  function loginIdFor(role, typed) {
+    return role === "teacher" ? nameToLoginId(typed, "teacher") : String(typed).trim().toLowerCase();
+  }
+
+  let authBusy = false;
+  function setAuthBusy(btn, busy, label) {
+    authBusy = busy;
+    if (!btn) return;
+    btn.disabled = busy;
+    btn.textContent = busy ? "잠시만요..." : label;
+  }
+
+  async function doLogin(role) {
+    if (authBusy) return;
     const f = LOGIN_FIELDS[role];
-    const name = document.getElementById(f.nameId).value.trim();
+    const typed = document.getElementById(f.nameId).value.trim();
     const pw = document.getElementById(f.pwId).value;
+    const what = role === "teacher" ? "이름" : "아이디";
 
-    if (!name) {
-      showAuthError(f.errorId, "이름을 입력해 주세요");
-      playErrorBuzz();
-      return;
-    }
-    if (!pw) {
-      showAuthError(f.errorId, "비밀번호를 입력해 주세요");
-      playErrorBuzz();
-      return;
-    }
+    if (!typed) { showAuthError(f.errorId, what + "을 입력해 주세요"); playErrorBuzz(); return; }
+    if (!pw) { showAuthError(f.errorId, "비밀번호를 입력해 주세요"); playErrorBuzz(); return; }
+    if (!window.FB) { showAuthError(f.errorId, "서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); playErrorBuzz(); return; }
 
-    const user = findUserByLogin(name, role, pw);
-    /* 어느 쪽이 틀렸는지 알려주지 않는 편이 계정 노출에 안전함 */
-    if (!user) {
-      showAuthError(f.errorId, "이름 또는 비밀번호가 올바르지 않아요");
+    const btn = document.querySelector("#page-" + (role === "teacher" ? "t-" : "") + "name-input .auth-submit");
+    setAuthBusy(btn, true, "로그인");
+    try {
+      const uid = await Cloud.signIn(loginIdFor(role, typed), pw);
+      const okDoc = await Cloud.start(uid);
+      if (!okDoc) {
+        await Cloud.signOutNow();
+        showAuthError(f.errorId, "계정 정보를 찾지 못했어요. 선생님께 문의해 주세요");
+        playErrorBuzz();
+        return;
+      }
+      const me = users.find((u) => u.id === uid);
+      if (!me || me.role !== role) {
+        await Cloud.signOutNow();
+        showAuthError(f.errorId, what + " 또는 비밀번호가 올바르지 않아요");
+        playErrorBuzz();
+        return;
+      }
+      clearAuthError(f.errorId);
+      playSuccessChime();
+      currentUserId = uid;
+      enterAfterLogin(role, me);
+    } catch (e) {
+      /* 어느 쪽이 틀렸는지 알려주지 않는 편이 계정 노출에 안전하다 */
+      const code = (e && e.code) || "";
+      if (code === "auth/network-request-failed") {
+        showAuthError(f.errorId, "인터넷 연결을 확인해 주세요");
+      } else if (code === "auth/too-many-requests") {
+        showAuthError(f.errorId, "여러 번 틀렸어요. 잠시 뒤에 다시 시도해 주세요");
+      } else {
+        showAuthError(f.errorId, what + " 또는 비밀번호가 올바르지 않아요");
+      }
       playErrorBuzz();
       document.getElementById(f.pwId).value = "";
-      return;
+    } finally {
+      setAuthBusy(btn, false, "로그인");
     }
+  }
 
-    clearAuthError(f.errorId);
-    playSuccessChime();
-    currentUserId = user.id;
-
+  function enterAfterLogin(role, me) {
     if (role === "teacher") {
-      teacherName = user.name;
+      teacherName = me.name;
       document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
       renderHomeStats();
       showPage("t-home");
     } else {
-      accountName = user.name;
-      studentName = user.name;
-      /* 반이 하나뿐이라 목록을 거칠 이유가 없다 - 바로 그 반으로 들어감 */
+      accountName = me.name;
+      studentName = me.name;
       const mine = myStudentClasses();
-      if (mine.length > 0) {
-        enterStudentClass(mine[0].i);
-      } else {
-        openStudentClasses();
-      }
+      if (mine.length > 0) enterStudentClass(mine[0].i);
+      else openStudentClasses();
     }
   }
 
@@ -5487,9 +6068,8 @@
      한도에 가까워지면 제출이 저장되지 않으므로 미리 보여 준다. */
   const STORAGE_LIMIT_BYTES = 5 * 1024 * 1024;
 
-  function storageUsedBytes() {
-    return Store.usedBytes();
-  }
+  /* 서버에 저장하므로 기기 용량은 더 이상 제한이 아니다 */
+  function storageUsedBytes() { return 0; }
 
   function formatMB(bytes) {
     return (bytes / 1024 / 1024).toFixed(1) + "MB";
@@ -5747,82 +6327,79 @@
     showPage("welcome");
   }
 
-  function doSignup() {
+  async function doSignup() {
+    if (authBusy) return;
     const name = document.getElementById("signupName").value.trim();
     const pw = document.getElementById("signupPw").value;
     const pw2 = document.getElementById("signupPwConfirm").value;
 
-    if (!name) {
-      showAuthError("signupError", "이름을 입력해 주세요");
-      playErrorBuzz();
-      return;
-    }
+    if (!name) { showAuthError("signupError", "이름을 입력해 주세요"); playErrorBuzz(); return; }
     const problem = passwordProblem(pw);
-    if (problem) {
-      showAuthError("signupError", problem);
-      playErrorBuzz();
-      return;
-    }
+    if (problem) { showAuthError("signupError", problem); playErrorBuzz(); return; }
     /* 오타로 잘못된 비밀번호가 만들어지지 않도록 두 번 입력을 맞춰 봄 */
-    if (pw !== pw2) {
-      showAuthError("signupError", "비밀번호가 서로 달라요");
-      playErrorBuzz();
-      return;
-    }
-
-    /* 같은 이름이어도 가입은 되게 하고, 로그인은 비밀번호로 가린다.
-       다만 이름과 비밀번호가 둘 다 같으면 서로를 구분할 방법이 없어 막는다 */
-    if (findUserByLogin(name, currentAuthRole, pw)) {
-      /* 이름만 같은 건 괜찮지만, 비밀번호까지 같으면 서로를 구분할 수 없다.
-         뒤에 번호를 붙이면 된다는 걸 알려 준다. */
-      const sameName = users.filter((u) => u.name === name && u.role === currentAuthRole).length;
-      const suggest = name + String(sameName).padStart(2, "0");
-      showAuthError("signupError", `이미 있는 이름이에요. ${suggest}은 가능해요`);
-      playErrorBuzz();
-      return;
-    }
+    if (pw !== pw2) { showAuthError("signupError", "비밀번호가 서로 달라요"); playErrorBuzz(); return; }
 
     if (!document.getElementById("agreeTerms").checked) {
-      showAuthError("signupError", "개인정보 수집·이용에 동의해 주세요");
-      playErrorBuzz();
-      return;
+      showAuthError("signupError", "개인정보 수집·이용에 동의해 주세요"); playErrorBuzz(); return;
     }
 
     const guardianName = document.getElementById("guardianName").value.trim();
     const guardianContact = document.getElementById("guardianContact").value.trim();
     if (signupIsMinor) {
       if (!guardianName || !guardianContact) {
-        showAuthError("signupError", "보호자 성함과 연락처를 입력해 주세요");
-        playErrorBuzz();
-        return;
+        showAuthError("signupError", "보호자 성함과 연락처를 입력해 주세요"); playErrorBuzz(); return;
       }
       if (!document.getElementById("agreeGuardian").checked) {
-        showAuthError("signupError", "보호자 동의를 확인해 주세요");
-        playErrorBuzz();
-        return;
+        showAuthError("signupError", "보호자 동의를 확인해 주세요"); playErrorBuzz(); return;
       }
     }
+    if (!window.FB) {
+      showAuthError("signupError", "서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); playErrorBuzz(); return;
+    }
 
-    users.push({
-      id: newUserId(),
-      name: name,
-      role: currentAuthRole,
-      pw: hashPassword(pw),
-      pwSaved: encodePw(pw),
-      classCodes: [],
-      classNames: {},
-      agreedAt: new Date().toISOString(),
-      isMinor: signupIsMinor,
-      guardianName: signupIsMinor ? guardianName : "",
-      guardianContact: signupIsMinor ? guardianContact : "",
-    });
-    saveUsers();
-    clearAuthError("signupError");
-    playSuccessChime();
+    const btn = document.querySelector("#page-signup .auth-submit");
+    setAuthBusy(btn, true, "가입 완료");
+    Cloud.signingUp = true;
+    try {
+      const uid = await Cloud.signUp(loginIdFor(currentAuthRole, name), pw);
+      Cloud.uid = uid;
+      await Cloud.writeMe({
+        name: name,
+        role: currentAuthRole,
+        loginId: loginIdFor(currentAuthRole, name),
+        classIds: [],
+        classNames: {},
+        agreedAt: new Date().toISOString(),
+        isMinor: signupIsMinor,
+        guardianName: signupIsMinor ? guardianName : "",
+        guardianContact: signupIsMinor ? guardianContact : "",
+      });
+      /* 가입 직후에는 로그인된 상태가 되므로, 로그인 화면으로 돌아가도록 끊어 준다 */
+      await Cloud.signOutNow();
 
-    document.getElementById("signupDoneName").textContent =
-      name + (currentAuthRole === "teacher" ? " 선생님" : "님");
-    document.getElementById("signupDoneModal").classList.add("show");
+      clearAuthError("signupError");
+      playSuccessChime();
+      document.getElementById("signupDoneName").textContent =
+        name + (currentAuthRole === "teacher" ? " 선생님" : "님");
+      document.getElementById("signupDoneModal").classList.add("show");
+    } catch (e) {
+      const code = (e && e.code) || "";
+      if (code === "auth/email-already-in-use") {
+        /* 같은 이름은 서로를 구분할 수 없어 막는다. 뒤에 번호를 붙이면 된다. */
+        showAuthError("signupError", `이미 있는 이름이에요. ${name}01은 가능해요`);
+      } else if (code === "auth/network-request-failed") {
+        showAuthError("signupError", "인터넷 연결을 확인해 주세요");
+      } else if (code === "auth/weak-password") {
+        showAuthError("signupError", "비밀번호가 너무 쉬워요");
+      } else {
+        showAuthError("signupError", "가입하지 못했어요. 잠시 뒤 다시 시도해 주세요");
+        console.error("가입 실패:", code, e && e.message);
+      }
+      playErrorBuzz();
+    } finally {
+      Cloud.signingUp = false;
+      setAuthBusy(btn, false, "가입 완료");
+    }
   }
 
   /* 가입이 끝나면 시작 화면으로 돌아가 로그인부터 하게 함 */
@@ -5854,15 +6431,10 @@
   }
 
   /* 로그인한 학생이 등록한 반들. 선생님이 반을 지웠으면 자동으로 빠짐 */
+  /* 학생 계정은 선생님이 만들 때 이미 반에 붙여 준다.
+     그래서 불러온 반이 곧 내 반이다. */
   function myStudentClasses() {
-    const acc = myStudentAccount();
-    if (!acc) return [];
-    return acc.classCodes
-      .map((code) => {
-        const i = classes.findIndex((c) => c.code === code);
-        return i === -1 ? null : { c: classes[i], i: i };
-      })
-      .filter(Boolean);
+    return classes.map((c, i) => ({ c: c, i: i }));
   }
 
   /* 반마다 내가 쓰는 이름이 다를 수 있어(동명이인 번호), 그 반 기준으로 센다 */
@@ -5951,6 +6523,7 @@
 
   function logoutTeacher() {
     playTapSound();
+    Cloud.signOutNow();
     currentUserId = null;
     teacherName = "";
     currentClassIndex = null;
@@ -5960,6 +6533,7 @@
 
   function logoutStudent() {
     playTapSound();
+    Cloud.signOutNow();
     currentUserId = null;
     accountName = "";
     studentName = "";
@@ -7047,24 +7621,24 @@
     if (!currentBundle) return;
 
     const c = classes[joinedClassIndex];
-    c.submissions.push({
+    const newSub = {
+      _id: currentBundle.id + "_" + currentUserId,
+      studentUid: currentUserId,
       studentName: studentName,
       hwId: currentBundle.id,
       status: "pending",
       photos: uploadedPhotos.slice(),
+      photosLoaded: true,
+      photoCount: uploadedPhotos.length,
       note: document.getElementById("teacherNote").value,
       rejectReason: null,
       movedToPast: false,
       lateDays: overdueDays(currentBundle.due),
-    });
-    if (!saveState()) {
-      /* 저장이 안 됐으면 낸 걸로 처리하면 안 되므로 방금 추가한 제출을 되돌림 */
-      c.submissions.pop();
-      saveState();
-      playErrorBuzz();
-      showStorageFullModal();
-      return;
-    }
+    };
+    c.submissions.push(newSub);
+    saveState();
+    /* 사진은 무거워서 제출물 문서와 나눠 담는다 */
+    Cloud.savePhotos(c.id, newSub, uploadedPhotos.slice());
 
     renderRemainingList();
     renderApprovalList();
@@ -7089,8 +7663,7 @@
      실패하면 화면에서 알려 준다. */
   /* 반 목록도 계정과 같은 이유로 병합해서 저장한다 */
   function saveState() {
-    classes = mergeKeeping(classes, Store.readArray(STORAGE_KEY), "code");
-    return Store.writeArray(STORAGE_KEY, classes);
+    return Cloud.pushClasses();
   }
 
   function showStorageFullModal() {
@@ -7098,17 +7671,13 @@
     if (el) el.classList.add("show");
   }
 
-  function loadState() {
-    classes = Store.readArray(STORAGE_KEY);
-  }
+  function loadState() {}
 
   function saveEvents() {
-    return Store.writeArray(STORAGE_KEY_EVENTS, events);
+    return Cloud.pushEvents();
   }
 
-  function loadEvents() {
-    events = Store.readArray(STORAGE_KEY_EVENTS);
-  }
+  function loadEvents() {}
 
   /* 선생님 이름을 기준으로 각자의 반/일정만 보이도록 하는 필터
      (학생이 코드로 반을 찾는 로직은 classes 전체를 그대로 검색하므로 영향 없음) */
@@ -7172,31 +7741,9 @@
     if (activeId === "page-t-class-detail" && currentClassIndex !== null) renderClassDetail();
   }
 
-  window.addEventListener("storage", (e) => {
-    if (e.key === STORAGE_KEY_USERS) {
-      /* 다른 탭에서 계정이 바뀌면 바로 따라간다 (예전엔 이게 없어서 어긋났음) */
-      loadUsers();
-      if (currentUserId && !users.find((u) => u.id === currentUserId)) {
-        /* 쓰던 계정이 지워졌으면(관리자 삭제/초기화) 로그인 상태를 푼다 */
-        currentUserId = null;
-        accountName = "";
-        studentName = "";
-        teacherName = "";
-        joinedClassIndex = null;
-        showPage("welcome");
-        return;
-      }
-      refreshCurrentView();
-    }
-    if (e.key === STORAGE_KEY) {
-      loadState();
-      refreshCurrentView();
-    }
-    if (e.key === STORAGE_KEY_EVENTS) {
-      loadEvents();
-      refreshCurrentView();
-    }
-  });
+  /* 예전에는 탭 사이 어긋남을 storage 이벤트로 맞췄다.
+     이제는 서버 구독(onSnapshot)이 모든 기기와 탭을 실시간으로 맞춰 주므로 필요 없다. */
+
 
   /* ===== 온보딩 상태 ===== */
   let teacherName = "";
@@ -7280,6 +7827,7 @@
 
     /* 반은 코드가 만들어지는 즉시 저장 - "완료" 버튼을 안 눌러도 유지되도록 함 */
     classes.push({
+      id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
       name: className,
       code: classCode,
       teacherName: teacherName,
@@ -7289,6 +7837,11 @@
       submissions: [],
     });
     pendingClassIndex = classes.length - 1;
+    /* 반이 생기면 내 계정에도 어느 반인지 적어 둔다 (다음 로그인 때 찾아오기 위함) */
+    const newClassId = classes[pendingClassIndex].id;
+    saveState();
+    saveUsers();
+    Cloud.settle().then(() => Cloud.watchClass(newClassId));
     saveState();
 
     playSuccessChime();
@@ -7522,6 +8075,125 @@
     });
   }
 
+  /* ===== 학생 계정 발급 (선생님) =====
+     학생은 스스로 가입하지 않는다. 선생님이 이름을 넣으면 아이디와 임시 비밀번호를
+     만들어 주고, 그걸 받아 로그인만 한다. 그래서 아이가 개인정보를 직접 적을 일이 없다. */
+
+  let lastIssued = [];
+
+  function toggleAddStuForm() {
+    playTapSound();
+    const form = document.getElementById("addStuForm");
+    form.classList.toggle("show");
+    if (form.classList.contains("show")) document.getElementById("newStuNames").focus();
+  }
+
+  /* 헷갈리는 글자(0/O, 1/l 등)는 빼고 만든다 */
+  const SAFE_CHARS = "abcdefghjkmnpqrstuvwxyz23456789";
+  function randomChars(n) {
+    const buf = new Uint32Array(n);
+    try { crypto.getRandomValues(buf); }
+    catch (e) { for (let i = 0; i < n; i++) buf[i] = Math.floor(Math.random() * 1e9); }
+    let out = "";
+    for (let i = 0; i < n; i++) out += SAFE_CHARS[buf[i] % SAFE_CHARS.length];
+    return out;
+  }
+
+  async function issueStudentAccounts() {
+    if (authBusy) return;
+    const c = classes[currentClassIndex];
+    if (!c || !c.id) return;
+    const box = document.getElementById("newStuNames");
+    const names = box.value.split("\n").map((x) => x.trim()).filter(Boolean);
+    if (names.length === 0) return;
+    if (!window.FB) return;
+
+    const btn = document.getElementById("newStuConfirmBtn");
+    setAuthBusy(btn, true, "계정 만들기");
+
+    const made = [], failed = [];
+    const side = window.FB.makeSecondary();
+    const F = window.FB;
+
+    try {
+      for (const rawName of names) {
+        const alias = nextClassMemberName(c, rawName);
+        let loginId = "", pw = "", uid = null;
+        /* 아이디가 겹치면 다른 값으로 몇 번 더 시도한다 */
+        for (let attempt = 0; attempt < 5 && !uid; attempt++) {
+          loginId = (c.code ? c.code.slice(0, 3) : "hw") + randomChars(4);
+          pw = randomChars(6);
+          try {
+            const cred = await F.createUserWithEmailAndPassword(
+              side.auth, idToEmail(loginId), pw);
+            uid = cred.user.uid;
+          } catch (e) {
+            if ((e && e.code) !== "auth/email-already-in-use") {
+              failed.push(rawName + " (" + ((e && e.code) || "실패") + ")");
+              break;
+            }
+          }
+        }
+        if (!uid) { if (!failed.some((f) => f.indexOf(rawName) === 0)) failed.push(rawName); continue; }
+
+        /* 방금 만든 계정으로 보조 연결에 로그인된 상태라, 그 학생의 문서를 직접 쓸 수 있다 */
+        try {
+          await F.setDoc(F.doc(side.db, "users", uid), {
+            name: alias, role: "student", loginId: loginId,
+            classId: c.id, classNames: {}, agreedAt: new Date().toISOString(),
+            isMinor: false, guardianName: "", guardianContact: "",
+          });
+          await F.setDoc(F.doc(side.db, "classes", c.id, "students", uid), { name: alias });
+          made.push({ name: alias, id: loginId, pw: pw });
+          if (!c.students.some((x) => x.uid === uid)) c.students.push({ uid: uid, name: alias });
+        } catch (e) {
+          failed.push(rawName + " (자료 저장 실패)");
+        }
+        try { await F.signOut(side.auth); } catch (e) {}
+      }
+    } finally {
+      await side.close();
+      setAuthBusy(btn, false, "계정 만들기");
+    }
+
+    box.value = "";
+    document.getElementById("addStuForm").classList.remove("show");
+    renderClassDetail();
+
+    lastIssued = made;
+    const list = document.getElementById("issuedList");
+    list.innerHTML =
+      made.map((m) => `
+        <div class="issued-row">
+          <b>${escHtml(m.name)}</b>
+          <span>${escHtml(m.id)} / ${escHtml(m.pw)}</span>
+        </div>`).join("") +
+      (failed.length
+        ? `<p class="issued-fail">만들지 못함: ${escHtml(failed.join(", "))}</p>`
+        : "");
+    document.getElementById("issuedModal").classList.add("show");
+    if (made.length) playSuccessChime(); else playErrorBuzz();
+  }
+
+  function copyIssued() {
+    const text = lastIssued
+      .map((m) => `${m.name}  아이디 ${m.id}  비밀번호 ${m.pw}`)
+      .join("\n");
+    const done = () => {
+      const btn = document.querySelector("#issuedModal .modal-actions button");
+      if (btn) { btn.textContent = "복사했어요"; setTimeout(() => { btn.textContent = "복사하기"; }, 1500); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, () => {});
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+    playTapSound();
+  }
+
   function renderClassDetail() {
     const c = classes[currentClassIndex];
     const manageList = document.getElementById("manageStudentList");
@@ -7530,7 +8202,7 @@
 
     /* 학생 관리: 순수 명단 (숙제 현황은 여기서 다루지 않음) */
     if (c.students.length === 0) {
-      manageList.innerHTML = '<p class="empty-approval">아직 참여한 학생이 없어요<br>반 코드를 공유해보세요</p>';
+      manageList.innerHTML = '<p class="empty-approval">아직 학생이 없어요<br>위에서 학생 계정을 만들어 주세요</p>';
     } else {
       manageList.innerHTML = c.students.map((s, i) => `
         <div class="student-card" style="cursor:default;">
@@ -7854,6 +8526,8 @@
     }
     saveState();
     renderClassDetail();
+    /* 계정 자체는 남는다. 로그인 자료는 관리자만 지울 수 있어서,
+       반에서 빼는 것과 계정 삭제는 분리해 둔다. */
   }
 
   /* 반려된 제출은 다시 내야 하는 상태라 '미제출' 쪽으로 묶어서 봄 */
@@ -8507,6 +9181,37 @@
   renderCounts();
   renderPastList();
   fitWelcomeBrandWidth();
+
+  /* ===== 서버 연결을 기다렸다가, 이미 로그인돼 있으면 이어서 들어간다 =====
+     파이어베이스는 로그인을 기기에 기억하므로 새로고침해도 다시 로그인할 필요가 없다. */
+  function showConnectProblem() {
+    const el = document.getElementById("storageFullModal");
+    const t = document.getElementById("storageFullText");
+    if (t) t.textContent = "서버에 연결하지 못했어요. 인터넷 연결을 확인하고 새로고침해 주세요.";
+    if (el) el.classList.add("show");
+  }
+
+  function startWithFirebase() {
+    if (!window.FB) { showConnectProblem(); return; }
+    window.FB.onAuthStateChanged(window.FB.auth, async (user) => {
+      if (!user) {
+        Cloud.stop();
+        currentUserId = null;
+        return;
+      }
+      if (Cloud.signingUp) return;          /* 가입 절차가 끝날 때까지 기다린다 */
+      if (Cloud.uid === user.uid) return;   /* 이미 이어져 있음 */
+      const ok = await Cloud.start(user.uid);
+      if (!ok) { await Cloud.signOutNow(); return; }
+      const me = users.find((u) => u.id === user.uid);
+      if (!me) return;
+      currentUserId = user.uid;
+      enterAfterLogin(me.role, me);
+    });
+  }
+
+  if (window.FB_READY) startWithFirebase();
+  else window.addEventListener("fb-ready", startWithFirebase, { once: true });
 </script>
 
 </body>
