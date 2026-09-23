@@ -2267,6 +2267,26 @@
     opacity:1;
   }
 
+  .box-notice{
+    background:#FAFBFF;
+    border:1px solid #EAEEF7;
+    border-radius:12px;
+    padding:18px 20px;
+    text-align:left;
+  }
+  .master-info-title{
+    font-size:15px;
+    font-weight:800;
+    color:var(--point-strong);
+    margin:0 0 8px;
+  }
+  .master-info-body{
+    font-size:13px;
+    color:#5A6072;
+    line-height:1.7;
+    margin:0;
+  }
+
   .issued-list{
     max-height:240px;
     overflow-y:auto;
@@ -5437,7 +5457,9 @@
         self.classUnsubs[cid].push(
           F.onSnapshot(F.collection(F.db, "classes", cid, "submissions"), (qs) => {
             const c = slot();
-            c.submissions = qs.docs.map((s) => self.toAppSub(s.id, s.data()));
+            const before = c.submissions;
+            c.submissions = qs.docs.map((s) =>
+              self.toAppSub(s.id, s.data(), before.find((x) => x._id === s.id)));
             self.snapshotMirror(cid, "submissions");
             self.refresh();
           }, self.quiet));
@@ -5447,31 +5469,36 @@
       return firstLoad;
     },
 
-    /* 학생용: 내 제출물만 하나씩 듣는다 */
+    /* 학생용: 반 전체 제출물은 볼 수 없으므로(보안 규칙), 내 것만 하나씩 듣는다.
+       숙제 목록 스냅샷을 그대로 읽어서 어떤 제출물을 들어야 하는지 정한다.
+       (다른 구독이 c.homeworks를 갱신하는 순서에 기대면 어긋난다) */
     watchMySubs(cid, slot) {
       const F = window.FB, self = this;
       const seen = {};
-      const tick = () => {
-        const c = slot();
-        (c.homeworks || []).forEach((h) => {
-          const sid = h.id + "_" + self.uid;
+      const tick = (qs) => {
+        qs.docs.forEach((hwDoc) => {
+          const sid = hwDoc.id + "_" + self.uid;
           if (seen[sid]) return;
           seen[sid] = true;
           self.classUnsubs[cid].push(
             F.onSnapshot(F.doc(F.db, "classes", cid, "submissions", sid), (snap) => {
               const cc = slot();
+              const prev = cc.submissions.find((s) => s._id === sid);
               cc.submissions = cc.submissions.filter((s) => s._id !== sid);
-              if (snap.exists()) cc.submissions.push(self.toAppSub(sid, snap.data()));
+              if (snap.exists()) cc.submissions.push(self.toAppSub(sid, snap.data(), prev));
               self.snapshotMirror(cid, "submissions");
               self.refresh();
-            }, () => {}));
+            }, self.quiet));
         });
       };
       self.classUnsubs[cid].push(
         F.onSnapshot(F.collection(F.db, "classes", cid, "homeworks"), tick, self.quiet));
     },
 
-    toAppSub(id, d) {
+    toAppSub(id, d, prev) {
+      /* 이미 받아 둔 사진은 그대로 들고 간다. 갱신이 올 때마다 다시 받으면
+         전송량도 낭비고, 보고 있던 사진이 사라져 깜빡인다. */
+      const keep = prev && prev.photosLoaded && prev.photoCount === (d.photoCount || 0);
       return {
         _id: id,
         hwId: d.hwId || "",
@@ -5483,8 +5510,8 @@
         movedToPast: !!d.movedToPast,
         lateDays: d.lateDays || 0,
         photoCount: d.photoCount || 0,
-        photos: [],        /* 사진은 무거워서 눌렀을 때만 받아 온다 */
-        photosLoaded: false,
+        photos: keep ? prev.photos : [],   /* 사진은 무거워서 눌렀을 때만 받아 온다 */
+        photosLoaded: !!keep,
       };
     },
 
@@ -5687,6 +5714,9 @@
           .map((d) => ({ i: parseInt(d.id, 10) || 0, data: d.data().data }))
           .sort((a, b) => a.i - b.i)
           .map((x) => x.data);
+        /* 막 올리는 중이면 아직 다 안 올라왔을 수 있다.
+           그때 '다 받았다'고 표시해 버리면 영영 빈 채로 남는다. */
+        if (arr.length === 0 && (sub.photoCount || 0) > 0) return;
         sub.photos = arr;
         sub.photosLoaded = true;
         sub.photoCount = arr.length;
@@ -7396,11 +7426,14 @@
     );
   }
 
-  function openStatusDetail(hwId) {
+  async function openStatusDetail(hwId) {
     currentStatusHwId = hwId;
     const c = classes[joinedClassIndex];
     const h = c.homeworks.find((x) => x.id === hwId);
     const s = c.submissions.find((x) => x.hwId === hwId && x.studentName === studentName);
+    if (!h || !s) return;
+    /* 사진은 목록을 볼 때는 받지 않고, 이렇게 열어볼 때만 받아 온다 */
+    await Cloud.loadPhotos(c.id, s);
     sdUploadedPhotos = s.photos.slice();
 
     document.getElementById("sdBundleTitle").textContent = h.title;
@@ -7509,12 +7542,7 @@
 
     if (s.status === "approved") {
       s.movedToPast = true;
-      if (!saveState()) {
-        s.movedToPast = false;
-        playErrorBuzz();
-        showStorageFullModal();
-        return;
-      }
+      saveState();
       renderApprovalList();
       renderCounts();
       renderPastList();
@@ -7543,19 +7571,26 @@
       rejectReason: s.rejectReason,
     };
     s.photos = sdUploadedPhotos.slice();
+    s.photosLoaded = true;
+    s.photoCount = s.photos.length;
     s.note = document.getElementById("sdNote").value;
     s.status = "pending";
     s.rejectReason = null;
-    if (!saveState()) {
-      s.photos = before.photos;
-      s.note = before.note;
-      s.status = before.status;
-      s.rejectReason = before.rejectReason;
-      saveState();
-      playErrorBuzz();
-      showStorageFullModal();
-      return;
-    }
+    saveState();
+    /* 사진은 제출물과 나눠 담으므로 따로 올린다 */
+    Cloud.savePhotos(c.id, s, sdUploadedPhotos.slice()).then((ok) => {
+      if (!ok) {
+        /* 사진을 못 올렸으면 낸 걸로 두면 안 되므로 되돌린다 */
+        s.photos = before.photos;
+        s.note = before.note;
+        s.status = before.status;
+        s.rejectReason = before.rejectReason;
+        s.photoCount = before.photos.length;
+        saveState();
+        renderApprovalList();
+        renderCounts();
+      }
+    });
 
     renderApprovalList();
     renderCounts();
@@ -7639,6 +7674,9 @@
     saveState();
     /* 사진은 무거워서 제출물 문서와 나눠 담는다 */
     Cloud.savePhotos(c.id, newSub, uploadedPhotos.slice());
+    /* 처음 제출하기 전에는 제출물 문서가 없어서, 그걸 지켜보던 구독이 끊겨 있다.
+       이제 문서가 생겼으니 다시 걸어 선생님의 승인·반려가 바로 보이게 한다. */
+    Cloud.retryClass(c.id);
 
     renderRemainingList();
     renderApprovalList();
@@ -8625,7 +8663,7 @@
   let previewStudentName = null;
   let previewHwId = null;
 
-  function openSubmissionPreview(studentNameArg, hwId) {
+  async function openSubmissionPreview(studentNameArg, hwId) {
     playTapSound();
     previewStudentName = studentNameArg;
     previewHwId = hwId;
@@ -8633,6 +8671,8 @@
     const h = c.homeworks.find((x) => x.id === hwId);
     const sub = c.submissions.find((x) => x.studentName === studentNameArg && x.hwId === hwId);
     if (!h || !sub) return;
+    /* 목록에서는 사진을 받지 않으므로, 열어볼 때 여기서 받아 온다 */
+    await Cloud.loadPhotos(c.id, sub);
 
     document.getElementById("previewHwTitle").textContent = h.title;
     document.getElementById("previewStudentName").textContent = studentNameArg + " 학생 제출" + (sub.lateDays > 0 ? ` (기한 ${sub.lateDays}일 지남)` : "");
@@ -8786,6 +8826,25 @@
     showPage("master");
   }
 
+  /* 예전에는 자료가 기기 안에만 있어서 이 화면으로 전체를 들여다볼 수 있었다.
+     이제는 서버 보안 규칙이 '본인과 담당 선생님'에게만 자료를 열어 주므로,
+     앱 안에서 남의 계정을 훑는 일 자체가 불가능하다(그게 맞다).
+     전체 관리는 파이어베이스 콘솔에서 한다. */
+  function masterUnavailableHtml() {
+    return `
+      <div class="box-notice">
+        <p class="master-info-title">이제 여기서는 전체 목록을 볼 수 없어요</p>
+        <p class="master-info-body">
+          자료가 서버로 옮겨지면서, 본인과 담당 선생님만 볼 수 있도록 잠갔습니다.
+          앱에서 남의 계정을 들여다보는 길을 막아 둔 것이라 정상입니다.
+        </p>
+        <p class="master-info-body" style="margin-top:10px;">
+          계정·반·제출물 전체 관리는 <b>파이어베이스 콘솔</b>에서 하세요.<br>
+          console.firebase.google.com → today-homework
+        </p>
+      </div>`;
+  }
+
   document.getElementById("masterPasswordInput").addEventListener("keydown", (e) => {
     if (e.key === "Enter") submitMasterPassword();
   });
@@ -8820,33 +8879,8 @@
 
   /* --- 1단계: 선생님 목록 --- */
   function renderMasterTeachers() {
-    const teachers = allTeachers();
-    const studentCount = users.filter((u) => u.role === "student").length;
-
-    document.getElementById("masterTeacherCount").textContent = teachers.length + "명";
-    document.getElementById("masterStudentCount").textContent = studentCount + "명";
-    document.getElementById("masterClassCount").textContent = classes.length + "개";
-
     const el = document.getElementById("masterTeacherList");
-    if (teachers.length === 0) {
-      el.innerHTML = '<p class="empty-approval">아직 가입한 선생님이 없어요</p>';
-      return;
-    }
-
-    el.innerHTML = teachers.map((t) => {
-      const mine = classesOfTeacher(t);
-      const joined = mine.reduce((n, c) => n + c.students.length, 0);
-      return `
-        <div class="student-card" onclick="openMasterClasses('${jsStr(t.id || "")}', '${jsStr(t.name)}')">
-          <div class="student-avatar">${escHtml(t.name[0])}</div>
-          <div class="student-info">
-            <p class="student-name">${escHtml(t.label)} 선생님</p>
-            <p class="student-meta">반 ${mine.length}개 · 학생 ${joined}명</p>
-          </div>
-          ${MASTER_ARROW}
-        </div>
-      `;
-    }).join("");
+    if (el) el.innerHTML = masterUnavailableHtml();
   }
 
   /* --- 계정 관리: 비밀번호 확인 / 초기화 --- */
@@ -8861,41 +8895,7 @@
 
   function renderMasterAccounts() {
     const el = document.getElementById("masterAccountList");
-    if (users.length === 0) {
-      el.innerHTML = '<p class="empty-approval">아직 가입한 계정이 없어요</p>';
-      return;
-    }
-    el.innerHTML = users.map((u, i) => {
-      const key = accountKey(u);
-      const shown = !!shownPwKeys[key];
-      const pw = decodePw(u.pwSaved);
-      const roleLabel = u.role === "teacher" ? "선생님" : "학생";
-      const pwText = shown
-        ? (pw ? escHtml(pw) : "확인할 수 없어요 (이전에 만든 계정)")
-        : "••••••••";
-      return `
-        <div class="master-acc-card">
-          <div class="master-acc-top">
-            <div class="student-avatar">${escHtml(u.name[0])}</div>
-            <div class="student-info">
-              <p class="student-name">${escHtml(displayUserName(u))}</p>
-              <p class="student-meta">${roleLabel} 계정</p>
-            </div>
-            <span class="master-role-pill ${u.role}">${roleLabel}</span>
-          </div>
-          <div class="master-acc-pw">
-            <span class="master-acc-pw-value${shown && pw ? " on" : ""}">${pwText}</span>
-            <button type="button" class="pw-eye" onclick="toggleAccountPw('${jsStr(key)}')" aria-label="비밀번호 ${shown ? "숨기기" : "표시"}">
-              ${shown ? EYE_HIDE : EYE_SHOW}
-            </button>
-          </div>
-          <div class="master-acc-actions">
-            <button class="master-acc-reset" onclick="openPwReset('${jsStr(u.id)}')">비밀번호 초기화</button>
-            <button class="master-acc-delete" onclick="openAccountDelete('${jsStr(u.id)}')">계정 삭제</button>
-          </div>
-        </div>
-      `;
-    }).join("");
+    if (el) el.innerHTML = masterUnavailableHtml();
   }
 
   function toggleAccountPw(key) {
