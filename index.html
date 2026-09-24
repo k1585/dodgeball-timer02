@@ -2287,6 +2287,77 @@
     margin:0;
   }
 
+  /* 기다리는 동안 글자 대신 도는 표시를 보여 준다.
+     글자를 바꾸면 버튼 크기가 들쭉날쭉해지고, 무엇을 기다리는지도 덜 분명하다. */
+  .mypage-idrow{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-top:10px;
+    padding:11px 14px;
+    background:#FAFBFF;
+    border:1px solid #EAEEF7;
+    border-radius:12px;
+  }
+  .mypage-idlabel{
+    font-size:13px;
+    color:#8A8FA3;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .mypage-idvalue{
+    flex:1;
+    font-size:15px;
+    font-weight:800;
+    color:var(--point-strong);
+    font-variant-numeric:tabular-nums;
+    letter-spacing:0.3px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .mypage-idbtn{
+    flex-shrink:0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border:none;
+    border-radius:8px;
+    padding:7px 13px;
+    font-size:13px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .mypage-idbtn:active{ transform:scale(0.96); }
+
+  .btn-loading{
+    color:transparent !important;
+    position:relative;
+    pointer-events:none;
+  }
+  .btn-loading,
+  .btn-loading:disabled{
+    background:linear-gradient(135deg, var(--point-strong), var(--point-mid)) !important;
+    border-color:transparent !important;
+    box-shadow:none !important;
+    opacity:1 !important;
+  }
+  .btn-loading::after{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:19px;
+    height:19px;
+    margin:-10px 0 0 -10px;
+    border:2.5px solid rgba(255,255,255,0.35);
+    border-top-color:#ffffff;
+    border-radius:50%;
+    animation:btn-spin 0.7s linear infinite;
+  }
+  @keyframes btn-spin{
+    to{ transform:rotate(360deg); }
+  }
+
   .issued-list{
     max-height:240px;
     overflow-y:auto;
@@ -3112,25 +3183,6 @@
   }
 
   /* 저장공간 막대 */
-  .t-scope .storage-bar{
-    height:6px;
-    border-radius:999px;
-    background:var(--line);
-    overflow:hidden;
-    margin:-2px 2px 0;
-  }
-
-  .t-scope .storage-bar i{
-    display:block;
-    height:100%;
-    width:0%;
-    border-radius:999px;
-    background:var(--point-strong);
-    transition:width 0.35s ease, background 0.2s ease;
-  }
-
-  .t-scope .storage-bar i.warn{ background:#E08A00; }
-  .t-scope .storage-bar i.danger{ background:#E4423F; }
 
   /* 마이페이지 반 카드의 오른쪽 버튼 */
   .t-scope .class-action-btn{
@@ -3722,12 +3774,11 @@
           <p class="student-meta" id="mypageRole">계정</p>
         </div>
       </div>
-      <p class="mypage-lock">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-        </svg>
-        가입할 때 정한 이름은 바꿀 수 없어요
-      </p>
+      <div class="mypage-idrow" id="mypageIdRow">
+        <span class="mypage-idlabel">아이디</span>
+        <span class="mypage-idvalue" id="mypageLoginId">-</span>
+        <button class="mypage-idbtn" onclick="openIdChange()">변경</button>
+      </div>
 
       <p class="section-title" style="margin-top:22px;">내 활동</p>
       <div class="stat-row">
@@ -3758,19 +3809,13 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
       </button>
       <button class="master-danger-btn" style="margin-top:2px;" onclick="openSelfDelete()">계정 삭제</button>
-      <p class="mypage-note">계정을 지우면 내 정보와 제출한 숙제가 모두 사라지고 되돌릴 수 없어요</p>
+      <p class="mypage-note">지우면 되돌릴 수 없어요</p>
 
       <p class="section-title" style="margin-top:22px;">정보</p>
       <button class="mypage-btn" onclick="openPrivacy('mypage')">
         <span>개인정보처리방침</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
-      <div class="mypage-row">
-        <span>저장공간</span>
-        <span class="mypage-value" id="mypageStorage">-</span>
-      </div>
-      <div class="storage-bar"><i id="mypageStorageBar"></i></div>
-      <p class="mypage-note" id="mypageStorageNote">사진이 많아지면 제출이 저장되지 않을 수 있어요</p>
       <div class="mypage-row">
         <span>앱 버전</span>
         <span class="mypage-value" id="mypageVersion">1.0</span>
@@ -3829,7 +3874,7 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
         </svg>
-        가입할 때 정한 이름은 바꿀 수 없어요
+        가입할 때 정한 이름은 바꿀 수 없어요 (이 이름으로 로그인해요)
       </p>
 
       <p class="section-title" style="margin-top:22px;">내 현황</p>
@@ -3861,19 +3906,13 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
       </button>
       <button class="master-danger-btn" style="margin-top:2px;" onclick="openSelfDelete()">계정 삭제</button>
-      <p class="mypage-note">계정을 지우면 내 정보와 제출한 숙제가 모두 사라지고 되돌릴 수 없어요</p>
+      <p class="mypage-note">지우면 되돌릴 수 없어요</p>
 
       <p class="section-title" style="margin-top:22px;">정보</p>
       <button class="mypage-btn" onclick="openPrivacy('t-mypage')">
         <span>개인정보처리방침</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
-      <div class="mypage-row">
-        <span>저장공간</span>
-        <span class="mypage-value" id="t-mypageStorage">-</span>
-      </div>
-      <div class="storage-bar"><i id="t-mypageStorageBar"></i></div>
-      <p class="mypage-note" id="t-mypageStorageNote">사진이 많아지면 제출이 저장되지 않을 수 있어요</p>
       <div class="mypage-row">
         <span>앱 버전</span>
         <span class="mypage-value" id="t-mypageVersion">1.0</span>
@@ -4293,6 +4332,31 @@
   </div>
 
   <!-- 비밀번호 변경 -->
+  <!-- 아이디 변경 (학생) -->
+  <div class="modal-overlay" id="idChangeModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" style="margin-bottom:6px;">아이디 변경</p>
+      <p class="modal-sub" style="margin-bottom:14px;">
+        외우기 쉬운 아이디로 바꿀 수 있어요.<br>바꾸면 다음부터 새 아이디로 로그인해요.
+      </p>
+
+      <input type="text" id="newLoginId" class="consent-input" placeholder="새 아이디"
+             autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="20">
+      <div class="pw-field" style="margin-top:8px;">
+        <input type="password" id="idChangePw" class="consent-input has-eye" placeholder="지금 비밀번호" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('idChangePw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+      </div>
+
+      <p class="master-error" id="idChangeMsg"></p>
+      <p class="mypage-note" style="margin:0 0 16px;text-align:left;">영문 소문자와 숫자만, 4~20자</p>
+
+      <div class="modal-actions">
+        <button onclick="closeModal('idChangeModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button id="idChangeBtn" onclick="confirmIdChange()" style="background:var(--point-strong);color:#ffffff;">변경</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="pwChangeModal">
     <div class="modal-box" style="max-width:340px;">
       <p class="modal-text" style="margin-bottom:6px;" id="pwChangeTitle">비밀번호 변경</p>
@@ -4565,14 +4629,6 @@
 
       <div class="top-bar">
         <div class="greeting"><span class="page-label">홈|</span><span class="user-name" id="teacherNameLabel">김선생님</span> 안녕하세요!</div>
-        <div class="top-icons">
-          <button class="icon-btn" onclick="logoutTeacher()" aria-label="로그아웃">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <path d="M16 17l5-5-5-5M21 12H9"></path>
-            </svg>
-          </button>
-        </div>
       </div>
 
       <div id="homeEmptyState" class="empty-class-card" style="margin-top:20px;display:none;">
@@ -6016,17 +6072,19 @@
   function setAuthBusy(btn, busy, label) {
     authBusy = busy;
     clearTimeout(authBusyTimer);
+    const release = () => {
+      authBusy = false;
+      if (btn) { btn.disabled = false; btn.classList.remove("btn-loading"); }
+    };
     if (busy) {
       /* 통신이 영영 안 끝나는 경우가 있다(주소가 아닌 파일로 열었을 때 등).
-         그때 버튼이 '잠시만요...'로 굳으면 앱 전체가 잠기므로 스스로 풀어 준다. */
-      authBusyTimer = setTimeout(() => {
-        authBusy = false;
-        if (btn) { btn.disabled = false; btn.textContent = label; }
-      }, 20000);
+         그때 버튼이 굳으면 앱 전체가 잠기므로 스스로 풀어 준다. */
+      authBusyTimer = setTimeout(release, 20000);
     }
     if (!btn) return;
     btn.disabled = busy;
-    btn.textContent = busy ? "잠시만요..." : label;
+    /* 글자는 그대로 두고 잠깐 감춘 뒤, 그 자리에 도는 표시를 얹는다 */
+    btn.classList.toggle("btn-loading", busy);
   }
 
   /* 파일을 그대로 열면(특히 안드로이드는 content:// 로 열린다) 서버와 통신할 수
@@ -6223,16 +6281,6 @@
 
   const APP_VERSION = "1.0";
 
-  /* 저장소를 얼마나 쓰고 있는지. 브라우저 한도가 보통 5MB라, 사진이 쌓여
-     한도에 가까워지면 제출이 저장되지 않으므로 미리 보여 준다. */
-  const STORAGE_LIMIT_BYTES = 5 * 1024 * 1024;
-
-  /* 서버에 저장하므로 기기 용량은 더 이상 제한이 아니다 */
-  function storageUsedBytes() { return 0; }
-
-  function formatMB(bytes) {
-    return (bytes / 1024 / 1024).toFixed(1) + "MB";
-  }
 
   /* 내가 속한 모든 반을 합친 내 숙제 현황 (반려는 다시 내야 하므로 미제출로 셈) */
   function myOverallStats() {
@@ -6272,6 +6320,18 @@
       if (!isNaN(d)) role += " · " + d.getFullYear() + "." + (d.getMonth() + 1) + "." + d.getDate() + " 가입";
     }
     document.getElementById(pid + "Role").textContent = role;
+
+    /* 아이디는 학생만 보여 준다. 선생님은 이름으로 로그인한다. */
+    const idRow = document.getElementById("mypageIdRow");
+    if (idRow) {
+      if (isTeacher) {
+        idRow.hidden = true;
+      } else {
+        idRow.hidden = false;
+        document.getElementById("mypageLoginId").textContent =
+          (me && me.loginId) ? me.loginId : "-";
+      }
+    }
 
     const listEl = document.getElementById(pid + "ClassList");
     const addIcon = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>';
@@ -6334,13 +6394,6 @@
       }
     }
 
-    /* 자료가 서버에 담기면서 기기 저장공간은 더 이상 제한이 아니다 */
-    document.getElementById(pid + "Storage").textContent = "서버에 보관";
-    const bar = document.getElementById(pid + "StorageBar");
-    bar.style.width = "100%";
-    bar.classList.remove("warn", "danger");
-    document.getElementById(pid + "StorageNote").textContent =
-      "숙제와 사진은 서버에 저장되어, 기기를 바꿔도 그대로 볼 수 있어요";
     document.getElementById(pid + "Version").textContent = APP_VERSION;
   }
 
@@ -6409,6 +6462,77 @@
     forcePwChange = false;
     closeModal("pwChangeModal");
     playSuccessChime();
+  }
+
+  /* ===== 아이디 변경 (학생) =====
+     로그인에 쓰는 아이디를 바꾼다. 파이어베이스는 아이디를 내부에서 이메일 꼴로
+     다루기 때문에, 바꾸려면 지금 비밀번호로 한 번 더 본인 확인이 필요하다. */
+  function openIdChange() {
+    playTapSound();
+    document.getElementById("newLoginId").value = "";
+    document.getElementById("idChangePw").value = "";
+    hidePwField("idChangePw");
+    document.getElementById("idChangeMsg").classList.remove("show");
+    document.getElementById("idChangeModal").classList.add("show");
+  }
+
+  async function confirmIdChange() {
+    const msg = document.getElementById("idChangeMsg");
+    const fail = (t) => {
+      msg.textContent = t;
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+    };
+
+    const me = userById(currentUserId);
+    if (!me || !window.FB) { fail("로그인 정보를 찾을 수 없어요"); return; }
+
+    const want = document.getElementById("newLoginId").value.trim().toLowerCase();
+    const pw = document.getElementById("idChangePw").value;
+
+    if (!/^[a-z0-9]{4,20}$/.test(want)) { fail("영문 소문자와 숫자만, 4~20자로 정해 주세요"); return; }
+    if (want === (me.loginId || "")) { fail("지금 쓰는 아이디와 같아요"); return; }
+    if (!pw) { fail("지금 비밀번호를 입력해 주세요"); return; }
+
+    const btn = document.getElementById("idChangeBtn");
+    setAuthBusy(btn, true, "변경");
+    try {
+      /* 바꾸기 전에 본인임을 확인한다 */
+      try {
+        await withTimeout(window.FB.signInWithEmailAndPassword(
+          window.FB.auth, idToEmail(me.loginId || ""), pw), 15000);
+      } catch (e) {
+        fail("비밀번호가 올바르지 않아요");
+        return;
+      }
+
+      const mod = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js");
+      await withTimeout(mod.updateEmail(window.FB.auth.currentUser, idToEmail(want)), 15000);
+
+      me.loginId = want;
+      await Cloud.writeMe({ loginId: want });
+      closeModal("idChangeModal");
+      renderMyPage();
+      playSuccessChime();
+    } catch (e) {
+      const code = (e && e.code) || "";
+      if (code === "auth/email-already-in-use") {
+        fail("이미 쓰고 있는 아이디예요. 다른 걸로 정해 주세요");
+      } else if (code === "auth/operation-not-allowed") {
+        /* 프로젝트 설정(이메일 열거 방지)이 켜져 있으면 막힌다 */
+        fail("지금은 아이디를 바꿀 수 없어요. 선생님께 문의해 주세요");
+        console.warn("아이디 변경이 막혀 있음: 파이어베이스 콘솔 > Authentication > 설정에서 " +
+                     "'이메일 열거 방지(Email enumeration protection)'를 꺼야 합니다.");
+      } else if (code === "app/timeout" || code === "auth/network-request-failed") {
+        fail(connectHint());
+      } else {
+        fail("아이디를 바꾸지 못했어요. 잠시 뒤 다시 시도해 주세요");
+        console.error("아이디 변경 실패:", code, e && e.message);
+      }
+    } finally {
+      setAuthBusy(btn, false, "변경");
+    }
   }
 
   /* ===== 반 나가기 (학생) ===== */
