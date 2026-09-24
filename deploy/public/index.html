@@ -3379,11 +3379,6 @@
           <path d="M12 19l-7-7 7-7"></path>
         </svg>
       </button>
-      <div class="progress-dots">
-        <span class="current"></span>
-        <span></span>
-        <span></span>
-      </div>
     </div>
 
     <div class="role-heading ob-anim d1">
@@ -3401,7 +3396,7 @@
         </div>
         <div class="role-text">
           <h2>학생이신가요?</h2>
-          <p>학생이라면 여기를 눌러 선생님이 배부하신 코드로 Today Homework와 함께해요</p>
+          <p>선생님께 받은 아이디로 로그인해서 Today Homework와 함께해요</p>
         </div>
         <span class="role-arrow">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -3535,60 +3530,6 @@
       <p class="auth-error" id="signupError"></p>
 
       <button class="onboard-btn auth-submit ob-anim d4" onclick="doSignup()">가입 완료</button>
-    </div>
-  </div>
-
-  <!-- ===== 4. 코드 입력 ===== -->
-  <div class="page" id="page-code-input">
-    <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="playTapSound(); openStudentClasses()" aria-label="뒤로가기">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5"></path>
-          <path d="M12 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-      <div class="progress-dots">
-        <span class="done"></span>
-        <span class="done"></span>
-        <span class="current"></span>
-      </div>
-    </div>
-
-    <div class="onboard-center" id="codeCenter">
-      <div id="codeInputSection" style="display:flex; flex-direction:column; align-items:center;">
-        <div class="step-icon ob-anim d1">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-        </div>
-        <p class="onboard-title ob-anim d2">코드를 입력하세요!</p>
-        <p class="onboard-desc ob-anim d2">선생님께서 알려주신 코드 6자리를 입력하세요</p>
-
-        <div class="otp-row ob-anim d3" id="otpRow">
-          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="0">
-          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="1">
-          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="2">
-          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="3">
-          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="4">
-          <input type="text" inputmode="numeric" maxlength="1" class="otp-box" data-idx="5">
-        </div>
-
-        <p class="code-error" id="codeError">존재하지 않는 코드예요 다시 확인해주세요</p>
-      </div>
-
-      <div id="codeConfirmSection" style="display:none;">
-        <div class="confirm-badge">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 6L9 17l-5-5"></path>
-          </svg>
-        </div>
-        <p class="onboard-confirm-big" id="classConfirmText">A반이 맞으신가요?</p>
-        <div class="onboard-btn-row ob-anim d1">
-          <button class="ob-secondary-btn" id="codeRetryBtn">다시 입력하기</button>
-          <button class="onboard-btn" id="codeOkBtn">맞아요</button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -4581,16 +4522,6 @@
   </div>
 
   <!-- 반은 하나만 -->
-  <div class="modal-overlay" id="oneClassModal">
-    <div class="modal-box">
-      <p class="modal-text">반은 하나만 등록할 수 있어요</p>
-      <p class="modal-sub">다른 반으로 옮기려면 마이페이지에서 지금 반을 탈퇴해 주세요</p>
-      <div class="modal-actions">
-        <button onclick="closeModal('oneClassModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 반 나가기 확인 -->
   <div class="modal-overlay" id="leaveClassModal">
     <div class="modal-box">
@@ -4752,10 +4683,6 @@
           <path d="M12 19l-7-7 7-7"></path>
         </svg>
       </button>
-      <div class="progress-dots">
-        <span class="current"></span>
-        <span></span>
-      </div>
     </div>
 
     <div class="onboard-center">
@@ -4780,48 +4707,6 @@
       </p>
 
       <button class="onboard-btn" id="classConfirmBtn" disabled>맞아요</button>
-    </div>
-  </div>
-
-  <!-- ===== 새 반 만들기 2/2: 코드 생성 완료 ===== -->
-  <div class="page t-scope" id="page-t-code-reveal">
-    <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="leaveCodeRevealScreen()" aria-label="뒤로가기">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5"></path>
-          <path d="M12 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-      <div class="progress-dots">
-        <span class="done"></span>
-        <span class="current"></span>
-      </div>
-    </div>
-
-    <div class="onboard-center">
-      <div class="step-icon ob-anim d1">
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="11" width="18" height="10" rx="2"></rect>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-        </svg>
-      </div>
-      <p class="onboard-title ob-anim d2">반 코드가 만들어졌어요!</p>
-      <p class="onboard-desc ob-anim d2">이 코드를 학생들에게 알려주세요</p>
-
-      <div class="code-display" id="codeDisplay">
-        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
-      </div>
-
-      <button class="copy-btn ob-anim d3" id="copyCodeBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        코드 복사하기
-      </button>
-      <p class="copy-toast" id="copyToast">복사했어요</p>
-
-      <button class="onboard-btn ob-anim d4" id="codeNextBtn" style="margin-top:26px;">완료</button>
     </div>
   </div>
 
@@ -5072,10 +4957,6 @@
       </button>
     </div>
 
-    <div class="detail-code-chip">
-      <span>코드 <strong id="classDetailCode">000000</strong></span>
-      <button class="detail-code-copy" id="classDetailCopyBtn" onclick="copyClassCode(classes[currentClassIndex].code, this)">복사</button>
-    </div>
 
     <div class="tabs">
       <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
@@ -6886,7 +6767,7 @@
             <div class="student-avatar">${escHtml(c.name[0])}</div>
             <div class="student-info">
               <p class="student-name">${escHtml(c.name)}</p>
-              <p class="student-meta">학생 ${c.students.length}명 · 코드 ${escHtml(c.code)}</p>
+              <p class="student-meta">학생 ${c.students.length}명</p>
             </div>
             ${p > 0 ? `<span class="status-pill pending">대기 ${p}</span>` : ""}
             <button class="class-action-btn" onclick="openClassDetail(${i}, 't-mypage')">관리</button>
@@ -7324,7 +7205,7 @@
 
     if (mine.length === 0) {
       container.innerHTML = `
-        <div class="empty-class-card" onclick="startJoinClass()" style="cursor:pointer;">
+        <div class="empty-class-card">
           <div class="empty-class-icon">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="3" y="4" width="18" height="13" rx="2"></rect>
@@ -7367,23 +7248,6 @@
     renderCounts();
     renderPastList();
     showPage("home");
-  }
-
-  /* '반 등록' - 선생님이 알려준 반 코드를 입력받는 화면으로.
-     학생은 한 번에 한 반만 등록할 수 있다. */
-  function startJoinClass() {
-    playTapSound();
-    if (myStudentClasses().length >= 1) {
-      showOneClassOnlyModal();
-      return;
-    }
-    resetCodeInput();
-    showPage("code-input");
-  }
-
-  function showOneClassOnlyModal() {
-    const el = document.getElementById("oneClassModal");
-    if (el) el.classList.add("show");
   }
 
   function logoutTeacher() {
@@ -7485,125 +7349,9 @@
     }
   }
 
-  /* 코드 입력 (OTP 스타일) - 실제로 선생님이 만든 반 코드와 대조 */
-  const otpBoxes = Array.from(document.querySelectorAll(".otp-box"));
-  const otpRow = document.getElementById("otpRow");
-  const codeCenter = document.getElementById("codeCenter");
-  const codeConfirmSection = document.getElementById("codeConfirmSection");
-  const codeError = document.getElementById("codeError");
-
-  otpBoxes.forEach((box, idx) => {
-    box.addEventListener("input", () => {
-      box.value = box.value.replace(/[^0-9]/g, "");
-
-      if (box.value) {
-        box.classList.remove("pop");
-        void box.offsetWidth;
-        box.classList.add("pop");
-      }
-
-      if (box.value && idx < otpBoxes.length - 1) {
-        otpBoxes[idx + 1].focus();
-      }
-      if (box.value && idx === otpBoxes.length - 1) {
-        checkOtpComplete();
-      }
-    });
-
-    box.addEventListener("keydown", (e) => {
-      if (e.key === "Backspace" && !box.value && idx > 0) {
-        otpBoxes[idx - 1].focus();
-      }
-    });
-
-    box.addEventListener("paste", (e) => {
-      e.preventDefault();
-      const text = (e.clipboardData.getData("text") || "").replace(/[^0-9]/g, "").slice(0, 6);
-      text.split("").forEach((ch, i) => {
-        if (otpBoxes[i]) otpBoxes[i].value = ch;
-      });
-      if (text.length === 6) {
-        checkOtpComplete();
-      } else if (otpBoxes[text.length]) {
-        otpBoxes[text.length].focus();
-      }
-    });
-  });
-
-  function checkOtpComplete() {
-    const code = otpBoxes.map((b) => b.value).join("");
-    if (code.length === 6) submitClassCode(code);
-  }
-
-  function submitClassCode(code) {
-    const idx = classes.findIndex((c) => c.code === code);
-
-    if (idx === -1) {
-      playErrorBuzz();
-      codeError.classList.add("show");
-      otpRow.classList.add("shake");
-      setTimeout(() => {
-        otpRow.classList.remove("shake");
-        otpBoxes.forEach((b) => (b.value = ""));
-        otpBoxes[0].focus();
-      }, 400);
-      return;
-    }
-
-    playSuccessChime();
-    joinedClassIndex = idx;
-    selectedClassName = classes[idx].name;
-    codeError.classList.remove("show");
-    document.getElementById("classConfirmText").textContent = selectedClassName + josaIGa(selectedClassName) + " 맞으신가요?";
-    codeCenter.classList.add("shift-up");
-    document.getElementById("codeInputSection").style.display = "none";
-    codeConfirmSection.style.display = "flex";
-  }
-
-  function resetCodeInput() {
-    codeCenter.classList.remove("shift-up");
-    codeConfirmSection.style.display = "none";
-    document.getElementById("codeInputSection").style.display = "flex";
-    otpBoxes.forEach((b) => (b.value = ""));
-    codeError.classList.remove("show");
-  }
-
-  document.getElementById("codeRetryBtn").addEventListener("click", () => {
-    playTapSound();
-    resetCodeInput();
-  });
-
-  document.getElementById("codeOkBtn").addEventListener("click", () => {
-    playTapSound();
-    const c = classes[joinedClassIndex];
-    const stuAcc = myStudentAccount();
-    let alias = (stuAcc && stuAcc.classNames) ? stuAcc.classNames[c.code] : null;
-    if (!alias) {
-      alias = nextClassMemberName(c, accountName);
-      c.students.push({ name: alias });
-      saveState();
-      if (stuAcc) {
-        stuAcc.classNames[c.code] = alias;
-        saveUsers();
-      }
-    }
-    studentName = alias;
-    /* 다음 로그인 때도 이 반이 목록에 남도록 계정에 반 코드를 기록 */
-    if (stuAcc && stuAcc.classCodes.indexOf(c.code) === -1) {
-      stuAcc.classCodes.push(c.code);
-      saveUsers();
-    }
-    document.getElementById("onboardWelcomeText").textContent =
-      selectedClassName + "의 " + studentName + "님 환영해요";
-    showPage("onboard-complete");
-    launchConfetti("page-onboard-complete");
-    setTimeout(playSuccessChime, 150);
-  });
-
   /* 온보딩 완료 */
   document.getElementById("restartOnboardBtn").addEventListener("click", () => {
     playTapSound();
-    resetCodeInput();
     openStudentClasses();
   });
 
@@ -8704,13 +8452,11 @@
     playTapSound();
     className = val;
 
+    /* 이 번호는 화면에 내보이지 않는다. 학생 아이디 앞머리와 계정 파일
+       이름에만 쓰는 반 구분용 번호다. */
     classCode = newClassCode();
-    const spans = document.querySelectorAll("#codeDisplay span");
-    classCode.split("").forEach((digit, i) => {
-      spans[i].textContent = digit;
-    });
 
-    /* 반은 코드가 만들어지는 즉시 저장 - "완료" 버튼을 안 눌러도 유지되도록 함 */
+    /* 반은 만들어지는 즉시 저장한다 */
     classes.push({
       id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
       name: className,
@@ -8729,51 +8475,24 @@
     Cloud.settle().then(() => Cloud.watchClass(newClassId));
     saveState();
 
+    /* 학생 계정은 선생님이 직접 만들어 주므로 학생이 외울 코드가 필요 없다.
+       반을 만들면 곧바로 반 목록으로 돌아간다. */
+    finishClassSetup();
+  });
+
+  function finishClassSetup() {
+    pendingClassIndex = null;
+    if (classSetupReturnPage === "t-students") {
+      renderStudentsHome();
+    } else if (classSetupReturnPage === "t-mypage") {
+      renderMyPage();
+    } else {
+      renderHomeStats();
+    }
+    showPage(classSetupReturnPage);
+    launchConfetti("page-" + classSetupReturnPage);
     playSuccessChime();
-    showPage("t-code-reveal");
-  });
-
-  /* 코드 화면에서 나가기.
-     이 화면에 왔다는 건 반이 이미 만들어지고 코드까지 나왔다는 뜻이라,
-     뒤로가기로 반을 지우면 적어 둔 코드가 갑자기 안 먹는 일이 생김.
-     그래서 뒤로가기도 '완료'와 똑같이 반을 그대로 두고 목록으로 돌아감
-     (반을 없애고 싶으면 반 관리에서 '반 삭제'를 쓰면 됨) */
-  function leaveCodeRevealScreen() {
-    playTapSound();
-    pendingClassIndex = null;
-    if (classSetupReturnPage === "t-students") {
-      renderStudentsHome();
-    } else if (classSetupReturnPage === "t-mypage") {
-      renderMyPage();
-    } else {
-      renderHomeStats();
-    }
-    showPage(classSetupReturnPage);
   }
-
-  /* 코드 공개 */
-  document.getElementById("copyCodeBtn").addEventListener("click", () => {
-    playTapSound();
-    const toast = document.getElementById("copyToast");
-    copyText(classCode);
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 1500);
-  });
-
-  document.getElementById("codeNextBtn").addEventListener("click", () => {
-    playTapSound();
-    pendingClassIndex = null;
-    if (classSetupReturnPage === "t-students") {
-      renderStudentsHome();
-    } else if (classSetupReturnPage === "t-mypage") {
-      renderMyPage();
-    } else {
-      renderHomeStats();
-    }
-    showPage(classSetupReturnPage);
-    launchConfetti("page-t-code-reveal");
-    setTimeout(playSuccessChime, 150);
-  });
 
   /* 대시보드로 이동 */
   document.getElementById("teacherStartServiceBtn").addEventListener("click", () => {
@@ -8934,7 +8653,6 @@
     classDetailReturnPage = returnTo || "t-home";
     const c = classes[i];
     document.getElementById("classDetailTitle").textContent = c.name;
-    document.getElementById("classDetailCode").textContent = c.code;
     document.getElementById("newHwTitle").value = "";
     document.getElementById("newHwDesc").value = "";
     document.getElementById("addHwForm").classList.remove("show");
@@ -9918,7 +9636,7 @@
         <div class="student-avatar">${escHtml(c.name[0])}</div>
         <div class="student-info">
           <p class="student-name">${escHtml(c.name)}</p>
-          <p class="student-meta">코드 ${escHtml(c.code)} · 학생 ${c.students.length}명 · 숙제 ${c.homeworks.length}건</p>
+          <p class="student-meta">학생 ${c.students.length}명 · 숙제 ${c.homeworks.length}건</p>
         </div>
         ${MASTER_ARROW}
       </div>
