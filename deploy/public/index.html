@@ -2,7 +2,13 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1E3A6B">
+<!-- 홈 화면에 추가하면 주소창 없이 앱처럼 뜬다 -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="오늘의 숙제">
 <title>오늘의 숙제</title>
 <style>
   :root{
@@ -343,8 +349,8 @@
   }
 
   .status-pill.missing{
-    background:#F5F6FA;
-    color:var(--sub);
+    background:#FDE7E7;
+    color:#E4423F;
   }
 
   /* ===== 학생 달력 화면 ===== */
@@ -1839,6 +1845,8 @@
   }
   .tab-content.active{
     display:block;
+    /* 탭 밑줄에 내용이 바짝 붙지 않게 한 칸 띄운다 */
+    padding-top:18px;
     animation:tabIn 0.24s cubic-bezier(.2,.8,.25,1) both;
   }
 
@@ -2146,6 +2154,82 @@
     cursor:pointer;
     padding:0;
     margin-top:10px;
+  }
+
+  .t-scope .hw-manage-btns{
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .t-scope .hw-manage-close{
+    background:none;
+    border:none;
+    color:var(--point-strong);
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+    padding:0;
+    margin-top:10px;
+  }
+
+  .t-scope .student-loginid{
+    margin:2px 0 0;
+    font-size:12px;
+    font-weight:700;
+    color:var(--sub);
+    letter-spacing:0.02em;
+  }
+  .t-scope .student-pw-btn{
+    flex-shrink:0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border:none;
+    border-radius:8px;
+    padding:6px 11px;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .t-scope .student-pw-btn:active{ transform:scale(0.96); }
+
+  .stu-pw-steps{
+    margin:0 0 12px;
+    padding-left:20px;
+    text-align:left;
+    font-size:13px;
+    font-weight:600;
+    line-height:1.8;
+    color:var(--ink);
+  }
+  .stu-pw-mail{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#FAFBFF;
+    border:1px solid #EAEEF7;
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .stu-pw-mail span{
+    flex:1;
+    text-align:left;
+    font-size:12.5px;
+    font-weight:800;
+    color:var(--point-strong);
+    word-break:break-all;
+  }
+  .stu-pw-mail button{
+    flex-shrink:0;
+    background:var(--point-light);
+    color:var(--point-strong);
+    border:none;
+    border-radius:8px;
+    padding:6px 11px;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:800;
+    cursor:pointer;
   }
   .t-scope .blank-section{
     background:#ffffff;
@@ -2549,6 +2633,27 @@
   }
   .google-btn:active{ transform:scale(0.98); }
   .google-btn svg{ flex-shrink:0; }
+
+  .auth-signup-line{
+    margin:18px 0 0;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--sub);
+  }
+  .auth-signup-link{
+    background:none;
+    border:none;
+    padding:0 0 1px;
+    margin-left:4px;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:800;
+    color:var(--point-strong);
+    text-decoration:underline;
+    text-underline-offset:3px;
+    cursor:pointer;
+  }
+  .auth-signup-link:active{ opacity:0.6; }
 
   .auth-signup-btn{
     width:100%;
@@ -3653,7 +3758,7 @@
             <span class="status-count" id="countPending">0건</span>
           </div>
           <div class="status-box rejected">
-            <span class="status-label">승인 거절</span>
+            <span class="status-label">승인 반려</span>
             <span class="status-count" id="countRejected">0건</span>
           </div>
           <div class="status-box approved">
@@ -3733,7 +3838,6 @@
       <div class="cal-grid" id="calGrid"></div>
 
       <div class="cal-legend">
-        <span><i style="background:#C4C7D6;"></i>제출 전</span>
         <span><i style="background:#E4423F;"></i>미제출·반려</span>
         <span><i style="background:var(--point-strong);"></i>승인 대기중</span>
         <span><i style="background:#1FA455;"></i>승인완료</span>
@@ -4135,7 +4239,7 @@
       </div>
 
       <div class="reject-box" id="sdRejectBlock" style="display:none;">
-        <p class="note-label">선생님이 작성하신 거절 사유</p>
+        <p class="note-label">선생님이 적어 주신 반려 사유</p>
         <p id="sdRejectReason"></p>
       </div>
 
@@ -4169,6 +4273,16 @@
   </div>
 
   <!-- 6: 수정/재업로드 시 변경된 내용이 없을 때 -->
+  <div class="modal-overlay" id="hwClosedModal">
+    <div class="modal-box">
+      <p class="modal-text">마감된 숙제예요</p>
+      <p class="modal-sub" style="margin-top:6px;">선생님이 마감해서 더 낼 수 없어요.</p>
+      <div class="modal-actions">
+        <button onclick="closeModal('hwClosedModal')">확인</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="noChangesModal">
     <div class="modal-box">
       <p class="modal-text">수정 사항이 없어요</p>
@@ -4332,6 +4446,7 @@
       <p class="issued-pw" id="issuedPwLine"></p>
       <div class="modal-actions" style="gap:8px;">
         <button onclick="copyIssued()" style="background:var(--point-light);color:var(--point-strong);">복사하기</button>
+        <button onclick="downloadIssued()" style="background:var(--point-light);color:var(--point-strong);">표로 저장</button>
         <button onclick="closeModal('issuedModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
       </div>
     </div>
@@ -4375,6 +4490,34 @@
       <div class="modal-actions">
         <button onclick="closeModal('idChangeModal')" style="background:#f1f2f5;color:#555555;">취소</button>
         <button id="idChangeBtn" onclick="confirmIdChange()" style="background:var(--point-strong);color:#ffffff;">변경</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 학생 비밀번호 초기화 안내 -->
+  <div class="modal-overlay" id="stuPwModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" style="margin-bottom:6px;">학생 비밀번호 초기화</p>
+      <p class="modal-sub" style="margin-bottom:12px;" id="stuPwWho"></p>
+
+      <p class="mypage-note" style="margin:0 0 6px;text-align:left;">
+        비밀번호는 아무도 볼 수 없게 보관돼서, 앱에서는 바꿀 수 없어요.
+        파이어베이스 콘솔에서 30초면 됩니다.
+      </p>
+      <ol class="stu-pw-steps">
+        <li>콘솔 &gt; Authentication &gt; Users</li>
+        <li>아래 주소를 찾아 오른쪽 ⋮ 를 누르기</li>
+        <li>'비밀번호 재설정' 대신 <b>사용자 수정</b>에서 새 비밀번호 넣기</li>
+        <li>학생에게 새 비밀번호를 알려주기</li>
+      </ol>
+
+      <div class="stu-pw-mail">
+        <span id="stuPwMail">-</span>
+        <button type="button" onclick="copyStudentMail()">복사</button>
+      </div>
+
+      <div class="modal-actions" style="margin-top:14px;">
+        <button onclick="closeModal('stuPwModal')" style="background:var(--point-strong);color:#ffffff;">알겠어요</button>
       </div>
     </div>
   </div>
@@ -4471,9 +4614,20 @@
       </div>
       <p class="modal-text">정말 계정을 삭제할까요?</p>
       <p class="modal-sub" id="selfDeleteWhat"></p>
+
+      <div class="pw-field" id="selfDeletePwRow" style="margin-top:14px;">
+        <input type="password" id="selfDeletePw" class="consent-input has-eye" placeholder="비밀번호를 입력해 주세요" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('selfDeletePw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+      </div>
+      <p class="modal-sub" id="selfDeleteGoogleHint" style="margin-top:14px;" hidden>
+        삭제 버튼을 누르면 구글로 한 번 더 확인해요.
+      </p>
+
+      <p class="master-error" id="selfDeleteMsg"></p>
+
       <div class="modal-actions">
         <button onclick="closeModal('selfDeleteModal')" style="background:#f1f2f5;color:#555555;">취소</button>
-        <button onclick="confirmSelfDelete()" style="background:#E4423F;color:#ffffff;">삭제</button>
+        <button id="selfDeleteBtn" onclick="confirmSelfDelete()" style="background:#E4423F;color:#ffffff;">삭제</button>
       </div>
     </div>
   </div>
@@ -4584,8 +4738,9 @@
       </button>
       <p class="auth-hint" style="margin:8px 0 0;">구글로 처음 들어오면 새 선생님 계정이 만들어져요</p>
 
-      <div class="auth-divider ob-anim d4"><span>아직 계정이 없나요?</span></div>
-      <button class="auth-signup-btn ob-anim d4" onclick="openSignup('teacher')">회원가입</button>
+      <p class="auth-signup-line ob-anim d4">아직 계정이 없나요?
+        <button type="button" class="auth-signup-link" onclick="openSignup('teacher')">회원가입</button>
+      </p>
     </div>
   </div>
 
@@ -5481,6 +5636,25 @@
       try { await window.FB.signOut(window.FB.auth); } catch (e) {}
     },
 
+    /* 학생 아이디는 반 명단이 아니라 그 학생의 계정 문서에 있다.
+       반 명단은 같은 반 학생들도 읽을 수 있어서, 아이디를 거기 두면
+       서로의 아이디를 알게 된다. 계정 문서는 본인과 담당 선생님만 읽는다. */
+    async loadStudentIds(c) {
+      const F = window.FB;
+      if (!this.ready() || !c) return;
+      const todo = c.students.filter((s) => s.uid && studentIds[s.uid] === undefined);
+      /* 새로 읽을 게 없으면 여기서 끝낸다. 그리지 않아야 다시 불려 오지 않는다 */
+      if (!todo.length) return;
+      for (const stu of todo) {
+        studentIds[stu.uid] = "";          /* 두 번 읽지 않게 자리를 잡아 둔다 */
+        try {
+          const snap = await F.getDoc(F.doc(F.db, "users", stu.uid));
+          if (snap.exists()) studentIds[stu.uid] = snap.data().loginId || "";
+        } catch (e) { this.quiet(e); }
+      }
+      renderClassDetail();
+    },
+
     /* ---- 내 계정 문서 ---- */
     async writeMe(data) {
       const F = window.FB;
@@ -5796,8 +5970,10 @@
         /* 숙제 — 선생님만 */
         if (mine) c.homeworks.forEach((h) => {
           const was = (old.homeworks || []).find((x) => x.id === h.id);
-          const body = { title: h.title || "", due: h.due || "", desc: h.desc || "" };
-          if (!was || !eq({ title: was.title || "", due: was.due || "", desc: was.desc || "" }, body)) {
+          const body = { title: h.title || "", due: h.due || "", desc: h.desc || "",
+                         closed: !!h.closed };
+          if (!was || !eq({ title: was.title || "", due: was.due || "", desc: was.desc || "",
+                            closed: !!was.closed }, body)) {
             batch.set(F.doc(F.db, "classes", c.id, "homeworks", h.id), body, { merge: true }); n++;
           }
         });
@@ -6180,6 +6356,57 @@
 
   /* 파일을 그대로 열면(특히 안드로이드는 content:// 로 열린다) 서버와 통신할 수
      없다. 그때는 무엇이 문제인지 바로 알려 줘야 하염없이 기다리지 않는다. */
+  /* ===== 앱처럼 띄우기 =====
+     1) 설명서(manifest)를 만들어 붙인다. '홈 화면에 추가'로 넣으면 주소창
+        없이 앱처럼 열린다. 한 파일로도 돌아가야 해서 파일 대신 즉석에서 만든다.
+     2) 브라우저 탭으로 열었을 때는 처음 화면을 누르는 순간 전체화면으로
+        바꾼다. 전체화면은 사용자가 건드려야만 켤 수 있어서 이렇게 한다. */
+  function installManifest() {
+    try {
+      const m = {
+        name: "오늘의 숙제", short_name: "오늘의 숙제",
+        start_url: ".", scope: ".", display: "standalone",
+        background_color: "#ffffff", theme_color: "#1E3A6B",
+      };
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(m)], { type: "application/manifest+json" }));
+      const link = document.createElement("link");
+      link.rel = "manifest";
+      link.href = url;
+      document.head.appendChild(link);
+    } catch (e) {}
+  }
+
+  function inAppMode() {
+    try {
+      return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+        || window.navigator.standalone === true;
+    } catch (e) { return false; }
+  }
+
+  function setUpFullscreen() {
+    /* 이미 앱처럼 떠 있으면 주소창이 없으니 그대로 둔다.
+       손가락으로 쓰는 기기에서만 한다. 마우스 쓰는 화면에서는 방해가 된다. */
+    if (inAppMode()) return;
+    let coarse = false;
+    try { coarse = window.matchMedia("(pointer: coarse)").matches; } catch (e) {}
+    if (!coarse) return;
+    if (!document.documentElement.requestFullscreen) return;
+
+    const go = () => {
+      document.removeEventListener("pointerdown", go);
+      if (document.fullscreenElement) return;
+      try {
+        const r = document.documentElement.requestFullscreen();
+        if (r && r.catch) r.catch(() => {});
+      } catch (e) {}
+    };
+    document.addEventListener("pointerdown", go, { once: true });
+  }
+
+  installManifest();
+  setUpFullscreen();
+
   function openedAsFile() {
     const p = location.protocol;
     return p !== "http:" && p !== "https:";
@@ -6868,13 +7095,66 @@
     document.getElementById("selfDeleteWhat").textContent = isTeacher
       ? "내가 만든 반과 그 반의 숙제·제출물이 모두 사라져요"
       : "참여한 반에서 빠지고 제출한 숙제와 사진이 모두 사라져요";
+
+    /* 잘못 눌러서 지우는 일이 없게, 지우기 전에 본인임을 확인받는다 */
+    const me = userById(currentUserId);
+    const byGoogle = !!(me && me.google);
+    document.getElementById("selfDeletePwRow").hidden = byGoogle;
+    document.getElementById("selfDeleteGoogleHint").hidden = !byGoogle;
+    document.getElementById("selfDeletePw").value = "";
+    hidePwField("selfDeletePw");
+    document.getElementById("selfDeleteMsg").classList.remove("show");
     document.getElementById("selfDeleteModal").classList.add("show");
   }
 
-  function confirmSelfDelete() {
-    closeModal("selfDeleteModal");
+  /* 지금 로그인한 사람이 맞는지 다시 확인한다.
+     비밀번호 계정은 비밀번호로, 구글 계정은 구글 확인으로 한다. */
+  async function verifyItIsMe(me) {
+    if (me && me.google) {
+      const cred = await withTimeout(window.FB.googlePopup(), 120000, "확인 시간 초과");
+      if (!cred || !cred.user || cred.user.uid !== me.id) {
+        const e = new Error("다른 계정"); e.code = "app/other-account"; throw e;
+      }
+      return;
+    }
+    const pw = document.getElementById("selfDeletePw").value;
+    if (!pw) { const e = new Error("빈 비밀번호"); e.code = "app/empty-pw"; throw e; }
+    const loginId = (me && me.loginId) || loginIdFor(me.role, me.name);
+    await withTimeout(window.FB.signInWithEmailAndPassword(
+      window.FB.auth, idToEmail(loginId), pw), 15000);
+  }
+
+  async function confirmSelfDelete() {
+    if (authBusy) return;
     const me = userById(currentUserId);
     if (!me) return;
+
+    const msg = document.getElementById("selfDeleteMsg");
+    const fail = (text) => {
+      msg.textContent = text;
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+    };
+    if (!window.FB) { fail("서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); return; }
+
+    const btn = document.getElementById("selfDeleteBtn");
+    setAuthBusy(btn, true, "삭제");
+    try {
+      await verifyItIsMe(me);
+    } catch (e) {
+      const code = (e && e.code) || "";
+      if (code === "app/empty-pw") fail("비밀번호를 입력해 주세요");
+      else if (code === "app/other-account") fail("지금 로그인한 계정과 달라요");
+      else if (code === "auth/popup-closed-by-user") msg.classList.remove("show");
+      else if (code === "auth/network-request-failed" || code === "app/timeout") fail(connectHint());
+      else fail("비밀번호가 올바르지 않아요");
+      return;
+    } finally {
+      setAuthBusy(btn, false, "삭제");
+    }
+
+    closeModal("selfDeleteModal");
 
     if (me.role === "teacher") {
       /* 선생님이 나가면 그 선생님이 만든 반은 남겨 둘 이유가 없다 */
@@ -7400,7 +7680,7 @@
 
   function statusLabel(status) {
     if (status === "pending") return "대기중";
-    if (status === "rejected") return "거절";
+    if (status === "rejected") return "반려";
     if (status === "missing") return "미제출";
     return "완료";
   }
@@ -7414,7 +7694,13 @@
   function myRemainingHomeworks() {
     const c = classes[joinedClassIndex];
     return c.homeworks
-      .filter((h) => !mySubmission(h.id))
+      /* 반려된 숙제는 다시 내야 하므로 남은 숙제에 도로 올린다.
+         선생님이 마감한 숙제는 더 낼 수 없으니 뺀다. */
+      .filter((h) => !h.closed)
+      .filter((h) => {
+        const sub = mySubmission(h.id);
+        return !sub || sub.status === "rejected";
+      })
       /* 기한이 지나도 한 달 안이면 아직 낼 수 있게 남겨 둠 */
       .filter((h) => overdueDays(h.due) <= 30)
       .slice()
@@ -7573,6 +7859,13 @@
   }
 
   /* 특정 날짜가 마감인 숙제들의 내 제출 상태 (missing/pending/approved/rejected) */
+  /* 아직 내지 않았거나 반려된 숙제는 달력에서 바로 낼 수 있게 한다.
+     선생님이 마감한 숙제는 눌러도 들어가지 않는다. */
+  function canRedo(status, hw) {
+    if (hw && hw.closed) return false;
+    return status === "missing" || status === "rejected";
+  }
+
   function dayHomeworkStatuses(dateStr) {
     if (joinedClassIndex === null) return [];
     const c = classes[joinedClassIndex];
@@ -7604,15 +7897,13 @@
       if (dateStr === calSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
 
-      /* 그날 숙제 하나에 점 하나씩. 색은 그 숙제의 승인 현황을 그대로 따름.
-         단 기한이 아직 안 지난 숙제를 아직 안 낸 건 늦은 게 아니라서,
-         빨강 대신 회색으로 둬 '지나서 못 낸 숙제'와 구분함 */
+      /* 그날 숙제 하나에 점 하나씩. 아직 내지 않은 것과 반려된 것은
+         둘 다 손이 가야 하는 숙제라서 빨강으로 함께 표시한다. */
       const dots = dayHomeworkStatuses(dateStr).map((s) => {
         let dotCls;
         if (s.status === "pending") dotCls = "dot-blue";
         else if (s.status === "approved") dotCls = "dot-green";
-        else if (s.status === "rejected") dotCls = "dot-red";
-        else dotCls = dateStr < todayStr ? "dot-red" : "dot-gray";
+        else dotCls = "dot-red";
         return `<span class="cal-dot ${dotCls}"></span>`;
       });
       /* 선생님이 올린 일정은 노란 점으로 뒤에 붙임 */
@@ -7656,7 +7947,7 @@
       </div>
     `).join("");
     html += statuses.map(({ hw, status }) => `
-      <div class="hw-card" style="cursor:${status === "missing" ? "pointer" : "default"};" ${status === "missing" ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
+      <div class="hw-card" style="cursor:${canRedo(status, hw) ? "pointer" : "default"};" ${canRedo(status, hw) ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
         <div>
           <p class="hw-name">${escHtml(hw.title)}</p>
           <p class="hw-due">제출 기한: ${formatKoreanDate(hw.due)}</p>
@@ -7670,10 +7961,19 @@
   /* ===== 남은 숙제 카드 클릭 -> 상세 정보 반영 후 업로드 화면 ===== */
   let currentBundle = null;
 
+  function showClosedNotice() {
+    playErrorBuzz();
+    document.getElementById("hwClosedModal").classList.add("show");
+  }
+
   function openDetailCard(hwId) {
     const c = classes[joinedClassIndex];
     const h = c.homeworks.find((x) => x.id === hwId);
     if (!h) return;
+    if (h.closed) {
+      showClosedNotice();
+      return;
+    }
     currentBundle = h;
 
     document.getElementById("bundleTitle").textContent = h.title;
@@ -7897,12 +8197,18 @@
     return classes[joinedClassIndex].submissions.filter((s) => s.studentName === studentName);
   }
 
+  /* 선생님이 승인하면 그걸로 끝이다. 따로 '마무리하기'를 누르지 않아도
+     완료로 보고, 지난 숙제로 옮긴다. */
+  function isFinished(s) {
+    return s.status === "approved";
+  }
+
   function renderApprovalList() {
     const container = document.getElementById("pendingList");
     container.innerHTML = "";
     if (joinedClassIndex === null) return;
     const c = classes[joinedClassIndex];
-    const subs = mySubmissions().filter((s) => !s.movedToPast);
+    const subs = mySubmissions().filter((s) => !isFinished(s));
 
     subs.forEach((s) => {
       const h = c.homeworks.find((x) => x.id === s.hwId);
@@ -7925,7 +8231,7 @@
   }
 
   function renderCounts() {
-    const subs = mySubmissions().filter((s) => !s.movedToPast);
+    const subs = mySubmissions();
     document.getElementById("countPending").textContent = subs.filter((s) => s.status === "pending").length + "건";
     document.getElementById("countRejected").textContent = subs.filter((s) => s.status === "rejected").length + "건";
     document.getElementById("countApproved").textContent = subs.filter((s) => s.status === "approved").length + "건";
@@ -7938,7 +8244,7 @@
       return;
     }
     const c = classes[joinedClassIndex];
-    const moved = mySubmissions().filter((s) => s.movedToPast);
+    const moved = mySubmissions().filter(isFinished);
 
     if (moved.length === 0) {
       container.innerHTML = '<p class="empty-state">아직 지난 숙제가 없어요</p>';
@@ -8022,21 +8328,15 @@
        항목은 실행 버튼 자리를 없애고 뒤로가기만 남김 */
     const actionBtn = document.getElementById("sdActionBtn");
 
-    if (s.status === "approved" && s.movedToPast) {
+    if (isFinished(s)) {
+      /* 승인된 숙제는 더 손댈 것이 없다. 뒤로가기만 남긴다 */
       actionBtn.style.display = "none";
       document.getElementById("sdBackBottomBtn").style.flex = "1 1 100%";
     } else {
       actionBtn.style.display = "inline-block";
       actionBtn.style.flex = "1";
       document.getElementById("sdBackBottomBtn").style.flex = "1";
-
-      if (s.status === "approved") {
-        actionBtn.textContent = "숙제 마무리하기";
-      } else if (s.status === "rejected") {
-        actionBtn.textContent = "재업로드하기";
-      } else {
-        actionBtn.textContent = "수정하기";
-      }
+      actionBtn.textContent = s.status === "rejected" ? "재업로드하기" : "수정하기";
     }
 
     showPage("status-detail");
@@ -8094,17 +8394,6 @@
     const c = classes[joinedClassIndex];
     const s = c.submissions.find((x) => x.hwId === currentStatusHwId && x.studentName === studentName);
     const h = c.homeworks.find((x) => x.id === currentStatusHwId);
-
-    if (s.status === "approved") {
-      s.movedToPast = true;
-      saveState();
-      renderApprovalList();
-      renderCounts();
-      renderPastList();
-      renderStudentHome();
-      showCompletionScreen(h.title + "가 마무리됐어요!", "지난 숙제 확인하기", () => selectTab("past"), "수고했어요");
-      return;
-    }
 
     /* 6: 수정/재업로드인데 실제로 바뀐 게 없으면 안내 팝업만 띄우고 그대로 둠 */
     if (!sdHasChanges()) {
@@ -8211,21 +8500,24 @@
     if (!currentBundle) return;
 
     const c = classes[joinedClassIndex];
-    const newSub = {
+    /* 반려돼서 다시 내는 경우엔 이미 제출물이 있다. 새로 만들면 같은 숙제가
+       두 번 올라가므로, 있던 것을 고쳐 쓴다. */
+    const existing = mySubmission(currentBundle.id);
+    const newSub = existing || {
       _id: currentBundle.id + "_" + currentUserId,
       studentUid: currentUserId,
       studentName: studentName,
       hwId: currentBundle.id,
-      status: "pending",
-      photos: uploadedPhotos.slice(),
-      photosLoaded: true,
-      photoCount: uploadedPhotos.length,
-      note: document.getElementById("teacherNote").value,
-      rejectReason: null,
-      movedToPast: false,
-      lateDays: overdueDays(currentBundle.due),
     };
-    c.submissions.push(newSub);
+    newSub.status = "pending";
+    newSub.photos = uploadedPhotos.slice();
+    newSub.photosLoaded = true;
+    newSub.photoCount = uploadedPhotos.length;
+    newSub.note = document.getElementById("teacherNote").value;
+    newSub.rejectReason = null;
+    newSub.movedToPast = false;
+    newSub.lateDays = overdueDays(currentBundle.due);
+    if (!existing) c.submissions.push(newSub);
     saveState();
     /* 사진은 무거워서 제출물 문서와 나눠 담는다 */
     Cloud.savePhotos(c.id, newSub, uploadedPhotos.slice());
@@ -8742,7 +9034,10 @@
           });
           await F.setDoc(F.doc(side.db, "classes", c.id, "students", uid), { name: alias });
           made.push({ name: alias, id: loginId, pw: pw });
-          if (!c.students.some((x) => x.uid === uid)) c.students.push({ uid: uid, name: alias });
+          studentIds[uid] = loginId;
+          if (!c.students.some((x) => x.uid === uid)) {
+            c.students.push({ uid: uid, name: alias });
+          }
         } catch (e) {
           failed.push(rawName + " (자료 저장 실패)");
         }
@@ -8774,6 +9069,36 @@
     if (made.length) playSuccessChime(); else playErrorBuzz();
   }
 
+  /* 발급한 계정을 엑셀·구글 스프레드시트에서 열리는 파일로 내려받는다.
+     한글이 깨지지 않게 맨 앞에 BOM을 붙이고, 쉼표와 따옴표는 감싼다. */
+  function csvCell(v) {
+    const t = String(v == null ? "" : v);
+    return /[",\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+  }
+
+  function downloadIssued() {
+    playTapSound();
+    if (!lastIssued.length) return;
+    const c = classes[currentClassIndex];
+    const rows = [["반", "이름", "아이디", "처음 비밀번호"]].concat(
+      lastIssued.map((m) => [(c && c.name) || "", m.name, m.id, m.pw]));
+    const csv = "\uFEFF" + rows.map((r) => r.map(csvCell).join(",")).join("\r\n");
+    /* 파일 이름에 한글을 넣으면 크롬이 이름을 통째로 버리고 확장자 없는
+       'download'로 저장해 버린다(확인함). 그래서 영문·숫자만 쓴다.
+       반 이름은 파일 안 첫 칸에 들어 있으니 잃어버리지 않는다. */
+    const tail = (c && c.code) ? c.code : getTodayDateStr().replace(/-/g, "");
+    const name = "students-" + tail + ".csv";
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
   function copyIssued() {
     const text =
       lastIssued.map((m) => `${m.name}  아이디 ${m.id}`).join("\n") +
@@ -8793,8 +9118,12 @@
     playTapSound();
   }
 
+  /* 학생 uid -> 로그인 아이디. 선생님 화면에서만 채워진다 */
+  const studentIds = {};
+
   function renderClassDetail() {
     const c = classes[currentClassIndex];
+    if (c) Cloud.loadStudentIds(c);
     const manageList = document.getElementById("manageStudentList");
     const approveList = document.getElementById("approveStudentList");
     const badge = document.getElementById("approveBadge");
@@ -8808,7 +9137,9 @@
           <div class="student-avatar">${escHtml(s.name[0])}</div>
           <div class="student-info">
             <p class="student-name">${escHtml(s.name)}</p>
+            <p class="student-loginid">아이디 ${escHtml(studentIds[s.uid] || "…")}</p>
           </div>
+          <button class="student-pw-btn" onclick="openStudentPwReset(${i})">비번</button>
           <button class="student-delete-btn" onclick="removeStudent(${i})" aria-label="삭제">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"></path>
@@ -8968,10 +9299,15 @@
         <div class="hw-manage-card">
           <div class="hw-manage-top">
             <p class="hw-manage-title">${escHtml(h.title)}</p>
-            <span class="hw-manage-dday">${calcDday(h.due)}</span>
+            <span class="hw-manage-dday">${h.closed ? "마감됨" : calcDday(h.due)}</span>
           </div>
           ${h.desc ? `<p class="hw-manage-desc">${escHtml(h.desc)}</p>` : ""}
-          <button class="hw-manage-delete" onclick="removeHomework('${jsStr(h.id)}')">삭제</button>
+          <div class="hw-manage-btns">
+            ${overdueDays(h.due) > 0 || h.closed
+              ? `<button class="hw-manage-close" onclick="toggleHomeworkClosed('${jsStr(h.id)}')">${h.closed ? "마감 풀기" : "마감하기"}</button>`
+              : ""}
+            <button class="hw-manage-delete" onclick="removeHomework('${jsStr(h.id)}')">삭제</button>
+          </div>
         </div>
       `).join("");
     }
@@ -9209,6 +9545,41 @@
     descInput.value = "";
     document.getElementById("addHwForm").classList.remove("show");
     renderClassDetail();
+  }
+
+  /* 기한이 지난 숙제를 더 이상 받지 않게 닫는다. 자료는 그대로 남는다. */
+  function toggleHomeworkClosed(hwId) {
+    playTapSound();
+    const c = classes[currentClassIndex];
+    const h = c && c.homeworks.find((x) => x.id === hwId);
+    if (!h) return;
+    h.closed = !h.closed;
+    saveState();
+    renderHwDayList();
+    renderClassDetail();
+  }
+
+  /* 비밀번호는 되돌릴 수 없게 보관되므로 앱에서는 바꿀 수 없다.
+     선생님이 콘솔에서 직접 바꾸도록 필요한 것만 모아 보여 준다. */
+  let stuPwMail = "";
+
+  function openStudentPwReset(i) {
+    playTapSound();
+    const c = classes[currentClassIndex];
+    const stu = c && c.students[i];
+    if (!stu) return;
+    const loginId = studentIds[stu.uid] || "";
+    stuPwMail = loginId ? idToEmail(loginId) : "";
+    document.getElementById("stuPwWho").textContent =
+      stu.name + (loginId ? " · 아이디 " + loginId : "");
+    document.getElementById("stuPwMail").textContent =
+      stuPwMail || "아이디를 알 수 없어요 (콘솔에서 이름으로 찾아 주세요)";
+    document.getElementById("stuPwModal").classList.add("show");
+  }
+
+  function copyStudentMail() {
+    if (!stuPwMail) return;
+    copyText(stuPwMail);
   }
 
   function removeHomework(hwId) {
