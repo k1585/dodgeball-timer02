@@ -5996,11 +5996,48 @@
   }
 
   let authBusy = false;
+  let authBusyTimer = null;
+
   function setAuthBusy(btn, busy, label) {
     authBusy = busy;
+    clearTimeout(authBusyTimer);
+    if (busy) {
+      /* 통신이 영영 안 끝나는 경우가 있다(주소가 아닌 파일로 열었을 때 등).
+         그때 버튼이 '잠시만요...'로 굳으면 앱 전체가 잠기므로 스스로 풀어 준다. */
+      authBusyTimer = setTimeout(() => {
+        authBusy = false;
+        if (btn) { btn.disabled = false; btn.textContent = label; }
+      }, 20000);
+    }
     if (!btn) return;
     btn.disabled = busy;
     btn.textContent = busy ? "잠시만요..." : label;
+  }
+
+  /* 파일을 그대로 열면(특히 안드로이드는 content:// 로 열린다) 서버와 통신할 수
+     없다. 그때는 무엇이 문제인지 바로 알려 줘야 하염없이 기다리지 않는다. */
+  function openedAsFile() {
+    const p = location.protocol;
+    return p !== "http:" && p !== "https:";
+  }
+
+  function connectHint() {
+    return openedAsFile()
+      ? "파일을 직접 열면 서버에 연결할 수 없어요. 앱 주소로 접속해 주세요"
+      : "인터넷 연결을 확인해 주세요";
+  }
+
+  /* 서버가 응답하지 않으면 기다리다 끝내고 알려 준다. 멈춘 채로 두지 않는다. */
+  function withTimeout(promise, ms, tag) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) =>
+        setTimeout(() => {
+          const e = new Error(tag || "시간 초과");
+          e.code = "app/timeout";
+          reject(e);
+        }, ms || 15000)),
+    ]);
   }
 
   async function doLogin(role) {
@@ -6017,8 +6054,8 @@
     const btn = document.querySelector("#page-" + (role === "teacher" ? "t-" : "") + "name-input .auth-submit");
     setAuthBusy(btn, true, "로그인");
     try {
-      const uid = await Cloud.signIn(loginIdFor(role, typed), pw);
-      const okDoc = await Cloud.start(uid);
+      const uid = await withTimeout(Cloud.signIn(loginIdFor(role, typed), pw), 15000);
+      const okDoc = await withTimeout(Cloud.start(uid), 15000);
       if (!okDoc) {
         await Cloud.signOutNow();
         showAuthError(f.errorId, "계정 정보를 찾지 못했어요. 선생님께 문의해 주세요");
@@ -6039,8 +6076,8 @@
     } catch (e) {
       /* 어느 쪽이 틀렸는지 알려주지 않는 편이 계정 노출에 안전하다 */
       const code = (e && e.code) || "";
-      if (code === "auth/network-request-failed") {
-        showAuthError(f.errorId, "인터넷 연결을 확인해 주세요");
+      if (code === "auth/network-request-failed" || code === "app/timeout") {
+        showAuthError(f.errorId, connectHint());
       } else if (code === "auth/too-many-requests") {
         showAuthError(f.errorId, "여러 번 틀렸어요. 잠시 뒤에 다시 시도해 주세요");
       } else {
@@ -6415,9 +6452,9 @@
     setAuthBusy(btn, true, "가입 완료");
     Cloud.signingUp = true;
     try {
-      const uid = await Cloud.signUp(loginIdFor(currentAuthRole, name), pw);
+      const uid = await withTimeout(Cloud.signUp(loginIdFor(currentAuthRole, name), pw), 15000);
       Cloud.uid = uid;
-      await Cloud.writeMe({
+      await withTimeout(Cloud.writeMe({
         name: name,
         role: currentAuthRole,
         loginId: loginIdFor(currentAuthRole, name),
@@ -6427,7 +6464,7 @@
         isMinor: signupIsMinor,
         guardianName: signupIsMinor ? guardianName : "",
         guardianContact: signupIsMinor ? guardianContact : "",
-      });
+      }), 15000);
       /* 가입 직후에는 로그인된 상태가 되므로, 로그인 화면으로 돌아가도록 끊어 준다 */
       await Cloud.signOutNow();
 
@@ -6441,8 +6478,8 @@
       if (code === "auth/email-already-in-use") {
         /* 같은 이름은 서로를 구분할 수 없어 막는다. 뒤에 번호를 붙이면 된다. */
         showAuthError("signupError", `이미 있는 이름이에요. ${name}01은 가능해요`);
-      } else if (code === "auth/network-request-failed") {
-        showAuthError("signupError", "인터넷 연결을 확인해 주세요");
+      } else if (code === "auth/network-request-failed" || code === "app/timeout") {
+        showAuthError("signupError", connectHint());
       } else if (code === "auth/weak-password") {
         showAuthError("signupError", "비밀번호가 너무 쉬워요");
       } else {
@@ -9232,6 +9269,21 @@
       currentUserId = user.uid;
       enterAfterLogin(me.role, me);
     });
+  }
+
+  /* 주소가 아니라 파일로 열었으면 시작할 때 바로 알려 준다.
+     안 그러면 가입 버튼을 누르고 한참 기다린 뒤에야 안 된다는 걸 알게 된다. */
+  if (openedAsFile()) {
+    const t = document.getElementById("storageFullText");
+    const ti = document.getElementById("storageFullTitle");
+    if (ti) ti.textContent = "앱 주소로 열어 주세요";
+    if (t) {
+      t.textContent =
+        "파일을 그대로 열면 서버에 연결할 수 없어 로그인이 되지 않아요. " +
+        "인터넷 주소(https://...)로 접속해 주세요.";
+    }
+    const el = document.getElementById("storageFullModal");
+    if (el) el.classList.add("show");
   }
 
   if (window.FB_READY) startWithFirebase();
