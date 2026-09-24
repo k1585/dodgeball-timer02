@@ -98,10 +98,14 @@
 
 
   /* ================= 홈 화면 ================= */
-  #page-home .home-content, #page-calendar .home-content{
+  /* 본문 영역은 어느 화면이든 똑같이 — 화면 이름을 하나씩 적다 보면
+     새 화면이 빠져서 여백이 사라진다(내 반 화면이 그랬다). */
+  .home-content{
     flex:1;
     overflow-y:auto;
     padding:22px 20px 14px;
+    position:relative;
+    z-index:1;
   }
 
   .top-bar{
@@ -110,10 +114,21 @@
     justify-content:space-between;
   }
 
+  /* 화면 머리글: 굵은 제목 한 줄, 필요하면 그 밑에 옅은 한 줄.
+     이름이 길어도 두 줄로 깨지지 않게 크기를 잡았다. */
   .greeting{
-    font-size:24px;
+    font-size:21px;
     font-weight:800;
     color:#111111;
+    line-height:1.35;
+    word-break:keep-all;
+  }
+  .page-head{ min-width:0; }
+  .page-sub{
+    margin:3px 0 0;
+    font-size:13px;
+    font-weight:700;
+    color:var(--sub);
   }
 
   .greeting .user-name{
@@ -1587,31 +1602,20 @@
     margin:0 0 36px;
     text-align:center;
   }
-  #page-t-home .home-content, #page-t-students .home-content, #page-t-homework .home-content,
-  #page-mypage .home-content, #page-t-mypage .home-content{
-    flex:1;
-    overflow-y:auto;
-    padding:22px 20px 14px;
-    position:relative;
-    z-index:1;
-  }
   .t-scope .top-bar{
     display:flex;
     align-items:center;
     justify-content:space-between;
   }
   .t-scope .greeting{
-    font-size:22px;
+    font-size:21px;
     font-weight:800;
     color:var(--ink);
+    line-height:1.35;
+    word-break:keep-all;
   }
   .t-scope .greeting .user-name{
     color:var(--point-strong);
-  }
-  .page-label{
-    color:var(--sub);
-    font-weight:800;
-    margin-right:6px;
   }
   .icon-btn{
     width:36px;
@@ -1660,7 +1664,7 @@
     font-weight:800;
   }
   .t-scope .section-title{
-    margin:26px 0 12px;
+    margin:24px 0 12px;
     font-size:16px;
     font-weight:800;
     color:var(--ink);
@@ -2376,23 +2380,43 @@
   /* display를 따로 지정한 요소는 hidden만으로 사라지지 않는다. 한 번에 맞춰 둔다. */
   [hidden]{ display:none !important; }
 
-  .mypage-idrow{
+  /* ===== 마이페이지 =====
+     계정 화면이라 볼 것이 많지 않다. 프로필 한 장, 내 반, 메뉴 한 장으로 끝낸다. */
+  .prof-card{
+    margin-top:18px;
+    padding:16px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#ffffff;
+  }
+  .prof-top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .prof-hint{
+    margin:12px 0 0;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    font-weight:700;
+    color:var(--sub);
+  }
+  .prof-id{
     display:flex;
     align-items:center;
     gap:10px;
-    margin-top:10px;
-    padding:11px 14px;
-    background:#FAFBFF;
-    border:1px solid #EAEEF7;
-    border-radius:12px;
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px solid var(--line);
   }
-  .mypage-idlabel{
-    font-size:13px;
-    color:#8A8FA3;
-    font-weight:700;
+  .prof-id-label{
     flex-shrink:0;
+    font-size:13px;
+    font-weight:700;
+    color:var(--sub);
   }
-  .mypage-idvalue{
+  .prof-id-value{
     flex:1;
     font-size:15px;
     font-weight:800;
@@ -2403,18 +2427,57 @@
     text-overflow:ellipsis;
     white-space:nowrap;
   }
-  .mypage-idbtn{
+  .prof-id-btn{
     flex-shrink:0;
     background:var(--point-light);
     color:var(--point-strong);
     border:none;
     border-radius:8px;
     padding:7px 13px;
+    font-family:inherit;
     font-size:13px;
     font-weight:800;
     cursor:pointer;
   }
-  .mypage-idbtn:active{ transform:scale(0.96); }
+  .prof-id-btn:active{ transform:scale(0.96); }
+
+  /* 메뉴는 낱개 버튼을 늘어놓지 않고 한 장에 줄로 담는다 */
+  .menu-card{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:#ffffff;
+    overflow:hidden;
+  }
+  .menu-row{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:15px 16px;
+    background:none;
+    border:none;
+    border-top:1px solid var(--line);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    text-align:left;
+    cursor:pointer;
+  }
+  .menu-row:first-child{ border-top:none; }
+  .menu-row:active{ background:#F7F8FC; }
+  .menu-row .row-chev{ flex-shrink:0; color:#C4C7D6; }
+  .menu-row.danger{ color:#E4423F; }
+  .menu-row.danger .row-chev{ color:#F0A8A6; }
+
+  .app-version{
+    margin:26px 0 0;
+    text-align:center;
+    font-size:11.5px;
+    font-weight:700;
+    color:#C4C7D6;
+  }
 
   .btn-loading{
     color:transparent !important;
@@ -2573,22 +2636,7 @@
     color:var(--point-strong);
   }
 
-  .t-scope .master-danger-btn{
-    width:100%;
-    background:#FDE7E7;
-    color:#E4423F;
-    border:none;
-    border-radius:14px;
-    padding:14px;
-    font-size:14px;
-    font-weight:800;
-    cursor:pointer;
-    margin-top:8px;
-  }
 
-  .t-scope .master-danger-btn:active{
-    transform:scale(0.98);
-  }
 
   .auth-submit{
     margin-top:4px;
@@ -2673,15 +2721,8 @@
     transform:scale(0.98);
   }
 
-  /* 학생 홈에서 지금 보고 있는 반 이름 */
-  .home-class-label{
-    margin:6px 0 0;
-    font-size:12.5px;
-    font-weight:700;
-    color:var(--sub);
-  }
-
-  .home-class-label:empty{
+  /* 부제는 내용이 없으면 자리를 차지하지 않는다 */
+  .page-sub:empty{
     display:none;
   }
 
@@ -3170,44 +3211,9 @@
   }
 
   /* 마이페이지 */
-  .t-scope .mypage-card{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-top:20px;
-    padding:16px;
-    border:1px solid var(--line);
-    border-radius:16px;
-    background:#ffffff;
-  }
 
-  .t-scope .mypage-btn{
-    width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    background:#ffffff;
-    color:var(--ink);
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:15px 16px;
-    font-size:14px;
-    font-weight:700;
-    font-family:inherit;
-    cursor:pointer;
-    margin-bottom:8px;
-  }
 
-  .t-scope .mypage-btn:active{
-    transform:scale(0.99);
-    background:#FAFBFF;
-  }
 
-  .t-scope .mypage-btn svg{
-    color:#C9CCDA;
-    flex-shrink:0;
-  }
 
   .t-scope .mypage-note{
     font-size:11.5px;
@@ -3261,19 +3267,7 @@
   }
 
   /* 마이페이지 - 이름 변경 불가 안내 */
-  .t-scope .mypage-lock{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    font-size:11.5px;
-    font-weight:700;
-    color:var(--sub);
-    margin:8px 2px 0;
-  }
 
-  .t-scope .mypage-lock svg{
-    flex-shrink:0;
-  }
 
   .t-scope .section-count{
     display:inline-block;
@@ -3289,25 +3283,7 @@
   }
 
   /* 마이페이지 - 값만 보여주는 줄 */
-  .t-scope .mypage-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-    padding:15px 16px;
-    border:1px solid var(--line);
-    border-radius:14px;
-    font-size:14px;
-    font-weight:700;
-    color:var(--ink);
-    background:#ffffff;
-    margin-bottom:8px;
-  }
 
-  .t-scope .mypage-value{
-    color:var(--sub);
-    font-weight:800;
-  }
 
   /* 저장공간 막대 */
 
@@ -3537,7 +3513,10 @@
   <div class="page t-scope" id="page-s-classes">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">내 반|</span><span class="user-name" id="sClassesName">학생</span>님</div>
+        <div class="page-head">
+          <div class="greeting">내 반</div>
+          <p class="page-sub"><span id="sClassesName">학생</span>님</p>
+        </div>
       </div>
 
       <div id="sClassList" style="margin-top:20px;"></div>
@@ -3600,9 +3579,11 @@
     <div class="home-content">
 
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">홈|</span><span class="user-name">(이름)</span>님 안녕하세요!</div>
+        <div class="page-head">
+          <div class="greeting"><span class="user-name">(이름)</span>님, 안녕하세요!</div>
+          <p class="page-sub" id="homeClassLabel"></p>
+        </div>
       </div>
-      <p class="home-class-label" id="homeClassLabel"></p>
 
       <div class="homework-card">
         <p class="homework-title">제출해야 할 숙제</p>
@@ -3669,7 +3650,7 @@
   <div class="page" id="page-list">
 
     <div class="list-fixed-top">
-      <h1 class="page-title"><span class="page-label">숙제목록|</span><span id="listTabName">남은 숙제</span></h1>
+      <h1 class="page-title">숙제 목록</h1>
 
       <div class="tabs">
         <button class="tab active" data-tab="remaining" onclick="selectTab('remaining')">남은 숙제</button>
@@ -3759,7 +3740,10 @@
     <div class="home-content">
 
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">달력|</span>숙제 현황</div>
+        <div class="page-head">
+          <div class="greeting">달력</div>
+          <p class="page-sub">숙제 현황</p>
+        </div>
       </div>
 
       <div class="cal-page-header" style="margin-top:20px;">
@@ -3831,62 +3815,47 @@
   <div class="page t-scope" id="page-mypage">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">마이페이지|</span><span class="user-name" id="mypageName">이름</span></div>
-      </div>
-
-      <div class="mypage-card">
-        <div class="student-avatar" id="mypageAvatar">이</div>
-        <div class="student-info">
-          <p class="student-name" id="mypageName2">이름</p>
-          <p class="student-meta" id="mypageRole">계정</p>
+        <div class="page-head">
+          <div class="greeting">마이페이지</div>
         </div>
       </div>
-      <div class="mypage-idrow" id="mypageIdRow">
-        <span class="mypage-idlabel">아이디</span>
-        <span class="mypage-idvalue" id="mypageLoginId">-</span>
-        <button class="mypage-idbtn" onclick="openIdChange()">변경</button>
+
+      <div class="prof-card">
+        <div class="prof-top">
+          <div class="student-avatar" id="mypageAvatar">이</div>
+          <div class="student-info">
+            <p class="student-name" id="mypageName2">이름</p>
+            <p class="student-meta" id="mypageRole">계정</p>
+          </div>
+        </div>
+        <div class="prof-id" id="mypageIdRow">
+          <span class="prof-id-label">아이디</span>
+          <span class="prof-id-value" id="mypageLoginId">-</span>
+          <button class="prof-id-btn" onclick="openIdChange()">변경</button>
+        </div>
       </div>
 
-      <p class="section-title" style="margin-top:22px;">내 활동</p>
-      <div class="stat-row">
-                <div class="stat-box total">
-            <span class="stat-label">제출완료</span>
-            <span class="stat-count" id="mypageStat1">0건</span>
-          </div>
-          <div class="stat-box pending">
-            <span class="stat-label">승인대기</span>
-            <span class="stat-count" id="mypageStat2">0건</span>
-          </div>
-          <div class="stat-box missing">
-            <span class="stat-label">미제출</span>
-            <span class="stat-count" id="mypageStat3">0건</span>
-          </div>
-      </div>
-
-      <p class="section-title" style="margin-top:22px;">내 반 <span class="section-count" id="mypageCount">0</span></p>
+      <p class="section-title">내 반 <span class="section-count" id="mypageCount">0</span></p>
       <div id="mypageClassList"></div>
 
-      <p class="section-title" style="margin-top:22px;">계정</p>
-      <button class="mypage-btn" id="pwChangeRow" onclick="openPwChange()">
-        <span>비밀번호 변경</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
-      <button class="mypage-btn" onclick="logoutStudent()">
-        <span>로그아웃</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
-      </button>
-      <button class="master-danger-btn" style="margin-top:2px;" onclick="openSelfDelete()">계정 삭제</button>
-      <p class="mypage-note">지우면 되돌릴 수 없어요</p>
-
-      <p class="section-title" style="margin-top:22px;">정보</p>
-      <button class="mypage-btn" onclick="openPrivacy('mypage')">
-        <span>개인정보처리방침</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
-      <div class="mypage-row">
-        <span>앱 버전</span>
-        <span class="mypage-value" id="mypageVersion">1.0</span>
+      <p class="section-title">계정</p>
+      <div class="menu-card">
+        <button class="menu-row" id="pwChangeRow" onclick="openPwChange()">
+          <span>비밀번호 변경</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+        <button class="menu-row" onclick="openPrivacy('mypage')">
+          <span>개인정보처리방침</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+        <button class="menu-row" onclick="logoutStudent()">
+          <span>로그아웃</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+        <button class="menu-row danger" onclick="openSelfDelete()">
+          <span>계정 삭제</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
       </div>
+      <p class="mypage-note">계정을 지우면 되돌릴 수 없어요</p>
+
+      <p class="app-version">오늘의 숙제 <span id="mypageVersion">1.0</span></p>
     </div>
     <nav class="bottom-nav">
       <button class="nav-item" data-nav="home" onclick="openStudentHomeNav()">
@@ -3927,63 +3896,43 @@
   <div class="page t-scope" id="page-t-mypage">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">마이페이지|</span><span class="user-name" id="t-mypageName">이름</span></div>
-      </div>
-
-      <div class="mypage-card">
-        <div class="student-avatar" id="t-mypageAvatar">이</div>
-        <div class="student-info">
-          <p class="student-name" id="t-mypageName2">이름</p>
-          <p class="student-meta" id="t-mypageRole">계정</p>
+        <div class="page-head">
+          <div class="greeting">마이페이지</div>
         </div>
       </div>
-      <p class="mypage-lock">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
-        </svg>
-        <span id="t-mypageLock">가입할 때 정한 이름은 바꿀 수 없어요 (이 이름으로 로그인해요)</span>
-      </p>
 
-      <p class="section-title" style="margin-top:22px;">내 현황</p>
-      <div class="stat-row">
-                <div class="stat-box pending">
-            <span class="stat-label">반</span>
-            <span class="stat-count" id="t-mypageStat1">0개</span>
+      <div class="prof-card">
+        <div class="prof-top">
+          <div class="student-avatar" id="t-mypageAvatar">이</div>
+          <div class="student-info">
+            <p class="student-name" id="t-mypageName2">이름</p>
+            <p class="student-meta" id="t-mypageRole">계정</p>
           </div>
-          <div class="stat-box total">
-            <span class="stat-label">학생</span>
-            <span class="stat-count" id="t-mypageStat2">0명</span>
-          </div>
-          <div class="stat-box missing">
-            <span class="stat-label">승인대기</span>
-            <span class="stat-count" id="t-mypageStat3">0건</span>
-          </div>
+        </div>
+        <p class="prof-hint" id="t-mypageLock">가입할 때 정한 이름으로 로그인해요</p>
       </div>
 
-      <p class="section-title" style="margin-top:22px;">내 반 <span class="section-count" id="t-mypageCount">0</span></p>
+      <p class="section-title">내 반 <span class="section-count" id="t-mypageCount">0</span></p>
       <div id="t-mypageClassList"></div>
 
-      <p class="section-title" style="margin-top:22px;">계정</p>
-      <button class="mypage-btn" id="t-pwChangeRow" onclick="openPwChange()">
-        <span>비밀번호 변경</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
-      <button class="mypage-btn" onclick="logoutTeacher()">
-        <span>로그아웃</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><path d="M16 17l5-5-5-5M21 12H9"></path></svg>
-      </button>
-      <button class="master-danger-btn" style="margin-top:2px;" onclick="openSelfDelete()">계정 삭제</button>
-      <p class="mypage-note">지우면 되돌릴 수 없어요</p>
-
-      <p class="section-title" style="margin-top:22px;">정보</p>
-      <button class="mypage-btn" onclick="openPrivacy('t-mypage')">
-        <span>개인정보처리방침</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
-      </button>
-      <div class="mypage-row">
-        <span>앱 버전</span>
-        <span class="mypage-value" id="t-mypageVersion">1.0</span>
+      <p class="section-title">계정</p>
+      <div class="menu-card">
+        <button class="menu-row" id="t-pwChangeRow" onclick="openPwChange()">
+          <span>비밀번호 변경</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+        <button class="menu-row" onclick="openPrivacy('t-mypage')">
+          <span>개인정보처리방침</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+        <button class="menu-row" onclick="logoutTeacher()">
+          <span>로그아웃</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+        <button class="menu-row danger" onclick="openSelfDelete()">
+          <span>계정 삭제</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
       </div>
+      <p class="mypage-note">계정을 지우면 되돌릴 수 없어요</p>
+
+      <p class="app-version">오늘의 숙제 <span id="t-mypageVersion">1.0</span></p>
     </div>
     <nav class="bottom-nav">
       <button class="nav-item" data-nav="t-home" onclick="playTapSound(); showPage('t-home')">
@@ -4245,9 +4194,12 @@
       </button>
     </div>
 
-    <div class="home-content" style="flex:1; overflow-y:auto; padding:14px 20px 20px;">
+    <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">관리자|</span>관리 안내</div>
+        <div class="page-head">
+          <div class="greeting">관리자</div>
+          <p class="page-sub">관리 안내</p>
+        </div>
       </div>
 
       <div style="margin-top:18px;">
@@ -4255,14 +4207,14 @@
       </div>
       <div id="masterAccountList" hidden></div>
 
-      <p class="section-title" style="margin-top:22px;">관리자 비밀번호</p>
+      <p class="section-title">관리자 비밀번호</p>
       <div class="master-acc-card">
         <input type="password" inputmode="numeric" id="newMasterPw" class="consent-input" placeholder="새 관리자 비밀번호" autocomplete="off" style="margin-bottom:6px;">
         <p class="master-error" id="masterPwChangeMsg">바꿨어요</p>
         <button class="master-acc-reset" onclick="changeMasterPassword()">비밀번호 변경</button>
       </div>
 
-      <p class="section-title" style="margin-top:22px;">데이터 관리</p>
+      <p class="section-title">데이터 관리</p>
       <p class="master-info-body">
         자료가 서버에 있어서 여기서는 지울 수 없습니다.
         전체 삭제는 파이어베이스 콘솔에서 하세요.
@@ -4281,13 +4233,16 @@
       </button>
     </div>
 
-    <div class="home-content" style="flex:1; overflow-y:auto; padding:14px 20px 20px;">
+    <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">관리자|</span><span id="masterClassesTitle">선생님</span></div>
+        <div class="page-head">
+          <div class="greeting">관리자</div>
+          <p class="page-sub"><span id="masterClassesTitle">선생님</span></p>
+        </div>
       </div>
       <p class="master-crumb" id="masterClassesCrumb"></p>
 
-      <p class="section-title" style="margin-top:18px;">만든 반</p>
+      <p class="section-title">만든 반</p>
       <div id="masterClassList"></div>
     </div>
   </div>
@@ -4303,16 +4258,19 @@
       </button>
     </div>
 
-    <div class="home-content" style="flex:1; overflow-y:auto; padding:14px 20px 20px;">
+    <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">관리자|</span><span id="masterStudentsTitle">반</span></div>
+        <div class="page-head">
+          <div class="greeting">관리자</div>
+          <p class="page-sub"><span id="masterStudentsTitle">반</span></p>
+        </div>
       </div>
       <p class="master-crumb" id="masterStudentsCrumb"></p>
 
-      <p class="section-title" style="margin-top:18px;">학생</p>
+      <p class="section-title">학생</p>
       <div id="masterStudentList"></div>
 
-      <p class="section-title" style="margin-top:22px;">이 반의 숙제</p>
+      <p class="section-title">이 반의 숙제</p>
       <div id="masterClassHwList"></div>
     </div>
   </div>
@@ -4328,13 +4286,16 @@
       </button>
     </div>
 
-    <div class="home-content" style="flex:1; overflow-y:auto; padding:14px 20px 20px;">
+    <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">관리자|</span><span id="masterSubsTitle">학생</span></div>
+        <div class="page-head">
+          <div class="greeting">관리자</div>
+          <p class="page-sub"><span id="masterSubsTitle">학생</span></p>
+        </div>
       </div>
       <p class="master-crumb" id="masterSubsCrumb"></p>
 
-      <p class="section-title" style="margin-top:18px;">올린 숙제</p>
+      <p class="section-title">올린 숙제</p>
       <div id="masterSubsList"></div>
     </div>
   </div>
@@ -4730,7 +4691,9 @@
     <div class="home-content">
 
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">홈|</span><span class="user-name" id="teacherNameLabel">김선생님</span> 안녕하세요!</div>
+        <div class="page-head">
+          <div class="greeting"><span class="user-name" id="teacherNameLabel">김선생님</span>, 안녕하세요!</div>
+        </div>
       </div>
 
       <div id="homeEmptyState" class="empty-class-card" style="margin-top:20px;display:none;">
@@ -4813,10 +4776,13 @@
   <div class="page t-scope" id="page-t-students">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">반 관리|</span>반을 선택하세요</div>
+        <div class="page-head">
+          <div class="greeting">반 관리</div>
+          <p class="page-sub">반을 선택하세요</p>
+        </div>
       </div>
 
-      <p class="section-title" style="margin-top:20px;">내 반 목록</p>
+      <p class="section-title">내 반 목록</p>
       <div id="studentsClassList"></div>
 
       <div class="blank-section"></div>
@@ -4861,7 +4827,10 @@
   <div class="page t-scope" id="page-t-homework">
     <div class="home-content">
       <div class="top-bar">
-        <div class="greeting"><span class="page-label">달력|</span>전체 반 일정</div>
+        <div class="page-head">
+          <div class="greeting">달력</div>
+          <p class="page-sub">전체 반 일정</p>
+        </div>
       </div>
 
       <div class="hw-cal-header" style="margin-top:20px;">
@@ -4880,7 +4849,7 @@
 
       <div class="hw-cal-grid" id="tHwCalGrid"></div>
 
-      <p class="section-title" id="tHwCalSelectedLabel" style="margin:20px 0 12px;">숙제</p>
+      <p class="section-title" id="tHwCalSelectedLabel">숙제</p>
 
       <button class="add-hw-btn" id="addEventToggleBtn" onclick="toggleAddEventForm()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -4997,7 +4966,7 @@
 
         <div class="hw-cal-grid" id="hwCalGrid"></div>
 
-        <p class="section-title" id="hwCalSelectedLabel" style="margin:20px 0 12px;">숙제</p>
+        <p class="section-title" id="hwCalSelectedLabel">숙제</p>
 
         <button class="add-hw-btn" id="addHwToggleBtn" onclick="toggleAddHwForm()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
@@ -6711,7 +6680,6 @@
     const name = isTeacher ? teacherName : accountName;
     const me = userById(currentUserId);
 
-    document.getElementById(pid + "Name").textContent = name;
     document.getElementById(pid + "Name2").textContent = name;
     document.getElementById(pid + "Avatar").textContent = name ? name[0] : "?";
 
@@ -6731,8 +6699,8 @@
     const lock = document.getElementById("t-mypageLock");
     if (lock && isTeacher) {
       lock.textContent = byGoogle
-        ? "구글 계정으로 로그인해요" + (me.loginId ? " (" + me.loginId + ")" : "")
-        : "가입할 때 정한 이름은 바꿀 수 없어요 (이 이름으로 로그인해요)";
+        ? "구글 계정으로 로그인해요" + (me.loginId ? " · " + me.loginId : "")
+        : "가입할 때 정한 이름으로 로그인해요";
     }
 
     /* 아이디는 학생만 보여 준다. 선생님은 이름으로 로그인한다. */
@@ -6752,12 +6720,6 @@
 
     if (isTeacher) {
       const mine = myClasses();
-      const students = mine.reduce((n, { c }) => n + c.students.length, 0);
-      const waiting = mine.reduce(
-        (n, { c }) => n + c.submissions.filter((s) => s.status === "pending").length, 0);
-      document.getElementById(pid + "Stat1").textContent = mine.length + "개";
-      document.getElementById(pid + "Stat2").textContent = students + "명";
-      document.getElementById(pid + "Stat3").textContent = waiting + "건";
       document.getElementById(pid + "Count").textContent = mine.length;
 
       listEl.innerHTML = mine.map(({ c, i }) => {
@@ -6780,11 +6742,6 @@
         listEl.innerHTML = '<p class="empty-approval">아직 만든 반이 없어요</p>' + listEl.innerHTML;
       }
     } else {
-      const st = myOverallStats();
-      document.getElementById(pid + "Stat1").textContent = st.done + "건";
-      document.getElementById(pid + "Stat2").textContent = st.pending + "건";
-      document.getElementById(pid + "Stat3").textContent = st.missing + "건";
-
       const mine = myStudentClasses();
       document.getElementById(pid + "Count").textContent = mine.length;
 
@@ -7423,7 +7380,6 @@
       c.classList.toggle("active", c.id === "tab-" + tabName);
     });
 
-    document.getElementById("listTabName").textContent = tabLabels[tabName];
   }
 
   function statusLabel(status) {
