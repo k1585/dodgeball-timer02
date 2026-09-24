@@ -2289,6 +2289,9 @@
 
   /* 기다리는 동안 글자 대신 도는 표시를 보여 준다.
      글자를 바꾸면 버튼 크기가 들쭉날쭉해지고, 무엇을 기다리는지도 덜 분명하다. */
+  /* display를 따로 지정한 요소는 hidden만으로 사라지지 않는다. 한 번에 맞춰 둔다. */
+  [hidden]{ display:none !important; }
+
   .mypage-idrow{
     display:flex;
     align-items:center;
@@ -2527,6 +2530,25 @@
     height:1px;
     background:var(--line);
   }
+
+  .google-btn{
+    width:100%;
+    max-width:280px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    background:#ffffff;
+    color:#3C4043;
+    border:1.5px solid #DADCE3;
+    border-radius:16px;
+    padding:15px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .google-btn:active{ transform:scale(0.98); }
+  .google-btn svg{ flex-shrink:0; }
 
   .auth-signup-btn{
     width:100%;
@@ -3800,7 +3822,7 @@
       <div id="mypageClassList"></div>
 
       <p class="section-title" style="margin-top:22px;">계정</p>
-      <button class="mypage-btn" onclick="openPwChange()">
+      <button class="mypage-btn" id="pwChangeRow" onclick="openPwChange()">
         <span>비밀번호 변경</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
@@ -3874,7 +3896,7 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="11" width="16" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
         </svg>
-        가입할 때 정한 이름은 바꿀 수 없어요 (이 이름으로 로그인해요)
+        <span id="t-mypageLock">가입할 때 정한 이름은 바꿀 수 없어요 (이 이름으로 로그인해요)</span>
       </p>
 
       <p class="section-title" style="margin-top:22px;">내 현황</p>
@@ -3897,7 +3919,7 @@
       <div id="t-mypageClassList"></div>
 
       <p class="section-title" style="margin-top:22px;">계정</p>
-      <button class="mypage-btn" onclick="openPwChange()">
+      <button class="mypage-btn" id="t-pwChangeRow" onclick="openPwChange()">
         <span>비밀번호 변경</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
       </button>
@@ -4357,6 +4379,34 @@
     </div>
   </div>
 
+  <!-- 구글로 처음 들어왔을 때: 학생들에게 보여질 이름부터 정한다 -->
+  <div class="modal-overlay" id="googleSetupModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" style="margin-bottom:6px;">선생님 계정 만들기</p>
+      <p class="modal-sub" style="margin-bottom:14px;">
+        구글 계정으로 들어왔어요.<br>학생들에게 보여질 이름을 정해 주세요.
+      </p>
+
+      <p id="googleEmail" style="margin:0 0 10px;text-align:left;font-size:13px;font-weight:700;color:#8A8FA3;word-break:break-all;"></p>
+
+      <input type="text" id="googleName" class="consent-input" placeholder="이름"
+             autocomplete="off" maxlength="20">
+
+      <label class="consent-check" style="margin-top:12px;">
+        <input type="checkbox" id="googleAgree">
+        <span>(필수) 개인정보 수집·이용에 동의합니다</span>
+      </label>
+      <button type="button" class="consent-link" onclick="openPrivacyFromGoogle()">개인정보처리방침 보기</button>
+
+      <p class="master-error" id="googleSetupMsg"></p>
+
+      <div class="modal-actions" style="margin-top:14px;">
+        <button onclick="cancelGoogleSetup()" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button id="googleSetupBtn" onclick="confirmGoogleSetup()" style="background:var(--point-strong);color:#ffffff;">시작하기</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="pwChangeModal">
     <div class="modal-box" style="max-width:340px;">
       <p class="modal-text" style="margin-bottom:6px;" id="pwChangeTitle">비밀번호 변경</p>
@@ -4521,6 +4571,18 @@
       <p class="auth-error" id="tchLoginError"></p>
 
       <button class="onboard-btn auth-submit ob-anim d4" onclick="doLogin('teacher')">로그인</button>
+
+      <div class="auth-divider ob-anim d4"><span>또는</span></div>
+      <button class="google-btn ob-anim d4" id="tchGoogleBtn" onclick="loginWithGoogle()">
+        <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+          <path fill="#4285F4" d="M45.1 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2.1 5-4.4 6.6v5.5h7.1c4.2-3.8 6.6-9.5 6.6-16.1z"></path>
+          <path fill="#34A853" d="M24 46c6 0 11-2 14.6-5.4l-7.1-5.5c-2 1.3-4.5 2.1-7.5 2.1-5.8 0-10.6-3.9-12.4-9.1H4.3v5.7C7.9 41 15.4 46 24 46z"></path>
+          <path fill="#FBBC05" d="M11.6 28.1c-.5-1.3-.7-2.7-.7-4.1s.3-2.8.7-4.1V14H4.3C2.8 17 2 20.4 2 24s.8 7 2.3 10l7.3-5.9z"></path>
+          <path fill="#EA4335" d="M24 10.8c3.3 0 6.2 1.1 8.5 3.3l6.3-6.3C35 4.3 30 2 24 2 15.4 2 7.9 7 4.3 14l7.3 5.7c1.8-5.2 6.6-9 12.4-9z"></path>
+        </svg>
+        <span>구글로 로그인</span>
+      </button>
+      <p class="auth-hint" style="margin:8px 0 0;">구글로 처음 들어오면 새 선생님 계정이 만들어져요</p>
 
       <div class="auth-divider ob-anim d4"><span>아직 계정이 없나요?</span></div>
       <button class="auth-signup-btn ob-anim d4" onclick="openSignup('teacher')">회원가입</button>
@@ -5081,7 +5143,8 @@
   import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
   import {
     getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
-    signOut, onAuthStateChanged, updatePassword, deleteUser
+    signOut, onAuthStateChanged, updatePassword, deleteUser,
+    GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult
   } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js";
   import {
     getFirestore, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
@@ -5092,12 +5155,25 @@
      실제 접근 통제는 Firestore 보안 규칙이 한다. */
   const firebaseConfig = {
     apiKey: "AIzaSyCD1t64W6TE0uknmHuoK4NyhNYkAnT7veI",
+    /* 구글에 등록된 돌아올 주소는 firebaseapp.com 쪽 하나뿐이다.
+       앱을 web.app 주소로 열어도 이 값은 그대로 둬야 한다. web.app으로 바꾸면
+       구글이 redirect_uri_mismatch로 막는다(실제로 확인함). 바꾸려면 먼저
+       구글 클라우드 콘솔 > API 및 서비스 > 사용자 인증 정보에서 그 주소를
+       '승인된 리디렉션 URI'에 넣어야 한다. */
     authDomain: "today-homework.firebaseapp.com",
     projectId: "today-homework",
     storageBucket: "today-homework.firebasestorage.app",
     messagingSenderId: "790935402559",
     appId: "1:790935402559:web:e6b2a1247bd240d029208a",
   };
+
+  /* 계정 선택 화면을 매번 띄운다. 공용 컴퓨터에서 앞사람 계정으로
+     그냥 들어가 버리는 일을 막는다. */
+  function googleProvider() {
+    const p = new GoogleAuthProvider();
+    p.setCustomParameters({ prompt: "select_account" });
+    return p;
+  }
 
   try {
     const app = initializeApp(firebaseConfig);
@@ -5106,6 +5182,20 @@
       db: getFirestore(app),
       signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut,
       onAuthStateChanged, updatePassword, deleteUser,
+
+      /* 구글 로그인 (선생님 전용).
+         창을 띄우는 방식이 기본이고, 휴대폰처럼 창이 막히는 곳에서는
+         화면을 옮겼다 돌아오는 방식으로 넘어간다. */
+      googlePopup() {
+        return signInWithPopup(getAuth(app), googleProvider());
+      },
+      googleRedirect() {
+        return signInWithRedirect(getAuth(app), googleProvider());
+      },
+      googleRedirectResult() {
+        return getRedirectResult(getAuth(app));
+      },
+
       doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc,
       collection, query, where, onSnapshot, writeBatch, serverTimestamp,
 
@@ -5455,6 +5545,7 @@
         name: d.name || "",
         role: d.role || "student",
         loginId: d.loginId || "",
+        google: !!d.google,
         classCodes: d.classCodes || [],
         classNames: d.classNames || {},
         agreedAt: d.agreedAt || "",
@@ -6163,6 +6254,197 @@
     }
   }
 
+  /* ===== 구글로 로그인 (선생님 전용) =====
+     학생 계정은 선생님이 발급하므로 구글을 쓰지 않는다.
+     구글로 처음 들어오면 이름과 동의를 받아 선생님 계정을 새로 만든다.
+     이름·비밀번호로 만든 계정과는 서로 다른 계정이다. */
+  let googlePendingUser = null;
+
+  function googleFail(text) {
+    showAuthError("tchLoginError", text);
+    playErrorBuzz();
+  }
+
+  async function loginWithGoogle() {
+    if (authBusy) return;
+    if (!window.FB) { googleFail("서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); return; }
+
+    const btn = document.getElementById("tchGoogleBtn");
+    clearAuthError("tchLoginError");
+    setAuthBusy(btn, true);
+    Cloud.signingUp = true;     /* 이름을 정하기 전에 앱으로 들어가 버리지 않게 */
+    try {
+      const cred = await withTimeout(window.FB.googlePopup(), 120000, "로그인 시간 초과");
+      await afterGoogleSignIn(cred.user);
+    } catch (e) {
+      const code = (e && e.code) || "";
+      if (code === "auth/popup-blocked"
+          || code === "auth/cancelled-popup-request"
+          || code === "auth/operation-not-supported-in-this-environment") {
+        /* 창을 못 띄우는 휴대폰 브라우저에서는 화면을 옮겼다 돌아오는 방식으로 */
+        try { sessionStorage.setItem("googleRedirect", "1"); } catch (e2) {}
+        try {
+          await window.FB.googleRedirect();
+          return;                                  /* 화면이 넘어간다 */
+        } catch (e2) {
+          try { sessionStorage.removeItem("googleRedirect"); } catch (e3) {}
+          googleFail("구글 로그인 창을 열지 못했어요");
+        }
+      } else if (code === "auth/popup-closed-by-user") {
+        /* 사용자가 직접 닫았다. 잘못된 게 아니므로 아무 말도 하지 않는다 */
+      } else if (code === "auth/network-request-failed" || code === "app/timeout") {
+        googleFail(connectHint());
+      } else if (code === "auth/unauthorized-domain") {
+        googleFail("이 주소에서는 구글 로그인을 쓸 수 없어요");
+        console.warn("파이어베이스 콘솔 > Authentication > 설정 > 승인된 도메인에 "
+                     + location.hostname + " 을 추가해야 합니다.");
+      } else if (code === "auth/operation-not-allowed") {
+        googleFail("지금은 구글 로그인을 쓸 수 없어요");
+        console.warn("파이어베이스 콘솔 > Authentication > 로그인 방법에서 "
+                     + "'Google'을 사용 설정해야 합니다.");
+      } else {
+        googleFail("구글 로그인을 마치지 못했어요. 잠시 뒤 다시 시도해 주세요");
+        console.error("구글 로그인 실패:", code, e && e.message);
+      }
+      Cloud.signingUp = false;
+    } finally {
+      setAuthBusy(btn, false);
+    }
+  }
+
+  /* 화면을 옮기는 방식으로 로그인하고 돌아왔을 때.
+     이 방식은 인증 창이 앱과 다른 주소(firebaseapp.com)에 있어서, 남의 주소
+     저장소를 막는 브라우저에서는 돌아와도 결과가 비어 있을 수 있다.
+     그때는 멈춰 있지 말고 로그인 화면으로 돌려보내 다시 해 보게 한다. */
+  async function handleGoogleRedirect() {
+    try { sessionStorage.removeItem("googleRedirect"); } catch (e) {}
+    let res = null;
+    try {
+      res = await withTimeout(window.FB.googleRedirectResult(), 20000);
+    } catch (e) {
+      console.error("구글 로그인 결과를 받지 못함:", (e && e.code) || "", e && e.message);
+    }
+    if (res && res.user) { await afterGoogleSignIn(res.user); return; }
+
+    Cloud.signingUp = false;
+    /* 이미 로그인이 이어졌다면(감시가 먼저 처리) 굳이 방해하지 않는다 */
+    if (currentUserId) return;
+    showPage("t-name-input");
+    googleFail("구글 로그인을 마치지 못했어요. 한 번 더 눌러 주세요");
+  }
+
+  /* 구글 확인이 끝난 뒤: 계정 문서가 있으면 들어가고, 없으면 이름부터 정한다 */
+  async function afterGoogleSignIn(user) {
+    Cloud.signingUp = true;
+    Cloud.uid = user.uid;
+
+    let meDoc = null;
+    try {
+      meDoc = await withTimeout(Cloud.readMe(), 15000);
+    } catch (e) {
+      await Cloud.signOutNow();
+      Cloud.signingUp = false;
+      googleFail(connectHint());
+      return;
+    }
+
+    if (meDoc && meDoc.role !== "teacher") {
+      /* 있을 수 없는 조합이지만, 학생 화면이 열리지 않게 막아 둔다 */
+      await Cloud.signOutNow();
+      Cloud.signingUp = false;
+      googleFail("학생 계정은 구글로 로그인할 수 없어요");
+      return;
+    }
+
+    if (!meDoc) { openGoogleSetup(user); return; }
+    await enterAsGoogleTeacher(user.uid);
+  }
+
+  async function enterAsGoogleTeacher(uid) {
+    try {
+      const ok = await withTimeout(Cloud.start(uid), 15000);
+      const me = ok ? users.find((u) => u.id === uid) : null;
+      if (!me) {
+        await Cloud.signOutNow();
+        googleFail("계정 정보를 찾지 못했어요. 다시 시도해 주세요");
+        return;
+      }
+      clearAuthError("tchLoginError");
+      playSuccessChime();
+      currentUserId = uid;
+      enterAfterLogin("teacher", me);
+    } catch (e) {
+      await Cloud.signOutNow();
+      googleFail(connectHint());
+    } finally {
+      Cloud.signingUp = false;
+    }
+  }
+
+  function openGoogleSetup(user) {
+    googlePendingUser = user;
+    document.getElementById("googleEmail").textContent = user.email || "";
+    document.getElementById("googleName").value = String(user.displayName || "").trim();
+    document.getElementById("googleAgree").checked = false;
+    document.getElementById("googleSetupMsg").classList.remove("show");
+    document.getElementById("googleSetupModal").classList.add("show");
+  }
+
+  /* 이름을 정하지 않고 그만두면 계정을 만들지 않고 로그인도 끊는다 */
+  async function cancelGoogleSetup() {
+    closeModal("googleSetupModal");
+    googlePendingUser = null;
+    await Cloud.signOutNow();
+    Cloud.signingUp = false;
+    showPage("t-name-input");
+  }
+
+  async function confirmGoogleSetup() {
+    const msg = document.getElementById("googleSetupMsg");
+    const fail = (text) => {
+      msg.textContent = text;
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+    };
+
+    const user = googlePendingUser;
+    if (!user) { fail("다시 로그인해 주세요"); return; }
+
+    const name = document.getElementById("googleName").value.trim();
+    if (!name) { fail("이름을 입력해 주세요"); return; }
+    if (!document.getElementById("googleAgree").checked) {
+      fail("개인정보 수집·이용에 동의해 주세요"); return;
+    }
+    if (!window.FB) { fail("서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); return; }
+
+    const btn = document.getElementById("googleSetupBtn");
+    setAuthBusy(btn, true);
+    try {
+      Cloud.uid = user.uid;
+      await withTimeout(Cloud.writeMe({
+        name: name,
+        role: "teacher",
+        google: true,
+        loginId: user.email || "",
+        classIds: [],
+        classNames: {},
+        agreedAt: new Date().toISOString(),
+        isMinor: false,
+        guardianName: "",
+        guardianContact: "",
+      }), 15000);
+      closeModal("googleSetupModal");
+      googlePendingUser = null;
+      await enterAsGoogleTeacher(user.uid);
+    } catch (e) {
+      fail("계정을 만들지 못했어요. 잠시 뒤 다시 시도해 주세요");
+      console.error("구글 계정 만들기 실패:", (e && e.code) || "", e && e.message);
+    } finally {
+      setAuthBusy(btn, false);
+    }
+  }
+
   /* 처음 받은 비밀번호를 그대로 쓰고 있으면 바꾸게 한다.
      모두에게 같은 비밀번호를 주기 때문에, 바꾸지 않으면 서로의 계정에
      들어갈 수 있다. 그래서 건너뛸 수 없게 한다. */
@@ -6277,6 +6559,17 @@
   function closePrivacy() {
     playTapSound();
     showPage(privacyReturnPage);
+    /* 구글 계정 만들기 중에 방침을 보러 갔다면, 돌아올 때 적던 창을 되살린다 */
+    if (googlePendingUser) {
+      document.getElementById("googleSetupModal").classList.add("show");
+    }
+  }
+
+  /* 창이 화면을 덮고 있으므로, 방침을 보러 갈 때는 잠깐 닫는다.
+     적어 둔 이름과 동의 표시는 그대로 두고 돌아와서 이어 쓴다. */
+  function openPrivacyFromGoogle() {
+    closeModal("googleSetupModal");
+    openPrivacy("t-name-input");
   }
 
   const APP_VERSION = "1.0";
@@ -6320,6 +6613,19 @@
       if (!isNaN(d)) role += " · " + d.getFullYear() + "." + (d.getMonth() + 1) + "." + d.getDate() + " 가입";
     }
     document.getElementById(pid + "Role").textContent = role;
+
+    /* 구글로 들어온 계정은 이 앱에 비밀번호가 없다. 바꿀 것이 없으니 감춘다. */
+    const byGoogle = !!(me && me.google);
+    const pwRow = document.getElementById((isTeacher ? "t-" : "") + "pwChangeRow");
+    if (pwRow) pwRow.hidden = byGoogle;
+
+    /* 구글 계정은 이름이 아니라 구글로 로그인하므로 안내 문구가 다르다 */
+    const lock = document.getElementById("t-mypageLock");
+    if (lock && isTeacher) {
+      lock.textContent = byGoogle
+        ? "구글 계정으로 로그인해요" + (me.loginId ? " (" + me.loginId + ")" : "")
+        : "가입할 때 정한 이름은 바꿀 수 없어요 (이 이름으로 로그인해요)";
+    }
 
     /* 아이디는 학생만 보여 준다. 선생님은 이름으로 로그인한다. */
     const idRow = document.getElementById("mypageIdRow");
@@ -9448,6 +9754,13 @@
 
   function startWithFirebase() {
     if (!window.FB) { showConnectProblem(); return; }
+
+    /* 구글 로그인을 하러 갔다가 막 돌아온 참이면, 결과를 직접 받아 처리한다.
+       먼저 표시를 세워 두어야 아래 감시가 앞질러 들어가지 않는다. */
+    let backFromGoogle = false;
+    try { backFromGoogle = sessionStorage.getItem("googleRedirect") === "1"; } catch (e) {}
+    if (backFromGoogle) Cloud.signingUp = true;
+
     window.FB.onAuthStateChanged(window.FB.auth, async (user) => {
       if (!user) {
         Cloud.stop();
@@ -9463,6 +9776,8 @@
       currentUserId = user.uid;
       enterAfterLogin(me.role, me);
     });
+
+    if (backFromGoogle) handleGoogleRedirect();
   }
 
   /* 주소가 아니라 파일로 열었으면 시작할 때 바로 알려 준다.
