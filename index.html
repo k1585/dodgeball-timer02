@@ -2183,58 +2183,35 @@
     color:var(--sub);
     letter-spacing:0.02em;
   }
-  .t-scope .student-pw-btn{
-    flex-shrink:0;
-    background:var(--point-light);
-    color:var(--point-strong);
-    border:none;
-    border-radius:8px;
-    padding:6px 11px;
-    font-family:inherit;
-    font-size:12px;
-    font-weight:800;
-    cursor:pointer;
-  }
-  .t-scope .student-pw-btn:active{ transform:scale(0.96); }
 
-  .stu-pw-steps{
-    margin:0 0 12px;
-    padding-left:20px;
-    text-align:left;
-    font-size:13px;
-    font-weight:600;
-    line-height:1.8;
-    color:var(--ink);
-  }
-  .stu-pw-mail{
+  .t-scope .info-row{
     display:flex;
     align-items:center;
-    gap:8px;
+    justify-content:space-between;
+    gap:10px;
+    padding:11px 0;
+    border-bottom:1px solid var(--line);
+    font-size:13.5px;
+  }
+  .t-scope .info-row:last-of-type{ border-bottom:none; }
+  .t-scope .info-label{ font-weight:700; color:var(--sub); }
+  .t-scope .info-value{ font-weight:800; color:var(--ink); }
+  .t-scope .info-contact{
+    margin:0;
+    padding:12px 14px;
     background:#FAFBFF;
     border:1px solid #EAEEF7;
-    border-radius:10px;
-    padding:10px 12px;
-  }
-  .stu-pw-mail span{
-    flex:1;
+    border-radius:12px;
+    font-size:13.5px;
+    font-weight:700;
+    line-height:1.65;
+    color:var(--ink);
     text-align:left;
-    font-size:12.5px;
-    font-weight:800;
-    color:var(--point-strong);
+    white-space:pre-wrap;
     word-break:break-all;
   }
-  .stu-pw-mail button{
-    flex-shrink:0;
-    background:var(--point-light);
-    color:var(--point-strong);
-    border:none;
-    border-radius:8px;
-    padding:6px 11px;
-    font-family:inherit;
-    font-size:12px;
-    font-weight:800;
-    cursor:pointer;
-  }
+  .t-scope .info-contact.empty{ color:var(--sub); font-weight:600; }
+
   .t-scope .blank-section{
     background:#ffffff;
     min-height:80px;
@@ -2382,6 +2359,16 @@
 
   /* ===== 마이페이지 =====
      계정 화면이라 볼 것이 많지 않다. 프로필 한 장, 내 반, 메뉴 한 장으로 끝낸다. */
+
+  .t-scope .master-steps{
+    margin:0 0 4px;
+    padding-left:20px;
+    font-size:13px;
+    font-weight:600;
+    line-height:1.9;
+    color:var(--ink);
+  }
+
   .prof-card{
     margin-top:18px;
     padding:16px;
@@ -3300,6 +3287,18 @@
     background:#F5F6FA;
     color:var(--sub);
   }
+  /* 반 카드 안에서는 '숙제 n' 표시와 '반 탈퇴' 단추가 나란히 놓인다.
+     하나는 둥근 알약, 하나는 네모라 짝이 맞지 않아 보여 같은 꼴로 맞췄다. */
+  .t-scope .class-card-pill{
+    flex-shrink:0;
+    border-radius:10px;
+    padding:8px 12px;
+    font-size:12px;
+    font-weight:800;
+    white-space:nowrap;
+    background:var(--point-light);
+    color:var(--point-strong);
+  }
 
   .t-scope .class-action-btn.leave{
     background:#FDE7E7;
@@ -3321,6 +3320,58 @@
     margin-bottom:0;
   }
 
+
+  /* ===== 넓은 화면 =====
+     지금까지 폭 480px 한 벌로만 만들어서, 태블릿이나 노트북에서 열면
+     가운데 좁은 띠만 쓰고 양옆이 텅 비었다. 화면이 넓어지면 앱도 같이
+     넓어지고, 카드 목록은 두 칸으로 나눠 담는다.
+
+     학생은 태블릿 폭(820px)까지만 넓어진다. 숙제를 내고 확인하는 일은
+     한 줄로 읽는 편이 낫고, 학생이 주로 쓰는 기기도 폰과 태블릿이다.
+     선생님은 명단과 현황을 한눈에 봐야 해서 노트북 폭(1120px)까지 넓어진다. */
+  @media (min-width: 760px){
+    .app-shell{ max-width:820px; }
+    .home-content{ padding:28px 32px 20px; }
+    .greeting{ font-size:24px; }
+    #page-list .list-fixed-top{ padding:24px 32px 0; }
+
+    #manageStudentList, #approveStudentList, #hwManageList,
+    #studentsClassList, #sClassList, #mypageClassList, #t-mypageClassList,
+    #tab-remaining.active, #tab-past.active, #pendingList,
+    #calDayList, #tHwDayList, #missingStudentList{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+      align-items:start;
+    }
+    /* 칸 사이 간격은 grid가 맡으므로 카드 자체의 아래 여백은 뺀다 */
+    #manageStudentList > *, #approveStudentList > *, #hwManageList > *,
+    #studentsClassList > *, #sClassList > *, #mypageClassList > *,
+    #t-mypageClassList > *, #tab-remaining > *, #pendingList > *,
+    #tab-past > *, #calDayList > *, #tHwDayList > *,
+    #tab-pending > *, #missingStudentList > *{
+      margin-bottom:0;
+    }
+    /* 안내 문구, 구분선, 추가 단추는 한 줄을 통째로 쓴다 */
+    .empty-state, .empty-approval, .section-divider,
+    .add-class-btn, .add-hw-btn, .empty-class-card{
+      grid-column:1 / -1;
+    }
+  }
+
+  @media (min-width: 1120px){
+    body[data-role="teacher"] .app-shell{ max-width:1120px; }
+    body[data-role="teacher"] .home-content{ padding:32px 40px 24px; }
+    body[data-role="teacher"] #page-list .list-fixed-top{ padding:28px 40px 0; }
+    body[data-role="teacher"] #manageStudentList,
+    body[data-role="teacher"] #approveStudentList,
+    body[data-role="teacher"] #hwManageList,
+    body[data-role="teacher"] #studentsClassList,
+    body[data-role="teacher"] #t-mypageClassList,
+    body[data-role="teacher"] #missingStudentList{
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+    }
+  }
 </style>
 </head>
 <body>
@@ -3835,7 +3886,7 @@
         </div>
       </div>
 
-      <p class="section-title">내 반 <span class="section-count" id="mypageCount">0</span></p>
+      <p class="section-title">내 반</p>
       <div id="mypageClassList"></div>
 
       <p class="section-title">계정</p>
@@ -4163,6 +4214,20 @@
   </div>
 
   <!-- 6: 수정/재업로드 시 변경된 내용이 없을 때 -->
+  <!-- 구글 계정은 이 앱에 비밀번호가 없다 -->
+  <div class="modal-overlay" id="googlePwModal">
+    <div class="modal-box">
+      <p class="modal-text">비밀번호를 바꿀 수 없어요</p>
+      <p class="modal-sub" style="margin-top:8px;">
+        구글로 로그인한 계정이라 이 앱에는 비밀번호가 없어요.<br>
+        바꾸시려면 구글 계정 설정에서 바꿔 주세요.
+      </p>
+      <div class="modal-actions">
+        <button onclick="closeModal('googlePwModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="hwClosedModal">
     <div class="modal-box">
       <p class="modal-text">마감된 숙제예요</p>
@@ -4213,6 +4278,18 @@
         <p class="master-error" id="masterPwChangeMsg">바꿨어요</p>
         <button class="master-acc-reset" onclick="changeMasterPassword()">비밀번호 변경</button>
       </div>
+
+      <p class="section-title">학생 비밀번호 초기화</p>
+      <p class="master-info-body">
+        비밀번호는 되돌릴 수 없게 보관돼서 앱에서는 바꿀 수 없습니다.
+        파이어베이스 콘솔에서 바꾸세요.
+      </p>
+      <ol class="master-steps">
+        <li>반 관리 &gt; 학생 명단에서 그 학생의 <b>아이디</b>를 확인</li>
+        <li>콘솔 &gt; Authentication &gt; Users 로 이동</li>
+        <li><b>아이디@todayhw.app</b> 을 찾아 오른쪽 ⋮ &gt; 사용자 수정</li>
+        <li>새 비밀번호를 넣고 저장한 뒤 학생에게 알려주기</li>
+      </ol>
 
       <p class="section-title">데이터 관리</p>
       <p class="master-info-body">
@@ -4396,34 +4473,6 @@
     </div>
   </div>
 
-  <!-- 학생 비밀번호 초기화 안내 -->
-  <div class="modal-overlay" id="stuPwModal">
-    <div class="modal-box" style="max-width:340px;">
-      <p class="modal-text" style="margin-bottom:6px;">학생 비밀번호 초기화</p>
-      <p class="modal-sub" style="margin-bottom:12px;" id="stuPwWho"></p>
-
-      <p class="mypage-note" style="margin:0 0 6px;text-align:left;">
-        비밀번호는 아무도 볼 수 없게 보관돼서, 앱에서는 바꿀 수 없어요.
-        파이어베이스 콘솔에서 30초면 됩니다.
-      </p>
-      <ol class="stu-pw-steps">
-        <li>콘솔 &gt; Authentication &gt; Users</li>
-        <li>아래 주소를 찾아 오른쪽 ⋮ 를 누르기</li>
-        <li>'비밀번호 재설정' 대신 <b>사용자 수정</b>에서 새 비밀번호 넣기</li>
-        <li>학생에게 새 비밀번호를 알려주기</li>
-      </ol>
-
-      <div class="stu-pw-mail">
-        <span id="stuPwMail">-</span>
-        <button type="button" onclick="copyStudentMail()">복사</button>
-      </div>
-
-      <div class="modal-actions" style="margin-top:14px;">
-        <button onclick="closeModal('stuPwModal')" style="background:var(--point-strong);color:#ffffff;">알겠어요</button>
-      </div>
-    </div>
-  </div>
-
   <!-- 구글로 처음 들어왔을 때: 학생들에게 보여질 이름부터 정한다 -->
   <div class="modal-overlay" id="googleSetupModal">
     <div class="modal-box" style="max-width:340px;">
@@ -4459,6 +4508,11 @@
         처음 받은 비밀번호는 모두 같아요. 나만 아는 비밀번호로 바꿔 주세요.
       </p>
 
+      <div class="pw-field" id="firstIdRow" hidden>
+        <input type="text" id="firstId" class="consent-input" placeholder="새 아이디"
+               autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="20">
+      </div>
+
       <div class="pw-field" id="curPwRow">
         <input type="password" id="curPw" class="consent-input has-eye" placeholder="현재 비밀번호" autocomplete="off">
         <button type="button" class="pw-eye" onclick="togglePw('curPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
@@ -4473,7 +4527,7 @@
       </div>
 
       <p class="master-error" id="pwChangeMsg"></p>
-      <p class="mypage-note" style="margin:0 0 16px;text-align:left;">8자 이상, 영문·숫자·특수문자를 모두 포함해야 해요</p>
+      <p class="mypage-note" style="margin:0 0 16px;text-align:left;" id="pwChangeHint">8자 이상, 영문·숫자·특수문자를 모두 포함해야 해요</p>
 
       <div class="modal-actions">
         <button id="pwChangeCancelBtn" onclick="cancelPwChange()" style="background:#f1f2f5;color:#555555;">취소</button>
@@ -4508,7 +4562,7 @@
       <p class="modal-sub" id="selfDeleteWhat"></p>
 
       <div class="pw-field" id="selfDeletePwRow" style="margin-top:14px;">
-        <input type="password" id="selfDeletePw" class="consent-input has-eye" placeholder="비밀번호를 입력해 주세요" autocomplete="off">
+        <input type="password" id="selfDeletePw" class="consent-input has-eye" placeholder="계정 비밀번호를 입력해 주세요" autocomplete="off">
         <button type="button" class="pw-eye" onclick="togglePw('selfDeletePw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
       </div>
       <p class="modal-sub" id="selfDeleteGoogleHint" style="margin-top:14px;" hidden>
@@ -5082,6 +5136,7 @@
       <p class="modal-text" style="margin-bottom:16px;">반 관리</p>
       <div class="modal-actions" style="display:flex;flex-direction:column;gap:10px;">
         <button onclick="openRenameClass()">이름 수정</button>
+        <button onclick="openClassContact()">문의 방법 수정</button>
         <button onclick="openDeleteClassConfirm()" style="background:#FDE7E7;color:#E4423F;">반 삭제</button>
         <button onclick="closeModal('classActionsModal')" style="background:#F5F6FA;color:var(--sub);">취소</button>
       </div>
@@ -5089,6 +5144,47 @@
   </div>
 
   <!-- 반 이름 수정 -->
+  <!-- 학생에게 보일 문의 방법 -->
+  <div class="modal-overlay t-scope" id="classContactModal">
+    <div class="modal-box">
+      <p class="modal-text" style="margin-bottom:6px;">문의 방법</p>
+      <p class="modal-sub" style="margin-bottom:14px;">
+        이 반 학생이 반 정보에서 볼 수 있어요.<br>오픈채팅 링크, 전화번호 등을 적어 주세요.
+      </p>
+      <textarea id="classContactInput" class="add-hw-textarea" rows="3"
+                placeholder="예) 질문은 오픈채팅으로 주세요&#10;https://open.kakao.com/o/..."></textarea>
+      <div class="modal-actions" style="display:flex;gap:10px;margin-top:12px;">
+        <button onclick="closeModal('classContactModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmClassContact()" style="flex:1;width:auto;">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 학생이 보는 반 정보 -->
+  <div class="modal-overlay t-scope" id="classInfoModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" style="margin-bottom:6px;" id="classInfoName">반 이름</p>
+      <p class="modal-sub" style="margin-bottom:14px;" id="classInfoTeacher">선생님</p>
+
+      <div class="info-row">
+        <span class="info-label">내 이름</span>
+        <span class="info-value" id="classInfoMyName">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">남은 숙제</span>
+        <span class="info-value" id="classInfoLeft">0건</span>
+      </div>
+
+      <p class="section-title" style="margin:18px 0 8px;font-size:14px;">문의 방법</p>
+      <p class="info-contact" id="classInfoContact">-</p>
+
+      <div class="modal-actions" style="display:flex;gap:10px;margin-top:16px;">
+        <button onclick="closeModal('classInfoModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">닫기</button>
+        <button onclick="enterClassFromInfo()" style="flex:1;width:auto;">숙제 보기</button>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay t-scope" id="renameClassModal">
     <div class="modal-box">
       <p class="modal-text" style="margin-bottom:14px;">반 이름 수정</p>
@@ -5104,9 +5200,19 @@
   <div class="modal-overlay t-scope" id="deleteClassConfirmModal">
     <div class="modal-box">
       <p class="modal-text">이 반을 삭제할까요?<br><span style="font-size:12px;color:var(--sub);font-weight:500;">학생과 숙제 정보가 모두 사라져요</span></p>
+
+      <div class="pw-field" id="delClassPwRow" style="margin-top:14px;">
+        <input type="password" id="delClassPw" class="consent-input has-eye" placeholder="계정 비밀번호를 입력해 주세요" autocomplete="off">
+        <button type="button" class="pw-eye" onclick="togglePw('delClassPw', this)" aria-label="비밀번호 표시"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+      </div>
+      <p class="modal-sub" id="delClassGoogleHint" style="margin-top:14px;" hidden>
+        삭제 버튼을 누르면 구글로 한 번 더 확인해요.
+      </p>
+      <p class="master-error" id="delClassMsg"></p>
+
       <div class="modal-actions" style="display:flex;gap:10px;">
         <button onclick="closeModal('deleteClassConfirmModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
-        <button onclick="confirmDeleteClass()" style="flex:1;width:auto;background:#E4423F;">삭제</button>
+        <button id="delClassBtn" onclick="confirmDeleteClass()" style="flex:1;width:auto;background:#E4423F;">삭제</button>
       </div>
     </div>
   </div>
@@ -5489,20 +5595,30 @@
     /* 학생 아이디는 반 명단이 아니라 그 학생의 계정 문서에 있다.
        반 명단은 같은 반 학생들도 읽을 수 있어서, 아이디를 거기 두면
        서로의 아이디를 알게 된다. 계정 문서는 본인과 담당 선생님만 읽는다. */
+    idLoadBusy: false,
+
     async loadStudentIds(c) {
       const F = window.FB;
-      if (!this.ready() || !c) return;
-      const todo = c.students.filter((s) => s.uid && studentIds[s.uid] === undefined);
-      /* 새로 읽을 게 없으면 여기서 끝낸다. 그리지 않아야 다시 불려 오지 않는다 */
-      if (!todo.length) return;
-      for (const stu of todo) {
-        studentIds[stu.uid] = "";          /* 두 번 읽지 않게 자리를 잡아 둔다 */
-        try {
-          const snap = await F.getDoc(F.doc(F.db, "users", stu.uid));
-          if (snap.exists()) studentIds[stu.uid] = snap.data().loginId || "";
-        } catch (e) { this.quiet(e); }
+      if (!this.ready() || !c || this.idLoadBusy) return;
+      const list = c.students.filter((s) => s.uid);
+      if (!list.length) return;
+      /* 학생이 첫 로그인 때 아이디를 바꿀 수 있어서, 한 번 읽고 마는 게 아니라
+         명단을 열 때마다 다시 확인한다. 달라진 게 있을 때만 다시 그린다. */
+      this.idLoadBusy = true;
+      let changed = false;
+      try {
+        for (const stu of list) {
+          let got = studentIds[stu.uid] || "";
+          try {
+            const snap = await F.getDoc(F.doc(F.db, "users", stu.uid));
+            if (snap.exists()) got = snap.data().loginId || "";
+          } catch (e) { this.quiet(e); }
+          if (studentIds[stu.uid] !== got) { studentIds[stu.uid] = got; changed = true; }
+        }
+      } finally {
+        this.idLoadBusy = false;
       }
-      renderClassDetail();
+      if (changed) renderClassDetail();
     },
 
     /* ---- 내 계정 문서 ---- */
@@ -5607,6 +5723,7 @@
         const c = slot(), d = snap.data();
         c.name = d.name || ""; c.code = d.code || "";
         c.teacherId = d.teacherId || ""; c.teacherName = d.teacherName || "";
+        c.teacherContact = d.teacherContact || "";
         self.snapshotMirror(cid, "_meta");
         gotClass = true; maybeDone();
         self.refresh();
@@ -5716,7 +5833,8 @@
       const m = this.mirror[cid] || (this.mirror[cid] = {});
       const copy = (v) => JSON.parse(JSON.stringify(v));
       if (part === "_meta") {
-        m._meta = copy({ name: c.name, code: c.code, teacherId: c.teacherId, teacherName: c.teacherName });
+        m._meta = copy({ name: c.name, code: c.code, teacherId: c.teacherId,
+                         teacherName: c.teacherName, teacherContact: c.teacherContact || "" });
       } else if (part === "students") {
         m.students = copy(c.students);
       } else if (part === "homeworks") {
@@ -5798,7 +5916,8 @@
         const mine = iAmTeacher && c.teacherId === self.uid;
 
         /* 반 자체 — 담당 선생님만 고칠 수 있다 */
-        const meta = { name: c.name, code: c.code, teacherId: c.teacherId, teacherName: c.teacherName };
+        const meta = { name: c.name, code: c.code, teacherId: c.teacherId,
+                       teacherName: c.teacherName, teacherContact: c.teacherContact || "" };
         if (mine && (!old._meta || !eq(old._meta, meta))) {
           batch.set(F.doc(F.db, "classes", c.id), meta, { merge: true }); n++;
         }
@@ -6533,8 +6652,17 @@
       document.getElementById(id).value = "";
       hidePwField(id);
     });
-    document.getElementById("pwChangeTitle").textContent = "비밀번호를 정해 주세요";
+    /* 처음 받은 아이디는 기계가 지은 것이라 외우기 어렵다.
+       비밀번호를 정하는 김에 아이디도 함께 바꾸게 한다. 그대로 둬도 된다. */
+    const me = userById(currentUserId);
+    document.getElementById("firstIdRow").hidden = false;
+    document.getElementById("firstId").value = (me && me.loginId) || "";
+    document.getElementById("pwChangeTitle").textContent = "아이디와 비밀번호를 정해 주세요";
     document.getElementById("pwChangeIntro").hidden = false;
+    document.getElementById("pwChangeIntro").textContent =
+      "처음 받은 비밀번호는 모두 같아요. 나만 아는 것으로 바꿔 주세요. 아이디도 외우기 쉬운 걸로 바꿀 수 있어요.";
+    document.getElementById("pwChangeHint").textContent =
+      "아이디는 영문 소문자와 숫자 4~20자 · 비밀번호는 8자 이상, 영문·숫자·특수문자 모두 포함";
     document.getElementById("curPwRow").hidden = true;      /* 지금 비밀번호는 앱이 안다 */
     document.getElementById("pwChangeCancelBtn").textContent = "로그아웃";
     document.getElementById("pwChangeMsg").classList.remove("show");
@@ -6551,7 +6679,15 @@
     else logoutStudent();
   }
 
+  /* 화면 폭 규칙이 역할을 알아야 해서 body에 적어 둔다.
+     선생님은 노트북·데스크탑까지, 학생은 태블릿 폭까지만 넓어진다. */
+  function setBodyRole(role) {
+    if (role) document.body.dataset.role = role;
+    else delete document.body.dataset.role;
+  }
+
   function enterAfterLogin(role, me) {
+    setBodyRole(role);
     if (me && me.mustChangePw) {
       /* 화면은 정상적으로 들어가되, 그 위에 바꾸는 창을 띄운다 */
       setTimeout(openFirstPwChange, 400);
@@ -6690,16 +6826,15 @@
     }
     document.getElementById(pid + "Role").textContent = role;
 
-    /* 구글로 들어온 계정은 이 앱에 비밀번호가 없다. 바꿀 것이 없으니 감춘다. */
+    /* 구글로 들어온 계정은 이 앱에 비밀번호가 없다. 단추는 그대로 두고,
+       눌렀을 때 왜 못 바꾸는지 알려 준다. 감춰 두면 없어진 줄 알기 쉽다. */
     const byGoogle = !!(me && me.google);
-    const pwRow = document.getElementById((isTeacher ? "t-" : "") + "pwChangeRow");
-    if (pwRow) pwRow.hidden = byGoogle;
 
     /* 구글 계정은 이름이 아니라 구글로 로그인하므로 안내 문구가 다르다 */
     const lock = document.getElementById("t-mypageLock");
     if (lock && isTeacher) {
       lock.textContent = byGoogle
-        ? "구글 계정으로 로그인해요" + (me.loginId ? " · " + me.loginId : "")
+        ? "구글 계정으로 로그인했어요" + (me.loginId ? " · " + me.loginId : "")
         : "가입할 때 정한 이름으로 로그인해요";
     }
 
@@ -6731,19 +6866,18 @@
               <p class="student-name">${escHtml(c.name)}</p>
               <p class="student-meta">학생 ${c.students.length}명</p>
             </div>
-            ${p > 0 ? `<span class="status-pill pending">대기 ${p}</span>` : ""}
+            ${p > 0 ? `<span class="class-card-pill">대기 ${p}</span>` : ""}
             <button class="class-action-btn" onclick="openClassDetail(${i}, 't-mypage')">관리</button>
           </div>
         `;
       }).join("") + `
-        <button class="add-class-btn" onclick="startAddClass('t-mypage')" style="margin-top:4px;">${addIcon} 새 반 만들기</button>
+        <button class="add-class-btn" onclick="startAddClass('t-students')" style="margin-top:4px;">${addIcon} 새 반 만들기</button>
       `;
       if (mine.length === 0) {
         listEl.innerHTML = '<p class="empty-approval">아직 만든 반이 없어요</p>' + listEl.innerHTML;
       }
     } else {
       const mine = myStudentClasses();
-      document.getElementById(pid + "Count").textContent = mine.length;
 
       listEl.innerHTML = mine.map(({ c }) => {
         const left = remainingCountFor(c);
@@ -6754,7 +6888,7 @@
               <p class="student-name">${escHtml(c.name)}</p>
               <p class="student-meta">${escHtml(c.teacherName || "")} 선생님${myNameInClass(c.code) !== accountName ? " · " + escHtml(myNameInClass(c.code)) : ""}</p>
             </div>
-            ${left > 0 ? `<span class="status-pill pending">숙제 ${left}</span>` : ""}
+            ${left > 0 ? `<span class="class-card-pill">숙제 ${left}</span>` : ""}
             <button class="class-action-btn leave" onclick="openLeaveClass('${jsStr(c.code)}')">반 탈퇴</button>
           </div>
         `;
@@ -6771,12 +6905,22 @@
   /* ===== 비밀번호 변경 ===== */
   function openPwChange() {
     playTapSound();
+    /* 구글 계정의 비밀번호는 구글이 갖고 있다. 이 앱에는 아예 없어서
+       여기서 바꿀 수가 없다. 구글 계정 설정에서 바꾸면 된다. */
+    const me = userById(currentUserId);
+    if (me && me.google) {
+      document.getElementById("googlePwModal").classList.add("show");
+      return;
+    }
     forcePwChange = false;
     ["curPw", "newPw", "newPw2"].forEach((id) => {
       document.getElementById(id).value = "";
       hidePwField(id);
     });
     document.getElementById("pwChangeTitle").textContent = "비밀번호 변경";
+    document.getElementById("firstIdRow").hidden = true;
+    document.getElementById("pwChangeHint").textContent =
+      "8자 이상, 영문·숫자·특수문자를 모두 포함해야 해요";
     document.getElementById("pwChangeIntro").hidden = true;
     document.getElementById("curPwRow").hidden = false;
     document.getElementById("pwChangeCancelBtn").textContent = "취소";
@@ -6809,6 +6953,17 @@
       return;
     }
 
+    /* 첫 로그인이면 아이디도 함께 정한다. 그대로 둬도 된다. */
+    let wantId = null;
+    if (forcePwChange) {
+      const typed = document.getElementById("firstId").value.trim().toLowerCase();
+      if (!/^[a-z0-9]{4,20}$/.test(typed)) {
+        fail("아이디는 영문 소문자와 숫자만, 4~20자로 정해 주세요");
+        return;
+      }
+      if (typed !== (me.loginId || "")) wantId = typed;
+    }
+
     /* 비밀번호는 서버가 되돌릴 수 없게 보관하므로, 지금 비밀번호로 한 번 더
        본인임을 확인한 다음에 바꾼다. */
     try {
@@ -6818,6 +6973,30 @@
       fail("현재 비밀번호가 올바르지 않아요");
       return;
     }
+
+    /* 아이디를 먼저 바꾼다. 비밀번호를 바꾼 뒤에 하면, 아이디 바꾸기가
+       막혀 있을 때 방금 확인한 본인 확인이 헛돌게 된다. */
+    let idFailed = "";
+    if (wantId) {
+      try {
+        const mod = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js");
+        await withTimeout(mod.updateEmail(window.FB.auth.currentUser, idToEmail(wantId)), 15000);
+        me.loginId = wantId;
+      } catch (e) {
+        const code = (e && e.code) || "";
+        if (code === "auth/email-already-in-use") {
+          fail("이미 쓰고 있는 아이디예요. 다른 걸로 정해 주세요");
+          return;
+        }
+        /* 아이디를 못 바꿔도 비밀번호는 반드시 바꾸게 한다.
+           처음 비밀번호는 모두 같아서 그대로 두면 위험하기 때문이다. */
+        idFailed = code === "auth/operation-not-allowed"
+          ? "아이디는 지금 바꿀 수 없어서 그대로 뒀어요"
+          : "아이디를 바꾸지 못해 그대로 뒀어요";
+        console.warn("아이디 변경 실패:", code, e && e.message);
+      }
+    }
+
     try {
       await window.FB.updatePassword(window.FB.auth.currentUser, a);
     } catch (e) {
@@ -6826,13 +7005,22 @@
     }
 
     /* 바꿨으니 '처음 받은 비밀번호' 표시를 지운다 */
-    if (me.mustChangePw) {
+    const patch = { mustChangePw: false };
+    if (wantId && !idFailed) patch.loginId = wantId;
+    if (me.mustChangePw || wantId) {
       me.mustChangePw = false;
-      try { await Cloud.writeMe({ mustChangePw: false }); } catch (e) {}
+      try { await Cloud.writeMe(patch); } catch (e) {}
     }
     forcePwChange = false;
     closeModal("pwChangeModal");
     playSuccessChime();
+    if (idFailed) {
+      const el = document.getElementById("storageFullText");
+      const ti = document.getElementById("storageFullTitle");
+      if (ti) ti.textContent = "비밀번호를 바꿨어요";
+      if (el) el.textContent = idFailed + ". 아이디는 마이페이지에서 다시 해 볼 수 있어요.";
+      document.getElementById("storageFullModal").classList.add("show");
+    }
   }
 
   /* ===== 아이디 변경 (학생) =====
@@ -6947,7 +7135,7 @@
 
   /* 지금 로그인한 사람이 맞는지 다시 확인한다.
      비밀번호 계정은 비밀번호로, 구글 계정은 구글 확인으로 한다. */
-  async function verifyItIsMe(me) {
+  async function verifyItIsMe(me, pwFieldId) {
     if (me && me.google) {
       const cred = await withTimeout(window.FB.googlePopup(), 120000, "확인 시간 초과");
       if (!cred || !cred.user || cred.user.uid !== me.id) {
@@ -6955,7 +7143,7 @@
       }
       return;
     }
-    const pw = document.getElementById("selfDeletePw").value;
+    const pw = document.getElementById(pwFieldId || "selfDeletePw").value;
     if (!pw) { const e = new Error("빈 비밀번호"); e.code = "app/empty-pw"; throw e; }
     const loginId = (me && me.loginId) || loginIdFor(me.role, me.name);
     await withTimeout(window.FB.signInWithEmailAndPassword(
@@ -6982,7 +7170,7 @@
       await verifyItIsMe(me);
     } catch (e) {
       const code = (e && e.code) || "";
-      if (code === "app/empty-pw") fail("비밀번호를 입력해 주세요");
+      if (code === "app/empty-pw") fail("계정 비밀번호를 입력해 주세요");
       else if (code === "app/other-account") fail("지금 로그인한 계정과 달라요");
       else if (code === "auth/popup-closed-by-user") msg.classList.remove("show");
       else if (code === "auth/network-request-failed" || code === "app/timeout") fail(connectHint());
@@ -7156,6 +7344,32 @@
 
   const ADD_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>';
 
+  /* 반 카드를 누르면 바로 숙제로 들어가 버려서, 선생님이 누군지·어디로
+     물어보면 되는지 볼 곳이 없었다. 반 정보를 먼저 보여 준다. */
+  let classInfoIndex = null;
+
+  function openClassInfo(i) {
+    playTapSound();
+    const c = classes[i];
+    if (!c) return;
+    classInfoIndex = i;
+    document.getElementById("classInfoName").textContent = c.name || "";
+    document.getElementById("classInfoTeacher").textContent =
+      (c.teacherName || "") + " 선생님";
+    document.getElementById("classInfoMyName").textContent = myNameInClass(c.code) || accountName;
+    document.getElementById("classInfoLeft").textContent = remainingCountFor(c) + "건";
+    const contact = (c.teacherContact || "").trim();
+    const box = document.getElementById("classInfoContact");
+    box.textContent = contact || "선생님이 아직 적어 두지 않았어요";
+    box.classList.toggle("empty", !contact);
+    document.getElementById("classInfoModal").classList.add("show");
+  }
+
+  function enterClassFromInfo() {
+    closeModal("classInfoModal");
+    if (classInfoIndex !== null) enterStudentClass(classInfoIndex);
+  }
+
   function renderStudentClassList() {
     const container = document.getElementById("sClassList");
     const mine = myStudentClasses();
@@ -7179,13 +7393,13 @@
     container.innerHTML = mine.map(({ c, i }) => {
       const remaining = remainingCountFor(c);
       return `
-        <div class="student-card" onclick="enterStudentClass(${i})">
+        <div class="student-card" onclick="openClassInfo(${i})">
           <div class="student-avatar">${escHtml(c.name[0])}</div>
           <div class="student-info">
             <p class="student-name">${escHtml(c.name)}</p>
             <p class="student-meta">${escHtml(c.teacherName || "")} 선생님${myNameInClass(c.code) !== accountName ? ` · ${escHtml(myNameInClass(c.code))}로 참여중` : ""}</p>
           </div>
-          ${remaining > 0 ? `<span class="status-pill pending">숙제 ${remaining}</span>` : ""}
+          ${remaining > 0 ? `<span class="class-card-pill">숙제 ${remaining}</span>` : ""}
           <button class="class-action-btn leave" onclick="event.stopPropagation(); openLeaveClass('${jsStr(c.code)}')">반 탈퇴</button>
         </div>
       `;
@@ -7209,6 +7423,7 @@
 
   function logoutTeacher() {
     playTapSound();
+    setBodyRole(null);
     Cloud.signOutNow();
     currentUserId = null;
     teacherName = "";
@@ -7219,6 +7434,7 @@
 
   function logoutStudent() {
     playTapSound();
+    setBodyRole(null);
     Cloud.signOutNow();
     currentUserId = null;
     accountName = "";
@@ -8813,7 +9029,6 @@
             <p class="student-name">${escHtml(s.name)}</p>
             <p class="student-loginid">아이디 ${escHtml(studentIds[s.uid] || "…")}</p>
           </div>
-          <button class="student-pw-btn" onclick="openStudentPwReset(${i})">비번</button>
           <button class="student-delete-btn" onclick="removeStudent(${i})" aria-label="삭제">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"></path>
@@ -9233,29 +9448,6 @@
     renderClassDetail();
   }
 
-  /* 비밀번호는 되돌릴 수 없게 보관되므로 앱에서는 바꿀 수 없다.
-     선생님이 콘솔에서 직접 바꾸도록 필요한 것만 모아 보여 준다. */
-  let stuPwMail = "";
-
-  function openStudentPwReset(i) {
-    playTapSound();
-    const c = classes[currentClassIndex];
-    const stu = c && c.students[i];
-    if (!stu) return;
-    const loginId = studentIds[stu.uid] || "";
-    stuPwMail = loginId ? idToEmail(loginId) : "";
-    document.getElementById("stuPwWho").textContent =
-      stu.name + (loginId ? " · 아이디 " + loginId : "");
-    document.getElementById("stuPwMail").textContent =
-      stuPwMail || "아이디를 알 수 없어요 (콘솔에서 이름으로 찾아 주세요)";
-    document.getElementById("stuPwModal").classList.add("show");
-  }
-
-  function copyStudentMail() {
-    if (!stuPwMail) return;
-    copyText(stuPwMail);
-  }
-
   function removeHomework(hwId) {
     playTapSound();
     const c = classes[currentClassIndex];
@@ -9358,13 +9550,70 @@
     closeModal("renameClassModal");
   }
 
+  /* 문의 방법은 반 문서에 담는다. 학생은 선생님 계정 문서를 읽을 수 없고,
+     반 문서는 그 반 학생이면 읽을 수 있기 때문이다. */
+  function openClassContact() {
+    playTapSound();
+    closeModal("classActionsModal");
+    const c = classes[currentClassIndex];
+    document.getElementById("classContactInput").value = (c && c.teacherContact) || "";
+    document.getElementById("classContactModal").classList.add("show");
+  }
+
+  function confirmClassContact() {
+    const c = classes[currentClassIndex];
+    if (!c) return;
+    c.teacherContact = document.getElementById("classContactInput").value.trim().slice(0, 300);
+    saveState();
+    closeModal("classContactModal");
+    playSuccessChime();
+  }
+
   function openDeleteClassConfirm() {
     playTapSound();
     closeModal("classActionsModal");
+    /* 반을 지우면 그 안의 숙제와 제출물까지 한꺼번에 사라진다.
+       계정 삭제와 마찬가지로 본인임을 한 번 더 확인받는다. */
+    const me = userById(currentUserId);
+    const byGoogle = !!(me && me.google);
+    document.getElementById("delClassPwRow").hidden = byGoogle;
+    document.getElementById("delClassGoogleHint").hidden = !byGoogle;
+    document.getElementById("delClassPw").value = "";
+    hidePwField("delClassPw");
+    document.getElementById("delClassMsg").classList.remove("show");
     document.getElementById("deleteClassConfirmModal").classList.add("show");
   }
 
-  function confirmDeleteClass() {
+  async function confirmDeleteClass() {
+    if (authBusy) return;
+    const me = userById(currentUserId);
+    if (!me) return;
+
+    const msg = document.getElementById("delClassMsg");
+    const fail = (text) => {
+      msg.textContent = text;
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+    };
+    if (!window.FB) { fail("서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); return; }
+
+    const btn = document.getElementById("delClassBtn");
+    setAuthBusy(btn, true, "삭제");
+    try {
+      await verifyItIsMe(me, "delClassPw");
+    } catch (e) {
+      const code = (e && e.code) || "";
+      if (code === "app/empty-pw") fail("계정 비밀번호를 입력해 주세요");
+      else if (code === "app/other-account") fail("지금 로그인한 계정과 달라요");
+      else if (code === "auth/popup-closed-by-user") msg.classList.remove("show");
+      else if (code === "auth/network-request-failed" || code === "app/timeout") fail(connectHint());
+      else fail("비밀번호가 올바르지 않아요");
+      return;
+    } finally {
+      setAuthBusy(btn, false, "삭제");
+    }
+
     classes.splice(currentClassIndex, 1);
     currentClassIndex = null;
     /* saveState는 저장소에 있는 반을 다시 합쳐 넣기 때문에 방금 지운 반이
@@ -9629,7 +9878,7 @@
               <p class="student-name">${escHtml(s.name)}</p>
               <p class="student-meta">제출 ${subs.length}건 / 숙제 ${c.homeworks.length}건</p>
             </div>
-            ${pending > 0 ? `<span class="status-pill pending">대기 ${pending}</span>` : ""}
+            ${pending > 0 ? `<span class="class-card-pill">대기 ${pending}</span>` : ""}
             ${MASTER_ARROW}
           </div>
         `;
