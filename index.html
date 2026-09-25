@@ -2184,6 +2184,74 @@
     letter-spacing:0.02em;
   }
 
+  /* 공지 카드 — 선생님 화면과 학생 화면이 같은 모양을 쓴다 */
+  .notice-card{
+    padding:14px 16px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#ffffff;
+    margin-bottom:8px;
+  }
+  .notice-text{
+    margin:0;
+    font-size:14px;
+    font-weight:700;
+    line-height:1.6;
+    color:var(--ink);
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .notice-when{
+    margin:8px 0 0;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--sub);
+  }
+  .notice-foot{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-top:10px;
+  }
+  .notice-where{
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--point-strong);
+  }
+  .notice-del{
+    flex-shrink:0;
+    background:none;
+    border:none;
+    padding:0;
+    font-family:inherit;
+    font-size:12px;
+    font-weight:800;
+    color:var(--sub);
+    cursor:pointer;
+  }
+  .notice-pick{
+    max-height:190px;
+    overflow-y:auto;
+  }
+  .notice-pick-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    margin-bottom:6px;
+    font-size:13.5px;
+    font-weight:700;
+    color:var(--ink);
+    text-align:left;
+    cursor:pointer;
+  }
+  .notice-pick-row input{ width:17px; height:17px; flex-shrink:0; accent-color:var(--point-strong); }
+  .notice-pick-row span:nth-of-type(1){ flex:1; }
+  .notice-pick-count{ font-size:11.5px; font-weight:700; color:var(--sub); }
+
   .t-scope .info-row{
     display:flex;
     align-items:center;
@@ -3709,6 +3777,11 @@
         </div>
       </div>
 
+      <div id="sNoticeBox" style="display:none;">
+        <p class="section-title" style="margin-top:18px;">선생님 공지</p>
+        <div id="sNoticeList"></div>
+      </div>
+
       <div class="homework-card">
         <p class="homework-title">제출해야 할 숙제</p>
         <p class="homework-date-range"></p>
@@ -3970,7 +4043,7 @@
         <button class="menu-row" onclick="openPrivacy('mypage')">
           <span>개인정보처리방침</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </button>
-        <button class="menu-row" onclick="logoutStudent()">
+        <button class="menu-row" onclick="askLogout()">
           <span>로그아웃</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </button>
         <button class="menu-row danger" onclick="openSelfDelete()">
@@ -4047,7 +4120,7 @@
         <button class="menu-row" onclick="openPrivacy('t-mypage')">
           <span>개인정보처리방침</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </button>
-        <button class="menu-row" onclick="logoutTeacher()">
+        <button class="menu-row" onclick="askLogout()">
           <span>로그아웃</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </button>
         <button class="menu-row danger" onclick="openSelfDelete()">
@@ -4297,6 +4370,39 @@
       </p>
       <div class="modal-actions">
         <button onclick="closeModal('googlePwModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공지 올리기 -->
+  <div class="modal-overlay t-scope" id="noticeModal">
+    <div class="modal-box" style="max-width:360px;">
+      <p class="modal-text" style="margin-bottom:6px;">공지 올리기</p>
+      <p class="modal-sub" style="margin-bottom:14px;">고른 반의 학생 홈에 바로 보여요.</p>
+
+      <textarea id="noticeText" class="add-hw-textarea" rows="4" maxlength="300"
+                placeholder="예) 이번 주 금요일은 수업이 없어요"></textarea>
+
+      <p class="section-title" style="margin:16px 0 8px;font-size:14px;">어느 반에 올릴까요?</p>
+      <div id="noticeClassPick" class="notice-pick"></div>
+
+      <p class="master-error" id="noticeMsg"></p>
+
+      <div class="modal-actions" style="display:flex;gap:10px;margin-top:14px;">
+        <button onclick="closeModal('noticeModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button id="noticeSaveBtn" onclick="confirmNotice()" style="flex:1;width:auto;">올리기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그아웃 확인 -->
+  <div class="modal-overlay" id="logoutModal">
+    <div class="modal-box">
+      <p class="modal-text">로그아웃할까요?</p>
+      <p class="modal-sub" style="margin-top:8px;">다시 들어오려면 아이디와 비밀번호가 필요해요.</p>
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('logoutModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">아니오</button>
+        <button onclick="confirmLogout()" style="flex:1;width:auto;">네, 로그아웃</button>
       </div>
     </div>
   </div>
@@ -4559,11 +4665,28 @@
       <input type="text" id="googleName" class="consent-input" placeholder="이름"
              autocomplete="off" maxlength="20">
 
+      <p class="consent-title" style="margin-top:14px;">나이 확인</p>
+      <div class="age-row">
+        <button type="button" class="age-btn active" id="gAgeAdultBtn" onclick="setGoogleAge(false)">만 14세 이상</button>
+        <button type="button" class="age-btn" id="gAgeMinorBtn" onclick="setGoogleAge(true)">만 14세 미만</button>
+      </div>
+
+      <div id="gGuardianBox" style="display:none;">
+        <p class="consent-note">만 14세 미만은 법에 따라 보호자 동의가 필요해요</p>
+        <input type="text" id="gGuardianName" class="consent-input" placeholder="보호자 성함" autocomplete="off">
+        <input type="text" id="gGuardianContact" class="consent-input" placeholder="보호자 연락처" autocomplete="off">
+      </div>
+
       <label class="consent-check" style="margin-top:12px;">
         <input type="checkbox" id="googleAgree">
         <span>(필수) 개인정보 수집·이용에 동의합니다</span>
       </label>
       <button type="button" class="consent-link" onclick="openPrivacyFromGoogle()">개인정보처리방침 보기</button>
+
+      <label class="consent-check" id="gGuardianCheckRow" style="display:none;">
+        <input type="checkbox" id="gAgreeGuardian">
+        <span>(필수) 보호자에게 동의를 받았습니다</span>
+      </label>
 
       <p class="master-error" id="googleSetupMsg"></p>
 
@@ -4837,6 +4960,17 @@
           </svg>
           반 추가하기
         </button>
+      </div>
+
+      <div id="noticeSection" style="display:none;">
+        <p class="section-title">공지</p>
+        <button class="add-hw-btn" onclick="openNoticeWrite()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 5v14M5 12h14"></path>
+          </svg>
+          공지 올리기
+        </button>
+        <div id="tNoticeList"></div>
       </div>
 
       <div id="statsSection" style="display:none;">
@@ -5604,6 +5738,15 @@
   /* 학생은 이메일이 없어도 되게, 아이디를 내부에서만 이메일 꼴로 바꿔 쓴다.
      화면에는 '이메일'이라는 말이 나오지 않는다. */
   const LOGIN_DOMAIN = "todayhw.app";
+  const RULES_HINT = "파이어베이스 콘솔 > Firestore Database > 규칙에 loginIds 규칙을 "
+    + "올려야 아이디를 바꿀 수 있습니다. 파일럿/firestore.rules 를 그대로 붙여 넣으세요.";
+
+  /* 지금 로그인된 계정의 진짜 주소. 아이디와 다를 수 있다(위 장부 설명 참고) */
+  function authEmail() {
+    const u = window.FB && window.FB.auth && window.FB.auth.currentUser;
+    return (u && u.email) || "";
+  }
+
   function idToEmail(loginId) {
     const v = String(loginId || "").trim().toLowerCase();
     return v.indexOf("@") >= 0 ? v : v + "@" + LOGIN_DOMAIN;
@@ -5649,10 +5792,67 @@
     /* 가입 중에는 잠깐 로그인 상태가 되는데, 그때 자동으로 앱에 들어가면 안 된다 */
     signingUp: false,
 
+    /* ---- 로그인 아이디 찾아보기 ----
+       파이어베이스는 계정을 이메일로 구분한다. 그래서 지금까지는 아이디를
+       바꾸려면 그 이메일 자체를 바꿔야 했는데, 프로젝트 설정(이메일 열거
+       방지)이 켜져 있으면 "새 주소를 먼저 인증하라"며 막는다. 학생 아이디는
+       메일이 갈 수 없는 가짜 주소라 인증할 방법이 없다.
+
+       그래서 이메일은 처음 발급된 그대로 두고, '로그인 아이디 → 이메일'
+       장부를 따로 둔다. 아이디를 바꾸는 일은 이 장부에 줄 하나 바꿔 쓰는
+       일이 된다. 로그인할 때 이 장부를 먼저 찾아본다.
+
+       장부를 못 읽으면(규칙을 아직 안 올렸다면) 예전처럼 아이디에서
+       주소를 만들어 쓴다. 그래서 규칙을 올리기 전에도 앱은 그대로 돌아간다. */
+    async resolveLoginEmail(typedId) {
+      const id = String(typedId || "").trim().toLowerCase();
+      try {
+        const F = window.FB;
+        const snap = await F.getDoc(F.doc(F.db, "loginIds", id));
+        if (snap.exists() && snap.data().email) return snap.data().email;
+      } catch (e) { /* 규칙이 없으면 조용히 예전 방식으로 */ }
+      return idToEmail(id);
+    },
+
+    /* 이 아이디를 내 것으로 등록한다.
+       거부당하는 이유가 둘이라 구분해서 알려 준다.
+         - 남이 이미 그 아이디를 쓰고 있다
+         - 장부 규칙이 아직 서버에 올라가 있지 않다
+       둘 다 permission-denied로 똑같이 오기 때문에, 먼저 읽어 본다.
+       읽기는 규칙이 있을 때만 열려 있어서, 읽기부터 막히면 규칙이 없는 것이다. */
+    async claimLoginId(newId, oldId) {
+      const F = window.FB, u = F.auth.currentUser;
+      let snap;
+      try {
+        snap = await F.getDoc(F.doc(F.db, "loginIds", newId));
+      } catch (e) {
+        const err = new Error("장부 규칙 없음");
+        err.code = "app/no-rules";
+        throw err;
+      }
+      if (snap.exists() && snap.data().uid !== u.uid) {
+        const err = new Error("이미 쓰는 아이디");
+        err.code = "app/id-taken";
+        throw err;
+      }
+      try {
+        await F.setDoc(F.doc(F.db, "loginIds", newId), { uid: u.uid, email: u.email });
+      } catch (e) {
+        const err = new Error("장부에 쓰지 못함");
+        err.code = (e && e.code) === "permission-denied" ? "app/no-rules" : ((e && e.code) || "app/write-failed");
+        throw err;
+      }
+      if (oldId && oldId !== newId) {
+        try { await F.deleteDoc(F.doc(F.db, "loginIds", oldId)); } catch (e) { this.quiet(e); }
+      }
+    },
+
     /* ---- 로그인 ---- */
     async signIn(loginId, pw) {
-      const cred = await window.FB.signInWithEmailAndPassword(
-        window.FB.auth, idToEmail(loginId), pw);
+      return this.signInEmail(idToEmail(loginId), pw);
+    },
+    async signInEmail(email, pw) {
+      const cred = await window.FB.signInWithEmailAndPassword(window.FB.auth, email, pw);
       return cred.user.uid;
     },
     async signUp(loginId, pw) {
@@ -5797,6 +5997,7 @@
         c.name = d.name || ""; c.code = d.code || "";
         c.teacherId = d.teacherId || ""; c.teacherName = d.teacherName || "";
         c.teacherContact = d.teacherContact || "";
+        c.notices = Array.isArray(d.notices) ? d.notices : [];
         self.snapshotMirror(cid, "_meta");
         gotClass = true; maybeDone();
         self.refresh();
@@ -5907,7 +6108,8 @@
       const copy = (v) => JSON.parse(JSON.stringify(v));
       if (part === "_meta") {
         m._meta = copy({ name: c.name, code: c.code, teacherId: c.teacherId,
-                         teacherName: c.teacherName, teacherContact: c.teacherContact || "" });
+                         teacherName: c.teacherName, teacherContact: c.teacherContact || "",
+                         notices: c.notices || [] });
       } else if (part === "students") {
         m.students = copy(c.students);
       } else if (part === "homeworks") {
@@ -5990,7 +6192,8 @@
 
         /* 반 자체 — 담당 선생님만 고칠 수 있다 */
         const meta = { name: c.name, code: c.code, teacherId: c.teacherId,
-                       teacherName: c.teacherName, teacherContact: c.teacherContact || "" };
+                       teacherName: c.teacherName, teacherContact: c.teacherContact || "",
+                       notices: c.notices || [] };
         if (mine && (!old._meta || !eq(old._meta, meta))) {
           batch.set(F.doc(F.db, "classes", c.id), meta, { merge: true }); n++;
         }
@@ -6487,7 +6690,10 @@
     const btn = document.querySelector("#page-" + (role === "teacher" ? "t-" : "") + "name-input .auth-submit");
     setAuthBusy(btn, true, "로그인");
     try {
-      const uid = await withTimeout(Cloud.signIn(loginIdFor(role, typed), pw), 15000);
+      const email = role === "student"
+        ? await withTimeout(Cloud.resolveLoginEmail(typed), 10000)
+        : idToEmail(loginIdFor(role, typed));
+      const uid = await withTimeout(Cloud.signInEmail(email, pw), 15000);
       const okDoc = await withTimeout(Cloud.start(uid), 15000);
       if (!okDoc) {
         await Cloud.signOutNow();
@@ -6650,8 +6856,26 @@
     }
   }
 
+  /* 구글로 들어와도 만 14세 확인은 똑같이 받아야 한다.
+     법이 가입 방법을 가리지 않기 때문이다. */
+  let googleIsMinor = false;
+
+  function setGoogleAge(isMinor) {
+    playTapSound();
+    googleIsMinor = isMinor;
+    document.getElementById("gAgeAdultBtn").classList.toggle("active", !isMinor);
+    document.getElementById("gAgeMinorBtn").classList.toggle("active", isMinor);
+    document.getElementById("gGuardianBox").style.display = isMinor ? "" : "none";
+    document.getElementById("gGuardianCheckRow").style.display = isMinor ? "" : "none";
+    document.getElementById("googleSetupMsg").classList.remove("show");
+  }
+
   function openGoogleSetup(user) {
     googlePendingUser = user;
+    setGoogleAge(false);
+    document.getElementById("gGuardianName").value = "";
+    document.getElementById("gGuardianContact").value = "";
+    document.getElementById("gAgreeGuardian").checked = false;
     document.getElementById("googleEmail").textContent = user.email || "";
     document.getElementById("googleName").value = String(user.displayName || "").trim();
     document.getElementById("googleAgree").checked = false;
@@ -6685,6 +6909,14 @@
     if (!document.getElementById("googleAgree").checked) {
       fail("개인정보 수집·이용에 동의해 주세요"); return;
     }
+    const gName = document.getElementById("gGuardianName").value.trim();
+    const gContact = document.getElementById("gGuardianContact").value.trim();
+    if (googleIsMinor) {
+      if (!gName || !gContact) { fail("보호자 성함과 연락처를 입력해 주세요"); return; }
+      if (!document.getElementById("gAgreeGuardian").checked) {
+        fail("보호자 동의를 확인해 주세요"); return;
+      }
+    }
     if (!window.FB) { fail("서버에 연결하지 못했어요. 인터넷을 확인해 주세요"); return; }
 
     const btn = document.getElementById("googleSetupBtn");
@@ -6699,9 +6931,9 @@
         classIds: [],
         classNames: {},
         agreedAt: new Date().toISOString(),
-        isMinor: false,
-        guardianName: "",
-        guardianContact: "",
+        isMinor: googleIsMinor,
+        guardianName: googleIsMinor ? gName : "",
+        guardianContact: googleIsMinor ? gContact : "",
       }), 15000);
       closeModal("googleSetupModal");
       googlePendingUser = null;
@@ -7040,32 +7272,30 @@
     /* 비밀번호는 서버가 되돌릴 수 없게 보관하므로, 지금 비밀번호로 한 번 더
        본인임을 확인한 다음에 바꾼다. */
     try {
-      const loginId = me.loginId || loginIdFor(me.role, me.name);
-      await window.FB.signInWithEmailAndPassword(window.FB.auth, idToEmail(loginId), cur);
+      await window.FB.signInWithEmailAndPassword(window.FB.auth, authEmail(), cur);
     } catch (e) {
       fail("현재 비밀번호가 올바르지 않아요");
       return;
     }
 
-    /* 아이디를 먼저 바꾼다. 비밀번호를 바꾼 뒤에 하면, 아이디 바꾸기가
-       막혀 있을 때 방금 확인한 본인 확인이 헛돌게 된다. */
+    /* 아이디를 먼저 바꾼다. 장부에 줄 하나 바꿔 쓰는 일이라 이메일은 그대로다. */
     let idFailed = "";
     if (wantId) {
       try {
-        const mod = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js");
-        await withTimeout(mod.updateEmail(window.FB.auth.currentUser, idToEmail(wantId)), 15000);
+        await withTimeout(Cloud.claimLoginId(wantId, me.loginId || ""), 15000);
         me.loginId = wantId;
       } catch (e) {
         const code = (e && e.code) || "";
-        if (code === "auth/email-already-in-use") {
-          fail("이미 쓰고 있는 아이디예요. 다른 걸로 정해 주세요");
-          return;
-        }
         /* 아이디를 못 바꿔도 비밀번호는 반드시 바꾸게 한다.
            처음 비밀번호는 모두 같아서 그대로 두면 위험하기 때문이다. */
-        idFailed = code === "auth/operation-not-allowed"
-          ? "아이디는 지금 바꿀 수 없어서 그대로 뒀어요"
-          : "아이디를 바꾸지 못해 그대로 뒀어요";
+        if (code === "app/id-taken") {
+          idFailed = "그 아이디는 이미 쓰는 사람이 있어서 그대로 뒀어요";
+        } else if (code === "app/no-rules") {
+          idFailed = "아이디 바꾸기가 아직 준비되지 않아 그대로 뒀어요";
+          console.warn("%s", RULES_HINT);
+        } else {
+          idFailed = "아이디를 바꾸지 못해 그대로 뒀어요";
+        }
         console.warn("아이디 변경 실패:", code, e && e.message);
       }
     }
@@ -7133,14 +7363,14 @@
       /* 바꾸기 전에 본인임을 확인한다 */
       try {
         await withTimeout(window.FB.signInWithEmailAndPassword(
-          window.FB.auth, idToEmail(me.loginId || ""), pw), 15000);
+          window.FB.auth, authEmail(), pw), 15000);
       } catch (e) {
         fail("비밀번호가 올바르지 않아요");
         return;
       }
 
-      const mod = await import("https://www.gstatic.com/firebasejs/12.19.0/firebase-auth.js");
-      await withTimeout(mod.updateEmail(window.FB.auth.currentUser, idToEmail(want)), 15000);
+      /* 장부에 이 아이디를 내 것으로 적는다. 남이 쓰고 있으면 규칙이 막는다. */
+      await withTimeout(Cloud.claimLoginId(want, me.loginId || ""), 15000);
 
       me.loginId = want;
       await Cloud.writeMe({ loginId: want });
@@ -7149,13 +7379,11 @@
       playSuccessChime();
     } catch (e) {
       const code = (e && e.code) || "";
-      if (code === "auth/email-already-in-use") {
+      if (code === "app/id-taken") {
         fail("이미 쓰고 있는 아이디예요. 다른 걸로 정해 주세요");
-      } else if (code === "auth/operation-not-allowed") {
-        /* 프로젝트 설정(이메일 열거 방지)이 켜져 있으면 막힌다 */
-        fail("지금은 아이디를 바꿀 수 없어요. 선생님께 문의해 주세요");
-        console.warn("아이디 변경이 막혀 있음: 파이어베이스 콘솔 > Authentication > 설정에서 " +
-                     "'이메일 열거 방지(Email enumeration protection)'를 꺼야 합니다.");
+      } else if (code === "app/no-rules") {
+        fail("아직 아이디를 바꿀 수 없어요. 선생님께 문의해 주세요");
+        console.warn("%s", RULES_HINT);
       } else if (code === "app/timeout" || code === "auth/network-request-failed") {
         fail(connectHint());
       } else {
@@ -7218,9 +7446,8 @@
     }
     const pw = document.getElementById(pwFieldId || "selfDeletePw").value;
     if (!pw) { const e = new Error("빈 비밀번호"); e.code = "app/empty-pw"; throw e; }
-    const loginId = (me && me.loginId) || loginIdFor(me.role, me.name);
     await withTimeout(window.FB.signInWithEmailAndPassword(
-      window.FB.auth, idToEmail(loginId), pw), 15000);
+      window.FB.auth, authEmail(), pw), 15000);
   }
 
   async function confirmSelfDelete() {
@@ -7485,6 +7712,7 @@
     selectedClassName = classes[i].name;
     studentName = myNameInClass(classes[i].code);
     document.querySelector("#page-home .user-name").textContent = accountName;
+    renderStudentNotices();
     document.getElementById("homeClassLabel").textContent = classes[i].name;
     renderStudentHome();
     renderRemainingList();
@@ -7492,6 +7720,19 @@
     renderCounts();
     renderPastList();
     showPage("home");
+  }
+
+  /* 실수로 눌러 로그아웃되는 일이 잦아 한 번 더 묻는다.
+     학생은 비밀번호를 새로 정한 지 얼마 안 돼 더 그렇다. */
+  function askLogout() {
+    playTapSound();
+    document.getElementById("logoutModal").classList.add("show");
+  }
+
+  function confirmLogout() {
+    closeModal("logoutModal");
+    if (teacherName) logoutTeacher();
+    else logoutStudent();
   }
 
   function logoutTeacher() {
@@ -7703,6 +7944,32 @@
         if (aOver !== bOver) return aOver ? 1 : -1;
         return a.due.localeCompare(b.due);
       });
+  }
+
+  /* 선생님이 올린 공지. 새것이 위로 온다. */
+  function renderStudentNotices() {
+    const box = document.getElementById("sNoticeBox");
+    const list = document.getElementById("sNoticeList");
+    const c = joinedClassIndex !== null ? classes[joinedClassIndex] : null;
+    const rows = (c && Array.isArray(c.notices)) ? c.notices : [];
+    if (rows.length === 0) { box.style.display = "none"; return; }
+    box.style.display = "";
+    list.innerHTML = rows.map((n) => `
+      <div class="notice-card">
+        <p class="notice-text">${escHtml(n.text)}</p>
+        <p class="notice-when">${escHtml(noticeWhen(n.at))}</p>
+      </div>
+    `).join("");
+  }
+
+  /* 올린 날짜를 '9월 25일'처럼, 오늘이면 '오늘'로 */
+  function noticeWhen(at) {
+    const d = new Date(at);
+    if (isNaN(d)) return "";
+    const today = new Date();
+    const same = d.getFullYear() === today.getFullYear()
+      && d.getMonth() === today.getMonth() && d.getDate() === today.getDate();
+    return same ? "오늘" : (d.getMonth() + 1) + "월 " + d.getDate() + "일";
   }
 
   function renderStudentHome() {
@@ -8758,18 +9025,113 @@
   }
 
   /* 홈 대시보드 통계 렌더링 (반 전체를 통틀어 실제 제출 현황 계산) */
+  /* ===== 공지 =====
+     공지는 반 문서 안에 배열로 담는다. 따로 컬렉션을 만들면 보안 규칙에
+     그 자리를 새로 적어 줘야 하는데, 반 문서는 이미 '담당 선생님만 쓰고
+     반 구성원은 읽는다'가 걸려 있어서 그대로 쓸 수 있다. */
+  function noticesOf(c) {
+    return Array.isArray(c && c.notices) ? c.notices : [];
+  }
+
+  function openNoticeWrite() {
+    playTapSound();
+    const mine = myClasses();
+    if (mine.length === 0) return;
+    document.getElementById("noticeText").value = "";
+    document.getElementById("noticeMsg").classList.remove("show");
+    /* 반이 하나뿐이면 미리 골라 둔다 */
+    document.getElementById("noticeClassPick").innerHTML = mine.map(({ c, i }) => `
+      <label class="notice-pick-row">
+        <input type="checkbox" class="notice-class-cb" value="${i}"${mine.length === 1 ? " checked" : ""}>
+        <span>${escHtml(c.name)}</span>
+        <span class="notice-pick-count">학생 ${c.students.length}명</span>
+      </label>
+    `).join("");
+    document.getElementById("noticeModal").classList.add("show");
+  }
+
+  function confirmNotice() {
+    const msg = document.getElementById("noticeMsg");
+    const fail = (t) => {
+      msg.textContent = t;
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+    };
+    const text = document.getElementById("noticeText").value.trim();
+    if (!text) { fail("공지 내용을 적어 주세요"); return; }
+    const picked = [...document.querySelectorAll(".notice-class-cb:checked")]
+      .map((b) => Number(b.value));
+    if (picked.length === 0) { fail("어느 반에 올릴지 골라 주세요"); return; }
+
+    const notice = {
+      id: "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      text: text.slice(0, 300),
+      at: new Date().toISOString(),
+    };
+    picked.forEach((i) => {
+      const c = classes[i];
+      if (!c) return;
+      c.notices = [notice].concat(noticesOf(c)).slice(0, 20);   /* 최근 20개만 */
+    });
+    saveState();
+    closeModal("noticeModal");
+    renderHomeStats();
+    playSuccessChime();
+  }
+
+  function removeNotice(noticeId) {
+    playTapSound();
+    myClasses().forEach(({ c }) => {
+      if (!Array.isArray(c.notices)) return;
+      c.notices = c.notices.filter((n) => n.id !== noticeId);
+    });
+    saveState();
+    renderHomeStats();
+  }
+
+  function renderTeacherNotices() {
+    const box = document.getElementById("tNoticeList");
+    /* 같은 공지를 여러 반에 올렸으면 한 줄로 합쳐 보여 준다 */
+    const byId = {};
+    myClasses().forEach(({ c }) => {
+      noticesOf(c).forEach((n) => {
+        if (!byId[n.id]) byId[n.id] = { n: n, names: [] };
+        byId[n.id].names.push(c.name);
+      });
+    });
+    const rows = Object.values(byId).sort((a, b) => (b.n.at || "").localeCompare(a.n.at || ""));
+    if (rows.length === 0) {
+      box.innerHTML = '<p class="empty-approval">아직 올린 공지가 없어요</p>';
+      return;
+    }
+    box.innerHTML = rows.map(({ n, names }) => `
+      <div class="notice-card">
+        <p class="notice-text">${escHtml(n.text)}</p>
+        <div class="notice-foot">
+          <span class="notice-where">${escHtml(names.join(" · "))}</span>
+          <button class="notice-del" onclick="removeNotice('${jsStr(n.id)}')">삭제</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
   function renderHomeStats() {
     const emptyState = document.getElementById("homeEmptyState");
     const stats = document.getElementById("statsSection");
+    const noticeBox = document.getElementById("noticeSection");
     const mine = myClasses();
 
     if (mine.length === 0) {
       emptyState.style.display = "";
       stats.style.display = "none";
+      noticeBox.style.display = "none";
       return;
     }
     emptyState.style.display = "none";
     stats.style.display = "";
+    noticeBox.style.display = "";
+    renderTeacherNotices();
 
     let totalStudents = 0;
     let pendingCount = 0;
@@ -8996,6 +9358,13 @@
             mustChangePw: true,   /* 첫 로그인 때 각자 바꾸게 한다 */
           });
           await F.setDoc(F.doc(side.db, "classes", c.id, "students", uid), { name: alias });
+          /* 로그인 아이디 장부. 이 학생으로 로그인된 보조 연결이라 규칙을 통과한다.
+             규칙을 아직 안 올렸으면 실패하는데, 그때는 예전 방식으로 로그인되므로
+             계정 만들기를 막지 않는다. */
+          try {
+            await F.setDoc(F.doc(side.db, "loginIds", loginId),
+                           { uid: uid, email: idToEmail(loginId) });
+          } catch (e) { console.warn("아이디 장부 기록 실패(규칙 확인):", e && e.code); }
           made.push({ name: alias, id: loginId, pw: pw });
           studentIds[uid] = loginId;
           if (!c.students.some((x) => x.uid === uid)) {

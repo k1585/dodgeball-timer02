@@ -32,6 +32,13 @@ service cloud.firestore {
       allow create, update, delete: if signedIn() && uid() == userId;
     }
 
+    match /loginIds/{id} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if signedIn() && request.resource.data.uid == uid();
+      allow update, delete: if signedIn() && resource.data.uid == uid();
+    }
+
     match /classCodes/{code} {
       allow get: if signedIn();
       allow list: if false;
