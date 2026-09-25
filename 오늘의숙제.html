@@ -2461,6 +2461,18 @@
   /* ===== 마이페이지 =====
      계정 화면이라 볼 것이 많지 않다. 프로필 한 장, 내 반, 메뉴 한 장으로 끝낸다. */
 
+  .t-scope .master-cmd{
+    margin:4px 0 12px;
+    padding:12px 14px;
+    background:#F5F6FA;
+    border-radius:10px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+    font-size:11.5px;
+    line-height:1.8;
+    color:var(--ink);
+    word-break:break-all;
+  }
+
   .t-scope .master-steps{
     margin:0 0 4px;
     padding-left:20px;
@@ -4532,17 +4544,22 @@
         <button class="master-acc-reset" onclick="changeMasterPassword()">비밀번호 변경</button>
       </div>
 
-      <p class="section-title">학생 비밀번호 초기화</p>
+      <p class="section-title">비밀번호 초기화</p>
       <p class="master-info-body">
         비밀번호는 되돌릴 수 없게 보관돼서 앱에서는 바꿀 수 없습니다.
-        파이어베이스 콘솔에서 바꾸세요.
+        콘솔의 '비밀번호 재설정'은 메일을 보내는 기능인데, 이 앱의 계정
+        주소(@todayhw.app)는 메일이 갈 수 없는 주소라 도착하지 않습니다.
+        클라우드 셸에서 아래 한 줄로 바꾸세요.
       </p>
       <ol class="master-steps">
         <li>반 관리 &gt; 학생 명단에서 그 학생의 <b>아이디</b>를 확인</li>
-        <li>콘솔 &gt; Authentication &gt; Users 로 이동</li>
-        <li><b>아이디@todayhw.app</b> 을 찾아 오른쪽 ⋮ &gt; 사용자 수정</li>
-        <li>새 비밀번호를 넣고 저장한 뒤 학생에게 알려주기</li>
+        <li>클라우드 셸을 열고 아래를 붙여 넣기</li>
       </ol>
+      <p class="master-cmd">cd ~/dodgeball-timer02/reset &amp;&amp; npm install<br>node set-password.js 아이디 새비밀번호</p>
+      <p class="master-info-body">
+        선생님 계정도 같은 방법으로 바꿉니다. 아이디 자리에
+        콘솔 Users 에 보이는 주소를 그대로 넣으세요.
+      </p>
 
       <p class="section-title">데이터 관리</p>
       <p class="master-info-body">

@@ -63,11 +63,28 @@ firebase firestore:databases:list --project today-homework
 
 ---
 
+## 비밀번호 하나만 바꾸고 싶을 때
+
+콘솔의 **비밀번호 재설정**은 *메일을 보내는* 기능입니다.
+이 앱의 계정 주소(`...@todayhw.app`)는 메일이 갈 수 없는 주소라
+그 메일은 아무 데도 도착하지 않습니다. 대신 아래를 쓰세요.
+
+```
+cd ~/dodgeball-timer02/reset && npm install
+node set-password.js 657b7q7 새비밀번호123!
+```
+
+- 학생 아이디는 앱의 **반 관리 > 학생 명단**에 보입니다
+- 선생님 계정은 콘솔 Users 에 보이는 주소를 그대로 넣으세요
+  (`node set-password.js teca095...@todayhw.app 새비밀번호123!`)
+
+---
+
 ## 계정이 몇 개 없을 때 (콘솔에서 직접)
 
 스무 개 남짓이면 콘솔에서 눌러 지우는 편이 빠릅니다.
 
-- 계정: Authentication > Users > 왼쪽 네모 칸으로 골라서 휴지통
+- 계정: Authentication > Users > 왼쪽 네모 칸으로 골라서 휴지통 (비밀번호는 여기서 못 바꿉니다)
 - 자료: Firestore Database > 컬렉션 이름 옆 ⋮ > 컬렉션 삭제
 
 한 쪽은 50개씩 보여 주므로, 많으면 위의 클라우드 셸 방법이 낫습니다.
