@@ -8982,6 +8982,9 @@
   function refreshCurrentView() {
     const activeId = document.querySelector(".page.active")?.id;
     if (activeId === "page-home") renderStudentHome();
+    /* 반 목록은 들어올 때 한 번만 그렸다. 인터넷이 느려 반 정보가 늦게 오면
+       '아직 반에 들어가 있지 않아요'가 뜬 채로 멈춰 버린다. 여기서도 다시 그린다. */
+    if (activeId === "page-s-classes") renderStudentClassList();
     if (activeId === "page-list") {
       renderRemainingList();
       renderApprovalList();
@@ -10699,10 +10702,16 @@
       }
       if (Cloud.signingUp) return;          /* 가입 절차가 끝날 때까지 기다린다 */
       if (Cloud.uid === user.uid) return;   /* 이미 이어져 있음 */
+      /* 로그인 단추로 들어온 경우에는 이미 화면까지 들어가 있다. 여기서 또 들어가면
+         사용자가 그 사이에 옮겨 간 화면을 홈으로 되돌려 버린다. 로그인하자마자
+         무언가를 누르면 홈으로 튕기던 원인이다. */
+      if (currentUserId === user.uid) return;
       const ok = await Cloud.start(user.uid);
       if (!ok) { await Cloud.signOutNow(); return; }
       const me = users.find((u) => u.id === user.uid);
       if (!me) return;
+      /* 위 await 사이에 로그인 절차가 끝났을 수도 있으니 한 번 더 본다 */
+      if (currentUserId === user.uid) return;
       currentUserId = user.uid;
       enterAfterLogin(me.role, me);
     });
