@@ -4551,7 +4551,7 @@
         주소(@todayhw.app)는 메일이 갈 수 없는 주소라 도착하지 않습니다.
         클라우드 셸에서 아래 한 줄로 바꾸세요.
       </p>
-      <ol class="master-steps">
+      <ol class="master-steps" id="pwResetSteps">
         <li>반 관리 &gt; 학생 명단에서 그 학생의 <b>아이디</b>를 확인</li>
         <li>클라우드 셸을 열고 아래를 붙여 넣기</li>
       </ol>
@@ -4561,10 +4561,23 @@
         콘솔 Users 에 보이는 주소를 그대로 넣으세요.
       </p>
 
-      <p class="section-title">데이터 관리</p>
+      <p class="section-title">전체 초기화</p>
       <p class="master-info-body">
-        자료가 서버에 있어서 여기서는 지울 수 없습니다.
-        전체 삭제는 파이어베이스 콘솔에서 하세요.
+        자료가 서버에 있어서 앱에서는 지울 수 없습니다. 아래 두 줄을
+        클라우드 셸에 넣으면 반·숙제·제출 사진과 모든 계정(선생님·학생)이
+        한 번에 지워집니다. <b>되돌릴 수 없습니다.</b>
+      </p>
+      <ol class="master-steps">
+        <li>자료 지우기 (반·숙제·제출 사진·공지)</li>
+      </ol>
+      <p class="master-cmd">firebase firestore:delete --all-collections -f --project today-homework</p>
+      <ol class="master-steps" start="2">
+        <li>계정 지우기 (선생님·학생 전부)</li>
+      </ol>
+      <p class="master-cmd">cd ~/dodgeball-timer02/reset &amp;&amp; npm install<br>node delete-all-users.js --yes</p>
+      <p class="master-info-body">
+        다 지운 뒤에는 선생님 계정부터 새로 만들면 처음 상태가 됩니다.
+        관리자 비밀번호는 지워지지 않습니다.
       </p>
     </div>
   </div>
