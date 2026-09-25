@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오늘의 숙제 — 시범 운영 결과 보고서</title>
+<style>
+  *{ box-sizing:border-box; }
+  body{ max-width:760px; margin:0 auto; padding:34px 20px 72px;
+    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    color:#2B2F3A; line-height:1.75; font-size:15px; }
+  h1{ font-size:27px; color:#1E3A6B; margin:0 0 6px; letter-spacing:-0.4px; }
+  h2{ font-size:18px; color:#1E3A6B; margin:34px 0 10px;
+      padding-bottom:7px; border-bottom:2px solid #E8EDF6; }
+  h3{ font-size:15.5px; color:#33436B; margin:22px 0 6px; }
+  .updated{ color:#8A8FA3; font-size:13.5px; margin:0 0 6px; }
+  .doc-kind{ display:inline-block; background:#1E3A6B; color:#fff; font-size:12px;
+     font-weight:700; padding:3px 10px; border-radius:20px; margin-bottom:14px; }
+  table{ border-collapse:collapse; width:100%; margin:14px 0; font-size:14px; }
+  th,td{ border:1px solid #E8EDF6; padding:9px 12px; text-align:left; vertical-align:top; }
+  th{ background:#F7F9FD; color:#33436B; font-weight:700; }
+  .box{ background:#F9FBFF; border:1px solid #E8EDF6; border-radius:10px;
+        padding:16px 18px; margin:16px 0; }
+  .key{ background:#FFF8E8; border:1px solid #F0DFB4; border-radius:10px;
+        padding:16px 18px; margin:16px 0; }
+  .warn{ background:#FDF0EF; border:1px solid #F3D2D0; border-radius:10px;
+        padding:16px 18px; margin:16px 0; }
+  ul,ol{ padding-left:22px; margin:10px 0; }
+  li{ margin:5px 0; }
+  code,.cmd{ font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px;
+     background:#F1F4FA; padding:2px 6px; border-radius:5px; }
+  .cmd{ display:block; padding:12px 14px; margin:10px 0; line-height:1.7;
+     white-space:pre-wrap; word-break:break-all; }
+  .shot{ margin:14px 0 22px; }
+  .shot img{ max-width:100%; border:1px solid #E2E7F0; border-radius:12px;
+     box-shadow:0 2px 10px rgba(30,58,107,0.07); display:block; }
+  .shot .cap{ font-size:13px; color:#8A8FA3; margin-top:7px; }
+  .row{ display:flex; gap:18px; flex-wrap:wrap; }
+  .step{ border-left:3px solid #C9D6EE; padding:2px 0 2px 16px; margin:18px 0; }
+  .step .n{ display:inline-block; background:#1E3A6B; color:#fff; font-size:12px;
+     font-weight:700; width:22px; height:22px; line-height:22px; text-align:center;
+     border-radius:50%; margin-right:7px; }
+  .fill{ background:#FFFDF2; border-bottom:1.5px dashed #D9C37E; padding:1px 22px; }
+  .sub{ color:#8A8FA3; font-size:13.5px; }
+  .ok{ color:#1FA455; font-weight:700; }
+  .no{ color:#E4423F; font-weight:700; }
+  .toc a{ color:#1E3A6B; text-decoration:none; font-weight:600; }
+  footer{ margin-top:48px; padding-top:16px; border-top:1px solid #E8EDF6;
+     color:#A0A5B5; font-size:12.5px; }
+  @media print{ body{ padding:0; } h2{ page-break-after:avoid; }
+     .shot,.box,.key,.warn,table{ page-break-inside:avoid; } }
+</style>
+</head>
+<body>
+<div class="doc-kind">결과 보고</div>
+<h1>시범 운영 결과 보고서</h1>
+<p class="updated">운영 결과와 발견한 문제 · 작성일 2026년 9월 25일</p>
+
+<div class="warn">
+  <b>작성 안내 — 이 부분은 인쇄 전에 지워 주세요</b><br>
+  아래 <span class="fill">&nbsp;</span> 는 <b>시범 운영을 마친 뒤 채우는 칸</b>입니다.
+  1·2·5·6장은 이미 사실인 내용이라 그대로 두셔도 됩니다.
+  3·4장의 숫자만 운영 결과로 채우시면 보고서가 완성됩니다.
+</div>
+
+<h2>1. 요약</h2>
+<div class="key">
+  「오늘의 숙제」를 한 반 <span class="fill">&nbsp;</span>명 대상으로 <span class="fill">&nbsp;</span>주간 시범 운영했습니다.
+  기간 중 앱으로 제출된 숙제는 <span class="fill">&nbsp;</span>건이며, 그중 <span class="fill">&nbsp;</span>건이 승인되었습니다.
+  운영 중 <span class="fill">&nbsp;</span>건의 문제가 발생해 <span class="fill">&nbsp;</span>건을 수정했습니다.
+  <b>다른 학생의 자료가 노출된 사례는 없었습니다.</b>
+</div>
+
+<h2>2. 운영 개요</h2>
+<table>
+  <tr><th style="width:150px;">항목</th><th>내용</th></tr>
+  <tr><td>대상</td><td><span class="fill">&nbsp;</span></td></tr>
+  <tr><td>기간</td><td><span class="fill">&nbsp;</span> ~ <span class="fill">&nbsp;</span></td></tr>
+  <tr><td>참여 학생</td><td><span class="fill">&nbsp;</span>명 (전체 <span class="fill">&nbsp;</span>명 중)</td></tr>
+  <tr><td>사용 기기</td><td>아이폰 <span class="fill">&nbsp;</span>대 · 안드로이드 <span class="fill">&nbsp;</span>대</td></tr>
+  <tr><td>병행 여부</td><td>기존 방식과 병행</td></tr>
+</table>
+
+<h2>3. 사용 현황</h2>
+<table>
+  <tr><th style="width:230px;">항목</th><th style="width:120px;">수치</th><th>비고</th></tr>
+  <tr><td>낸 숙제 수 (선생님)</td><td><span class="fill">&nbsp;</span>건</td><td></td></tr>
+  <tr><td>앱으로 제출된 건수</td><td><span class="fill">&nbsp;</span>건</td><td></td></tr>
+  <tr><td>제출률</td><td><span class="fill">&nbsp;</span>%</td><td>제출 건수 ÷ (숙제 수 × 학생 수)</td></tr>
+  <tr><td>승인까지 간 비율</td><td><span class="fill">&nbsp;</span>%</td><td>승인 ÷ 제출</td></tr>
+  <tr><td>반려 건수</td><td><span class="fill">&nbsp;</span>건</td><td></td></tr>
+  <tr><td>공지 사용</td><td><span class="fill">&nbsp;</span>회</td><td></td></tr>
+</table>
+
+<h2>4. 나온 문제와 처리</h2>
+<table>
+  <tr><th style="width:44px;">번호</th><th style="width:230px;">내용</th>
+      <th style="width:90px;">처리</th><th>비고</th></tr>
+  <tr><td>1</td><td><span class="fill">&nbsp;</span></td><td><span class="fill">&nbsp;</span></td><td><span class="fill">&nbsp;</span></td></tr>
+  <tr><td>2</td><td><span class="fill">&nbsp;</span></td><td><span class="fill">&nbsp;</span></td><td><span class="fill">&nbsp;</span></td></tr>
+  <tr><td>3</td><td><span class="fill">&nbsp;</span></td><td><span class="fill">&nbsp;</span></td><td><span class="fill">&nbsp;</span></td></tr>
+</table>
+<p class="sub">칸이 모자라면 줄을 늘려 주세요.</p>
+
+<h2>5. 사전 점검에서 찾아 고친 것 <span class="sub">(운영 전 · 이미 완료)</span></h2>
+<p>시범 운영에 앞서 <b>10명을 대상으로 아이폰·안드로이드 전체 흐름을 점검</b>했습니다.
+그 과정과 이후 검토에서 다음을 찾아 수정했습니다.</p>
+<table>
+  <tr><th style="width:240px;">찾은 문제</th><th>원인과 조치</th></tr>
+  <tr><td>학생이 자기 숙제를 스스로 승인할 수 있었음</td>
+      <td><b>서버 규칙으로 차단.</b> 학생이 보내는 저장 요청은 항상 '확인 대기' 상태여야
+          통과하도록 제한했습니다. 가장 중요한 수정이었습니다.</td></tr>
+  <tr><td>학생 아이디가 같은 반 학생에게 보였음</td>
+      <td>첫 비밀번호가 모두 같아 서로 로그인할 수 있는 상태였습니다.
+          아이디를 선생님만 읽을 수 있는 곳으로 옮겼습니다.</td></tr>
+  <tr><td>학사 일정을 올리면 「인터넷 문제」라며 저장되지 않음</td>
+      <td>다른 선생님의 일정까지 함께 올리려다 권한이 없어 거부됐고,
+          묶음 저장은 하나만 막혀도 전부 취소됩니다. 내 일정만 올리도록 고쳤습니다.</td></tr>
+  <tr><td>권한 문제를 「인터넷 문제」라고 잘못 안내</td>
+      <td>원인을 영영 못 찾게 만드는 안내였습니다. 권한 문제는 그대로 알리도록 바꿨습니다.</td></tr>
+  <tr><td>로그인 직후 2초 안에 무언가를 누르면 홈으로 튕김</td>
+      <td>로그인 처리가 두 번 일어나면서 옮겨 간 화면을 덮어썼습니다.
+          이미 들어가 있으면 넘어가도록 고쳤습니다.</td></tr>
+  <tr><td>인터넷이 느리면 학생이 「아직 반에 들어가 있지 않아요」에서 멈춤</td>
+      <td>반 목록이 한 번만 그려졌습니다. 자료가 도착하면 다시 그리고,
+          자기 반으로 들어가도록 고쳤습니다.</td></tr>
+  <tr><td>비밀번호 재설정 안내가 틀렸음</td>
+      <td>콘솔에는 비밀번호를 직접 바꾸는 기능이 없고, 재설정 메일은
+          이 앱의 계정 주소로 갈 수 없습니다. 실제로 동작하는 방법으로 안내를 바꾸고
+          도구를 만들었습니다.</td></tr>
+  <tr><td>아이폰에서 화면이 위아래로 밀림</td>
+      <td>전체화면 설정 때문에 노치·홈 막대 아래까지 늘어났습니다. 여백을 넣어 맞췄습니다.</td></tr>
+</table>
+
+<h2>6. 안전 점검 <span class="sub">(운영 전 · 이미 완료)</span></h2>
+<div class="box">
+  두 기기를 동시에 띄워 선생님과 학생 흐름을 끝까지 돌려 보는 <b>자동 점검 7종</b>을
+  만들어 두고, 고칠 때마다 전부 다시 돌렸습니다. 마지막 확인에서 <b>7종 모두 통과</b>했습니다.
+  <ul style="margin:8px 0 0;">
+    <li>선생님·학생 두 기기 전체 흐름 (계정 발급 → 숙제 → 제출 → 승인)</li>
+    <li>학생이 남의 제출물을 직접 요청하면 서버가 거절하는지</li>
+    <li>구글 로그인, 아이디·비밀번호 변경, 계정 삭제</li>
+    <li>숙제 수정·삭제·마감, 공지, 달력 표시</li>
+  </ul>
+</div>
+
+<h2>7. 자료 삭제 확인</h2>
+<table>
+  <tr><th style="width:230px;">항목</th><th>결과</th></tr>
+  <tr><td>학생·선생님 계정 삭제</td><td><span class="fill">&nbsp;</span></td></tr>
+  <tr><td>숙제·제출물·사진 삭제</td><td><span class="fill">&nbsp;</span></td></tr>
+  <tr><td>삭제 일자</td><td><span class="fill">&nbsp;</span></td></tr>
+</table>
+
+<h2>8. 평가와 제안</h2>
+<h3>잘된 점</h3>
+<p><span class="fill">&nbsp;</span></p>
+<h3>아쉬운 점</h3>
+<p><span class="fill">&nbsp;</span></p>
+<h3>다음 단계 제안</h3>
+<p><span class="fill">&nbsp;</span></p>
+
+<h2>9. 남아 있는 한계</h2>
+<table>
+  <tr><th style="width:230px;">항목</th><th>내용</th></tr>
+  <tr><td>비밀번호 재설정</td>
+      <td>학생이 스스로 되돌릴 수 없습니다. 계정 주소가 메일을 받을 수 없는 형식이기 때문입니다.
+          운영자가 명령으로 설정해야 합니다.</td></tr>
+  <tr><td>오프라인 제출</td><td>인터넷이 끊기면 제출할 수 없습니다.</td></tr>
+  <tr><td>사진 화질</td><td>저장 공간을 아끼려 줄여서 보관합니다(한 장 약 1MB 이하).</td></tr>
+  <tr><td>학사 일정 공개 범위</td>
+      <td>로그인한 사용자면 다른 반 일정 제목도 볼 수 있습니다.</td></tr>
+</table>
+
+<footer>「오늘의 숙제」 시범 운영 자료 · 2026년 9월 25일</footer>
+</body>
+</html>

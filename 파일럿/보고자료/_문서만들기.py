@@ -38,7 +38,7 @@ CSS = """
   .cmd{ display:block; padding:12px 14px; margin:10px 0; line-height:1.7;
      white-space:pre-wrap; word-break:break-all; }
   .shot{ margin:14px 0 22px; }
-  .shot img{ width:236px; border:1px solid #E2E7F0; border-radius:12px;
+  .shot img{ max-width:100%; border:1px solid #E2E7F0; border-radius:12px;
      box-shadow:0 2px 10px rgba(30,58,107,0.07); display:block; }
   .shot .cap{ font-size:13px; color:#8A8FA3; margin-top:7px; }
   .row{ display:flex; gap:18px; flex-wrap:wrap; }
@@ -72,8 +72,9 @@ def shot(name, width=236, cap=None):
         buf = io.BytesIO(); im.save(buf, 'JPEG', quality=72, optimize=True)
         _cache[name] = base64.b64encode(buf.getvalue()).decode()
     c = '<div class="cap">%s</div>' % cap if cap else ''
-    return ('<div class="shot"><img src="data:image/jpeg;base64,%s" alt="%s">%s</div>'
-            % (_cache[name], cap or name, c))
+    return ('<div class="shot" style="width:%dpx;">'
+            '<img src="data:image/jpeg;base64,%s" alt="%s" style="width:%dpx;">%s</div>'
+            % (width, _cache[name], cap or name, width, c))
 
 def row(*shots):
     return '<div class="row">' + ''.join(shots) + '</div>'

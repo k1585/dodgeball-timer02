@@ -240,6 +240,5 @@ await S.evaluate(()=>showPage('list')); await S.waitForTimeout(1000);
 await shot(S,'S10-지난숙제');
 
 console.log('\n에러:', errs.length); errs.forEach(e=>console.log('  ❌',e));
-fs.writeFileSync(DIR+'/_발급계정.json', JSON.stringify(issued,null,1));
 await b.close();
 })().catch(e=>{ console.error('실패:', e.message); process.exit(1); });
