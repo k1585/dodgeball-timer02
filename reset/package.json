@@ -1,0 +1,9 @@
+{
+  "name": "today-homework-reset",
+  "private": true,
+  "version": "1.0.0",
+  "description": "오늘의 숙제 - 계정/자료 전체 초기화 도구",
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
