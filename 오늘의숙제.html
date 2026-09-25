@@ -2534,6 +2534,8 @@
     color:#C4C7D6;
     text-align:center;
     line-height:1.6;
+    /* 한글은 글자 단위로 끊으면 '로그인하세 요'처럼 어색해진다 */
+    word-break:keep-all;
   }
 
   /* ================= 관리자(마스터) 모드 ================= */
@@ -3331,6 +3333,15 @@
      선생님은 명단과 현황을 한눈에 봐야 해서 노트북 폭(1120px)까지 넓어진다. */
   @media (min-width: 760px){
     .app-shell{ max-width:820px; }
+
+    /* 로그인·가입 화면은 넓혀도 줄이 길어지기만 해서, 가운데 한 칸만
+       조금 넓힌다. 280px는 넓은 화면에서 지나치게 좁아 보였다. */
+    .onboard-input-wrap, .onboard-btn, .auth-signup-btn, .google-btn,
+    .auth-divider, .auth-hint, .auth-error, .onboard-btn-row,
+    .consent-box, .age-row{
+      max-width:360px;
+    }
+    .onboard-center{ padding:28px 28px 32px; }
     .home-content{ padding:28px 32px 20px; }
     .greeting{ font-size:24px; }
     #page-list .list-fixed-top{ padding:24px 32px 0; }
@@ -3359,8 +3370,70 @@
     }
   }
 
+  /* ===== 노트북·데스크탑: 아래 메뉴를 왼쪽 기둥으로 =====
+     화면이 세로로 길어지면, 내용은 위에 몰리고 아래 메뉴만 저 멀리 떨어져
+     가운데가 텅 빈다. 폰에서는 엄지가 닿는 아래가 맞지만 마우스로 쓰는
+     화면에서는 왼쪽이 맞다. 메뉴를 왼쪽으로 세우면 그 빈 자리가 사라진다.
+
+     :has()로 '아래 메뉴가 있는 화면'만 골라 바꾼다. 화면 이름을 일일이
+     적어 두면 나중에 만든 화면이 빠진다(전에 그런 일이 있었다). */
   @media (min-width: 1120px){
     body[data-role="teacher"] .app-shell{ max-width:1120px; }
+
+    body[data-role="teacher"] .page.active:has(> .bottom-nav){
+      display:grid;
+      grid-template-columns:212px minmax(0, 1fr);
+      grid-template-rows:minmax(0, 1fr);
+    }
+    body[data-role="teacher"] .page.active > .bottom-nav{
+      grid-column:1;
+      grid-row:1 / -1;
+      flex-direction:column;
+      justify-content:flex-start;
+      gap:2px;
+      padding:22px 12px;
+      border-top:none;
+      border-right:1px solid var(--line);
+      background:#FBFCFE;
+    }
+    body[data-role="teacher"] .page.active > .bottom-nav .nav-item{
+      flex:0 0 auto;
+      flex-direction:row;
+      justify-content:flex-start;
+      gap:11px;
+      width:100%;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      letter-spacing:0;
+    }
+    body[data-role="teacher"] .page.active > .bottom-nav .nav-item.active{
+      background:var(--point-light);
+    }
+    body[data-role="teacher"] .page.active > .bottom-nav .nav-item svg{
+      width:19px;
+      height:19px;
+    }
+    body[data-role="teacher"] .page.active > .home-content{
+      grid-column:2;
+      grid-row:1 / -1;
+    }
+
+    /* 숙제 목록: 위는 고정, 아래만 구른다 */
+    body[data-role="teacher"] #page-list.active{
+      grid-template-rows:auto minmax(0, 1fr);
+    }
+    body[data-role="teacher"] #page-list.active > .list-fixed-top{ grid-column:2; grid-row:1; }
+    body[data-role="teacher"] #page-list.active > .list-area{ grid-column:2; grid-row:2; }
+
+    /* 반 상세: 제목 줄, 탭, 내용 */
+    body[data-role="teacher"] #page-t-class-detail.active{
+      grid-template-rows:auto auto minmax(0, 1fr);
+    }
+    body[data-role="teacher"] #page-t-class-detail.active > .ob-top-bar{ grid-column:2; grid-row:1; }
+    body[data-role="teacher"] #page-t-class-detail.active > .tabs{ grid-column:2; grid-row:2; margin:0 32px; }
+    body[data-role="teacher"] #page-t-class-detail.active > .detail-content{ grid-column:2; grid-row:3; }
+
     body[data-role="teacher"] .home-content{ padding:32px 40px 24px; }
     body[data-role="teacher"] #page-list .list-fixed-top{ padding:28px 40px 0; }
     body[data-role="teacher"] #manageStudentList,
