@@ -44,6 +44,14 @@
     background:#ffffff;
     position:relative;
     overflow:hidden;
+    /* 전체화면을 쓰려고 viewport-fit=cover를 켰는데, 그러면 아이폰에서
+       화면이 노치와 홈 막대 아래까지 늘어난다. 그만큼 안쪽으로 물려 주지
+       않으면 위아래가 가려지고 내용이 밀려 보인다.
+       브라우저로 열었을 때는 이 값이 0이라 달라지는 게 없다. */
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
     /* 1: 모바일 브라우저 주소창 때문에 아래가 잘리는 문제 방지 (동적 뷰포트 높이 우선 사용) */
     height:100vh;
     height:100dvh;
@@ -415,7 +423,9 @@
     border:none;
     background:none;
     border-radius:12px;
-    font-size:13px;
+    overflow:hidden;
+    /* 6: 날짜가 작아 잘 안 보여서 두 단계 키웠다 */
+    font-size:15px;
     font-weight:700;
     font-family:inherit;
     color:var(--ink);
@@ -434,25 +444,46 @@
     color:var(--point-strong);
     font-weight:800;
   }
+  /* 고른 날을 진한 바탕으로 칠하면 그 위의 띠가 묻힌다.
+     띠를 살리려고 테두리로 표시한다. */
   .cal-cell.selected{
-    background:var(--point-strong);
-    color:#ffffff;
+    box-shadow:inset 0 0 0 2px var(--point-strong);
+    font-weight:800;
   }
   /* 숙제 하나에 점 하나. 개수가 많으면 줄바꿈해서 칸을 넘지 않게 함 */
-  .cal-dot-row{
+  /* 7: 그날 숙제가 여러 개면 어디서 끊기는지 알기 어려워 가는 선으로 나눈다.
+     카드 테두리를 없애고 줄 사이에만 선을 둔다. */
+  .hw-card.day-row{
+    border:none;
+    border-radius:0;
+    border-top:1px solid var(--line);
+    margin-bottom:0;
+    padding:14px 4px;
+    background:none;
+  }
+  .hw-card.day-row:first-of-type{ border-top:none; }
+
+  /* 날짜 칸을 채우는 세로 띠. 숙제 하나가 띠 하나다. */
+  .cal-bars{
+    position:absolute;
+    inset:0;
     display:flex;
-    flex-wrap:wrap;
-    gap:2px;
-    justify-content:center;
-    max-width:100%;
-    line-height:0;
+    border-radius:12px;
+    overflow:hidden;
   }
-  .cal-dot{
-    width:5px;
-    height:5px;
-    border-radius:50%;
-    background:var(--sub);
+  .cal-bars i{
+    flex:1;
+    min-width:0;
   }
+  .cal-num{
+    position:relative;
+    z-index:1;
+  }
+  /* 숫자가 묻히지 않게 연하게 깐다 */
+  .bar-red{ background:rgba(228,66,63,0.42); }
+  .bar-blue{ background:rgba(30,58,107,0.38); }
+  .bar-green{ background:rgba(31,164,85,0.40); }
+  .bar-yellow{ background:rgba(224,138,0,0.45); }
   .cal-dot.dot-red{ background:#E4423F; }
   .cal-dot.dot-blue{ background:var(--point-strong); }
   .cal-dot.dot-green{ background:#1FA455; }
@@ -477,10 +508,12 @@
     gap:4px;
   }
   .cal-legend i{
-    width:8px;
-    height:8px;
-    border-radius:50%;
+    width:7px;
+    height:14px;
+    border-radius:3px;
     display:inline-block;
+    vertical-align:-3px;
+    margin-right:3px;
   }
 
   /* 승인 현황 - 상태 요약 3칸 (3: 완료/거절 투톤으로) */
@@ -3960,10 +3993,10 @@
       <div class="cal-grid" id="calGrid"></div>
 
       <div class="cal-legend">
-        <span><i style="background:#E4423F;"></i>미제출·반려</span>
-        <span><i style="background:var(--point-strong);"></i>승인 대기중</span>
-        <span><i style="background:#1FA455;"></i>승인완료</span>
-        <span><i style="background:#E08A00;"></i>선생님 일정</span>
+        <span><i class="bar-red"></i>미제출·반려</span>
+        <span><i class="bar-blue"></i>승인 대기중</span>
+        <span><i class="bar-green"></i>승인완료</span>
+        <span><i class="bar-yellow"></i>선생님 일정</span>
       </div>
 
       <p class="page-title" id="calSelectedLabel" style="font-size:15px;margin:16px 0 10px;">8월 26일 (수)</p>
@@ -4370,6 +4403,47 @@
       </p>
       <div class="modal-actions">
         <button onclick="closeModal('googlePwModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 숙제 수정 -->
+  <div class="modal-overlay t-scope" id="hwEditModal">
+    <div class="modal-box" style="max-width:340px;">
+      <p class="modal-text" style="margin-bottom:6px;">숙제 수정</p>
+      <p class="modal-sub" style="margin-bottom:14px;">아직 아무도 내지 않아 고칠 수 있어요.</p>
+      <input type="text" id="editHwTitle" class="add-hw-input" placeholder="숙제 이름">
+      <textarea id="editHwDesc" class="add-hw-textarea" rows="3" placeholder="설명 (선택)"></textarea>
+      <p class="master-error" id="editHwMsg"></p>
+      <div class="modal-actions" style="display:flex;gap:10px;margin-top:12px;">
+        <button onclick="closeModal('hwEditModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">취소</button>
+        <button onclick="confirmHwEdit()" style="flex:1;width:auto;">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이미 낸 사람이 있어 못 고침 -->
+  <div class="modal-overlay t-scope" id="hwLockedModal">
+    <div class="modal-box">
+      <p class="modal-text">이미 낸 학생이 있어요</p>
+      <p class="modal-sub" style="margin-top:8px;">
+        낸 뒤에 내용이 바뀌면 학생이 다른 숙제를 한 셈이 돼요.<br>
+        고치려면 새 숙제로 만들어 주세요.
+      </p>
+      <div class="modal-actions">
+        <button onclick="closeModal('hwLockedModal')" style="background:var(--point-strong);color:#ffffff;">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 숙제 삭제 확인 -->
+  <div class="modal-overlay t-scope" id="delHwModal">
+    <div class="modal-box">
+      <p class="modal-text">이 숙제를 삭제할까요?</p>
+      <p class="modal-sub" style="margin-top:8px;" id="delHwWhat"></p>
+      <div class="modal-actions" style="display:flex;gap:10px;">
+        <button onclick="closeModal('delHwModal')" style="flex:1;width:auto;background:#F5F6FA;color:var(--sub);">아니오</button>
+        <button onclick="confirmRemoveHomework()" style="flex:1;width:auto;background:#E4423F;">삭제</button>
       </div>
     </div>
   </div>
@@ -6149,8 +6223,13 @@
         (e) => {
           self.pending--;
           self.failed = true;
-          self.note("저장하지 못했어요. 인터넷 연결을 확인해 주세요.");
-          console.error("저장 실패:", e && e.code, e && e.message);
+          /* 권한 문제를 '인터넷 문제'라고 하면 원인을 영영 못 찾는다.
+             실제로 일정 저장이 그래서 한참 헤맸다. */
+          const code = (e && e.code) || "";
+          self.note(code === "permission-denied"
+            ? "저장 권한이 없어요. 다시 로그인해 보세요."
+            : "저장하지 못했어요. 인터넷 연결을 확인해 주세요.");
+          console.error("저장 실패:", code, e && e.message);
         });
     },
 
@@ -6264,14 +6343,19 @@
 
     pushEvents() {
       if (!this.ready()) return false;
-      const F = window.FB;
+      const F = window.FB, self = this;
       const batch = F.writeBatch(F.db);
       let n = 0;
       events.forEach((e) => {
         if (!e.id) return;
+        /* 일정 목록에는 다른 선생님이 올린 것도 함께 담겨 있다(규칙이 읽기를
+           모두에게 열어 둬서다). 그것까지 올리려 들면 권한이 없어 거부되고,
+           묶음 저장은 하나만 막혀도 통째로 취소된다. 그래서 새 일정을 넣어도
+           '인터넷 문제'라는 말만 나왔다. 내 일정만 올린다. */
+        if ((e.teacherId || self.uid) !== self.uid) return;
         batch.set(F.doc(F.db, "events", e.id), {
           title: e.title || "", startDate: e.startDate || "", endDate: e.endDate || "",
-          teacherId: e.teacherId || this.uid, teacherName: e.teacherName || "",
+          teacherId: e.teacherId || self.uid, teacherName: e.teacherName || "",
         }, { merge: true }); n++;
       });
       if (n > 0) this.run(batch.commit());
@@ -8157,22 +8241,23 @@
       if (dateStr === calSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
 
-      /* 그날 숙제 하나에 점 하나씩. 아직 내지 않은 것과 반려된 것은
-         둘 다 손이 가야 하는 숙제라서 빨강으로 함께 표시한다. */
-      const dots = dayHomeworkStatuses(dateStr).map((s) => {
-        let dotCls;
-        if (s.status === "pending") dotCls = "dot-blue";
-        else if (s.status === "approved") dotCls = "dot-green";
-        else dotCls = "dot-red";
-        return `<span class="cal-dot ${dotCls}"></span>`;
+      /* 작은 점은 색을 가리기 어려워서, 날짜 칸 자체를 세로 띠로 채운다.
+         숙제 하나가 띠 하나다. 아직 내지 않은 것과 반려된 것은 둘 다 손이
+         가야 하는 숙제라서 빨강으로 함께 표시한다.
+         색은 연하게 깔아 숫자가 묻히지 않게 한다. */
+      const bars = dayHomeworkStatuses(dateStr).map((s) => {
+        if (s.status === "pending") return "bar-blue";
+        if (s.status === "approved") return "bar-green";
+        return "bar-red";
       });
-      /* 선생님이 올린 일정은 노란 점으로 뒤에 붙임 */
+      /* 선생님이 올린 일정은 노란 띠로 뒤에 붙임 */
       const eventCount = classEvents.filter((e) => dateStr >= e.startDate && dateStr <= e.endDate).length;
-      for (let k = 0; k < eventCount; k++) dots.push('<span class="cal-dot dot-yellow"></span>');
+      for (let k = 0; k < eventCount; k++) bars.push("bar-yellow");
 
-      const inner = dots.length > 0
-        ? `<span>${d}</span><span class="cal-dot-row">${dots.join("")}</span>`
-        : String(d);
+      const inner = bars.length > 0
+        ? `<span class="cal-bars">${bars.map((b) => `<i class="${b}"></i>`).join("")}</span>`
+          + `<span class="cal-num">${d}</span>`
+        : `<span class="cal-num">${d}</span>`;
       html += `<button class="${cls}" onclick="selectStudentCalDay('${dateStr}')">${inner}</button>`;
     }
     grid.innerHTML = html;
@@ -8207,7 +8292,7 @@
       </div>
     `).join("");
     html += statuses.map(({ hw, status }) => `
-      <div class="hw-card" style="cursor:${canRedo(status, hw) ? "pointer" : "default"};" ${canRedo(status, hw) ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
+      <div class="hw-card day-row" style="cursor:${canRedo(status, hw) ? "pointer" : "default"};" ${canRedo(status, hw) ? `onclick="openDetailCard('${jsStr(hw.id)}')"` : ""}>
         <div>
           <p class="hw-name">${escHtml(hw.title)}</p>
           <p class="hw-due">제출 기한: ${formatKoreanDate(hw.due)}</p>
@@ -9634,10 +9719,13 @@
           </div>
           ${h.desc ? `<p class="hw-manage-desc">${escHtml(h.desc)}</p>` : ""}
           <div class="hw-manage-btns">
+            ${hwSubmitCount(h.id) === 0
+              ? `<button class="hw-manage-close" onclick="openHwEdit('${jsStr(h.id)}')">수정</button>`
+              : ""}
             ${overdueDays(h.due) > 0 || h.closed
               ? `<button class="hw-manage-close" onclick="toggleHomeworkClosed('${jsStr(h.id)}')">${h.closed ? "마감 풀기" : "마감하기"}</button>`
               : ""}
-            <button class="hw-manage-delete" onclick="removeHomework('${jsStr(h.id)}')">삭제</button>
+            <button class="hw-manage-delete" onclick="askRemoveHomework('${jsStr(h.id)}')">삭제</button>
           </div>
         </div>
       `).join("");
@@ -9890,12 +9978,88 @@
     renderClassDetail();
   }
 
+  /* 이 숙제를 낸 사람이 몇인지. 한 명이라도 냈으면 내용을 못 고치게 한다.
+     이미 낸 학생이 다른 숙제를 한 셈이 되기 때문이다. */
+  function hwSubmitCount(hwId) {
+    const c = classes[currentClassIndex];
+    if (!c) return 0;
+    return c.submissions.filter((s) => s.hwId === hwId).length;
+  }
+
+  let editingHwId = null;
+
+  function openHwEdit(hwId) {
+    playTapSound();
+    const c = classes[currentClassIndex];
+    const h = c && c.homeworks.find((x) => x.id === hwId);
+    if (!h) return;
+    if (hwSubmitCount(hwId) > 0) { showHwLockedNotice(); return; }
+    editingHwId = hwId;
+    document.getElementById("editHwTitle").value = h.title || "";
+    document.getElementById("editHwDesc").value = h.desc || "";
+    document.getElementById("editHwMsg").classList.remove("show");
+    document.getElementById("hwEditModal").classList.add("show");
+  }
+
+  function confirmHwEdit() {
+    const msg = document.getElementById("editHwMsg");
+    const title = document.getElementById("editHwTitle").value.trim();
+    if (!title) {
+      msg.textContent = "숙제 이름을 적어 주세요";
+      msg.style.color = "#E4423F";
+      msg.classList.add("show");
+      playErrorBuzz();
+      return;
+    }
+    const c = classes[currentClassIndex];
+    const h = c && c.homeworks.find((x) => x.id === editingHwId);
+    if (!h) return;
+    /* 고치는 사이에 누가 냈을 수도 있다. 한 번 더 확인한다. */
+    if (hwSubmitCount(editingHwId) > 0) {
+      closeModal("hwEditModal");
+      showHwLockedNotice();
+      return;
+    }
+    h.title = title;
+    h.desc = document.getElementById("editHwDesc").value.trim();
+    saveState();
+    closeModal("hwEditModal");
+    renderHwDayList();
+    renderClassDetail();
+    playSuccessChime();
+  }
+
+  function showHwLockedNotice() {
+    playErrorBuzz();
+    document.getElementById("hwLockedModal").classList.add("show");
+  }
+
+  /* 지우면 낸 숙제와 사진까지 함께 사라진다. 한 번 더 묻는다. */
+  let removingHwId = null;
+
+  function askRemoveHomework(hwId) {
+    playTapSound();
+    removingHwId = hwId;
+    const n = hwSubmitCount(hwId);
+    document.getElementById("delHwWhat").textContent = n > 0
+      ? "학생이 낸 숙제 " + n + "건과 사진도 함께 사라져요"
+      : "아직 아무도 내지 않은 숙제예요";
+    document.getElementById("delHwModal").classList.add("show");
+  }
+
+  function confirmRemoveHomework() {
+    closeModal("delHwModal");
+    if (removingHwId) removeHomework(removingHwId);
+    removingHwId = null;
+  }
+
   function removeHomework(hwId) {
     playTapSound();
     const c = classes[currentClassIndex];
     c.homeworks = c.homeworks.filter((h) => h.id !== hwId);
     c.submissions = c.submissions.filter((s) => s.hwId !== hwId);
     saveState();
+    renderHwDayList();
     renderClassDetail();
   }
 
