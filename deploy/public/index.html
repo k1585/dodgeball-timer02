@@ -444,8 +444,8 @@
     color:var(--point-strong);
     font-weight:800;
   }
-  /* 고른 날을 진한 바탕으로 칠하면 그 위의 띠가 묻힌다.
-     띠를 살리려고 테두리로 표시한다. */
+  /* 고른 날을 진한 바탕으로 칠하면 그 위의 동그라미가 묻힌다.
+     색을 살리려고 테두리로 표시한다. */
   .cal-cell.selected{
     box-shadow:inset 0 0 0 2px var(--point-strong);
     font-weight:800;
@@ -463,36 +463,30 @@
   }
   .hw-card.day-row:first-of-type{ border-top:none; }
 
-  /* 날짜 칸을 채우는 세로 띠. 숙제 하나가 띠 하나다. */
-  .cal-bars{
-    position:absolute;
-    inset:0;
+  /* 숙제 하나에 동그라미 하나. 띠로 바꿔 봤더니 무슨 색인지 알아보기 어려워
+     다시 동그라미로 돌렸다. 대신 예전보다 크게 키워 색이 잘 보이게 한다. */
+  .cal-dots{
     display:flex;
-    border-radius:12px;
-    overflow:hidden;
+    justify-content:center;
+    align-items:center;
+    gap:3px;
+    flex-wrap:wrap;
+    max-width:100%;
+    line-height:0;
   }
-  .cal-bars i{
-    flex:1;
-    min-width:0;
+  .cal-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    display:inline-block;
+    flex:none;
   }
-  .cal-num{
-    position:relative;
-    z-index:1;
-  }
-  /* 숫자가 묻히지 않게 연하게 깐다 */
-  .bar-red{ background:rgba(228,66,63,0.42); }
-  .bar-blue{ background:rgba(30,58,107,0.38); }
-  .bar-green{ background:rgba(31,164,85,0.40); }
-  .bar-yellow{ background:rgba(224,138,0,0.45); }
+  .cal-num{ line-height:1.1; }
   .cal-dot.dot-red{ background:#E4423F; }
   .cal-dot.dot-blue{ background:var(--point-strong); }
   .cal-dot.dot-green{ background:#1FA455; }
   .cal-dot.dot-yellow{ background:#E08A00; }
-  .cal-dot.dot-gray{ background:#C4C7D6; }
-  /* 선택된 날은 배경이 남색이라 점이 묻히므로 흰 테두리를 둘러 줌 */
-  .cal-cell.selected .cal-dot{
-    box-shadow:0 0 0 1.5px #ffffff;
-  }
+  /* 고른 날은 테두리로 표시하므로 점을 덧칠할 필요가 없다 */
   .cal-legend{
     display:flex;
     flex-wrap:wrap;
@@ -508,12 +502,29 @@
     gap:4px;
   }
   .cal-legend i{
-    width:7px;
-    height:14px;
-    border-radius:3px;
+    width:8px;
+    height:8px;
+    border-radius:50%;
     display:inline-block;
-    vertical-align:-3px;
     margin-right:3px;
+  }
+
+  /* 완료 칸은 눌러서 지난 숙제로 가는 단추다. 단추가 되면 브라우저 기본
+     모양이 붙어 나머지 두 칸과 어긋나므로 도로 맞춰 준다. */
+  .status-box.is-link{
+    border:none;
+    font-family:inherit;
+    cursor:pointer;
+    /* 단추는 글이 가운데로 몰려 옆 두 칸과 어긋난다 */
+    text-align:left;
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  .status-box.is-link:active{ transform:scale(0.97); }
+  .status-go{
+    vertical-align:-2px;
+    margin-left:1px;
+    opacity:0.55;
   }
 
   /* 승인 현황 - 상태 요약 3칸 (3: 완료/거절 투톤으로) */
@@ -3925,13 +3936,14 @@
             <span class="status-label">승인 반려</span>
             <span class="status-count" id="countRejected">0건</span>
           </div>
-          <div class="status-box approved">
-            <span class="status-label">승인 완료</span>
+          <button type="button" class="status-box approved is-link" onclick="selectTab('past')">
+            <span class="status-label">승인 완료<svg class="status-go" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span>
             <span class="status-count" id="countApproved">0건</span>
-          </div>
+          </button>
         </div>
 
         <div id="pendingList"></div>
+        <p class="empty-state" id="pendingEmpty" hidden>해당 숙제가 없어요</p>
 
       </div>
 
@@ -4005,10 +4017,10 @@
       <div class="cal-grid" id="calGrid"></div>
 
       <div class="cal-legend">
-        <span><i class="bar-red"></i>미제출·반려</span>
-        <span><i class="bar-blue"></i>승인 대기중</span>
-        <span><i class="bar-green"></i>승인완료</span>
-        <span><i class="bar-yellow"></i>선생님 일정</span>
+        <span><i class="cal-dot dot-red"></i>미제출·반려</span>
+        <span><i class="cal-dot dot-blue"></i>승인 대기중</span>
+        <span><i class="cal-dot dot-green"></i>승인완료</span>
+        <span><i class="cal-dot dot-yellow"></i>선생님 일정</span>
       </div>
 
       <p class="page-title" id="calSelectedLabel" style="font-size:15px;margin:16px 0 10px;">8월 26일 (수)</p>
@@ -8033,6 +8045,10 @@
       c.classList.toggle("active", c.id === "tab-" + tabName);
     });
 
+    /* 탭만 바꾸면 안쪽은 예전 그대로 남는다. 승인현황은 '없어요' 안내가
+       엉뚱하게 남아 있을 수 있어 들어올 때 다시 그린다. */
+    if (tabName === "pending") { renderApprovalList(); renderCounts(); }
+    if (tabName === "past") renderPastList();
   }
 
   function statusLabel(status) {
@@ -8280,23 +8296,21 @@
       if (dateStr === calSelectedDate) cls += " selected";
       if (dateStr === todayStr) cls += " is-today";
 
-      /* 작은 점은 색을 가리기 어려워서, 날짜 칸 자체를 세로 띠로 채운다.
-         숙제 하나가 띠 하나다. 아직 내지 않은 것과 반려된 것은 둘 다 손이
-         가야 하는 숙제라서 빨강으로 함께 표시한다.
-         색은 연하게 깔아 숫자가 묻히지 않게 한다. */
-      const bars = dayHomeworkStatuses(dateStr).map((s) => {
-        if (s.status === "pending") return "bar-blue";
-        if (s.status === "approved") return "bar-green";
-        return "bar-red";
+      /* 숙제 하나에 동그라미 하나. 아직 내지 않은 것과 반려된 것은 둘 다 손이
+         가야 하는 숙제라서 빨강으로 함께 표시한다. */
+      const dots = dayHomeworkStatuses(dateStr).map((s) => {
+        if (s.status === "pending") return "dot-blue";
+        if (s.status === "approved") return "dot-green";
+        return "dot-red";
       });
-      /* 선생님이 올린 일정은 노란 띠로 뒤에 붙임 */
+      /* 선생님이 올린 일정은 노란 동그라미로 뒤에 붙임 */
       const eventCount = classEvents.filter((e) => dateStr >= e.startDate && dateStr <= e.endDate).length;
-      for (let k = 0; k < eventCount; k++) bars.push("bar-yellow");
+      for (let k = 0; k < eventCount; k++) dots.push("dot-yellow");
 
-      const inner = bars.length > 0
-        ? `<span class="cal-bars">${bars.map((b) => `<i class="${b}"></i>`).join("")}</span>`
-          + `<span class="cal-num">${d}</span>`
-        : `<span class="cal-num">${d}</span>`;
+      const inner = `<span class="cal-num">${d}</span>`
+        + (dots.length > 0
+            ? `<span class="cal-dots">${dots.map((c) => `<i class="cal-dot ${c}"></i>`).join("")}</span>`
+            : "");
       html += `<button class="${cls}" onclick="selectStudentCalDay('${dateStr}')">${inner}</button>`;
     }
     grid.innerHTML = html;
@@ -8612,6 +8626,9 @@
       card.addEventListener("click", () => openStatusDetail(s.hwId));
       container.appendChild(card);
     });
+    /* 대기중도 반려도 없으면 칸만 덩그러니 남아 고장 난 것처럼 보였다. */
+    const empty = document.getElementById("pendingEmpty");
+    if (empty) empty.hidden = container.children.length > 0;
   }
 
   function renderCounts() {

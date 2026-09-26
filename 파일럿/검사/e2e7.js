@@ -161,12 +161,16 @@ ok('★ 반려된 숙제가 남은 숙제에 다시 뜸', back.남은===1 && bac
 console.log('\n[7] 달력 색');
 const dots = await S.evaluate(()=>{
   openStudentCalendar();
-  /* 작은 점 대신 날짜 칸을 세로 띠로 채우도록 바뀌었다 */
-  return [...document.querySelectorAll('#calGrid .cal-bars i')].map(d=>d.className);
+  /* 띠로 바꿨다가, 무슨 색인지 알아보기 어려워 동그라미로 되돌렸다(크게) */
+  return [...document.querySelectorAll('#calGrid .cal-dot')].map(d=>d.className);
 });
 console.log('   ', JSON.stringify(dots));
-ok('반려는 빨강 띠', dots.some(c=>c.includes('bar-red')));
-ok('옛 점 표시는 안 씀', await S.evaluate(()=>document.querySelectorAll('#calGrid .cal-dot').length===0));
+ok('반려는 빨강 동그라미', dots.some(c=>c.includes('dot-red')));
+ok('띠는 더 안 씀', await S.evaluate(()=>document.querySelectorAll('#calGrid .cal-bars').length===0));
+ok('동그라미가 예전보다 큼', await S.evaluate(()=>{
+  const d=document.querySelector('#calGrid .cal-dot');
+  return !!d && parseFloat(getComputedStyle(d).width) >= 8;
+}));
 
 console.log('\n[6+10] 승인하면 바로 완료 + 지난 숙제');
 await overlayGone(S); await S.waitForTimeout(500);
