@@ -65,7 +65,7 @@ node delete-all-users.js --yes</div>
 </div>
 
 <h2>6. 점검 돌리기</h2>
-<p>고친 뒤에는 자동 점검 8종을 전부 돌립니다(<code>runall.sh</code>).
+<p>고친 뒤에는 자동 점검 11종을 전부 돌립니다(<code>runall.sh</code>).
 실제 서버에 붙어 돌기 때문에
 점검용 계정과 자료가 잠시 만들어졌다 지워집니다.</p>
 <p class="sub">점검 스크립트는 작업 폴더에 있으며, 화면 사진을 다시 찍는

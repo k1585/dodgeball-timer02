@@ -103,8 +103,6 @@
 
   /* 하단 고정 메뉴 (홈 / 숙제 목록 화면 공용) */
 
-
-
   /* ================= 홈 화면 ================= */
   /* 본문 영역은 어느 화면이든 똑같이 — 화면 이름을 하나씩 적다 보면
      새 화면이 빠져서 여백이 사라진다(내 반 화면이 그랬다). */
@@ -141,11 +139,6 @@
 
   .greeting .user-name{
     color:var(--point-strong);
-  }
-
-  .top-icons{
-    display:flex;
-    gap:14px;
   }
 
   .homework-card{
@@ -273,7 +266,6 @@
     overflow-y:auto;
     padding:0 20px 14px;
   }
-
 
   #page-list .hw-card,
   #page-status-detail .hw-card{
@@ -795,8 +787,6 @@
     color:#bbbbbb;
   }
 
-
-
   .note-section{
     margin-top:10px;
   }
@@ -1060,15 +1050,6 @@
   .ob-anim.d4{ animation-delay:0.32s; }
 
   /* 입력칸에 숫자가 들어갈 때 살짝 통통 튀는 효과 */
-  @keyframes digitPop{
-    0%{ transform:scale(1); }
-    45%{ transform:scale(1.18); }
-    100%{ transform:scale(1); }
-  }
-
-  .otp-box.pop{
-    animation:digitPop 0.22s ease;
-  }
 
   /* 완료 화면 색종이 효과 */
   .confetti-piece{
@@ -1090,14 +1071,7 @@
 
   /* 상단바 (뒤로가기 + 진행 점) - 온보딩 전용, 다른 화면의 top-bar/back-btn과 분리 */
 
-
-
-
-
   /* 시작 화면 */
-
-
-
 
   /* 역할 선택 */
   .role-heading{
@@ -1193,79 +1167,6 @@
     color:#C9CCDA;
   }
 
-  /* 이름/코드 입력 공용 */
-
-  .onboard-center.shift-up{
-    justify-content:flex-start;
-    padding-top:10vh;
-  }
-
-
-
-
-
-
-
-
-  /* 코드 입력 (OTP 스타일) */
-  .otp-row{
-    display:flex;
-    gap:8px;
-  }
-
-  .otp-box{
-    width:42px;
-    height:52px;
-    border:1.5px solid var(--line);
-    border-radius:14px;
-    text-align:center;
-    font-size:20px;
-    font-weight:800;
-    color:var(--ink);
-    background:#FAFBFF;
-    font-family:inherit;
-    transition:border-color 0.15s, box-shadow 0.15s, background 0.15s;
-  }
-
-  .otp-box:focus{
-    outline:none;
-    border-color:var(--point-strong);
-    box-shadow:0 0 0 4px rgba(30,58,107,0.12);
-    background:#ffffff;
-  }
-
-  .otp-row.shake{
-    animation:otpShake 0.4s;
-  }
-
-  .otp-row.shake .otp-box{
-    border-color:#E4423F;
-    background:#FFF4F4;
-  }
-
-  @keyframes otpShake{
-    0%, 100%{ transform:translateX(0); }
-    20%{ transform:translateX(-8px); }
-    40%{ transform:translateX(8px); }
-    60%{ transform:translateX(-6px); }
-    80%{ transform:translateX(6px); }
-  }
-
-  .code-error{
-    min-height:16px;
-    margin:14px 0 0;
-    font-size:12.5px;
-    font-weight:700;
-    color:#E4423F;
-    text-align:center;
-    opacity:0;
-    transition:opacity 0.2s;
-  }
-
-  .code-error.show{
-    opacity:1;
-  }
-
   #codeConfirmSection{
     margin-top:30px;
     text-align:center;
@@ -1275,65 +1176,9 @@
     align-items:center;
   }
 
-  .confirm-badge{
-    width:44px;
-    height:44px;
-    border-radius:50%;
-    background:var(--point-light);
-    color:var(--point-strong);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    margin:0 auto 14px;
-    animation:popIn 0.45s cubic-bezier(.34,1.56,.64,1);
-  }
-
-  .onboard-confirm-big{
-    font-size:18px;
-    font-weight:800;
-    color:var(--ink);
-    margin:0 0 22px;
-  }
-
-  .onboard-btn-row{
-    display:flex;
-    gap:10px;
-    width:100%;
-    max-width:280px;
-  }
-
-  /* 온보딩 전용 보조 버튼 (앱 전역 .secondary-btn과는 분리) */
-
-  .onboard-btn-row .onboard-btn{
-    flex:1.4;
-  }
-
-  /* 온보딩 완료 화면 */
-  .complete-content{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:0 28px;
-  }
-
   @keyframes popIn{
     0%{ transform:scale(0.4); opacity:0; }
     100%{ transform:scale(1); opacity:1; }
-  }
-
-
-  .onboard-final-actions{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    width:100%;
-    max-width:280px;
-  }
-
-  .onboard-final-actions button{
-    width:100%;
   }
 
   /* ===== 선생님용 화면 스타일 ===== */
@@ -1359,25 +1204,6 @@
   }
   .ob-back-btn:active{
     transform:scale(0.94);
-  }
-  .progress-dots{
-    display:flex;
-    gap:6px;
-  }
-  .progress-dots span{
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--line);
-    transition:background 0.2s, width 0.2s;
-  }
-  .progress-dots span.done{
-    background:var(--point-light);
-  }
-  .progress-dots span.current{
-    background:var(--point-strong);
-    width:16px;
-    border-radius:4px;
   }
   .welcome-content{
     flex:1;
@@ -1450,12 +1276,6 @@
     content:"";
     margin:auto;
     flex-shrink:0;
-  }
-
-  /* 코드 입력 화면은 일부러 위로 붙이는 모드라 auto 여백을 끔 */
-  .onboard-center.shift-up::before,
-  .onboard-center.shift-up::after{
-    margin:0;
   }
   .step-icon{
     width:60px;
@@ -1559,93 +1379,6 @@
   .ob-secondary-btn:active{
     transform:scale(0.98);
   }
-  .t-scope .code-display{
-    display:flex;
-    gap:8px;
-    margin-bottom:10px;
-  }
-  .t-scope .code-display span{
-    width:42px;
-    height:52px;
-    border:1.5px solid var(--line);
-    border-radius:14px;
-    background:#FAFBFF;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:22px;
-    font-weight:800;
-    color:var(--point-strong);
-    animation:popIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
-  }
-  .t-scope .code-display span:nth-child(1){ animation-delay:0.05s; }
-  .t-scope .code-display span:nth-child(2){ animation-delay:0.1s; }
-  .t-scope .code-display span:nth-child(3){ animation-delay:0.15s; }
-  .t-scope .code-display span:nth-child(4){ animation-delay:0.2s; }
-  .t-scope .code-display span:nth-child(5){ animation-delay:0.25s; }
-  .t-scope .code-display span:nth-child(6){ animation-delay:0.3s; }
-  .t-scope .copy-btn{
-    margin-top:18px;
-    background:#ffffff;
-    color:var(--point-strong);
-    border:1.5px solid var(--point-strong);
-    border-radius:14px;
-    padding:12px 24px;
-    font-size:14px;
-    font-weight:800;
-    cursor:pointer;
-    display:flex;
-    align-items:center;
-    gap:6px;
-  }
-  .t-scope .copy-btn:active{
-    transform:scale(0.97);
-  }
-  .t-scope .copy-toast{
-    margin-top:12px;
-    font-size:12px;
-    font-weight:700;
-    color:var(--point-strong);
-    opacity:0;
-    transition:opacity 0.2s;
-  }
-  .t-scope .copy-toast.show{
-    opacity:1;
-  }
-  .t-scope .complete-content{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:0 28px;
-  }
-  .complete-circle{
-    width:88px;
-    height:88px;
-    border-radius:50%;
-    background:linear-gradient(135deg, var(--point-strong), var(--point-mid));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    box-shadow:0 16px 30px rgba(30,58,107,0.30);
-    margin-bottom:26px;
-    animation:popIn 0.5s cubic-bezier(.34,1.56,.64,1);
-  }
-  .onboard-welcome-text{
-    font-size:20px;
-    font-weight:800;
-    color:var(--ink);
-    text-align:center;
-    margin:0 0 6px;
-    line-height:1.5;
-  }
-  .complete-sub{
-    font-size:13px;
-    color:var(--sub);
-    margin:0 0 36px;
-    text-align:center;
-  }
   .t-scope .top-bar{
     display:flex;
     align-items:center;
@@ -1659,18 +1392,6 @@
     word-break:keep-all;
   }
   .t-scope .greeting .user-name{
-    color:var(--point-strong);
-  }
-  .icon-btn{
-    width:36px;
-    height:36px;
-    border:none;
-    background:none;
-    padding:0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
     color:var(--point-strong);
   }
   .t-scope .stat-row{
@@ -1817,37 +1538,6 @@
     font-weight:800;
     color:var(--ink);
     margin:0;
-  }
-  .t-scope .detail-code-chip{
-    flex-shrink:0;
-    margin:14px 20px 0;
-    background:var(--point-light);
-    color:var(--point-strong);
-    border-radius:14px;
-    padding:12px 16px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    font-size:13px;
-    font-weight:700;
-  }
-  .t-scope .detail-code-chip strong{
-    font-size:15px;
-    letter-spacing:2px;
-    margin-left:4px;
-  }
-  .t-scope .detail-code-copy{
-    background:#ffffff;
-    color:var(--point-strong);
-    border:none;
-    border-radius:10px;
-    padding:8px 14px;
-    font-size:12px;
-    font-weight:800;
-    cursor:pointer;
-  }
-  .t-scope .detail-code-copy:active{
-    transform:scale(0.96);
   }
   #page-t-class-detail .tabs{
     flex-shrink:0;
@@ -2601,6 +2291,48 @@
   }
   .tour-dots i.on{ background:var(--point-strong); width:16px; border-radius:3px; }
 
+  /* 관리자 공지 — 선생님 공지와 구분되게 살짝 다른 색으로 */
+  .sys-banner{
+    background:#FFF6E3;
+    border:1px solid #F0DFB4;
+    border-radius:14px;
+    padding:13px 15px;
+    margin-bottom:10px;
+  }
+  .sys-tag{
+    display:inline-block;
+    background:#E08A00;
+    color:#ffffff;
+    font-size:10.5px;
+    font-weight:800;
+    padding:2px 8px;
+    border-radius:20px;
+    margin-bottom:6px;
+  }
+  .sys-text{
+    font-size:14px;
+    font-weight:700;
+    color:var(--ink);
+    line-height:1.55;
+    margin:0;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .sys-when{
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--sub);
+    margin:6px 0 0;
+  }
+  .sys-pop-item{
+    background:#F9FBFF;
+    border:1px solid #E8EDF6;
+    border-radius:12px;
+    padding:13px 15px;
+    margin-bottom:10px;
+  }
+  #masterNoticeList .master-acc-card{ text-align:left; }
+
   [hidden]{ display:none !important; }
 
   /* ===== 마이페이지 =====
@@ -2838,53 +2570,6 @@
     opacity:1;
   }
 
-  .t-scope .master-stat-row{
-    display:flex;
-    gap:8px;
-    margin-bottom:18px;
-  }
-
-  .t-scope .master-stat{
-    flex:1;
-    border-radius:14px;
-    padding:12px 10px;
-    background:var(--point-light);
-    color:var(--point-strong);
-  }
-
-  .t-scope .master-stat span{
-    display:block;
-    font-size:11px;
-    font-weight:700;
-    margin-bottom:6px;
-  }
-
-  .t-scope .master-stat strong{
-    font-size:18px;
-    font-weight:800;
-  }
-
-  .t-scope .master-role-pill{
-    flex-shrink:0;
-    font-size:11px;
-    font-weight:800;
-    padding:5px 10px;
-    border-radius:999px;
-    white-space:nowrap;
-  }
-
-  .t-scope .master-role-pill.teacher{
-    background:#FFF1DB;
-    color:#E08A00;
-  }
-
-  .t-scope .master-role-pill.student{
-    background:var(--point-light);
-    color:var(--point-strong);
-  }
-
-
-
   .auth-submit{
     margin-top:4px;
   }
@@ -2950,78 +2635,9 @@
   }
   .auth-signup-link:active{ opacity:0.6; }
 
-  .auth-signup-btn{
-    width:100%;
-    max-width:280px;
-    background:#ffffff;
-    color:var(--point-strong);
-    border:1.5px solid var(--point-strong);
-    border-radius:16px;
-    padding:15px;
-    font-size:15px;
-    font-weight:800;
-    font-family:inherit;
-    cursor:pointer;
-  }
-
-  .auth-signup-btn:active{
-    transform:scale(0.98);
-  }
-
   /* 부제는 내용이 없으면 자리를 차지하지 않는다 */
   .page-sub:empty{
     display:none;
-  }
-
-  /* 관리자 드릴다운 화면의 현재 위치 표시 */
-  .t-scope .master-crumb{
-    margin:6px 0 0;
-    font-size:12.5px;
-    font-weight:700;
-    color:var(--sub);
-  }
-
-  .t-scope .master-crumb:empty{
-    display:none;
-  }
-
-  .t-scope .master-sub-card{
-    border:1px solid #ececec;
-    border-radius:14px;
-    padding:14px;
-    margin-bottom:10px;
-  }
-
-  .t-scope .master-sub-top{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-bottom:4px;
-  }
-
-  .t-scope .master-sub-title{
-    font-size:15px;
-    font-weight:800;
-    color:var(--ink);
-    margin:0;
-    flex:1;
-  }
-
-  .t-scope .master-sub-meta{
-    font-size:12px;
-    color:var(--sub);
-    margin:0 0 8px;
-  }
-
-  .t-scope .master-sub-note{
-    background:#FAFBFF;
-    border:1px solid #ececec;
-    border-radius:10px;
-    padding:8px 10px;
-    font-size:12px;
-    color:#333333;
-    line-height:1.5;
-    margin:8px 0 0;
   }
 
   /* 비밀번호 보기/숨기기 (눈 버튼) */
@@ -3177,73 +2793,6 @@
     background:#ffffff;
   }
 
-  .t-scope .master-acc-top{
-    display:flex;
-    align-items:center;
-    gap:12px;
-  }
-
-  .t-scope .master-acc-pw{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    background:#FAFBFF;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:8px 6px 8px 12px;
-    margin-top:10px;
-    position:relative;
-  }
-
-  .t-scope .master-acc-pw .pw-eye{
-    position:static;
-    transform:none;
-    width:30px;
-    height:30px;
-    flex-shrink:0;
-  }
-
-  .t-scope .master-acc-pw .pw-eye:active{
-    transform:scale(0.9);
-  }
-
-  .t-scope .master-acc-pw-value{
-    flex:1;
-    font-size:13px;
-    font-weight:700;
-    color:var(--sub);
-    letter-spacing:1px;
-    word-break:break-all;
-  }
-
-  .t-scope .master-acc-pw-value.on{
-    color:var(--point-strong);
-    letter-spacing:0;
-  }
-
-  .t-scope .master-acc-actions{
-    display:flex;
-    gap:6px;
-    margin-top:8px;
-  }
-
-  .t-scope .master-acc-delete{
-    flex:1;
-    background:#FDE7E7;
-    color:#E4423F;
-    border:none;
-    border-radius:10px;
-    padding:9px;
-    font-size:12.5px;
-    font-weight:800;
-    font-family:inherit;
-    cursor:pointer;
-  }
-
-  .t-scope .master-acc-delete:active{
-    transform:scale(0.98);
-  }
-
   .t-scope .master-acc-reset{
     flex:1;
     background:#F5F6FA;
@@ -3275,7 +2824,6 @@
   #masterStudentList .student-card,
   #masterAccountList .master-acc-card,
   #hwManageList .hw-manage-card,
-  #masterSubsList .master-sub-card,
   #tab-remaining .hw-card,
   #tab-approval .hw-card,
   #tab-past .hw-card,
@@ -3459,9 +3007,6 @@
 
   /* 마이페이지 */
 
-
-
-
   .t-scope .mypage-note{
     font-size:11.5px;
     color:var(--sub);
@@ -3515,7 +3060,6 @@
 
   /* 마이페이지 - 이름 변경 불가 안내 */
 
-
   .t-scope .section-count{
     display:inline-block;
     min-width:20px;
@@ -3530,7 +3074,6 @@
   }
 
   /* 마이페이지 - 값만 보여주는 줄 */
-
 
   /* 저장공간 막대 */
 
@@ -3580,7 +3123,6 @@
     margin-bottom:0;
   }
 
-
   /* ===== 넓은 화면 =====
      지금까지 폭 480px 한 벌로만 만들어서, 태블릿이나 노트북에서 열면
      가운데 좁은 띠만 쓰고 양옆이 텅 비었다. 화면이 넓어지면 앱도 같이
@@ -3594,8 +3136,8 @@
 
     /* 로그인·가입 화면은 넓혀도 줄이 길어지기만 해서, 가운데 한 칸만
        조금 넓힌다. 280px는 넓은 화면에서 지나치게 좁아 보였다. */
-    .onboard-input-wrap, .onboard-btn, .auth-signup-btn, .google-btn,
-    .auth-divider, .auth-hint, .auth-error, .onboard-btn-row,
+    .onboard-input-wrap, .onboard-btn, .google-btn,
+    .auth-divider, .auth-hint, .auth-error,
     .consent-box, .age-row{
       max-width:360px;
     }
@@ -3939,23 +3481,6 @@
   </div>
 
   <!-- ===== 5. 온보딩 완료 ===== -->
-  <div class="page" id="page-onboard-complete">
-    <div class="complete-content">
-      <div class="complete-circle">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6L9 17l-5-5"></path>
-        </svg>
-      </div>
-      <p class="onboard-welcome-text ob-anim d1" id="onboardWelcomeText">A반의 홍길동님 환영해요</p>
-      <p class="complete-sub ob-anim d2">이제 Today Homework를 시작할 수 있어요</p>
-
-      <div class="onboard-final-actions ob-anim d3">
-        <button class="onboard-btn" id="startServiceBtn">시작하기</button>
-        <button class="ob-secondary-btn" id="restartOnboardBtn">내 반 목록으로</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ================= 홈 화면 ================= -->
   <div class="page" id="page-home">
     <div class="home-content">
@@ -3966,6 +3491,8 @@
           <p class="page-sub" id="homeClassLabel"></p>
         </div>
       </div>
+
+      <div id="sysBannerStudent" hidden style="margin-top:18px;"></div>
 
       <div id="sNoticeBox" style="display:none;">
         <p class="section-title" style="margin-top:18px;">선생님 공지</p>
@@ -4052,9 +3579,6 @@
       <div class="tab-content active" id="tab-remaining">
 
         <div class="section-divider">8월 26일 이후 숙제</div>
-
-
-
 
       </div>
 
@@ -4315,6 +3839,9 @@
         <button class="menu-row" onclick="startTour('teacher')">
           <span>설명 보기</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
         </button>
+        <button class="menu-row" onclick="openMasterPasswordModal()">
+          <span>관리자</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
       </div>
 
       <p class="section-title">계정</p>
@@ -4383,26 +3910,27 @@
     </div>
     <div class="privacy-content">
       <h1 class="privacy-title">개인정보처리방침</h1>
-      <p class="privacy-updated">최종 수정일: 2026년 9월 8일</p>
+      <p class="privacy-updated">최종 수정일: 2026년 9월 27일</p>
 
       <h2>1. 수집하는 항목</h2>
-      <p>이 앱은 아래 정보를 이용자의 기기 안에만 저장합니다.</p>
+      <p>이 앱은 아래 정보를 수집합니다.</p>
       <ul>
-        <li>이름, 비밀번호 (계정 구분용)</li>
+        <li>이름, 비밀번호 (계정 구분과 본인 확인용)</li>
         <li>가입일시·동의일시 (동의 사실 기록용)</li>
         <li>참여한 반 정보</li>
         <li>숙제 제출 사진과 선생님께 보내는 쪽지</li>
         <li>만 14세 미만인 경우: 보호자 성함과 연락처</li>
       </ul>
+      <p>주민등록번호, 위치정보, 연락처 목록, 기기 식별자는 수집하지 않습니다.</p>
 
       <h2>2. 이용 목적</h2>
       <p>숙제를 내고 제출하고 확인하는 기능을 제공하기 위해서만 씁니다. 광고나 분석에는 쓰지 않습니다.</p>
 
       <h2>3. 보관 위치와 기간</h2>
-      <p>모든 정보는 <b>이용자 기기의 브라우저 저장소에만</b> 보관되며 외부 서버로 전송되지 않습니다. 계정을 삭제하거나 앱 데이터를 지우면 즉시 사라집니다.</p>
+      <p>선생님과 학생이 같은 숙제를 함께 보려면 정보를 주고받을 곳이 필요하므로, 구글에서 제공하는 <b>파이어베이스(Firebase)</b>에 보관합니다. 서버는 <b>대한민국 서울</b>에 있으며 국외로 옮기지 않습니다. 계정을 삭제하면 즉시 지워지고, 따로 보관 기간을 두지 않습니다.</p>
 
-      <h2>4. 제3자 제공</h2>
-      <p>누구에게도 제공하지 않습니다.</p>
+      <h2>4. 제3자 제공과 처리위탁</h2>
+      <p>수집한 정보를 제3자에게 제공하지 않습니다. 다만 자료를 보관하기 위해 <b>Google LLC</b>에 파이어베이스를 통한 데이터 보관과 계정 인증을 위탁합니다. 수탁자는 위탁받은 일 말고 다른 목적으로 쓸 수 없습니다.</p>
 
       <h2>5. 만 14세 미만 이용자</h2>
       <p>만 14세 미만은 가입할 때 보호자 동의를 받아야 하며, 보호자는 언제든 자녀의 정보 열람·정정·삭제를 요청할 수 있습니다.</p>
@@ -4411,12 +3939,15 @@
       <p>마이페이지 &gt; 계정 삭제로 언제든 직접 지울 수 있습니다. 삭제하면 제출한 숙제와 사진도 함께 지워집니다.</p>
 
       <h2>7. 파기 절차 및 방법</h2>
-      <p>계정을 삭제하거나 앱 데이터를 지우는 즉시 기기에서 파기되며 복구할 수 없습니다. 따로 보관 기간을 두지 않습니다.</p>
+      <p>계정을 삭제하는 즉시 저장소에서 그 계정의 정보와 제출한 사진을 지우며, 지운 정보는 되살릴 수 없습니다. 따로 보관 기간을 두지 않습니다.</p>
 
       <h2>8. 자동 수집 장치</h2>
-      <p>광고나 분석을 위한 쿠키·추적 식별자를 쓰지 않습니다. 로그인 상태를 기억하기 위한 기기 저장소만 사용하며 기기 밖으로 나가지 않습니다.</p>
+      <p>광고나 분석을 위한 쿠키·추적 식별자를 쓰지 않습니다. 로그인 상태 유지, 안내를 본 기록, 닫은 공지 기록에만 기기 저장소를 쓰며, 브라우저에서 사이트 데이터를 지우면 언제든 없앨 수 있습니다.</p>
 
-      <h2>9. 개인정보 보호책임자 및 문의</h2>
+      <h2>9. 안전성 확보 조치</h2>
+      <p>비밀번호는 파이어베이스 인증이 한 방향으로 암호화해 보관하므로 만든 사람도 원래 비밀번호를 볼 수 없습니다. 앱과 서버 사이 통신은 모두 HTTPS로 암호화되고, 접근 규칙으로 본인과 담당 선생님만 그 자료를 볼 수 있게 막아 둡니다.</p>
+
+      <h2>10. 개인정보 보호책임자 및 문의</h2>
       <p id="privacyContact">김주원 · kimnui2012@gmail.com</p>
       <p style="font-size:12px;color:#8A8FA3;">개인정보침해 상담: 개인정보침해신고센터 (국번없이 118)</p>
     </div>
@@ -4704,6 +4235,15 @@
         <button class="master-acc-reset" onclick="changeMasterPassword()">비밀번호 변경</button>
       </div>
 
+      <p class="section-title">공지 관리</p>
+      <p class="master-info-body">
+        학생·선생님에게 보낼 공지를 올립니다. 누구에게 보일지와
+        어떻게 보일지를 골라서 올릴 수 있어요. 올리려면 먼저 로그인해야 합니다.
+      </p>
+      <button class="master-acc-reset" onclick="openSysNoticeWrite()"
+              style="margin-bottom:12px;">+ 공지 올리기</button>
+      <div id="masterNoticeList"></div>
+
       <p class="section-title">비밀번호 초기화</p>
       <p class="master-info-body">
         비밀번호는 되돌릴 수 없게 보관돼서 앱에서는 바꿀 수 없습니다.
@@ -4739,84 +4279,6 @@
         다 지운 뒤에는 선생님 계정부터 새로 만들면 처음 상태가 됩니다.
         관리자 비밀번호는 지워지지 않습니다.
       </p>
-    </div>
-  </div>
-
-  <!-- ===== 관리자(마스터): 2단계 반 목록 ===== -->
-  <div class="page t-scope" id="page-master-classes">
-    <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="masterBackToTeachers()" aria-label="뒤로가기">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5"></path>
-          <path d="M12 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <div class="home-content">
-      <div class="top-bar">
-        <div class="page-head">
-          <div class="greeting">관리자</div>
-          <p class="page-sub"><span id="masterClassesTitle">선생님</span></p>
-        </div>
-      </div>
-      <p class="master-crumb" id="masterClassesCrumb"></p>
-
-      <p class="section-title">만든 반</p>
-      <div id="masterClassList"></div>
-    </div>
-  </div>
-
-  <!-- ===== 관리자(마스터): 3단계 학생 목록 ===== -->
-  <div class="page t-scope" id="page-master-students">
-    <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="masterBackToClasses()" aria-label="뒤로가기">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5"></path>
-          <path d="M12 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <div class="home-content">
-      <div class="top-bar">
-        <div class="page-head">
-          <div class="greeting">관리자</div>
-          <p class="page-sub"><span id="masterStudentsTitle">반</span></p>
-        </div>
-      </div>
-      <p class="master-crumb" id="masterStudentsCrumb"></p>
-
-      <p class="section-title">학생</p>
-      <div id="masterStudentList"></div>
-
-      <p class="section-title">이 반의 숙제</p>
-      <div id="masterClassHwList"></div>
-    </div>
-  </div>
-
-  <!-- ===== 관리자(마스터): 4단계 학생이 올린 숙제 ===== -->
-  <div class="page t-scope" id="page-master-subs">
-    <div class="ob-top-bar">
-      <button class="ob-back-btn" onclick="masterBackToStudents()" aria-label="뒤로가기">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5"></path>
-          <path d="M12 19l-7-7 7-7"></path>
-        </svg>
-      </button>
-    </div>
-
-    <div class="home-content">
-      <div class="top-bar">
-        <div class="page-head">
-          <div class="greeting">관리자</div>
-          <p class="page-sub"><span id="masterSubsTitle">학생</span></p>
-        </div>
-      </div>
-      <p class="master-crumb" id="masterSubsCrumb"></p>
-
-      <p class="section-title">올린 숙제</p>
-      <div id="masterSubsList"></div>
     </div>
   </div>
 
@@ -5038,14 +4500,59 @@
     </div>
   </div>
 
-  <!-- 계정 삭제 확인 -->
-  <div class="modal-overlay" id="accDeleteModal">
+  <!-- 관리자 공지 쓰기 -->
+  <div class="modal-overlay t-scope" id="sysNoticeModal">
+    <div class="modal-box" style="text-align:left;">
+      <p class="modal-text" style="margin-bottom:6px;">공지 올리기</p>
+      <p class="modal-sub" style="margin-bottom:12px;">300자까지 쓸 수 있어요</p>
+      <textarea id="sysNoticeText" class="add-hw-textarea" rows="4" maxlength="300"
+                placeholder="공지 내용을 적어 주세요"></textarea>
+
+      <p class="section-title" style="margin-top:14px;">누구에게 보일까요</p>
+      <select id="sysScope" class="consent-input" onchange="syncSysClassPick()">
+        <option value="all">모두 (선생님 + 학생)</option>
+        <option value="teacher">선생님에게만</option>
+        <option value="student">학생에게만</option>
+        <option value="class">고른 반에만</option>
+      </select>
+      <div id="sysClassRow" hidden>
+        <p class="section-title" style="margin-top:12px;">어느 반</p>
+        <div id="sysClassPick" class="notice-pick"></div>
+      </div>
+
+      <p class="section-title" style="margin-top:14px;">어떻게 보일까요</p>
+      <select id="sysShow" class="consent-input">
+        <option value="home">홈 화면에 띄우기</option>
+        <option value="popup">로그인할 때 창으로 띄우기</option>
+        <option value="both">둘 다</option>
+      </select>
+
+      <p class="master-error" id="sysNoticeMsg"></p>
+      <div class="modal-actions" style="margin-top:14px;">
+        <button onclick="closeModal('sysNoticeModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button id="sysNoticeBtn" onclick="confirmSysNotice()" style="flex:1;width:auto;">올리기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관리자 공지 삭제 확인 -->
+  <div class="modal-overlay t-scope" id="sysDelModal">
     <div class="modal-box">
-      <p class="modal-text"><span id="accDeleteName"></span> <span id="accDeleteRole"></span> 계정을<br>삭제할까요?</p>
-      <p class="modal-sub">이 계정으로는 더 이상 로그인할 수 없어요</p>
+      <p class="modal-text">이 공지를 지울까요?</p>
       <div class="modal-actions">
-        <button onclick="closeModal('accDeleteModal')" style="background:#f1f2f5;color:#555555;">취소</button>
-        <button onclick="confirmAccountDelete()" style="background:#E4423F;color:#ffffff;">삭제</button>
+        <button onclick="closeModal('sysDelModal')" style="background:#f1f2f5;color:#555555;">취소</button>
+        <button onclick="confirmRemoveSysNotice()" style="background:#E4423F;color:#ffffff;">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 로그인할 때 뜨는 공지 -->
+  <div class="modal-overlay" id="sysPopupModal">
+    <div class="modal-box" style="text-align:left;">
+      <p class="modal-text" style="margin-bottom:12px;">알려 드려요</p>
+      <div id="sysPopupBody"></div>
+      <div class="modal-actions" style="margin-top:6px;">
+        <button onclick="closeSysPopup()" style="flex:1;width:auto;">닫기</button>
       </div>
     </div>
   </div>
@@ -5064,29 +4571,6 @@
         <button class="tour-skip" onclick="endTour(true)">건너뛰기</button>
         <button class="tour-back" id="tourBack" onclick="tourPrev()" hidden>이전</button>
         <button class="tour-next" id="tourNext" onclick="tourNext()">다음</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 비밀번호 초기화 확인 -->
-  <div class="modal-overlay" id="pwResetModal">
-    <div class="modal-box">
-      <p class="modal-text"><span id="pwResetName"></span>의 비밀번호를<br>초기화할까요?</p>
-      <p class="modal-sub">새 비밀번호는 <b>@abcd1234</b>가 돼요</p>
-      <div class="modal-actions">
-        <button onclick="closeModal('pwResetModal')" style="background:#f1f2f5;color:#555555;">취소</button>
-        <button onclick="confirmPwReset()" style="background:var(--point-strong);color:#ffffff;">초기화</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 전체 데이터 초기화 확인 -->
-  <div class="modal-overlay" id="masterResetModal">
-    <div class="modal-box">
-      <p class="modal-text">모든 데이터를 지울까요?<br><span style="font-size:12px;color:var(--sub);font-weight:500;">계정·반·숙제·제출물이 모두 사라져요</span></p>
-      <div class="modal-actions">
-        <button onclick="closeModal('masterResetModal')" style="background:#f1f2f5;color:#555555;">취소</button>
-        <button onclick="confirmMasterReset()" style="background:#E4423F;color:#ffffff;">초기화</button>
       </div>
     </div>
   </div>
@@ -5204,20 +4688,6 @@
   </div>
 
   <!-- ===== 5. 완료 ===== -->
-  <div class="page t-scope" id="page-t-onboard-complete">
-    <div class="complete-content">
-      <div class="complete-circle">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6L9 17l-5-5"></path>
-        </svg>
-      </div>
-      <p class="onboard-welcome-text ob-anim d1" id="teacherOnboardWelcomeText">김선생님, 환영해요</p>
-      <p class="complete-sub ob-anim d2">이제 반을 만들고 학생을 관리할 수 있어요</p>
-
-      <button class="onboard-btn ob-anim d3" id="teacherStartServiceBtn">시작하기</button>
-    </div>
-  </div>
-
   <!-- ===== 6. 대시보드(홈) ===== -->
   <div class="page t-scope" id="page-t-home">
     <div class="home-content">
@@ -5243,6 +4713,8 @@
           반 추가하기
         </button>
       </div>
+
+      <div id="sysBannerTeacher" hidden style="margin-top:18px;"></div>
 
       <div id="noticeSection" style="display:none;">
         <p class="section-title">공지</p>
@@ -5468,7 +4940,6 @@
         </svg>
       </button>
     </div>
-
 
     <div class="tabs">
       <button class="tab active" data-tab="manage" onclick="switchDetailTab('manage')">학생 관리</button>
@@ -5854,32 +5325,6 @@
     return String(s).replace(/'/g, "\\'");
   }
 
-  /* 클립보드 복사: navigator.clipboard는 보안 컨텍스트(https)가 아니면 조용히
-     실패할 수 있어서(예: 휴대폰에서 file://로 직접 연 경우) execCommand 기반
-     대체 방법도 함께 시도함 */
-  function copyText(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(text).catch(() => fallbackCopyText(text));
-    } else {
-      fallbackCopyText(text);
-    }
-  }
-
-  function fallbackCopyText(text) {
-    try {
-      const ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.position = "fixed";
-      ta.style.top = "-9999px";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.focus();
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-    } catch (e) {}
-  }
-
   /* 받침 유무에 따른 조사(이/가, 은/는, 을/를) 자동 선택 */
   function hasBatchim(str) {
     const s = (str || "").trim();
@@ -5940,31 +5385,12 @@
   let selectedClassName = "";
   let joinedClassIndex = null;
 
-  /* ===== 저장소 어댑터 =====
-     앱의 모든 저장/불러오기는 이 Store 한 곳만 거친다.
-     지금은 브라우저 저장소(localStorage)를 쓰지만, 나중에 서버(파이어베이스)로
-     옮길 때 바깥 코드를 건드리지 않고 이 안쪽만 바꾸면 되도록 입구를 모아 둔 것이다.
-     시크릿 모드처럼 저장소를 쓸 수 없는 환경에서도 앱이 멈추지 않도록,
+  /* ===== 이 기기에만 두는 값 =====
+     학생·선생님 자료는 모두 서버(파이어베이스)에 있고, 여기 저장소에는
+     이 기기에서만 쓰는 값(관리자 비밀번호, 안내를 본 기록, 닫은 공지)만 둔다.
+     시크릿 모드처럼 저장소를 못 쓰는 환경에서도 앱이 멈추지 않도록
      읽기는 항상 기본값을 돌려주고 쓰기는 성공 여부를 돌려준다. */
   const Store = {
-    readArray(key) {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
-      } catch (e) {
-        return [];
-      }
-    },
-    writeArray(key, arr) {
-      try {
-        localStorage.setItem(key, JSON.stringify(arr));
-        return true;
-      } catch (e) {
-        return false;
-      }
-    },
     readText(key, fallback) {
       try {
         return localStorage.getItem(key) || fallback;
@@ -5980,37 +5406,7 @@
         return false;
       }
     },
-    remove(keys) {
-      try {
-        keys.forEach((k) => localStorage.removeItem(k));
-        return true;
-      } catch (e) {
-        return false;
-      }
-    },
-    usedBytes() {
-      let total = 0;
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          total += (k.length + (localStorage.getItem(k) || "").length) * 2;
-        }
-      } catch (e) {}
-      return total;
-    },
   };
-
-  /* 저장 직전에 저장소를 다시 읽어, 이 탭이 모르는 항목(다른 탭에서 만든 것)은
-     그대로 두고 내 것만 반영한다. 탭을 여러 개 띄워 써도 서로 덮어쓰지 않게 하려는 것.
-     반대로 '지우는' 동작은 병합하면 지운 게 되살아나므로 write...Exact를 쓴다. */
-  function mergeKeeping(mine, stored, field) {
-    const has = new Set(mine.map((x) => x[field]));
-    const merged = mine.slice();
-    stored.forEach((x) => {
-      if (x && x[field] && !has.has(x[field])) merged.push(x);
-    });
-    return merged;
-  }
 
   /* ===== 서버(파이어베이스) 연결 층 =====
      화면 코드는 예전처럼 users / classes / events 배열을 동기로 읽는다.
@@ -6033,9 +5429,6 @@
     const v = String(loginId || "").trim().toLowerCase();
     return v.indexOf("@") >= 0 ? v : v + "@" + LOGIN_DOMAIN;
   }
-
-  let cloudReadyResolve;
-  const cloudFirstLoad = new Promise((r) => { cloudReadyResolve = r; });
 
   const Cloud = {
     uid: null,
@@ -6216,7 +5609,6 @@
           new Promise((r) => setTimeout(r, 8000)),
         ]);
       }
-      cloudReadyResolve && cloudReadyResolve();
       return true;
     },
 
@@ -6376,9 +5768,40 @@
     watchEvents() {
       const F = window.FB, self = this;
       self.unsubs.push(F.onSnapshot(F.collection(F.db, "events"), (qs) => {
-        events = qs.docs.map((s) => Object.assign({ id: s.id }, s.data()));
+        /* 관리자 공지는 일정과 같은 칸에 담는다. 새 칸을 만들면 보안 규칙을
+           콘솔에서 다시 올려야 해서, 이미 모두가 읽을 수 있는 이 칸을 쓴다.
+           kind 로 갈라 달력 쪽 코드는 그대로 둔다. */
+        const all = qs.docs.map((s) => Object.assign({ id: s.id }, s.data()));
+        events = all.filter((e) => e.kind !== "sys");
+        sysNotices = all.filter((e) => e.kind === "sys")
+          .sort((a, b) => String(b.at || "").localeCompare(String(a.at || "")));
         self.refresh();
+        renderSysBanners();
+        maybeShowSysPopup();
       }, () => {}));
+    },
+
+    /* 관리자 공지 올리기·지우기. 쓰려면 로그인되어 있어야 한다(서버 규칙). */
+    pushSysNotice(n) {
+      if (!this.ready()) return Promise.reject(new Error("로그인이 필요해요"));
+      const F = window.FB;
+      return F.setDoc(F.doc(F.db, "events", n.id), {
+        kind: "sys",
+        text: n.text || "",
+        scope: n.scope || "all",
+        classIds: n.classIds || [],
+        show: n.show || "home",
+        at: n.at || new Date().toISOString(),
+        teacherId: this.uid,
+        teacherName: n.teacherName || "",
+        /* 달력 쪽이 실수로 읽어도 날짜가 없어 그려지지 않게 비워 둔다 */
+        title: "", startDate: "", endDate: "",
+      }, { merge: true });
+    },
+    removeSysNotice(id) {
+      if (!this.ready()) return Promise.reject(new Error("로그인이 필요해요"));
+      const F = window.FB;
+      return F.deleteDoc(F.doc(F.db, "events", id));
     },
 
     /* 서버에서 받은 모습을 기억해 둔다. 나중에 무엇이 바뀌었는지 이걸로 가린다.
@@ -6679,10 +6102,8 @@
   });
 
   /* ===== 계정(회원가입/로그인) =====
-     이름과 비밀번호를 브라우저(localStorage)에만 저장하는 데모용 저장소입니다.
-     비밀번호는 평문 대신 해시로 보관하지만, 서버가 없으므로 실제 서비스 수준의
-     보안은 아닙니다. */
-  const STORAGE_KEY_USERS = "todayHomeworkUsers";
+     이름과 비밀번호는 파이어베이스 인증이 맡는다. 비밀번호는 서버가 한 방향으로
+     암호화해 보관하므로 만든 사람도 원래 값을 볼 수 없다. */
   /* 관리자 비밀번호는 소스에 그대로 두면 앱을 뜯었을 때 바로 보이므로 해시만 둔다.
      다만 네 자리 숫자는 해시여도 금방 맞춰볼 수 있으니, 이건 '지나가다 눌러보는
      사람을 막는' 수준이지 진짜 잠금이 아니다. 제대로 막으려면 서버가 필요하다. */
@@ -6707,18 +6128,8 @@
     return Cloud.pushMyUser();
   }
 
-  /* 계정 삭제나 전체 초기화는 '지우는' 동작이라, 병합하면 지운 게 되살아난다.
-     그래서 이때만 지금 목록을 그대로 저장한다. */
-  function writeUsersExact() {
-    return Cloud.pushMyUser();
-  }
-
   function writeClassesExact() {
     return Cloud.pushClasses();
-  }
-
-  function newUserId() {
-    return "u" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
   loadUsers();
@@ -6736,34 +6147,6 @@
     if (!u.id) u.id = "u" + i + "_" + (u.role || "x") + "_" + Date.now().toString(36);
   });
 
-  /* 관리자 화면에서 비밀번호를 확인할 수 있어야 해서 되돌릴 수 있는 형태로도
-     같이 보관한다. localStorage를 열어봤을 때 그대로 읽히지 않게 살짝 섞어 둘
-     뿐이라 암호화는 아니다 - 기기를 가진 사람은 결국 풀 수 있다. */
-  const PW_KEY = "todayhw";
-  const RESET_PASSWORD = "@abcd1234";
-
-  function encodePw(pw) {
-    let out = "";
-    for (let i = 0; i < pw.length; i++) {
-      out += String.fromCharCode(pw.charCodeAt(i) ^ PW_KEY.charCodeAt(i % PW_KEY.length));
-    }
-    try { return btoa(unescape(encodeURIComponent(out))); } catch (e) { return ""; }
-  }
-
-  function decodePw(saved) {
-    if (!saved) return null;
-    try {
-      const raw = decodeURIComponent(escape(atob(saved)));
-      let out = "";
-      for (let i = 0; i < raw.length; i++) {
-        out += String.fromCharCode(raw.charCodeAt(i) ^ PW_KEY.charCodeAt(i % PW_KEY.length));
-      }
-      return out;
-    } catch (e) {
-      return null;
-    }
-  }
-
   function hashPassword(pw) {
     let h = 5381;
     for (let i = 0; i < pw.length; i++) {
@@ -6774,21 +6157,6 @@
 
   function userById(id) {
     return users.find((u) => u.id === id) || null;
-  }
-
-  /* 이름이 같은 사람이 여럿일 수 있으므로, 비밀번호까지 맞는 계정을 골라낸다 */
-  function findUserByLogin(name, role, pw) {
-    const hashed = hashPassword(pw);
-    return users.find((u) => u.name === name && u.role === role && u.pw === hashed) || null;
-  }
-
-  /* 같은 이름이 여러 개면 두 번째부터 01, 02를 붙여 구분해 보여 준다
-     (가입 순서 기준, 첫 사람은 이름 그대로) */
-  function displayUserName(user) {
-    const same = users.filter((u) => u.name === user.name && u.role === user.role);
-    if (same.length < 2) return user.name;
-    const idx = same.findIndex((u) => u.id === user.id);
-    return idx <= 0 ? user.name : user.name + String(idx).padStart(2, "0");
   }
 
   /* 비밀번호 규칙: 8자 이상 + 영문 + 숫자 + 특수문자 */
@@ -7295,11 +6663,15 @@
       document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
       renderHomeStats();
       showPage("t-home");
+      renderSysBanners();
+      maybeShowSysPopup();
       maybeStartTour("teacher");
     } else {
       accountName = me.name;
       studentName = me.name;
       const mine = myStudentClasses();
+      renderSysBanners();
+      maybeShowSysPopup();
       maybeStartTour("student");
       if (mine.length > 0) { pendingFirstEntry = false; enterStudentClass(mine[0].i); }
       else {
@@ -7392,23 +6764,6 @@
   }
 
   const APP_VERSION = "1.0";
-
-
-  /* 내가 속한 모든 반을 합친 내 숙제 현황 (반려는 다시 내야 하므로 미제출로 셈) */
-  function myOverallStats() {
-    let done = 0, pending = 0, missing = 0;
-    myStudentClasses().forEach(({ c }) => {
-      const alias = myNameInClass(c.code);
-      c.homeworks.forEach((h) => {
-        const sub = c.submissions.find((s) => s.studentName === alias && s.hwId === h.id);
-        const st = sub ? sub.status : "missing";
-        if (st === "approved") done++;
-        else if (st === "pending") pending++;
-        else missing++;
-      });
-    });
-    return { done: done, pending: pending, missing: missing };
-  }
 
   function openMyPage() {
     playTapSound();
@@ -7943,8 +7298,6 @@
     showPage("s-classes");
   }
 
-  const ADD_ICON = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>';
-
   /* 반 카드를 누르면 바로 숙제로 들어가 버려서, 선생님이 누군지·어디로
      물어보면 되는지 볼 곳이 없었다. 반 정보를 먼저 보여 준다. */
   let classInfoIndex = null;
@@ -8140,17 +7493,6 @@
     }
   }
 
-  /* 온보딩 완료 */
-  document.getElementById("restartOnboardBtn").addEventListener("click", () => {
-    playTapSound();
-    openStudentClasses();
-  });
-
-  document.getElementById("startServiceBtn").addEventListener("click", () => {
-    playTapSound();
-    enterStudentClass(joinedClassIndex);
-  });
-
   /* ===== 화면 전환 ===== */
   function showPage(name) {
     document.querySelectorAll(".page").forEach((p) => {
@@ -8199,12 +7541,6 @@
   }
 
   /* ===== 숙제 목록 탭 전환 ===== */
-  const tabLabels = {
-    remaining: "남은 숙제",
-    pending: "승인 현황",
-    past: "지난 숙제",
-  };
-
   function selectTab(tabName) {
     document.querySelectorAll("#page-list .tab").forEach((t) => {
       t.classList.toggle("active", t.dataset.tab === tabName);
@@ -8839,6 +8175,197 @@
     });
   }
 
+  /* ===== 관리자 공지 =====
+     선생님 공지는 '그 반 학생'에게만 간다. 관리자 공지는 그보다 넓게 — 모두,
+     선생님만, 학생만, 고른 반만 중에 고를 수 있고, 홈에 띄울지 로그인할 때
+     창으로 띄울지 둘 다 할지도 고른다. */
+
+  function sysNoticeFor(me) {
+    /* 지금 로그인한 사람이 봐야 할 공지만 고른다 */
+    if (!me) return [];
+    const myClassIds = (classes || [])
+      .filter((c) => c && c.id && (me.role === "teacher"
+        ? c.teacherId === me.id
+        : (c.students || []).some((st) => st.uid === me.id)))
+      .map((c) => c.id);
+    return sysNotices.filter((n) => {
+      if (n.scope === "teacher") return me.role === "teacher";
+      if (n.scope === "student") return me.role === "student";
+      if (n.scope === "class") {
+        return (n.classIds || []).some((id) => myClassIds.indexOf(id) >= 0);
+      }
+      return true;                                   /* all */
+    });
+  }
+
+  function sysNoticeWhen(at) {
+    if (!at) return "";
+    const d = new Date(at);
+    if (isNaN(d.getTime())) return "";
+    const today = new Date();
+    const same = d.toDateString() === today.toDateString();
+    return same ? "오늘" : (d.getMonth() + 1) + "월 " + d.getDate() + "일";
+  }
+
+  /* 홈 화면에 띄우는 것 */
+  function renderSysBanners() {
+    const me = userById(currentUserId);
+    const mine = sysNoticeFor(me).filter((n) => n.show === "home" || n.show === "both");
+    ["sysBannerStudent", "sysBannerTeacher"].forEach((boxId) => {
+      const box = document.getElementById(boxId);
+      if (!box) return;
+      if (mine.length === 0) { box.innerHTML = ""; box.hidden = true; return; }
+      box.hidden = false;
+      box.innerHTML = mine.map((n) =>
+        '<div class="sys-banner">'
+        + '<span class="sys-tag">알림</span>'
+        + '<p class="sys-text">' + escHtml(n.text) + '</p>'
+        + '<p class="sys-when">' + sysNoticeWhen(n.at) + '</p>'
+        + '</div>').join("");
+    });
+  }
+
+  /* 로그인했을 때 창으로 띄우는 것. 한 번 닫으면 그 공지는 다시 안 뜬다. */
+  function sysSeenKey() { return "sysSeen:" + (currentUserId || ""); }
+  function sysSeenList() {
+    try { return JSON.parse(localStorage.getItem(sysSeenKey()) || "[]"); }
+    catch (e) { return []; }
+  }
+  function sysMarkSeen(ids) {
+    try {
+      const all = sysSeenList().concat(ids).slice(-100);
+      localStorage.setItem(sysSeenKey(), JSON.stringify(all));
+    } catch (e) {}
+  }
+
+  let sysPopupIds = [];
+  function maybeShowSysPopup() {
+    const me = userById(currentUserId);
+    if (!me) return;
+    const seen = sysSeenList();
+    const mine = sysNoticeFor(me)
+      .filter((n) => n.show === "popup" || n.show === "both")
+      .filter((n) => seen.indexOf(n.id) < 0);
+    if (mine.length === 0) return;
+    /* 먼저 처리해야 하는 창(비밀번호 정하기 등)이 떠 있으면 기다린다 */
+    if (document.querySelector(".modal-overlay.show")) {
+      setTimeout(maybeShowSysPopup, 900);
+      return;
+    }
+    sysPopupIds = mine.map((n) => n.id);
+    document.getElementById("sysPopupBody").innerHTML = mine.map((n) =>
+      '<div class="sys-pop-item">'
+      + '<p class="sys-text">' + escHtml(n.text) + '</p>'
+      + '<p class="sys-when">' + sysNoticeWhen(n.at) + '</p>'
+      + '</div>').join("");
+    document.getElementById("sysPopupModal").classList.add("show");
+  }
+
+  function closeSysPopup() {
+    playTapSound();
+    sysMarkSeen(sysPopupIds);
+    sysPopupIds = [];
+    closeModal("sysPopupModal");
+  }
+
+  /* ---- 관리자 화면에서 쓰고 지우기 ---- */
+  function renderMasterNotices() {
+    const box = document.getElementById("masterNoticeList");
+    if (!box) return;
+    if (sysNotices.length === 0) {
+      box.innerHTML = '<p class="master-info-body">올린 공지가 없어요</p>';
+      return;
+    }
+    const scopeLabel = { all: "모두", teacher: "선생님만", student: "학생만", class: "고른 반" };
+    const showLabel = { home: "홈 화면", popup: "로그인할 때", both: "홈 + 로그인" };
+    box.innerHTML = sysNotices.map((n) =>
+      '<div class="master-acc-card">'
+      + '<p class="sys-text">' + escHtml(n.text) + '</p>'
+      + '<p class="sys-when">' + (scopeLabel[n.scope] || "모두") + ' · '
+      + (showLabel[n.show] || "홈 화면") + ' · ' + sysNoticeWhen(n.at) + '</p>'
+      + '<button class="master-acc-reset" onclick="removeSysNoticeAsk(\'' + n.id + '\')">삭제</button>'
+      + '</div>').join("");
+  }
+
+  function openSysNoticeWrite() {
+    playTapSound();
+    document.getElementById("sysNoticeText").value = "";
+    document.getElementById("sysScope").value = "all";
+    document.getElementById("sysShow").value = "home";
+    document.getElementById("sysNoticeMsg").classList.remove("show");
+    /* 고른 반으로 보낼 때 쓸 목록. 지금 로그인한 계정이 볼 수 있는 반만 나온다. */
+    const pick = document.getElementById("sysClassPick");
+    pick.innerHTML = (classes || []).filter((c) => c && c.id).map((c, i) =>
+      '<label class="notice-pick-row"><input type="checkbox" class="sys-class-cb" value="'
+      + escHtml(c.id) + '"><span>' + escHtml(c.name || "이름 없는 반") + '</span></label>'
+    ).join("") || '<p class="master-info-body">보이는 반이 없어요</p>';
+    syncSysClassPick();
+    document.getElementById("sysNoticeModal").classList.add("show");
+  }
+
+  function syncSysClassPick() {
+    const isClass = document.getElementById("sysScope").value === "class";
+    document.getElementById("sysClassRow").hidden = !isClass;
+  }
+
+  async function confirmSysNotice() {
+    const msg = document.getElementById("sysNoticeMsg");
+    const fail = (t) => {
+      msg.textContent = t; msg.style.color = "#E4423F";
+      msg.classList.add("show"); playErrorBuzz();
+    };
+    const text = document.getElementById("sysNoticeText").value.trim();
+    if (!text) { fail("공지 내용을 적어 주세요"); return; }
+    const scope = document.getElementById("sysScope").value;
+    const show = document.getElementById("sysShow").value;
+    const classIds = [...document.querySelectorAll(".sys-class-cb:checked")].map((b) => b.value);
+    if (scope === "class" && classIds.length === 0) { fail("어느 반에 올릴지 골라 주세요"); return; }
+    /* Cloud 는 const 라 window 에 붙지 않는다. window.Cloud 로 보면 언제나
+       없는 것이 되어 로그인해 있어도 막혔다. 그냥 이름으로 본다. */
+    if (!Cloud.ready()) {
+      fail("공지를 올리려면 먼저 로그인해 주세요");
+      return;
+    }
+    const btn = document.getElementById("sysNoticeBtn");
+    setAuthBusy(btn, true, "올리기");
+    try {
+      await Cloud.pushSysNotice({
+        id: "sys" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        text: text.slice(0, 300),
+        scope: scope, classIds: classIds, show: show,
+        at: new Date().toISOString(),
+        teacherName: (userById(currentUserId) || {}).name || "",
+      });
+      closeModal("sysNoticeModal");
+      playSuccessChime();
+    } catch (e) {
+      fail("올리지 못했어요. 인터넷 연결을 확인해 주세요");
+    } finally {
+      setAuthBusy(btn, false, "올리기");
+    }
+  }
+
+  let sysRemoveId = null;
+  function removeSysNoticeAsk(id) {
+    playTapSound();
+    sysRemoveId = id;
+    document.getElementById("sysDelModal").classList.add("show");
+  }
+  async function confirmRemoveSysNotice() {
+    const id = sysRemoveId;
+    sysRemoveId = null;
+    closeModal("sysDelModal");
+    if (!id) return;
+    try { await Cloud.removeSysNotice(id); playSuccessChime(); }
+    catch (e) {
+      /* 서버 규칙이 '올린 사람만 지울 수 있게' 막고 있다. 남이 올린 것을
+         지우려 하면 거부되는데, 그걸 '인터넷 문제'라고 하면 원인을 못 찾는다. */
+      Cloud.note((e && e.code) === "permission-denied"
+        ? "내가 올린 공지만 지울 수 있어요. 올린 분에게 부탁하거나 콘솔에서 지워 주세요."
+        : "지우지 못했어요. 인터넷 연결을 확인해 주세요.");
+    }
+  }
+
   /* ===== 처음 쓰는 사람을 위한 안내(손전등) =====
      설명서를 따로 읽게 하면 아무도 안 읽는다. 진짜 화면 위에서 눌러야 할 곳을
      하나씩 밝혀 주면 그 자리에서 익힌다.
@@ -9049,7 +8576,7 @@
     /* 계정에 적어 둬야 기기를 바꿔도 다시 안 뜬다. 서버에 못 닿는 동안을
        위해 이 기기에도 함께 적어 둔다. */
     try { localStorage.setItem("tourDone:" + currentUserId, "1"); } catch (e) {}
-    if (window.Cloud && Cloud.ready && Cloud.ready()) {
+    if (Cloud.ready()) {
       try { Cloud.writeMe({ tourDone: true }); } catch (e) {}
     }
   }
@@ -9363,38 +8890,20 @@
      ===================== 선생님용 로직 시작 =========================
      ================================================================ */
 
-  /* ===== 반 데이터 저장 (같은 브라우저의 여러 탭이 실제로 같은 데이터를 공유하도록
-     localStorage에 저장. 학생 탭/선생님 탭을 각각 열어도 반 코드·학생 이름·제출
-     현황이 실시간으로 서로에게 반영됨) ===== */
-  const STORAGE_KEY = "todayHomeworkClasses";
-  const STORAGE_KEY_EVENTS = "todayHomeworkEvents";
-
-  /* 저장 공간이 꽉 차면 예외가 나는데, 예전엔 이걸 조용히 삼켜서 제출이
-     저장되지 않았는데도 성공한 것처럼 보였다. 이제 성공 여부를 돌려주고
-     실패하면 화면에서 알려 준다. */
-  /* 반 목록도 계정과 같은 이유로 병합해서 저장한다 */
+  /* ===== 반·일정 저장 =====
+     서버(파이어베이스)에 올린다. 올리기가 실패하면 성공 여부를 돌려주므로
+     부르는 쪽에서 화면에 알려 줄 수 있다. */
   function saveState() {
     return Cloud.pushClasses();
   }
-
-  function showStorageFullModal() {
-    const el = document.getElementById("storageFullModal");
-    if (el) el.classList.add("show");
-  }
-
-  function loadState() {}
 
   function saveEvents() {
     return Cloud.pushEvents();
   }
 
-  function loadEvents() {}
-
-  /* 선생님 이름을 기준으로 각자의 반/일정만 보이도록 하는 필터
-     (학생이 코드로 반을 찾는 로직은 classes 전체를 그대로 검색하므로 영향 없음) */
-  /* 이름이 같은 선생님이 둘일 수 있으므로 반과 일정은 '이름'이 아니라
-     '계정 id'에 묶는다. (예전 데이터는 id가 없어서 이름으로 넘어가되,
-     불러올 때 한 번 id를 채워 준다 - migrateOwnership) */
+  /* 선생님마다 자기 반·일정만 보이도록 걸러 주는 함수.
+     이름이 같은 선생님이 둘일 수 있으므로 '이름'이 아니라 '계정 id'에 묶는다.
+     (id가 없던 아주 예전 자료만 이름으로 알아본다) */
   function ownedByMe(x) {
     if (x.teacherId) return x.teacherId === currentUserId;
     return !!teacherName && x.teacherName === teacherName;
@@ -9410,29 +8919,9 @@
     return events.filter(ownedByMe);
   }
 
-  /* 예전에 만든 반·일정에 주인 계정을 채워 넣음 (같은 이름이 여럿이면 첫 계정) */
-  function migrateOwnership() {
-    const pick = (name) => {
-      const t = users.find((u) => u.role === "teacher" && u.name === name);
-      return t ? t.id : null;
-    };
-    classes.forEach((c) => {
-      if (!c.teacherId && c.teacherName) {
-        const id = pick(c.teacherName);
-        if (id) c.teacherId = id;
-      }
-    });
-    events.forEach((e) => {
-      if (!e.teacherId && e.teacherName) {
-        const id = pick(e.teacherName);
-        if (id) e.teacherId = id;
-      }
-    });
-  }
-
   function refreshCurrentView() {
     const activeId = document.querySelector(".page.active")?.id;
-    if (activeId === "page-home") renderStudentHome();
+    if (activeId === "page-home") { renderStudentHome(); renderSysBanners(); }
     /* 반 목록은 들어올 때 한 번만 그렸다. 인터넷이 느려 반 정보가 늦게 오면
        '아직 반에 들어가 있지 않아요'가 뜬 채로 멈춰 버린다. 여기서도 다시 그린다. */
     if (activeId === "page-s-classes") {
@@ -9458,7 +8947,7 @@
       renderStudentCalendar();
       renderStudentCalDayList();
     }
-    if (activeId === "page-t-home") renderHomeStats();
+    if (activeId === "page-t-home") { renderHomeStats(); renderSysBanners(); }
     if (activeId === "page-t-students") renderStudentsHome();
     if (activeId === "page-t-homework") {
       renderTHwCalendar();
@@ -9470,16 +8959,14 @@
   /* 예전에는 탭 사이 어긋남을 storage 이벤트로 맞췄다.
      이제는 서버 구독(onSnapshot)이 모든 기기와 탭을 실시간으로 맞춰 주므로 필요 없다. */
 
-
   /* ===== 온보딩 상태 ===== */
   let teacherName = "";
   let className = "";
   let classCode = "";
   let classes = [];
-  loadState();
   let events = [];
-  loadEvents();
-  migrateOwnership();
+  /* 관리자가 올린 공지. 일정과 같은 칸에서 받아 여기에 따로 담는다. */
+  let sysNotices = [];
   let nextEventId = 1;
   let currentClassIndex = null;
   let classDetailReturnPage = "t-home";
@@ -9586,14 +9073,6 @@
     launchConfetti("page-" + classSetupReturnPage);
     playSuccessChime();
   }
-
-  /* 대시보드로 이동 */
-  document.getElementById("teacherStartServiceBtn").addEventListener("click", () => {
-    playTapSound();
-    document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
-    renderHomeStats();
-    showPage("t-home");
-  });
 
   /* 새 반 만들기 시작 (반 관리에서 진입) */
   function startAddClass(returnTo) {
@@ -9750,16 +9229,6 @@
           <span class="status-pill missing">미제출</span>
         </div>
       `).join("");
-    }
-  }
-
-  function copyClassCode(code, btn) {
-    playTapSound();
-    copyText(code);
-    if (btn) {
-      const orig = btn.innerHTML;
-      btn.textContent = "복사완료";
-      setTimeout(() => { btn.innerHTML = orig; }, 1200);
     }
   }
 
@@ -10735,10 +10204,6 @@
      맞으면 선생님 → 반 → 학생 → 그 학생이 올린 숙제 순서로 파고들며 볼 수 있음 */
   let masterTapCount = 0;
   let masterTapTimer = null;
-  let masterTeacherName = "";
-  let masterTeacherId = null;
-  let masterClassIndex = null;
-  let masterStudentName = "";
 
   function tapMasterTrigger() {
     masterTapCount++;
@@ -10780,6 +10245,7 @@
     closeModal("masterPasswordModal");
     renderMasterTeachers();
     renderMasterAccounts();
+    renderMasterNotices();
     showPage("master");
   }
 
@@ -10811,276 +10277,16 @@
     showPage("role-select");
   }
 
-  const MASTER_ARROW = '<span class="hw-arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg></span>';
-
-  /* 이름이 같은 선생님이 여럿일 수 있어서 계정 단위로 다룬다.
-     계정이 지워졌는데 반만 남은 경우도 목록에서 빠지지 않게 함께 넣는다. */
-  function classesOfTeacher(t) {
-    return classes.filter((c) =>
-      t.id ? c.teacherId === t.id : (!c.teacherId && c.teacherName === t.name));
-  }
-
-  function allTeachers() {
-    const list = users
-      .filter((u) => u.role === "teacher")
-      .map((u) => ({ id: u.id, name: u.name, label: displayUserName(u) }));
-
-    classes.forEach((c) => {
-      const has = list.some((t) => (t.id ? c.teacherId === t.id : c.teacherName === t.name));
-      if (!has && c.teacherName && !list.some((t) => !t.id && t.name === c.teacherName)) {
-        list.push({ id: null, name: c.teacherName, label: c.teacherName + " (계정 없음)" });
-      }
-    });
-    return list;
-  }
-
   /* --- 1단계: 선생님 목록 --- */
   function renderMasterTeachers() {
     const el = document.getElementById("masterTeacherList");
     if (el) el.innerHTML = masterUnavailableHtml();
   }
 
-  /* --- 계정 관리: 비밀번호 확인 / 초기화 --- */
-  let pwResetTarget = null;
-  let accDeleteTarget = null;
-  let shownPwKeys = {};   /* 어떤 계정의 비번을 펼쳐 뒀는지 */
-
-  /* 이름이 같은 계정이 여럿일 수 있어 계정 id로 구분한다 */
-  function accountKey(u) {
-    return u.id;
-  }
-
+  /* --- 계정 관리 --- */
   function renderMasterAccounts() {
     const el = document.getElementById("masterAccountList");
     if (el) el.innerHTML = masterUnavailableHtml();
-  }
-
-  function toggleAccountPw(key) {
-    playTapSound();
-    shownPwKeys[key] = !shownPwKeys[key];
-    renderMasterAccounts();
-  }
-
-  function openPwReset(id) {
-    playTapSound();
-    const u = userById(id);
-    if (!u) return;
-    pwResetTarget = id;
-    document.getElementById("pwResetName").textContent = displayUserName(u);
-    document.getElementById("pwResetModal").classList.add("show");
-  }
-
-  function confirmPwReset() {
-    const u = userById(pwResetTarget);
-    pwResetTarget = null;
-    closeModal("pwResetModal");
-    if (!u) return;
-    u.pw = hashPassword(RESET_PASSWORD);
-    u.pwSaved = encodePw(RESET_PASSWORD);
-    saveUsers();
-    shownPwKeys[accountKey(u)] = true;
-    playSuccessChime();
-    renderMasterAccounts();
-  }
-
-  function openAccountDelete(id) {
-    playTapSound();
-    const u = userById(id);
-    if (!u) return;
-    accDeleteTarget = id;
-    document.getElementById("accDeleteName").textContent = displayUserName(u);
-    document.getElementById("accDeleteRole").textContent = u.role === "teacher" ? "선생님" : "학생";
-    document.getElementById("accDeleteModal").classList.add("show");
-  }
-
-  function confirmAccountDelete() {
-    const id = accDeleteTarget;
-    accDeleteTarget = null;
-    closeModal("accDeleteModal");
-    const idx = users.findIndex((u) => u.id === id);
-    if (idx === -1) return;
-    users.splice(idx, 1);
-    /* 지운 계정이 다른 탭의 저장으로 되살아나지 않도록 통째로 다시 씀 */
-    writeUsersExact();
-    if (currentUserId === id) {
-      currentUserId = null;
-      accountName = "";
-      studentName = "";
-      teacherName = "";
-    }
-    playTapSound();
-    renderMasterAccounts();
-    renderMasterTeachers();
-  }
-
-  /* --- 2단계: 그 선생님이 만든 반 --- */
-  function openMasterClasses(tid, tname) {
-    playTapSound();
-    masterTeacherId = tid || null;
-    masterTeacherName = tname;
-    renderMasterClasses();
-    showPage("master-classes");
-  }
-
-  function renderMasterClasses() {
-    const t = { id: masterTeacherId, name: masterTeacherName };
-    const owned = classesOfTeacher(t);
-    const mine = classes.map((c, i) => ({ c, i })).filter(({ c }) => owned.indexOf(c) !== -1);
-
-    const acc = masterTeacherId ? userById(masterTeacherId) : null;
-    document.getElementById("masterClassesTitle").textContent =
-      (acc ? displayUserName(acc) : masterTeacherName) + " 선생님";
-    document.getElementById("masterClassesCrumb").textContent = "만든 반 " + mine.length + "개";
-
-    const el = document.getElementById("masterClassList");
-    if (mine.length === 0) {
-      el.innerHTML = '<p class="empty-approval">아직 만든 반이 없어요</p>';
-      return;
-    }
-
-    el.innerHTML = mine.map(({ c, i }) => `
-      <div class="student-card" onclick="openMasterStudents(${i})">
-        <div class="student-avatar">${escHtml(c.name[0])}</div>
-        <div class="student-info">
-          <p class="student-name">${escHtml(c.name)}</p>
-          <p class="student-meta">학생 ${c.students.length}명 · 숙제 ${c.homeworks.length}건</p>
-        </div>
-        ${MASTER_ARROW}
-      </div>
-    `).join("");
-  }
-
-  /* --- 3단계: 그 반의 학생 + 반에 등록된 숙제 --- */
-  function openMasterStudents(i) {
-    playTapSound();
-    masterClassIndex = i;
-    renderMasterStudents();
-    showPage("master-students");
-  }
-
-  function renderMasterStudents() {
-    const c = classes[masterClassIndex];
-    if (!c) { masterBackToClasses(); return; }
-
-    document.getElementById("masterStudentsTitle").textContent = c.name;
-    document.getElementById("masterStudentsCrumb").textContent =
-      (c.teacherName ? c.teacherName + " 선생님 · " : "") + "코드 " + c.code;
-
-    const el = document.getElementById("masterStudentList");
-    if (c.students.length === 0) {
-      el.innerHTML = '<p class="empty-approval">아직 참여한 학생이 없어요</p>';
-    } else {
-      el.innerHTML = c.students.map((s) => {
-        const subs = c.submissions.filter((x) => x.studentName === s.name);
-        const pending = subs.filter((x) => x.status === "pending").length;
-        return `
-          <div class="student-card" onclick="openMasterSubs('${jsStr(s.name)}')">
-            <div class="student-avatar">${escHtml(s.name[0])}</div>
-            <div class="student-info">
-              <p class="student-name">${escHtml(s.name)}</p>
-              <p class="student-meta">제출 ${subs.length}건 / 숙제 ${c.homeworks.length}건</p>
-            </div>
-            ${pending > 0 ? `<span class="class-card-pill">대기 ${pending}</span>` : ""}
-            ${MASTER_ARROW}
-          </div>
-        `;
-      }).join("");
-    }
-
-    const hwEl = document.getElementById("masterClassHwList");
-    if (c.homeworks.length === 0) {
-      hwEl.innerHTML = '<p class="empty-approval">등록된 숙제가 없어요</p>';
-    } else {
-      hwEl.innerHTML = c.homeworks.map((h) => {
-        const done = c.submissions.filter((s) => s.hwId === h.id).length;
-        return `
-          <div class="master-sub-card">
-            <div class="master-sub-top">
-              <p class="master-sub-title">${escHtml(h.title)}</p>
-              <span class="hw-dday">${calcDday(h.due)}</span>
-            </div>
-            <p class="master-sub-meta">제출 기한: ${formatKoreanDate(h.due)} · 제출 ${done}/${c.students.length}명</p>
-          </div>
-        `;
-      }).join("");
-    }
-  }
-
-  /* --- 4단계: 그 학생이 올린 숙제(사진까지) --- */
-  function openMasterSubs(sname) {
-    playTapSound();
-    masterStudentName = sname;
-    renderMasterSubs();
-    showPage("master-subs");
-  }
-
-  function masterStatusLabel(status) {
-    if (status === "approved") return "승인완료";
-    if (status === "pending") return "승인대기";
-    if (status === "rejected") return "반려";
-    return "미제출";
-  }
-
-  function renderMasterSubs() {
-    const c = classes[masterClassIndex];
-    if (!c) { masterBackToClasses(); return; }
-
-    document.getElementById("masterSubsTitle").textContent = masterStudentName;
-    document.getElementById("masterSubsCrumb").textContent =
-      c.name + (c.teacherName ? " · " + c.teacherName + " 선생님" : "");
-
-    const el = document.getElementById("masterSubsList");
-    if (c.homeworks.length === 0) {
-      el.innerHTML = '<p class="empty-approval">이 반에 등록된 숙제가 없어요</p>';
-      return;
-    }
-
-    const rows = c.homeworks.map((h) => ({
-      hw: h,
-      sub: c.submissions.find((s) => s.studentName === masterStudentName && s.hwId === h.id) || null,
-    }));
-
-    el.innerHTML = rows.map((r, idx) => {
-      const status = r.sub ? r.sub.status : "missing";
-      const photoCount = r.sub ? r.sub.photos.length : 0;
-      return `
-        <div class="master-sub-card">
-          <div class="master-sub-top">
-            <p class="master-sub-title">${escHtml(r.hw.title)}</p>
-            <span class="status-pill ${status}">${masterStatusLabel(status)}</span>
-          </div>
-          <p class="master-sub-meta">제출 기한: ${formatKoreanDate(r.hw.due)}${r.sub ? " · 사진 " + photoCount + "장" : ""}</p>
-          ${photoCount > 0 ? `<div class="thumb-row" id="masterThumbs${idx}"></div>` : ""}
-          ${r.sub && r.sub.note ? `<p class="master-sub-note">${escHtml(r.sub.note)}</p>` : ""}
-          ${r.sub && r.sub.rejectReason ? `<div class="reject-box"><p class="note-label">반려 사유</p><p>${escHtml(r.sub.rejectReason)}</p></div>` : ""}
-        </div>
-      `;
-    }).join("");
-
-    /* 썸네일은 클릭해서 크게 볼 수 있어야 해서 renderPhotoSection이 직접 그림 */
-    rows.forEach((r, idx) => {
-      const row = document.getElementById("masterThumbs" + idx);
-      if (row && r.sub) renderPhotoSection(null, row, r.sub.photos, false, () => {});
-    });
-  }
-
-  function masterBackToTeachers() {
-    playTapSound();
-    renderMasterTeachers();
-    renderMasterAccounts();
-    showPage("master");
-  }
-
-  function masterBackToClasses() {
-    playTapSound();
-    renderMasterClasses();
-    showPage("master-classes");
-  }
-
-  function masterBackToStudents() {
-    playTapSound();
-    renderMasterStudents();
-    showPage("master-students");
   }
 
   function changeMasterPassword() {
@@ -11100,37 +10306,6 @@
     msg.style.color = "#1FA455";
     msg.classList.add("show");
     playSuccessChime();
-  }
-
-  function openMasterResetConfirm() {
-    playTapSound();
-    document.getElementById("masterResetModal").classList.add("show");
-  }
-
-  function confirmMasterReset() {
-    shownPwKeys = {};
-    users = [];
-    classes = [];
-    events = [];
-    /* 병합 저장을 쓰면 지운 것이 되살아나므로 여기서는 저장소를 그대로 비운다.
-       다른 탭도 storage 이벤트로 이 변화를 받아 함께 비워진다. */
-    Store.remove([STORAGE_KEY_USERS, STORAGE_KEY, STORAGE_KEY_EVENTS, STORAGE_KEY_MASTER]);
-    currentUserId = null;
-    accountName = "";
-
-    studentName = "";
-    selectedClassName = "";
-    joinedClassIndex = null;
-    teacherName = "";
-    currentClassIndex = null;
-    masterTeacherName = "";
-    masterTeacherId = null;
-    masterClassIndex = null;
-    masterStudentName = "";
-
-    closeModal("masterResetModal");
-    playSuccessChime();
-    showPage("welcome");
   }
 
   /* ===== 초기 렌더링 ===== */

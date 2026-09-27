@@ -13,7 +13,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SHOTS = os.path.join(HERE, 'manual')
 MM = 283.46
 BODY_W = 44419          # 틀 문서의 본문 폭
-TODAY = '2026년 9월 26일'
+TODAY = '2026년 9월 27일'
 
 # 틀 문서에서 확인한 모양 번호
 C_TITLE, C_SUB, C_HEAD, C_BODY = 9, 14, 10, 11
