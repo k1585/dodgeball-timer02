@@ -2479,7 +2479,11 @@
        비밀번호도 못 넣는 일이 있어서 일부러 아래로 내렸다. */
     z-index:90;
     display:none;
+    /* 밝힌 곳을 직접 눌러 볼 수 있어야 해서 덮개는 누르기를 막지 않는다.
+       어두운 것은 구멍에 두른 그림자라 그대로 보인다. */
+    pointer-events:none;
   }
+  .tour-lay .tour-card{ pointer-events:auto; }
   .tour-lay.show{ display:block; }
   .tour-hole{
     position:absolute;
@@ -2563,6 +2567,26 @@
     cursor:pointer;
   }
   .tour-next:active{ transform:scale(0.98); }
+  .tour-back{
+    border:1.5px solid var(--line);
+    background:#ffffff;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:800;
+    color:var(--sub);
+    border-radius:12px;
+    padding:12px 16px;
+    cursor:pointer;
+    flex:none;
+  }
+  .tour-back:active{ transform:scale(0.98); }
+  .tour-tap{
+    font-size:12.5px;
+    font-weight:800;
+    color:var(--point-strong);
+    text-align:center;
+    margin:0 0 10px;
+  }
   .tour-dots{
     display:flex;
     gap:5px;
@@ -5035,8 +5059,10 @@
       <p class="tour-title" id="tourTitle"></p>
       <p class="tour-body" id="tourBody"></p>
       <div class="tour-dots" id="tourDots"></div>
+      <p class="tour-tap" id="tourTap" hidden>밝은 곳을 직접 눌러 보세요</p>
       <div class="tour-btns">
         <button class="tour-skip" onclick="endTour(true)">건너뛰기</button>
+        <button class="tour-back" id="tourBack" onclick="tourPrev()" hidden>이전</button>
         <button class="tour-next" id="tourNext" onclick="tourNext()">다음</button>
       </div>
     </div>
@@ -8820,44 +8846,47 @@
      옮기고, sel 이 가리키는 것을 밝힌다. sel 이 없으면 화면만 어둡게 한다.
      화면이 바뀌어 못 찾는 것은 조용히 건너뛴다. 안내 때문에 앱이 막히면 안 된다. */
 
+  /* noTap: 밝히기는 하되 '눌러 보세요'라고는 하지 않는 단계.
+     그냥 보여 주는 곳(카드·달력 등)을 누르라고 하면 엉뚱한 데로 들어간다.
+     아래 메뉴처럼 진짜 눌러야 하는 것만 눌러서 넘어가게 둔다. */
   const TOUR_STUDENT = [
-    { title: "반가워요! 잠깐만요",
+    { title: "잠깐만요",
       body: "숙제 내는 법을 30초만에 알려 드릴게요. 넘기고 싶으면 아래 '건너뛰기'를 누르세요." },
-    { page: "home", sel: "#page-home .homework-card",
+    { page: "home", sel: "#page-home .homework-card", noTap: true,
       title: "여기가 홈이에요",
       body: "내야 할 숙제와 가장 빠른 기한이 여기 보여요. 선생님이 올린 공지도 이 위에 떠요." },
-    { page: "list", act: () => selectTab("remaining"), sel: "#tab-remaining",
-      title: "숙제 내기",
-      body: "'남은 숙제'에서 숙제를 누르고 사진을 찍어 올리면 제출이 끝나요. 사진은 여러 장 올려도 돼요." },
-    { page: "list", act: () => selectTab("pending"), sel: "#tab-pending .status-row",
-      title: "확인 결과 보기",
-      body: "선생님이 봤는지 여기서 알 수 있어요. '승인 완료'를 누르면 지난 숙제로 바로 가요." },
-    { page: "calendar", act: () => openStudentCalendar(), sel: "#calGrid",
-      title: "달력으로 한눈에",
-      body: "날짜마다 동그라미 색으로 보여요. 빨강은 아직 안 낸 것, 초록은 끝난 것이에요." },
-    { page: "mypage", sel: "#page-mypage .menu-card",
+    { page: "home", sel: '#page-home .nav-item[data-nav="list"]',
+      title: "'숙제 목록'을 눌러 보세요",
+      body: "내야 할 숙제가 모여 있는 곳이에요. 직접 눌러 보면 다음으로 넘어가요." },
+    { page: "list", act: () => selectTab("remaining"), sel: "#page-list .tabs", noTap: true,
+      title: "세 칸으로 나뉘어 있어요",
+      body: "'남은 숙제'에서 숙제를 누르고 사진을 찍어 올리면 제출 끝. '승인현황'에서 선생님이 봤는지 알 수 있고, 끝난 것은 '지난 숙제'로 가요." },
+    { page: "list", sel: '#page-list .nav-item[data-nav="calendar"]',
+      title: "'달력'을 눌러 보세요",
+      body: "날짜별로 한눈에 보는 곳이에요." },
+    { page: "calendar", act: () => openStudentCalendar(), sel: "#calGrid", noTap: true,
       title: "다 됐어요!",
-      body: "다시 보고 싶으면 마이페이지 > 설명 보기를 누르세요. 이제 시작해 볼까요?" },
+      body: "동그라미 색으로 보여요. 빨강은 아직 안 낸 것, 초록은 끝난 것. 다시 보려면 마이페이지 > 설명 보기를 누르세요." },
   ];
 
   const TOUR_TEACHER = [
-    { title: "반가워요! 잠깐만요",
+    { title: "잠깐만요",
       body: "반을 만들고 숙제를 받는 데까지 차례로 알려 드릴게요. 넘기고 싶으면 '건너뛰기'를 누르세요." },
-    { page: "t-home", sel: "#page-t-home .greeting, #page-t-home .page-head",
+    { page: "t-home", sel: "#page-t-home .greeting, #page-t-home .page-head", noTap: true,
       title: "여기가 홈이에요",
       body: "공지를 올리고, 아직 안 낸 학생이 누구인지 한눈에 봅니다." },
-    { page: "t-home", sel: '#page-t-home button[onclick="openNoticeWrite()"]',
+    { page: "t-home", sel: '#page-t-home button[onclick="openNoticeWrite()"]', noTap: true,
       title: "공지 올리기",
-      body: "누르고 반을 고르면 그 반 학생들 홈 맨 위에 뜹니다. 반 여러 개를 한 번에 고를 수 있어요." },
+      body: "누르고 반을 고르면 그 반 학생들 홈 맨 위에 뜹니다. 반 여러 개를 한 번에 고를 수 있어요. 반을 만들어야 보이는 자리예요." },
     { page: "t-home", sel: '#page-t-home .nav-item[data-nav="t-students"]',
-      title: "반 관리로 들어가기",
-      body: "반 만들기, 학생 계정 발급, 숙제 내기, 제출 확인이 전부 여기서 이뤄집니다." },
-    { page: "t-students", sel: "#studentsClassList, #page-t-students .home-content",
-      title: "반을 눌러 들어가기",
-      body: "반이 없으면 '반 만들기'로 먼저 만드세요. 반을 누르면 학생 관리·숙제 관리 칸이 나옵니다." },
+      title: "'반 관리'를 눌러 보세요",
+      body: "반 만들기, 학생 계정 발급, 숙제 내기, 제출 확인이 전부 여기서 이뤄져요. 직접 눌러 보면 다음으로 넘어가요." },
+    { page: "t-students", sel: "#studentsClassList, #page-t-students .home-content", noTap: true,
+      title: "먼저 반을 만듭니다",
+      body: "'새 반 만들기'로 반을 만들고, 만든 반을 누르면 학생 관리·숙제 관리 칸이 나옵니다." },
     { page: "t-students",
       title: "학생 계정은 선생님이 만듭니다",
-      body: "학생은 스스로 가입하지 않아요. 이름을 한 줄에 하나씩 넣으면 아이디와 첫 비밀번호가 만들어집니다." },
+      body: "학생은 스스로 가입하지 않아요. 반 안 '학생 관리'에서 이름을 한 줄에 하나씩 넣으면 아이디와 첫 비밀번호가 만들어집니다." },
     { page: "t-students",
       title: "'엑셀로 저장'을 꼭 먼저",
       body: "발급 화면을 닫으면 첫 비밀번호는 다시 볼 수 없어요. 아이디는 명단에서 언제든 볼 수 있습니다." },
@@ -8867,12 +8896,12 @@
     { page: "t-students",
       title: "확인하고 승인하기",
       body: "제출된 사진을 눌러 보고 승인하면 학생 화면이 바로 완료로 바뀝니다. 반려하면 학생의 남은 숙제로 되돌아가요." },
-    { page: "t-homework", sel: "#page-t-homework .hw-cal-grid, #page-t-homework .home-content",
-      title: "달력으로 한눈에",
-      body: "날짜마다 제출 상태가 색으로 보입니다. 학사 일정도 여기서 올릴 수 있어요." },
-    { page: "t-mypage", sel: "#page-t-mypage .menu-card",
+    { page: "t-students", sel: '#page-t-students .nav-item[data-nav="t-homework"]',
+      title: "'달력'을 눌러 보세요",
+      body: "날짜별 제출 상태와 학사 일정을 보는 곳이에요." },
+    { page: "t-homework", sel: "#page-t-homework .hw-cal-grid, #page-t-homework .home-content", noTap: true,
       title: "다 됐어요!",
-      body: "다시 보고 싶으면 마이페이지 > 설명 보기를 누르세요. 학생이 비밀번호를 잊으면 그 학생 아이디를 운영자에게 알려 주시면 됩니다." },
+      body: "날짜마다 제출 상태가 색으로 보이고, 학사 일정도 여기서 올립니다. 다시 보려면 마이페이지 > 설명 보기를 누르세요." },
   ];
 
   let tourSteps = [];
@@ -8899,26 +8928,31 @@
       tourAt === tourSteps.length - 1 ? "시작하기" : "다음";
     document.getElementById("tourDots").innerHTML =
       tourSteps.map((_, i) => '<i class="' + (i === tourAt ? "on" : "") + '"></i>').join("");
+    document.getElementById("tourBack").hidden = tourAt === 0;
 
     const hole = document.getElementById("tourHole");
     const ring = document.getElementById("tourRing");
     const card = document.getElementById("tourCard");
     const el = tourTarget(step.sel);
 
-    if (!el) {
+    /* 밝힐 데가 없으면 화면만 어둡게. 이때 앞 단계에서 넣어 둔 자리(인라인
+       스타일)를 반드시 지워야 한다. 클래스만 바꾸면 인라인이 이겨서
+       엉뚱한 흰 상자가 남는다. 실제로 그렇게 보였다. */
+    const blank = () => {
       hole.classList.add("none");
       ring.classList.add("none");
+      [hole, ring].forEach((n) => {
+        n.style.left = ""; n.style.top = ""; n.style.width = ""; n.style.height = "";
+      });
       card.style.top = Math.max(24, (window.innerHeight - card.offsetHeight) / 2) + "px";
-      return;
-    }
+      document.getElementById("tourTap").hidden = true;
+      tourDisarm();
+    };
+
+    if (!el) { blank(); return; }
     const r = el.getBoundingClientRect();
     /* 화면을 거의 다 덮는 것을 밝히면 손전등이 아무 뜻이 없다. 그냥 어둡게만. */
-    if (r.width * r.height > window.innerWidth * window.innerHeight * 0.7) {
-      hole.classList.add("none");
-      ring.classList.add("none");
-      card.style.top = Math.max(24, (window.innerHeight - card.offsetHeight) / 2) + "px";
-      return;
-    }
+    if (r.width * r.height > window.innerWidth * window.innerHeight * 0.7) { blank(); return; }
     hole.classList.remove("none");
     ring.classList.remove("none");
     const pad = 6;
@@ -8934,12 +8968,37 @@
       n.style.width = box.w + "px";
       n.style.height = box.h + "px";
     });
+    /* 밝힌 곳을 직접 눌러 보게 한다. 눌리면 저절로 다음 단계로 넘어간다.
+       읽기만 하는 것보다 한 번 눌러 보는 쪽이 훨씬 잘 익는다. */
+    if (step.noTap) { tourDisarm(); } else { tourArm(el); }
+    document.getElementById("tourTap").hidden = !!step.noTap;
     /* 설명 상자는 밝힌 곳을 가리지 않는 쪽에 둔다 */
     const ch = card.offsetHeight || 180;
     const below = box.top + box.h + 14;
     card.style.top = (below + ch < window.innerHeight - 12)
       ? below + "px"
       : Math.max(12, box.top - ch - 14) + "px";
+  }
+
+  /* 지금 밝힌 것에 '한 번만' 듣는 귀를 달아 둔다. 단계가 바뀌면 떼어 낸다. */
+  let tourArmed = null;
+  function tourDisarm() {
+    if (tourArmed) {
+      tourArmed.el.removeEventListener("click", tourArmed.fn, true);
+      tourArmed = null;
+    }
+  }
+  function tourArm(el) {
+    if (tourArmed && tourArmed.el === el) return;
+    tourDisarm();
+    const at = tourAt;
+    const fn = () => {
+      if (at !== tourAt) return;          /* 이미 넘어갔으면 무시 */
+      /* 누른 것이 제 할 일(화면 이동 등)을 마치도록 잠깐 기다렸다 넘어간다 */
+      setTimeout(() => { if (at === tourAt) tourNext(true); }, 420);
+    };
+    el.addEventListener("click", fn, true);
+    tourArmed = { el: el, fn: fn };
   }
 
   function tourGo() {
@@ -8956,10 +9015,19 @@
     setTimeout(tourPaint, step && step.page ? 280 : 40);
   }
 
-  function tourNext() {
-    playTapSound();
+  function tourNext(byTap) {
+    if (!byTap) playTapSound();
+    tourDisarm();
     if (tourAt >= tourSteps.length - 1) { endTour(); return; }
     tourAt++;
+    tourGo();
+  }
+
+  function tourPrev() {
+    playTapSound();
+    tourDisarm();
+    if (tourAt <= 0) return;
+    tourAt--;
     tourGo();
   }
 
@@ -8967,6 +9035,7 @@
     document.getElementById("tourLay").classList.remove("show");
     document.body.classList.remove("tour-on");
     window.removeEventListener("resize", tourPaint);
+    tourDisarm();
     tourSteps = [];
     markTourDone();
     if (!skipped) playSuccessChime();

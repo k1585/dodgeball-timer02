@@ -59,11 +59,48 @@ ok('선생님 단계 11개', tot===11, tot+'개');
 /* 밝힐 데가 없는 단계가 일부러 있다 — 첫 인사, 그리고 반 상세 안쪽을 말하는
    네 단계(반이 없으면 들어갈 수 없다). 공지 단추도 반이 있어야 보인다.
    갓 가입한 선생님 기준이라 여섯이 맞다. */
+/* 갓 가입한 선생님 기준: 첫 인사 1 + 반 상세 안쪽을 말하는 4 +
+   공지 단추 1(반이 없으면 숨어 있다) = 6 */
 ok('화면만 어둡게 한 단계가 설계대로', blind===6, blind+'개');
 await T.screenshot({path:'tour_t.png'});
 await T.evaluate(()=>tourNext()); await T.waitForTimeout(600);
 ok('마지막에 닫힘', !await T.evaluate(()=>document.getElementById('tourLay').classList.contains('show')));
 ok('본 것으로 기록됨', await T.evaluate(()=>!!(userById(currentUserId)||{}).tourDone));
+
+console.log('\n[추가] 문구·이전·눌러서 넘어가기');
+await T.evaluate(()=>showPage('t-mypage')); await T.waitForTimeout(500);
+await T.evaluate(()=>{[...document.querySelectorAll('#page-t-mypage .menu-row')]
+  .find(x=>x.textContent.includes('설명 보기')).click();});
+await T.waitForTimeout(900);
+let v = await T.evaluate(()=>({
+  제목: document.getElementById('tourTitle').textContent,
+  이전보임: !document.getElementById('tourBack').hidden,
+  구멍자리: document.getElementById('tourHole').style.width || '(비움)',
+}));
+console.log('   1단계:', JSON.stringify(v));
+ok('★ 문구가 「잠깐만요」', v.제목==='잠깐만요', v.제목);
+ok('1단계에는 「이전」 없음', v.이전보임===false);
+ok('★ 앞 단계 밝힌 자리가 안 남음', v.구멍자리==='(비움)', v.구멍자리);
+await T.evaluate(()=>tourNext()); await T.waitForTimeout(700);
+v = await T.evaluate(()=>({이전보임: !document.getElementById('tourBack').hidden,
+  제목: document.getElementById('tourTitle').textContent}));
+ok('★ 2단계부터 「이전」 나옴', v.이전보임===true);
+await T.evaluate(()=>tourPrev()); await T.waitForTimeout(700);
+ok('★ 「이전」이 진짜 되돌림',
+   await T.evaluate(()=>document.getElementById('tourTitle').textContent)==='잠깐만요');
+/* 눌러서 넘어가기 — '반 관리를 눌러 보세요' 단계까지 가서 진짜로 누른다 */
+for(let i=0;i<3;i++){ await T.evaluate(()=>tourNext()); await T.waitForTimeout(700); }
+v = await T.evaluate(()=>({제목: document.getElementById('tourTitle').textContent,
+  누르라고: !document.getElementById('tourTap').hidden}));
+console.log('   4단계:', JSON.stringify(v));
+ok('누르라는 안내가 뜸', v.누르라고===true, v.제목);
+await T.click('#page-t-home .nav-item[data-nav="t-students"]');
+await T.waitForTimeout(1400);
+v = await T.evaluate(()=>({제목: document.getElementById('tourTitle').textContent,
+  화면: (document.querySelector('.page.active')||{}).id}));
+console.log('   누른 뒤:', JSON.stringify(v));
+ok('★ 밝은 곳을 누르니 저절로 넘어감', v.제목==='먼저 반을 만듭니다' && v.화면==='page-t-students', JSON.stringify(v));
+await T.evaluate(()=>endTour(true)); await T.waitForTimeout(400);
 
 console.log('\n[선생님] 새로고침하면 다시 안 뜨는지');
 await T.reload({waitUntil:'domcontentloaded'});
