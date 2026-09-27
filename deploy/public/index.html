@@ -2467,6 +2467,116 @@
   /* 기다리는 동안 글자 대신 도는 표시를 보여 준다.
      글자를 바꾸면 버튼 크기가 들쭉날쭉해지고, 무엇을 기다리는지도 덜 분명하다. */
   /* display를 따로 지정한 요소는 hidden만으로 사라지지 않는다. 한 번에 맞춰 둔다. */
+  /* ===== 처음 쓰는 사람을 위한 안내(손전등) =====
+     화면을 어둡게 덮고 알려 줄 곳 하나만 밝힌다. 구멍을 뚫는 대신
+     밝힐 자리에 아주 두꺼운 그림자를 둘러 바깥을 어둡게 만든다.
+     그래야 둥근 모서리까지 자연스럽게 따라간다. */
+  .tour-on{ overflow:hidden; }
+  .tour-lay{
+    position:fixed;
+    inset:0;
+    /* 창(모달)이 90보다 위(100)라 언제나 안내를 덮는다. 안내가 창을 가려
+       비밀번호도 못 넣는 일이 있어서 일부러 아래로 내렸다. */
+    z-index:90;
+    display:none;
+  }
+  .tour-lay.show{ display:block; }
+  .tour-hole{
+    position:absolute;
+    border-radius:14px;
+    box-shadow:0 0 0 9999px rgba(16,22,40,0.72);
+    transition:all 0.28s cubic-bezier(0.4,0,0.2,1);
+    pointer-events:none;
+  }
+  /* 밝힐 곳이 없는 단계(첫 인사 등)는 화면 전체를 고르게 어둡게 */
+  .tour-hole.none{
+    left:50%; top:50%; width:0; height:0;
+    border-radius:0;
+    box-shadow:0 0 0 9999px rgba(16,22,40,0.78);
+  }
+  .tour-ring{
+    position:absolute;
+    border-radius:14px;
+    border:2.5px solid #ffffff;
+    transition:all 0.28s cubic-bezier(0.4,0,0.2,1);
+    pointer-events:none;
+  }
+  .tour-ring.none{ display:none; }
+  .tour-card{
+    position:absolute;
+    left:16px;
+    right:16px;
+    background:#ffffff;
+    border-radius:18px;
+    padding:18px 18px 14px;
+    box-shadow:0 12px 34px rgba(10,16,32,0.3);
+    transition:top 0.28s cubic-bezier(0.4,0,0.2,1);
+    max-width:420px;
+    margin:0 auto;
+  }
+  .tour-step{
+    font-size:11px;
+    font-weight:800;
+    color:var(--point-strong);
+    letter-spacing:0.4px;
+    margin:0 0 6px;
+  }
+  .tour-title{
+    font-size:17px;
+    font-weight:800;
+    color:var(--ink);
+    margin:0 0 6px;
+    line-height:1.35;
+  }
+  .tour-body{
+    font-size:13.5px;
+    color:var(--sub);
+    line-height:1.6;
+    margin:0 0 14px;
+    font-weight:600;
+  }
+  .tour-btns{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .tour-skip{
+    background:none;
+    border:none;
+    font-family:inherit;
+    font-size:13px;
+    font-weight:700;
+    color:#A0A5B5;
+    padding:10px 4px;
+    cursor:pointer;
+  }
+  .tour-next{
+    flex:1;
+    border:none;
+    font-family:inherit;
+    font-size:14.5px;
+    font-weight:800;
+    color:#ffffff;
+    background:var(--point-strong);
+    border-radius:12px;
+    padding:13px 0;
+    cursor:pointer;
+  }
+  .tour-next:active{ transform:scale(0.98); }
+  .tour-dots{
+    display:flex;
+    gap:5px;
+    justify-content:center;
+    margin:0 0 12px;
+  }
+  .tour-dots i{
+    width:6px; height:6px;
+    border-radius:50%;
+    background:#DDE2EC;
+    display:inline-block;
+  }
+  .tour-dots i.on{ background:var(--point-strong); width:16px; border-radius:3px; }
+
   [hidden]{ display:none !important; }
 
   /* ===== 마이페이지 =====
@@ -4092,6 +4202,13 @@
       <p class="section-title">내 반</p>
       <div id="mypageClassList"></div>
 
+      <p class="section-title">도움말</p>
+      <div class="menu-card">
+        <button class="menu-row" onclick="startTour('student')">
+          <span>설명 보기</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+      </div>
+
       <p class="section-title">계정</p>
       <div class="menu-card">
         <button class="menu-row" id="pwChangeRow" onclick="openPwChange()">
@@ -4168,6 +4285,13 @@
 
       <p class="section-title">내 반 <span class="section-count" id="t-mypageCount">0</span></p>
       <div id="t-mypageClassList"></div>
+
+      <p class="section-title">도움말</p>
+      <div class="menu-card">
+        <button class="menu-row" onclick="startTour('teacher')">
+          <span>설명 보기</span><svg class="row-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"></path></svg>
+        </button>
+      </div>
 
       <p class="section-title">계정</p>
       <div class="menu-card">
@@ -4898,6 +5022,22 @@
       <div class="modal-actions">
         <button onclick="closeModal('accDeleteModal')" style="background:#f1f2f5;color:#555555;">취소</button>
         <button onclick="confirmAccountDelete()" style="background:#E4423F;color:#ffffff;">삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 처음 쓰는 사람을 위한 안내(손전등) -->
+  <div class="tour-lay" id="tourLay" aria-live="polite">
+    <div class="tour-hole" id="tourHole"></div>
+    <div class="tour-ring" id="tourRing"></div>
+    <div class="tour-card" id="tourCard">
+      <p class="tour-step" id="tourStep">1 / 5</p>
+      <p class="tour-title" id="tourTitle"></p>
+      <p class="tour-body" id="tourBody"></p>
+      <div class="tour-dots" id="tourDots"></div>
+      <div class="tour-btns">
+        <button class="tour-skip" onclick="endTour(true)">건너뛰기</button>
+        <button class="tour-next" id="tourNext" onclick="tourNext()">다음</button>
       </div>
     </div>
   </div>
@@ -6079,6 +6219,7 @@
         classNames: d.classNames || {},
         agreedAt: d.agreedAt || "",
         mustChangePw: !!d.mustChangePw,
+        tourDone: !!d.tourDone,
         isMinor: !!d.isMinor,
         guardianName: d.guardianName || "",
         guardianContact: d.guardianContact || "",
@@ -7128,10 +7269,12 @@
       document.getElementById("teacherNameLabel").textContent = teacherName + " 선생님";
       renderHomeStats();
       showPage("t-home");
+      maybeStartTour("teacher");
     } else {
       accountName = me.name;
       studentName = me.name;
       const mine = myStudentClasses();
+      maybeStartTour("student");
       if (mine.length > 0) { pendingFirstEntry = false; enterStudentClass(mine[0].i); }
       else {
         /* 인터넷이 느리면 반 정보가 로그인보다 늦게 온다. 그때 그냥 목록에 세워 두면
@@ -8668,6 +8811,219 @@
       card.addEventListener("click", () => openStatusDetail(s.hwId));
       container.appendChild(card);
     });
+  }
+
+  /* ===== 처음 쓰는 사람을 위한 안내(손전등) =====
+     설명서를 따로 읽게 하면 아무도 안 읽는다. 진짜 화면 위에서 눌러야 할 곳을
+     하나씩 밝혀 주면 그 자리에서 익힌다.
+     각 단계는 { page, sel, title, body } 이다. page 가 있으면 그 화면으로 먼저
+     옮기고, sel 이 가리키는 것을 밝힌다. sel 이 없으면 화면만 어둡게 한다.
+     화면이 바뀌어 못 찾는 것은 조용히 건너뛴다. 안내 때문에 앱이 막히면 안 된다. */
+
+  const TOUR_STUDENT = [
+    { title: "반가워요! 잠깐만요",
+      body: "숙제 내는 법을 30초만에 알려 드릴게요. 넘기고 싶으면 아래 '건너뛰기'를 누르세요." },
+    { page: "home", sel: "#page-home .homework-card",
+      title: "여기가 홈이에요",
+      body: "내야 할 숙제와 가장 빠른 기한이 여기 보여요. 선생님이 올린 공지도 이 위에 떠요." },
+    { page: "list", act: () => selectTab("remaining"), sel: "#tab-remaining",
+      title: "숙제 내기",
+      body: "'남은 숙제'에서 숙제를 누르고 사진을 찍어 올리면 제출이 끝나요. 사진은 여러 장 올려도 돼요." },
+    { page: "list", act: () => selectTab("pending"), sel: "#tab-pending .status-row",
+      title: "확인 결과 보기",
+      body: "선생님이 봤는지 여기서 알 수 있어요. '승인 완료'를 누르면 지난 숙제로 바로 가요." },
+    { page: "calendar", act: () => openStudentCalendar(), sel: "#calGrid",
+      title: "달력으로 한눈에",
+      body: "날짜마다 동그라미 색으로 보여요. 빨강은 아직 안 낸 것, 초록은 끝난 것이에요." },
+    { page: "mypage", sel: "#page-mypage .menu-card",
+      title: "다 됐어요!",
+      body: "다시 보고 싶으면 마이페이지 > 설명 보기를 누르세요. 이제 시작해 볼까요?" },
+  ];
+
+  const TOUR_TEACHER = [
+    { title: "반가워요! 잠깐만요",
+      body: "반을 만들고 숙제를 받는 데까지 차례로 알려 드릴게요. 넘기고 싶으면 '건너뛰기'를 누르세요." },
+    { page: "t-home", sel: "#page-t-home .greeting, #page-t-home .page-head",
+      title: "여기가 홈이에요",
+      body: "공지를 올리고, 아직 안 낸 학생이 누구인지 한눈에 봅니다." },
+    { page: "t-home", sel: '#page-t-home button[onclick="openNoticeWrite()"]',
+      title: "공지 올리기",
+      body: "누르고 반을 고르면 그 반 학생들 홈 맨 위에 뜹니다. 반 여러 개를 한 번에 고를 수 있어요." },
+    { page: "t-home", sel: '#page-t-home .nav-item[data-nav="t-students"]',
+      title: "반 관리로 들어가기",
+      body: "반 만들기, 학생 계정 발급, 숙제 내기, 제출 확인이 전부 여기서 이뤄집니다." },
+    { page: "t-students", sel: "#studentsClassList, #page-t-students .home-content",
+      title: "반을 눌러 들어가기",
+      body: "반이 없으면 '반 만들기'로 먼저 만드세요. 반을 누르면 학생 관리·숙제 관리 칸이 나옵니다." },
+    { page: "t-students",
+      title: "학생 계정은 선생님이 만듭니다",
+      body: "학생은 스스로 가입하지 않아요. 이름을 한 줄에 하나씩 넣으면 아이디와 첫 비밀번호가 만들어집니다." },
+    { page: "t-students",
+      title: "'엑셀로 저장'을 꼭 먼저",
+      body: "발급 화면을 닫으면 첫 비밀번호는 다시 볼 수 없어요. 아이디는 명단에서 언제든 볼 수 있습니다." },
+    { page: "t-students",
+      title: "숙제 내기",
+      body: "반 안 '숙제 관리'에서 제목·설명·기한을 적으면 그 반 학생 모두에게 갑니다. 낸 학생이 한 명이라도 있으면 더는 못 고쳐요." },
+    { page: "t-students",
+      title: "확인하고 승인하기",
+      body: "제출된 사진을 눌러 보고 승인하면 학생 화면이 바로 완료로 바뀝니다. 반려하면 학생의 남은 숙제로 되돌아가요." },
+    { page: "t-homework", sel: "#page-t-homework .hw-cal-grid, #page-t-homework .home-content",
+      title: "달력으로 한눈에",
+      body: "날짜마다 제출 상태가 색으로 보입니다. 학사 일정도 여기서 올릴 수 있어요." },
+    { page: "t-mypage", sel: "#page-t-mypage .menu-card",
+      title: "다 됐어요!",
+      body: "다시 보고 싶으면 마이페이지 > 설명 보기를 누르세요. 학생이 비밀번호를 잊으면 그 학생 아이디를 운영자에게 알려 주시면 됩니다." },
+  ];
+
+  let tourSteps = [];
+  let tourAt = 0;
+
+  function tourTarget(sel) {
+    if (!sel) return null;
+    for (const one of sel.split(",")) {
+      const el = document.querySelector(one.trim());
+      if (el && el.getBoundingClientRect().height > 0) return el;
+    }
+    return null;
+  }
+
+  function tourPaint() {
+    const step = tourSteps[tourAt];
+    if (!step) { endTour(); return; }
+
+    document.getElementById("tourStep").textContent =
+      (tourAt + 1) + " / " + tourSteps.length;
+    document.getElementById("tourTitle").textContent = step.title;
+    document.getElementById("tourBody").textContent = step.body;
+    document.getElementById("tourNext").textContent =
+      tourAt === tourSteps.length - 1 ? "시작하기" : "다음";
+    document.getElementById("tourDots").innerHTML =
+      tourSteps.map((_, i) => '<i class="' + (i === tourAt ? "on" : "") + '"></i>').join("");
+
+    const hole = document.getElementById("tourHole");
+    const ring = document.getElementById("tourRing");
+    const card = document.getElementById("tourCard");
+    const el = tourTarget(step.sel);
+
+    if (!el) {
+      hole.classList.add("none");
+      ring.classList.add("none");
+      card.style.top = Math.max(24, (window.innerHeight - card.offsetHeight) / 2) + "px";
+      return;
+    }
+    const r = el.getBoundingClientRect();
+    /* 화면을 거의 다 덮는 것을 밝히면 손전등이 아무 뜻이 없다. 그냥 어둡게만. */
+    if (r.width * r.height > window.innerWidth * window.innerHeight * 0.7) {
+      hole.classList.add("none");
+      ring.classList.add("none");
+      card.style.top = Math.max(24, (window.innerHeight - card.offsetHeight) / 2) + "px";
+      return;
+    }
+    hole.classList.remove("none");
+    ring.classList.remove("none");
+    const pad = 6;
+    const box = {
+      left: Math.max(4, r.left - pad),
+      top: Math.max(4, r.top - pad),
+      w: Math.min(window.innerWidth - 8, r.width + pad * 2),
+      h: Math.min(window.innerHeight - 8, r.height + pad * 2),
+    };
+    [hole, ring].forEach((n) => {
+      n.style.left = box.left + "px";
+      n.style.top = box.top + "px";
+      n.style.width = box.w + "px";
+      n.style.height = box.h + "px";
+    });
+    /* 설명 상자는 밝힌 곳을 가리지 않는 쪽에 둔다 */
+    const ch = card.offsetHeight || 180;
+    const below = box.top + box.h + 14;
+    card.style.top = (below + ch < window.innerHeight - 12)
+      ? below + "px"
+      : Math.max(12, box.top - ch - 14) + "px";
+  }
+
+  function tourGo() {
+    const step = tourSteps[tourAt];
+    if (step && step.page) {
+      try { showPage(step.page); } catch (e) {}
+    }
+    /* 탭 하나를 더 눌러야 보이는 곳이 있다 */
+    if (step && step.act) { try { step.act(); } catch (e) {} }
+    /* 글은 먼저 채워 둔다. 안 그러면 화면이 바뀌기를 기다리는 사이에
+       빈 카드나 앞 단계의 글이 잠깐 보인다. */
+    tourPaint();
+    /* 자리는 화면이 다 바뀐 뒤에 다시 잡는다 */
+    setTimeout(tourPaint, step && step.page ? 280 : 40);
+  }
+
+  function tourNext() {
+    playTapSound();
+    if (tourAt >= tourSteps.length - 1) { endTour(); return; }
+    tourAt++;
+    tourGo();
+  }
+
+  function endTour(skipped) {
+    document.getElementById("tourLay").classList.remove("show");
+    document.body.classList.remove("tour-on");
+    window.removeEventListener("resize", tourPaint);
+    tourSteps = [];
+    markTourDone();
+    if (!skipped) playSuccessChime();
+  }
+
+  /* 본 적 있는지는 계정에 적어 둔다. 기기를 바꿔도 다시 뜨지 않게. */
+  function markTourDone() {
+    const me = userById(currentUserId);
+    if (!me || me.tourDone) return;
+    me.tourDone = true;
+    /* 계정에 적어 둬야 기기를 바꿔도 다시 안 뜬다. 서버에 못 닿는 동안을
+       위해 이 기기에도 함께 적어 둔다. */
+    try { localStorage.setItem("tourDone:" + currentUserId, "1"); } catch (e) {}
+    if (window.Cloud && Cloud.ready && Cloud.ready()) {
+      try { Cloud.writeMe({ tourDone: true }); } catch (e) {}
+    }
+  }
+
+  function tourSeen(me) {
+    if (!me) return false;
+    if (me.tourDone) return true;
+    try { return localStorage.getItem("tourDone:" + me.id) === "1"; } catch (e) { return false; }
+  }
+
+  function startTour(role) {
+    const r = role || (userById(currentUserId) || {}).role || "student";
+    tourSteps = r === "teacher" ? TOUR_TEACHER : TOUR_STUDENT;
+    tourAt = 0;
+    document.getElementById("tourLay").classList.add("show");
+    document.body.classList.add("tour-on");
+    window.addEventListener("resize", tourPaint);
+    tourGo();
+  }
+
+  /* 로그인 직후 한 번만. 학생은 비밀번호 정하는 창이 먼저라서 그게 끝난 뒤에 뜬다. */
+  function maybeStartTour(role, tries) {
+    const n = tries || 0;
+    if (n > 40) return;                       /* 30초쯤 기다리다 그만둔다 */
+    const me = userById(currentUserId);
+    if (!me) { setTimeout(() => maybeStartTour(role, n + 1), 700); return; }
+    if (tourSeen(me)) return;
+    /* 비밀번호 정하는 창처럼 먼저 끝내야 하는 것이 떠 있으면 기다린다.
+       예전에는 한 번만 보고 500ms 뒤에 그냥 띄워서, 그 사이에 뜬 창을
+       안내가 덮어 버렸다. 띄우기 직전에 다시 본다. */
+    if (document.querySelector(".modal-overlay.show")) {
+      setTimeout(() => maybeStartTour(role, n + 1), 700);
+      return;
+    }
+    setTimeout(() => {
+      const m = userById(currentUserId);
+      if (!m || tourSeen(m)) return;
+      if (document.querySelector(".modal-overlay.show")) {
+        maybeStartTour(role, n + 1);
+        return;
+      }
+      startTour(role);
+    }, 600);
   }
 
   /* ===== 승인현황 상세보기 화면 ===== */

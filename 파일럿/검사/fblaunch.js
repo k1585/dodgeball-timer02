@@ -5,7 +5,19 @@
 const path = require('path');
 const SDK = path.join(__dirname, 'fbsdk');
 
-async function useLocalSdk(ctx) {
+/* 첫 로그인에 '처음 쓰는 사람을 위한 안내'가 저절로 뜬다. 진짜 사용자에게는
+   그게 맞지만, 검사에서는 화면을 덮어 아무것도 못 누르게 된다.
+   그래서 검사에서는 뜨는 대로 닫는다. 안내 자체를 검사하는 e2e12 만
+   { tour: true } 를 넘겨 그대로 둔다. */
+async function useLocalSdk(ctx, opts) {
+  if (!(opts && opts.tour)) {
+    await ctx.addInitScript(() => {
+      setInterval(() => {
+        const l = document.getElementById('tourLay');
+        if (l && l.classList.contains('show') && typeof endTour === 'function') endTour(true);
+      }, 200);
+    });
+  }
   await ctx.route('https://www.gstatic.com/firebasejs/**', (route) => {
     const name = route.request().url().split('/').pop();
     route.fulfill({
