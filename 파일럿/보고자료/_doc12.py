@@ -84,7 +84,12 @@ node delete-all-users.js --yes</div>
 <p>화면이 바뀌면 안내서의 사진도 새로 찍어야 합니다.</p>
 <div class="cmd">cd 파일럿/보고자료
 node _캡처스크립트.js          # 화면 사진 다시 찍기
-python3 _문서전체만들기.py      # 문서 다시 만들기</div>
+python3 _문서전체만들기.py      # HTML 문서 다시 만들기
+python3 _한글문서만들기.py      # .docx 로 바꾸기
+python3 _hwpx문서.py  &lt;틀로 쓸 hwpx&gt;   # 안내서·인수인계 한글 파일
+python3 _hwpx동의서.py &lt;틀로 쓸 hwpx&gt;   # 보호자 동의서 한글 파일</div>
+<p class="sub">「틀로 쓸 hwpx」는 아무 한글 파일이나 됩니다. 글꼴·여백 같은 설정을
+그 파일에서 가져다 쓰기 때문입니다.</p>
 
 <h2>9. 문제가 생겼을 때 보는 곳</h2>
 <table>

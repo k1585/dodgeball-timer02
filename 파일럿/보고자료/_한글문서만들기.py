@@ -151,8 +151,12 @@ def emit_inline(p, node, bold=False, mono=False, color=None, size=10):
             if 'fill' in c:
                 """채워 넣을 빈칸. 그냥 빈칸에 밑줄을 그으면, 그 빈칸이 줄 맨 끝에
                    올 때 밑줄이 그려지지 않는다(줄 끝 공백은 지워서 그린다).
-                   밑줄 문자를 직접 쓰면 어디서든 그대로 보인다."""
-                r = p.add_run('_' * 14)
+                   밑줄 문자를 직접 쓰면 어디서든 그대로 보인다.
+                   폭은 HTML 에 적힌 min-width 를 따른다. 전부 같은 길이로 하면
+                   '○월 ○일 ~ ○월 ○일' 같은 줄이 넘쳐 두 줄이 된다."""
+                m = re.search(r'min-width\s*:\s*(\d+)', k.attrs.get('style', ''))
+                n = max(4, round(int(m.group(1)) / 7)) if m else 14
+                r = p.add_run('_' * n)
                 set_font(r, size=size, color=RGBColor(0x66, 0x6C, 0x7E))
             elif 'sub' in c:
                 emit_inline(p, k, bold, mono, GREY, size - 0.5)
@@ -194,7 +198,9 @@ def add_callout(doc, node, fill, bar):
         first = False
 
 def split_block(node):
-    """상자 안을 줄 단위로 쪼갠다. ul 이 있으면 li 하나가 한 줄."""
+    """상자 안을 줄 단위로 쪼갠다. ul 이 있으면 li 하나가 한 줄,
+       p 도 제 나름의 한 줄이다. 예전에는 p 를 안 쪼개서 동의서 서명란이
+       '학생 이름 보호자 성함 연락처 날짜'로 한 줄에 붙어 나왔다."""
     out, buf = [], Node('span')
     for k in node.kids:
         if k.tag in ('ul', 'ol'):
@@ -203,6 +209,10 @@ def split_block(node):
             for li in k.kids:
                 if li.tag == 'li':
                     out.append(li)
+        elif k.tag == 'p':
+            if buf.kids:
+                out.append(buf); buf = Node('span')
+            out.append(k)
         else:
             buf.kids.append(k)
     if buf.kids:
@@ -401,6 +411,18 @@ def convert(src, dst, tmpdir):
             add_callout(doc, node, 'FDF0EF', 'E4423F')
         elif tag == 'div' and 'box' in c:
             add_callout(doc, node, 'F7FAFF', '9FB5DA')
+        elif tag == 'div' and 'note' in c:
+            add_callout(doc, node, 'FFF6E5', 'E0A800')
+        elif tag == 'div' and 'sign' in c:
+            # 동의서의 서명란. 테두리를 두르고 안쪽 줄을 그대로 옮긴다.
+            # 예전에는 이 갈래가 없어 서명란이 통째로 빠진 채 저장됐다.
+            for i, part in enumerate(split_block(node)):
+                p = doc.add_paragraph()
+                p.paragraph_format.left_indent = Cm(0.3)
+                p.paragraph_format.space_before = Pt(10 if i == 0 else 4)
+                p.paragraph_format.space_after = Pt(4)
+                para_border(p, 'C9D6EE', 8, ('left',))
+                emit_inline(p, part)
         elif tag == 'div' and 'step' in c:
             p = doc.add_paragraph()
             para_border(p, 'C9D6EE', 18, ('left',))
