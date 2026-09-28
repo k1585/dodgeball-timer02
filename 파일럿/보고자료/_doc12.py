@@ -19,13 +19,22 @@ BODY = """
       <code>deploy/public/index.html</code> 과 항상 같은 내용이어야 합니다</td></tr>
 </table>
 
-<h2>2. 새 내용 올리기 (배포)</h2>
+<h2>2. 얼마나 쌓였는지 보기</h2>
+<p>앱 안에서 빠르게 보려면 <b>마이페이지 &gt; 관리자 &gt; 서버 현황</b>을 엽니다.
+반·학생·숙제·제출물·사진 수와, 사진이 차지하는 공간이 무료 한도(1 GB) 대비
+몇 %인지, 한 달 예상 요금이 나옵니다.</p>
+<p class="sub">보안 규칙이 남의 자료를 막고 있어서 이 숫자는 <b>지금 로그인한
+계정이 볼 수 있는 범위</b>만 셉니다. 학원 전체는 콘솔 &gt; 사용량(Usage)에서
+봅니다. 무료 한도는 저장 1 GiB, 하루 읽기 5만 건, 하루 쓰기 2만 건,
+한 달 전송 10 GiB입니다.</p>
+
+<h2>3. 새 내용 올리기 (배포)</h2>
 <div class="cmd">cd ~/dodgeball-timer02 && git pull
 cd deploy && firebase deploy --only hosting --project today-homework</div>
 <p class="sub">배포하면 바로 반영됩니다. 캐시를 끄는 설정이 들어 있어
 학생들이 새로고침하지 않아도 최신 화면을 봅니다.</p>
 
-<h2>3. 보안 규칙 올리기</h2>
+<h2>4. 보안 규칙 올리기</h2>
 <p>규칙을 고쳤을 때만 합니다. 콘솔 &gt; Firestore Database &gt; 규칙 에
 <code>파일럿/firestore.rules</code> 내용을 붙여 넣고 게시합니다.</p>
 <div class="warn">
@@ -33,7 +42,7 @@ cd deploy && firebase deploy --only hosting --project today-homework</div>
   올린 뒤에는 자동 점검을 한 번 돌려 확인하세요.
 </div>
 
-<h2>4. 학생 비밀번호 새로 설정</h2>
+<h2>5. 학생 비밀번호 새로 설정</h2>
 <p>가장 자주 하게 되는 일입니다. 선생님이 아이디를 알려 주시면 됩니다.</p>
 <div class="cmd">cd ~/dodgeball-timer02/reset && npm install
 node set-password.js 아이디 새비밀번호123!</div>
@@ -51,7 +60,7 @@ node set-password.js 아이디 새비밀번호123!</div>
 <p class="sub">「자격 증명을 찾지 못했다」가 나오면
 <code>gcloud auth application-default login</code> 을 한 번 실행하고 다시 하세요.</p>
 
-<h2>5. 전체 초기화</h2>
+<h2>6. 전체 초기화</h2>
 <p>시범 운영이 끝났을 때 합니다. <b>되돌릴 수 없습니다.</b></p>
 <div class="cmd">firebase firestore:delete --all-collections -f --project today-homework</div>
 <p class="sub">↑ 반·숙제·제출 사진·공지가 지워집니다</p>
@@ -64,20 +73,20 @@ node delete-all-users.js --yes</div>
   문서를 찾지 않아도 됩니다.
 </div>
 
-<h2>6. 점검 돌리기</h2>
-<p>고친 뒤에는 자동 점검 11종을 전부 돌립니다(<code>runall.sh</code>).
+<h2>7. 점검 돌리기</h2>
+<p>고친 뒤에는 자동 점검 11종 223항목을 전부 돌립니다(<code>runall.sh</code>).
 실제 서버에 붙어 돌기 때문에
 점검용 계정과 자료가 잠시 만들어졌다 지워집니다.</p>
 <p class="sub">점검 스크립트는 작업 폴더에 있으며, 화면 사진을 다시 찍는
 <code>파일럿/보고자료/_캡처스크립트.js</code> 도 같은 방식으로 돕니다.</p>
 
-<h2>7. 문서 다시 만들기</h2>
+<h2>8. 문서 다시 만들기</h2>
 <p>화면이 바뀌면 안내서의 사진도 새로 찍어야 합니다.</p>
 <div class="cmd">cd 파일럿/보고자료
 node _캡처스크립트.js          # 화면 사진 다시 찍기
 python3 _문서전체만들기.py      # 문서 다시 만들기</div>
 
-<h2>8. 문제가 생겼을 때 보는 곳</h2>
+<h2>9. 문제가 생겼을 때 보는 곳</h2>
 <table>
   <tr><th style="width:230px;">증상</th><th>볼 곳</th></tr>
   <tr><td>저장이 안 됨</td><td>콘솔 &gt; Firestore &gt; 규칙.

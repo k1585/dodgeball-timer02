@@ -2291,17 +2291,17 @@
   }
   .tour-dots i.on{ background:var(--point-strong); width:16px; border-radius:3px; }
 
-  /* 관리자 공지 — 선생님 공지와 구분되게 살짝 다른 색으로 */
+  /* 관리자 공지 — 선생님 공지(흰 카드)와 확실히 갈리도록 빨강 */
   .sys-banner{
-    background:#FFF6E3;
-    border:1px solid #F0DFB4;
+    background:#FDECEC;
+    border:1px solid #F2C4C2;
     border-radius:14px;
     padding:13px 15px;
     margin-bottom:10px;
   }
   .sys-tag{
     display:inline-block;
-    background:#E08A00;
+    background:#E4423F;
     color:#ffffff;
     font-size:10.5px;
     font-weight:800;
@@ -2324,14 +2324,58 @@
     color:var(--sub);
     margin:6px 0 0;
   }
+  /* 로그인할 때 뜨는 창도 같은 공지라서 홈 화면과 같은 빨강으로 맞춘다 */
   .sys-pop-item{
-    background:#F9FBFF;
-    border:1px solid #E8EDF6;
+    background:#FDECEC;
+    border:1px solid #F2C4C2;
     border-radius:12px;
     padding:13px 15px;
     margin-bottom:10px;
   }
   #masterNoticeList .master-acc-card{ text-align:left; }
+
+  /* 관리자 > 서버 현황 */
+  .usage-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .usage-cell{
+    background:#F7F8FB;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px;
+  }
+  .usage-cell span{
+    display:block;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--sub);
+    margin-bottom:4px;
+  }
+  .usage-cell strong{
+    display:block;
+    font-size:17px;
+    font-weight:800;
+    color:var(--ink);
+  }
+  .usage-cell.wide{ grid-column:1 / -1; }
+  .usage-bar{
+    height:8px;
+    border-radius:20px;
+    background:#E8EAF0;
+    overflow:hidden;
+    margin-top:8px;
+  }
+  .usage-bar i{
+    display:block;
+    height:100%;
+    border-radius:20px;
+    background:var(--point-strong);
+  }
+  .usage-bar i.warn{ background:#E08A00; }
+  .usage-bar i.over{ background:#E4423F; }
 
   [hidden]{ display:none !important; }
 
@@ -4235,12 +4279,20 @@
         <button class="master-acc-reset" onclick="changeMasterPassword()">비밀번호 변경</button>
       </div>
 
+      <p class="section-title">서버 현황</p>
+      <p class="master-info-body" id="usageScopeNote"></p>
+      <div class="usage-grid" id="usageGrid"></div>
+      <div id="usageCost"></div>
+      <button class="master-acc-reset" onclick="renderMasterUsage()"
+              style="margin-bottom:12px;">다시 세기</button>
+
       <p class="section-title">공지 관리</p>
       <p class="master-info-body">
         학생·선생님에게 보낼 공지를 올립니다. 누구에게 보일지와
-        어떻게 보일지를 골라서 올릴 수 있어요. 올리려면 먼저 로그인해야 합니다.
+        어떻게 보일지를 골라서 올릴 수 있어요.
       </p>
-      <button class="master-acc-reset" onclick="openSysNoticeWrite()"
+      <p class="master-info-body" id="sysLoginNote"></p>
+      <button class="master-acc-reset" id="sysWriteBtn" onclick="openSysNoticeWrite()"
               style="margin-bottom:12px;">+ 공지 올리기</button>
       <div id="masterNoticeList"></div>
 
@@ -5760,6 +5812,7 @@
         movedToPast: !!d.movedToPast,
         lateDays: d.lateDays || 0,
         photoCount: d.photoCount || 0,
+        photoBytes: d.photoBytes || 0,     /* 사진이 서버에서 차지하는 크기 */
         photos: keep ? prev.photos : [],   /* 사진은 무거워서 눌렀을 때만 받아 온다 */
         photosLoaded: !!keep,
       };
@@ -6092,6 +6145,15 @@
         sub.photos = photos.slice();
         sub.photosLoaded = true;
         sub.photoCount = photos.length;
+        /* 서버에 실제로 얼마나 쌓였는지 관리자 화면에서 어림이 아닌 진짜 값으로
+           보여 주려고, 이 사진들이 차지하는 크기를 제출물에 함께 적어 둔다.
+           글자 하나가 1바이트라 문자열 길이가 곧 저장되는 크기다.
+           실패해도 사진 저장 자체는 이미 끝났으므로 조용히 넘어간다. */
+        sub.photoBytes = photos.reduce((a, p) => a + String(p).length, 0);
+        try {
+          await F.setDoc(F.doc(F.db, "classes", cid, "submissions", sub._id),
+                         { photoBytes: sub.photoBytes }, { merge: true });
+        } catch (e) {}
         return true;
       } catch (e) {
         console.error("사진 저장 실패:", e && e.code, e && e.message);
@@ -8269,7 +8331,33 @@
   }
 
   /* ---- 관리자 화면에서 쓰고 지우기 ---- */
+
+  /* 공지를 올리는 것은 서버에 글을 쓰는 일이라 로그인이 있어야 한다.
+     (규칙: events 는 로그인한 사람이, 자기 것으로만 쓸 수 있다)
+     관리자 화면은 로그인 없이도 들어올 수 있어서, 지금 상태를 알려 준다. */
+  function renderSysLoginNote() {
+    const note = document.getElementById("sysLoginNote");
+    const btn = document.getElementById("sysWriteBtn");
+    if (!note || !btn) return;
+    const me = userById(currentUserId);
+    if (Cloud.ready() && me) {
+      note.innerHTML = '지금 <b>' + escHtml(me.name) + '</b> 계정으로 올립니다.'
+        + ' 올린 공지는 이 계정에서만 지울 수 있어요.';
+      note.style.color = "";
+      btn.disabled = false;
+      btn.style.opacity = "";
+    } else {
+      note.innerHTML = '지금은 <b>로그인되어 있지 않아</b> 공지를 올릴 수 없습니다.'
+        + ' 공지는 서버에 글을 쓰는 일이라 누가 올렸는지가 남아야 하기 때문입니다.'
+        + '<br>선생님 계정으로 로그인한 뒤 <b>마이페이지 &gt; 관리자</b>로 들어와 주세요.';
+      note.style.color = "#E4423F";
+      btn.disabled = true;
+      btn.style.opacity = "0.45";
+    }
+  }
+
   function renderMasterNotices() {
+    renderSysLoginNote();
     const box = document.getElementById("masterNoticeList");
     if (!box) return;
     if (sysNotices.length === 0) {
@@ -8285,6 +8373,105 @@
       + (showLabel[n.show] || "홈 화면") + ' · ' + sysNoticeWhen(n.at) + '</p>'
       + '<button class="master-acc-reset" onclick="removeSysNoticeAsk(\'' + n.id + '\')">삭제</button>'
       + '</div>').join("");
+  }
+
+  /* ---- 관리자 화면: 서버에 얼마나 쌓였고 돈이 얼마나 들지 ----
+     무료 한도와 단가는 구글이 밝힌 값이다(2026년 기준).
+     사진은 올릴 때 실제 크기를 제출물에 적어 두므로 거의 정확하고,
+     그 전에 올라온 사진만 한 장 150KB로 어림한다. */
+  const FREE_STORE = 1024 * 1024 * 1024;   /* 1 GiB */
+  const FREE_READS = 50000;                /* 하루 */
+  const PRICE_STORE = 0.26;                /* GiB 한 달 */
+  const PRICE_READ = 0.18 / 100000;
+  const USD_KRW = 1380;
+  const PHOTO_GUESS = 150 * 1024;
+
+  function masterUsage() {
+    const cls = (classes || []).filter((c) => c && c.id);
+    let students = 0, hw = 0, subs = 0, photos = 0, bytes = 0, guessed = 0;
+    let reads = 0;
+    const evCount = (events || []).length;
+    cls.forEach((c) => {
+      const st = (c.students || []).length;
+      const hws = (c.homeworks || []).length;
+      students += st; hw += hws;
+      let csubs = 0;
+      (c.submissions || []).forEach((s) => {
+        csubs++; subs++;
+        const n = s.photoCount || 0;
+        photos += n;
+        if (s.photoBytes) bytes += s.photoBytes;
+        else if (n > 0) { bytes += n * PHOTO_GUESS; guessed += n; }
+      });
+      /* 화면 한 번 열 때 서버에서 읽어 오는 문서 수(코드에서 센 그대로) */
+      reads += st * 3 * (1 + st + hws * 3 + evCount + 1);
+      reads += 6 * (1 + st + hws + csubs + evCount + 1);
+    });
+    const overStore = Math.max(0, bytes - FREE_STORE) / FREE_STORE;
+    const overRead = Math.max(0, reads - FREE_READS);
+    const usd = overStore * PRICE_STORE + overRead * 30 * PRICE_READ;
+    return { cls: cls.length, students, hw, subs, photos, bytes, guessed,
+             events: evCount, sys: (sysNotices || []).length,
+             reads: Math.round(reads), won: Math.round(usd * USD_KRW) };
+  }
+
+  function prettyBytes(n) {
+    if (n < 1024) return n + " B";
+    if (n < 1024 * 1024) return (n / 1024).toFixed(0) + " KB";
+    if (n < 1024 * 1024 * 1024) return (n / 1024 / 1024).toFixed(1) + " MB";
+    return (n / 1024 / 1024 / 1024).toFixed(2) + " GB";
+  }
+
+  function renderMasterUsage() {
+    const grid = document.getElementById("usageGrid");
+    const cost = document.getElementById("usageCost");
+    const note = document.getElementById("usageScopeNote");
+    if (!grid || !cost || !note) return;
+
+    if (!Cloud.ready()) {
+      note.innerHTML = '로그인해야 자료를 읽을 수 있어서 지금은 셀 수 없습니다.';
+      note.style.color = "#E4423F";
+      grid.innerHTML = "";
+      cost.innerHTML = "";
+      return;
+    }
+    const me = userById(currentUserId);
+    note.style.color = "";
+    note.innerHTML = '지금 로그인한 계정이 <b>볼 수 있는 자료만</b> 센 숫자입니다'
+      + (me && me.role === "teacher" ? '(이 선생님이 만든 반).' : '(내가 들어간 반).')
+      + ' 학원 전체 숫자는 파이어베이스 콘솔 → 사용량에서 보세요.';
+
+    const u = masterUsage();
+    const pct = Math.min(100, u.bytes / FREE_STORE * 100);
+    const cell = (label, value) =>
+      '<div class="usage-cell"><span>' + label + '</span><strong>' + value + '</strong></div>';
+    grid.innerHTML =
+      cell("반", u.cls + "개")
+      + cell("학생", u.students + "명")
+      + cell("숙제", u.hw + "개")
+      + cell("제출물", u.subs + "건")
+      + cell("올라온 사진", u.photos + "장")
+      + cell("공지 · 일정", u.sys + " · " + u.events)
+      + '<div class="usage-cell wide"><span>사진이 쓰는 공간</span><strong>'
+      + prettyBytes(u.bytes) + ' <span style="display:inline;font-size:12px;color:var(--sub);">'
+      + '/ 무료 1 GB (' + (pct < 0.1 && u.bytes > 0 ? "0.1 미만" : pct.toFixed(1)) + '%)</span></strong>'
+      + '<div class="usage-bar"><i class="' + (pct >= 100 ? "over" : pct >= 80 ? "warn" : "")
+      + '" style="width:' + Math.max(pct, u.bytes > 0 ? 2 : 0) + '%;"></i></div></div>';
+
+    const free = u.won <= 0;
+    cost.innerHTML =
+      '<div class="box-notice" style="margin-bottom:10px;">'
+      + '<p class="master-info-title">' + (free ? "지금은 무료 범위 안입니다 · 0원"
+                                                : "한 달에 약 " + u.won.toLocaleString() + "원") + '</p>'
+      + '<p class="master-info-body">하루 읽기 어림 <b>' + u.reads.toLocaleString() + '건</b>'
+      + ' / 무료 ' + FREE_READS.toLocaleString() + '건'
+      + ' <span style="color:var(--sub);">(학생은 하루 3번, 선생님은 6번 연다고 보고 셈)</span></p>'
+      + (u.guessed > 0
+          ? '<p class="master-info-body" style="margin-top:8px;color:var(--sub);">'
+            + '사진 ' + u.guessed + '장은 크기가 적혀 있지 않아 한 장 150KB로 어림했어요.'
+            + ' 이 기능을 넣기 전에 올라온 사진입니다.</p>'
+          : '')
+      + '</div>';
   }
 
   function openSysNoticeWrite() {
@@ -8828,10 +9015,15 @@
 
     successOverlay.classList.add("show");
 
+    /* 3초 뒤에 저절로 홈으로 보낸다. 다만 그 사이에 학생이 스스로 다른 화면으로
+       옮겨 갔다면 끌고 오면 안 된다. 예전에는 무조건 홈으로 보내서, 제출 직후
+       숙제 목록을 열어 보던 학생이 3초 뒤 갑자기 홈으로 튕겨 나갔다. */
+    const 제출한화면 = (document.querySelector(".page.active") || {}).id;
     clearTimeout(successTimeoutId);
     successTimeoutId = setTimeout(() => {
       successOverlay.classList.remove("show");
       resetUploadForm();
+      if ((document.querySelector(".page.active") || {}).id !== 제출한화면) return;
       showPage("home");
     }, 3000);
   }
@@ -8954,6 +9146,8 @@
       renderTHwDayList();
     }
     if (activeId === "page-t-class-detail" && currentClassIndex !== null) renderClassDetail();
+    /* 관리자 화면의 숫자와 공지도 서버가 바뀌면 따라 바뀌게 한다 */
+    if (activeId === "page-master") { renderMasterUsage(); renderMasterNotices(); }
   }
 
   /* 예전에는 탭 사이 어긋남을 storage 이벤트로 맞췄다.
@@ -10245,6 +10439,7 @@
     closeModal("masterPasswordModal");
     renderMasterTeachers();
     renderMasterAccounts();
+    renderMasterUsage();
     renderMasterNotices();
     showPage("master");
   }

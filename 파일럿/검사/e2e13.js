@@ -55,11 +55,33 @@ await T.fill('#masterPasswordInput','0000');
 await T.evaluate(()=>submitMasterPassword()); await T.waitForTimeout(700);
 let pg = await active(T);
 if (pg !== 'page-master') {   /* 기본 비번이 다르면 해시를 직접 맞춘다 */
-  await T.evaluate(()=>{ closeModal('masterPasswordModal'); renderMasterTeachers(); renderMasterAccounts(); renderMasterNotices(); showPage('master'); });
+  await T.evaluate(()=>{ closeModal('masterPasswordModal'); renderMasterTeachers(); renderMasterAccounts(); renderMasterUsage(); renderMasterNotices(); showPage('master'); });
   await T.waitForTimeout(500); pg = await active(T);
 }
 ok('관리자 화면 들어감', pg==='page-master', pg);
 ok('공지 관리 칸 있음', await T.evaluate(()=>document.body.textContent.includes('공지 관리')));
+
+console.log('\n[관리자] 로그인했으면 올릴 수 있다고 알려 주는지');
+const lg = await T.evaluate(()=>({
+  글: document.getElementById('sysLoginNote').textContent.trim(),
+  단추막힘: document.getElementById('sysWriteBtn').disabled,
+}));
+ok('★ 로그인 상태를 알려 줌', lg.글.includes('계정으로 올립니다') && lg.단추막힘===false, lg.글.slice(0,40));
+
+console.log('\n[관리자] 서버 현황');
+await T.evaluate(()=>renderMasterUsage()); await T.waitForTimeout(400);
+const us = await T.evaluate(()=>{
+  const cells=[...document.querySelectorAll('#usageGrid .usage-cell')].map(c=>c.textContent.trim());
+  return { 칸수: cells.length, 글: cells.join(' | '),
+           요금: document.getElementById('usageCost').textContent.trim(),
+           범위안내: document.getElementById('usageScopeNote').textContent.trim() };
+});
+console.log('   ',JSON.stringify(us.글));
+ok('★ 현황 숫자가 나옴', us.칸수===7, us.칸수+'칸');
+ok('반·학생 수가 맞음', us.글.includes('반1개') && us.글.includes('학생1명'), us.글.slice(0,40));
+ok('사진 공간과 무료 한도가 보임', us.글.includes('사진이 쓰는 공간') && us.글.includes('무료 1 GB'));
+ok('★ 예상 요금이 보임', us.요금.includes('무료 범위 안') || us.요금.includes('한 달에 약'), us.요금.slice(0,30));
+ok('어디까지 센 것인지 밝힘', us.범위안내.includes('볼 수 있는 자료만'));
 
 console.log('\n[학생] 로그인');
 await S.click('.welcome-start-btn'); await S.waitForTimeout(300);
@@ -103,6 +125,22 @@ let t=await seen(T), s2=await seen(S);
 ok('★ 선생님 홈에 보임', t.배너.includes('전체 안내입니다'), t.배너.slice(0,40));
 ok('★ 학생 홈에 보임', s2.배너.includes('전체 안내입니다'), s2.배너.slice(0,40));
 ok('팝업은 안 뜸(홈만 고름)', t.팝업===false && s2.팝업===false);
+
+/* 선생님 공지(흰 카드)와 확실히 갈리도록 관리자 공지는 빨강이어야 한다 */
+const color = await S.evaluate(()=>{
+  const b=document.querySelector('#sysBannerStudent .sys-banner');
+  const g=document.querySelector('#sysBannerStudent .sys-tag');
+  if(!b||!g) return null;
+  const cs=getComputedStyle(b), gs=getComputedStyle(g);
+  const num=(s)=>(s.match(/\d+/g)||[]).map(Number);
+  return { 배경: cs.backgroundColor, 테두리: cs.borderTopColor, 표딱지: gs.backgroundColor,
+           배경값: num(cs.backgroundColor), 표딱지값: num(gs.backgroundColor) };
+});
+console.log('   ',JSON.stringify(color&&{배경:color.배경,표딱지:color.표딱지}));
+const 빨강 = (v)=>v && v[0]>v[1]+8 && v[0]>v[2]+8;   /* 빨강 기운이 도는가 */
+ok('★ 공지 바탕이 빨강 계열', 빨강(color&&color.배경값), color&&color.배경);
+ok('★ 「알림」 표딱지가 빨강', 빨강(color&&color.표딱지값)
+   && color.표딱지값[0]>180 && color.표딱지값[1]<110, color&&color.표딱지);
 
 console.log('\n[2] 선생님에게만');
 await post('선생님만 보세요','teacher','home');

@@ -96,8 +96,20 @@ st = await S.evaluate(()=>({
 }));
 ok('낸 게 있으면 안내가 사라짐', st.안내보임===false && st.목록수===1, JSON.stringify(st));
 
+/* 제출 직후 3초 뒤에 저절로 홈으로 보내는 장치가 있다. 그 사이에 학생이 스스로
+   다른 화면으로 갔는데도 끌고 오면 안 된다(실제로 그랬다). 4초 기다려 본다. */
+console.log('\n[제출 직후] 다른 화면으로 갔으면 홈으로 끌고 오지 않는지');
+await S.waitForTimeout(4000);
+const stay = await S.evaluate(()=>(document.querySelector('.page.active')||{}).id);
+ok('★ 옮겨 간 화면에 그대로 있음', stay==='page-list', stay);
+
 console.log('\n[선생님] 승인');
 await waitFor(T,()=>classes[0].submissions.length===1,40000);
+/* 관리자 화면의 '서버 현황'이 어림이 아니라 진짜 크기를 쓰도록,
+   사진을 올릴 때 그 크기를 제출물에 적어 둔다. 서버에서 읽혀 오는지 본다. */
+const bytes = await waitFor(T,()=>(classes[0].submissions[0].photoBytes||0)>0,30000)
+  ? await T.evaluate(()=>classes[0].submissions[0].photoBytes) : 0;
+ok('★ 사진 크기가 서버에 적힘', bytes>0, bytes+'바이트');
 await T.evaluate(()=>switchDetailTab('homework')); await T.waitForTimeout(600);
 const hwIdT = await T.evaluate(()=>classes[0].homeworks[0].id);
 await T.evaluate(([n,h])=>approveSubmission(n,h),[stu.name,hwIdT]);
@@ -106,6 +118,21 @@ await waitFor(S,()=>classes[0].submissions[0]&&classes[0].submissions[0].status=
 
 console.log('\n[1] 승인 완료 칸을 누르면 지난 숙제로');
 await S.evaluate(()=>{ showPage('list'); selectTab('pending'); }); await S.waitForTimeout(900);
+/* 화면이 정말 보이는 상태인지까지 본다. 예전에 '탭은 승인현황인데 화면은
+   딴 데'여서 누르지 못하고 30초를 기다린 적이 있다. 그때 무엇이 가렸는지
+   알 수 있게 상태를 함께 찍는다. */
+const state = () => S.evaluate(()=>{
+  const box=document.querySelector('.status-box.approved');
+  const r=box? box.getBoundingClientRect() : null;
+  return {
+    화면: (document.querySelector('.page.active')||{}).id,
+    탭단추: (document.querySelector('#page-list .tab.active')||{dataset:{}}).dataset.tab,
+    보이는칸: (document.querySelector('#page-list .tab-content.active')||{}).id,
+    상자크기: r? Math.round(r.width)+'x'+Math.round(r.height) : '없음',
+    뜬창: [...document.querySelectorAll('.modal-overlay.show')].map(m=>m.id),
+    안내: !!document.querySelector('#tourLay.show'),
+  };
+});
 const before = await S.evaluate(()=>({
   완료수: document.getElementById('countApproved').textContent,
   단추인가: document.querySelector('.status-box.approved').tagName,
@@ -113,9 +140,16 @@ const before = await S.evaluate(()=>({
   지금탭: document.querySelector('#page-list .tab.active').dataset.tab,
 }));
 console.log('   ',JSON.stringify(before));
+console.log('    상태:',JSON.stringify(await state()));
 ok('완료 칸이 누를 수 있는 단추', before.단추인가==='BUTTON' && before.화살표===true);
 ok('승인이 완료로 셈', before.완료수==='1건', before.완료수);
-await S.click('.status-box.approved'); await S.waitForTimeout(800);
+try {
+  await S.click('.status-box.approved', {timeout:8000});
+} catch (e) {
+  console.log('    누르지 못함! 그 순간 상태:',JSON.stringify(await state()));
+  throw e;
+}
+await S.waitForTimeout(800);
 const after = await S.evaluate(()=>({
   탭: document.querySelector('#page-list .tab.active').dataset.tab,
   보이는칸: document.querySelector('#page-list .tab-content.active').id,
