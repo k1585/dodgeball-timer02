@@ -61,7 +61,7 @@ node set-password.js 아이디 새비밀번호123!</div>
 <code>gcloud auth application-default login</code> 을 한 번 실행하고 다시 하세요.</p>
 
 <h2>6. 전체 초기화</h2>
-<p>시범 운영이 끝났을 때 합니다. <b>되돌릴 수 없습니다.</b></p>
+<p>운영을 완전히 마칠 때 합니다. <b>되돌릴 수 없습니다.</b></p>
 <div class="cmd">firebase firestore:delete --all-collections -f --project today-homework</div>
 <p class="sub">↑ 반·숙제·제출 사진·공지가 지워집니다</p>
 <div class="cmd">cd ~/dodgeball-timer02/reset && npm install

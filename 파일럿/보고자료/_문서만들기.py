@@ -93,7 +93,7 @@ def page(fname, title, kind, body, sub=None):
 <h1>%s</h1>
 <p class="updated">%s · 작성일 %s</p>
 %s
-<footer>「오늘의 숙제」 시범 운영 자료 · %s</footer>
+<footer>「오늘의 숙제」 자료 · %s</footer>
 </body>
 </html>""" % (title, CSS, kind, title, sub or '오늘의 숙제', TODAY, body, TODAY)
     out = os.path.join(HERE, fname)
