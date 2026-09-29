@@ -4,6 +4,6 @@ import importlib, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 print('문서를 만듭니다\n')
 for m in ['_doc00','_doc01','_doc02','_doc03','_doc04',
-          '_doc08','_doc09','_doc10','_doc11','_doc12']:
+          '_doc08','_doc09','_doc10','_doc11','_doc12','_doc13']:
     importlib.import_module(m)
 print('\n끝났습니다.')

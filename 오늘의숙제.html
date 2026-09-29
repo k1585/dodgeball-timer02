@@ -8378,13 +8378,13 @@
   /* ---- 관리자 화면: 서버에 얼마나 쌓였고 돈이 얼마나 들지 ----
      무료 한도와 단가는 구글이 밝힌 값이다(2026년 기준).
      사진은 올릴 때 실제 크기를 제출물에 적어 두므로 거의 정확하고,
-     그 전에 올라온 사진만 한 장 150KB로 어림한다. */
+     그 전에 올라온 사진만 한 장 200KB로 어림한다. */
   const FREE_STORE = 1024 * 1024 * 1024;   /* 1 GiB */
   const FREE_READS = 50000;                /* 하루 */
   const PRICE_STORE = 0.26;                /* GiB 한 달 */
   const PRICE_READ = 0.18 / 100000;
   const USD_KRW = 1380;
-  const PHOTO_GUESS = 150 * 1024;
+  const PHOTO_GUESS = 200 * 1024;
 
   function masterUsage() {
     const cls = (classes || []).filter((c) => c && c.id);
@@ -8468,7 +8468,7 @@
       + ' <span style="color:var(--sub);">(학생은 하루 3번, 선생님은 6번 연다고 보고 셈)</span></p>'
       + (u.guessed > 0
           ? '<p class="master-info-body" style="margin-top:8px;color:var(--sub);">'
-            + '사진 ' + u.guessed + '장은 크기가 적혀 있지 않아 한 장 150KB로 어림했어요.'
+            + '사진 ' + u.guessed + '장은 크기가 적혀 있지 않아 한 장 200KB로 어림했어요.'
             + ' 이 기능을 넣기 전에 올라온 사진입니다.</p>'
           : '')
       + '</div>';

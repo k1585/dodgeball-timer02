@@ -3,7 +3,7 @@
    읽기가 생기는 곳은 코드에서 센 그대로다(학생 한 번 열 때 = 1+학생수+숙제x3+일정+1)."""
 FREE = dict(reads=50000, writes=20000, store=1.0, egress=10.0)
 PRICE = dict(read=0.18/100000, write=0.18/100000, store=0.26, egress=0.12)
-PHOTO_KB = 250; USD = 1380
+PHOTO_KB = 200; USD = 1380
 
 def calc(classes, per_class, hw_end=20, events=15, opens=3, t_opens=6, ph=2, subs=0.7):
     students = classes*per_class; teachers = max(1, round(classes/3))

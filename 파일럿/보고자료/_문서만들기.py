@@ -8,7 +8,7 @@ import base64, io, os, re, datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SHOTS = os.path.join(HERE, 'manual')
-TODAY = '2026년 9월 28일'
+TODAY = '2026년 9월 29일'
 
 CSS = """
   *{ box-sizing:border-box; }
