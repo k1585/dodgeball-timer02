@@ -479,6 +479,13 @@
                 <button type="button" class="btn-add btn-block" id="addGameBtn">경기 추가</button>
 
                 <div id="gameList" class="item-list"></div>
+
+                <div class="contact-info" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label for="bracketText">대진표 <span style="font-weight:400;color:#777;font-size:12px;">(선택 · 입력한 그대로 안내문에 들어갑니다)</span></label>
+                        <textarea id="bracketText" rows="8" placeholder="예:&#10;[A조]&#10;10:00 고려대 vs 썬더스&#10;10:40 이글스 vs 타이거즈&#10;&#10;[결승]&#10;15:00 A조 1위 vs B조 1위" data-save></textarea>
+                    </div>
+                </div>
             </div>
 
             <!-- 조 정보 -->
@@ -1011,6 +1018,13 @@
                 lines.push(`${teamLabel(findTeam(g.teamId))} vs ${g.opponent}`);
                 lines.push('');
             });
+        }
+
+        const bracket = $('bracketText').value.replace(/\s+$/, '');
+        if (bracket.trim()) {
+            lines.push('|대진표|');
+            lines.push(bracket.replace(/^\n+/, ''));
+            lines.push('');
         }
 
         const contact = [];
