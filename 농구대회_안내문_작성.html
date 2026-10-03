@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>농구 대회 안내 작성</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --accent: #764ba2;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --text: #333;
+            --muted: #777;
+            --border: #ddd;
+            --soft: #f7f8fc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            padding: 20px 16px;
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+
+        .content { padding: 30px; }
+
+        .section {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 25px;
+        }
+        .section:last-of-type { border-bottom: none; }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+        .section-title .hint {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--muted);
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .required::after { content: ' *'; color: var(--danger); }
+
+        input[type="text"], input[type="time"], input[type="date"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+        .invalid {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15) !important;
+        }
+        textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .row { display: flex; gap: 10px; align-items: center; }
+        .row > input, .row > select { flex: 1; min-width: 0; }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: inherit;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+        button:active { transform: translateY(1px); }
+
+        .btn-add { background: var(--primary); color: white; }
+        .btn-add:hover { background: var(--primary-dark); }
+        .btn-block { width: 100%; }
+
+        .btn-ghost { background: #eef0fb; color: var(--primary); }
+        .btn-ghost:hover { background: #e0e4f8; }
+
+        .btn-remove {
+            background: #f5f5f5;
+            color: var(--danger);
+            padding: 6px 10px;
+            font-size: 13px;
+        }
+        .btn-remove:hover { background: #ffe6e6; }
+
+        .item-list {
+            background: #f9f9f9;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 12px;
+        }
+        .item-list:empty { display: none; }
+
+        .item-card {
+            background: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        .item-card:last-child { margin-bottom: 0; }
+        .item-card .main { flex: 1; min-width: 0; word-break: break-all; }
+        .item-card .sub { font-size: 12px; color: var(--muted); }
+        .badge {
+            display: inline-block;
+            background: #fff3cd;
+            color: #8a6d00;
+            font-size: 11px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 4px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .radio-group label, .check-label {
+            margin-bottom: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 400;
+            cursor: pointer;
+        }
+        input[type="checkbox"], input[type="radio"] {
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary);
+        }
+
+        .team-block {
+            background: var(--soft);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .team-block-title {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .team-block-title .count { font-size: 12px; color: var(--muted); font-weight: 400; }
+
+        .player-input {
+            display: grid;
+            grid-template-columns: 1fr 90px auto auto;
+            gap: 8px;
+            align-items: center;
+        }
+
+        details.bulk { margin-top: 10px; }
+        details.bulk summary {
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+            padding: 4px 0;
+        }
+        details.bulk .bulk-body { margin-top: 8px; }
+        .help { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+        .empty-note {
+            font-size: 13px;
+            color: var(--muted);
+            background: var(--soft);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .contact-info {
+            background: #fff8e1;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        .contact-info .form-group:last-child { margin-bottom: 0; }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-generate {
+            background: var(--success);
+            color: white;
+            padding: 14px;
+            font-size: 16px;
+        }
+        .btn-generate:hover { background: #229954; }
+        .btn-reset { background: #f5f5f5; color: #666; }
+        .btn-reset:hover { background: #ffe6e6; color: var(--danger); }
+
+        .preview-section {
+            background: #f5f7ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        .preview-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .preview-title { font-size: 16px; font-weight: 700; color: var(--primary); }
+        .preview-content {
+            width: 100%;
+            min-height: 300px;
+            background: white;
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            line-height: 1.8;
+            border: 1px solid var(--border);
+        }
+        .btn-copy {
+            background: #3498db;
+            color: white;
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px;
+        }
+        .btn-copy:hover { background: #2980b9; }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(30, 30, 30, 0.92);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s, transform 0.2s;
+            z-index: 100;
+            max-width: calc(100% - 32px);
+            text-align: center;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .toast.error { background: rgba(192, 57, 43, 0.95); }
+
+        .hidden { display: none !important; }
+
+        @media (max-width: 600px) {
+            .content { padding: 20px 16px; }
+            .form-row { grid-template-columns: 1fr; }
+            .header h1 { font-size: 22px; }
+            .player-input { grid-template-columns: 1fr 70px; }
+            .player-input .check-label { grid-column: 1; }
+            .player-input .btn-add { grid-column: 2; }
+            .actions { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🏀 농구 대회 안내 작성</h1>
+        <p>대회 정보를 입력하고 공식 안내문을 자동 생성합니다 · 입력 내용은 이 브라우저에 자동 저장됩니다</p>
+    </div>
+
+    <div class="content">
+        <form id="tournamentForm" onsubmit="return false;">
+            <!-- 대회정보 -->
+            <div class="section">
+                <div class="section-title">대회정보</div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tournamentDate" class="required">대회 날짜</label>
+                        <input type="date" id="tournamentDate" data-save>
+                    </div>
+                    <div class="form-group">
+                        <label for="tournamentFormat" class="required">대회 형식</label>
+                        <select id="tournamentFormat" data-save>
+                            <option value="">선택하세요</option>
+                            <option value="5대5">5대5</option>
+                            <option value="3x3">3x3</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tournamentName" class="required">대회명</label>
+                    <input type="text" id="tournamentName" placeholder="예: 2026 양주시장배 유소년 농구대회" data-save>
+                </div>
+
+                <div class="form-group">
+                    <label for="venue">경기 장소 <span class="hint" style="font-weight:400;color:#777;font-size:12px;">(선택)</span></label>
+                    <input type="text" id="venue" placeholder="예: 양주시 실내체육관" data-save>
+                </div>
+
+                <div class="form-group">
+                    <label>참가 팀</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="teamType" value="single" checked> 단독팀</label>
+                        <label><input type="radio" name="teamType" value="multiple"> 여러팀</label>
+                    </div>
+                </div>
+
+                <div id="singleTeamSection">
+                    <div class="form-group">
+                        <label for="singleTeamName" class="required">팀 명칭</label>
+                        <input type="text" id="singleTeamName" placeholder="예: 고려대 스포츠아카데미">
+                    </div>
+                </div>
+
+                <div id="multipleTeamsSection" class="hidden">
+                    <div class="form-group">
+                        <label for="newTeamInput" class="required">팀 추가</label>
+                        <div class="row">
+                            <input type="text" id="newTeamInput" placeholder="예: 고려대 스포츠아카데미 U12">
+                            <button type="button" class="btn-add" id="addTeamBtn">추가</button>
+                        </div>
+                    </div>
+                    <div id="teamsList" class="item-list"></div>
+                </div>
+            </div>
+
+            <!-- 중계정보 -->
+            <div class="section">
+                <div class="section-title">중계정보</div>
+
+                <div class="form-group">
+                    <label>중계 예정</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="broadcast" value="yes" checked> 있음</label>
+                        <label><input type="radio" name="broadcast" value="no"> 없음</label>
+                    </div>
+                </div>
+
+                <div id="broadcastDetails">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="broadcastDate">중계 날짜 <span style="font-weight:400;color:#777;font-size:12px;">(비우면 대회 날짜)</span></label>
+                            <input type="date" id="broadcastDate" data-save>
+                        </div>
+                        <div class="form-group">
+                            <label for="broadcastStartTime">중계 시작 시간 <span style="font-weight:400;color:#777;font-size:12px;">(비우면 첫 경기)</span></label>
+                            <input type="time" id="broadcastStartTime" data-save>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="broadcastChannel">중계 채널</label>
+                            <input type="text" id="broadcastChannel" value="본 유튜브 라이브방송" data-save>
+                        </div>
+                        <div class="form-group">
+                            <label for="viewingLimit">시청 제한</label>
+                            <input type="text" id="viewingLimit" value="없음" data-save>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 선수정보 -->
+            <div class="section">
+                <div class="section-title">선수정보</div>
+
+                <div class="form-group">
+                    <label class="check-label">
+                        <input type="checkbox" id="maskNames" checked data-save>
+                        안내문에서 선수 이름 가리기 (예: 홍길동 → 홍*동)
+                    </label>
+                </div>
+
+                <div id="playerSection"></div>
+            </div>
+
+            <!-- 경기 일정 -->
+            <div class="section">
+                <div class="section-title">경기 일정 <span class="hint">시작 시각 순으로 자동 정렬됩니다</span></div>
+
+                <div class="form-group">
+                    <label for="gameName" class="required">경기명</label>
+                    <input type="text" id="gameName" placeholder="예: 예선 A조 1경기">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gameStartTime" class="required">시작 시각</label>
+                        <input type="time" id="gameStartTime">
+                    </div>
+                    <div class="form-group">
+                        <label for="gameEndTime">종료 시각 <span style="font-weight:400;color:#777;font-size:12px;">(선택)</span></label>
+                        <input type="time" id="gameEndTime">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gameTeam" class="required">우리팀</label>
+                        <select id="gameTeam"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="gameOpponent" class="required">상대팀</label>
+                        <input type="text" id="gameOpponent" placeholder="예: 의정부 썬더스">
+                    </div>
+                </div>
+
+                <button type="button" class="btn-add btn-block" id="addGameBtn">경기 추가</button>
+
+                <div id="gameList" class="item-list"></div>
+            </div>
+
+            <!-- 조 정보 -->
+            <div class="section">
+                <div class="section-title">조 정보 <span class="hint">(선택)</span></div>
+
+                <div class="form-group">
+                    <label for="groupName">조 이름</label>
+                    <input type="text" id="groupName" placeholder="예: A조">
+                </div>
+                <div class="form-group">
+                    <label for="groupTeams">소속 팀 <span style="font-weight:400;color:#777;font-size:12px;">(쉼표로 구분)</span></label>
+                    <div class="row">
+                        <input type="text" id="groupTeams" placeholder="예: 고려대 스포츠아카데미, 의정부 썬더스, 동두천 이글스">
+                        <button type="button" class="btn-add" id="addGroupBtn">조 추가</button>
+                    </div>
+                </div>
+
+                <div id="groupList" class="item-list"></div>
+            </div>
+
+            <!-- 생방송 및 기타 문의 -->
+            <div class="section">
+                <div class="section-title">생방송 및 기타 문의</div>
+
+                <div class="contact-info">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="academyInsta">학원 인스타그램</label>
+                            <input type="text" id="academyInsta" placeholder="@예시계정" value="@jangju_korea_sports" data-save>
+                        </div>
+                        <div class="form-group">
+                            <label for="managerInsta">담당자 인스타그램</label>
+                            <input type="text" id="managerInsta" placeholder="@예시계정" value="@kjw.2012" data-save>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="kakaoUrl">카카오톡 오픈링크</label>
+                        <input type="text" id="kakaoUrl" placeholder="https://open.kakao.com/..." value="https://open.kakao.com/o/sgG9G7ui" data-save>
+                    </div>
+                    <div class="form-group">
+                        <label for="kakaoName">카카오톡 그룹명</label>
+                        <input type="text" id="kakaoName" placeholder="예: 양주 고려대 스포츠아카데미" value="양주 고려대 스포츠아카데미" data-save>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="extraNotes">추가 안내 사항 <span style="font-weight:400;color:#777;font-size:12px;">(선택 · 안내문 하단에 그대로 들어갑니다)</span></label>
+                <textarea id="extraNotes" placeholder="예: 경기 시작 30분 전까지 체육관 도착 바랍니다.&#10;흰색/검정 유니폼 모두 지참해 주세요." data-save></textarea>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn-generate" id="generateBtn">📋 대회 안내문 생성</button>
+                <button type="button" class="btn-reset" id="resetBtn">초기화</button>
+            </div>
+        </form>
+
+        <!-- 미리보기 -->
+        <div class="preview-section hidden" id="previewSection">
+            <div class="preview-head">
+                <div class="preview-title">✅ 생성된 안내문</div>
+                <span class="help" style="margin:0;">아래에서 직접 수정한 뒤 복사할 수 있습니다</span>
+            </div>
+            <textarea class="preview-content" id="previewContent" spellcheck="false"></textarea>
+            <button type="button" class="btn-copy" id="copyBtn">📋 텍스트 복사</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+    'use strict';
+
+    const STORAGE_KEY = 'basketballNotice.v1';
+    const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+    // ===== 상태 =====
+    // teams: [{ id, name, players: [{ name, number, isCaptain }] }]
+    // 단독팀 모드에서는 teams[0] 한 개만 사용
+    let state = {
+        teamType: 'single',
+        broadcast: 'yes',
+        singleTeam: { id: 'single', name: '', players: [] },
+        teams: [],
+        games: [],   // { id, gameName, startTime, endTime, teamId, opponent }
+        groups: [],  // { id, name, teams: [string] }
+        fields: {}
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+    function escapeHtml(str) {
+        return String(str ?? '').replace(/[&<>"']/g, c => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[c]));
+    }
+
+    // ===== 토스트 =====
+    let toastTimer;
+    function toast(msg, isError) {
+        const el = $('toast');
+        el.textContent = msg;
+        el.classList.toggle('error', !!isError);
+        el.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function markInvalid(el) {
+        if (!el) return;
+        el.classList.add('invalid');
+        el.addEventListener('input', () => el.classList.remove('invalid'), { once: true });
+        el.addEventListener('change', () => el.classList.remove('invalid'), { once: true });
+    }
+
+    // ===== 저장/불러오기 =====
+    function save() {
+        document.querySelectorAll('[data-save]').forEach(el => {
+            state.fields[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+        });
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) { /* 저장 불가 환경은 무시 */ }
+    }
+
+    function load() {
+        let saved = null;
+        try {
+            saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+        } catch (e) { saved = null; }
+        if (!saved) return;
+
+        state = Object.assign(state, saved);
+        Object.entries(state.fields || {}).forEach(([id, value]) => {
+            const el = $(id);
+            if (!el) return;
+            if (el.type === 'checkbox') el.checked = !!value;
+            else el.value = value;
+        });
+        document.querySelector(`input[name="teamType"][value="${state.teamType}"]`).checked = true;
+        document.querySelector(`input[name="broadcast"][value="${state.broadcast}"]`).checked = true;
+        $('singleTeamName').value = state.singleTeam.name || '';
+    }
+
+    // ===== 팀 =====
+    function activeTeams() {
+        return state.teamType === 'single' ? [state.singleTeam] : state.teams;
+    }
+
+    function findTeam(id) {
+        return activeTeams().find(t => t.id === id);
+    }
+
+    function teamLabel(team) {
+        return team.name || '(팀 명칭 미입력)';
+    }
+
+    function addTeam() {
+        const input = $('newTeamInput');
+        const name = input.value.trim();
+        if (!name) {
+            markInvalid(input);
+            toast('팀 명칭을 입력하세요.', true);
+            input.focus();
+            return;
+        }
+        if (state.teams.some(t => t.name === name)) {
+            markInvalid(input);
+            toast('이미 추가된 팀입니다.', true);
+            return;
+        }
+        state.teams.push({ id: uid(), name, players: [] });
+        input.value = '';
+        input.focus();
+        renderAll();
+    }
+
+    function removeTeam(id) {
+        const team = state.teams.find(t => t.id === id);
+        if (!team) return;
+        const gameCount = state.games.filter(g => g.teamId === id).length;
+        const msg = `'${team.name}' 팀을 삭제할까요?` +
+            (team.players.length || gameCount
+                ? `\n(선수 ${team.players.length}명, 경기 ${gameCount}개도 함께 삭제됩니다)` : '');
+        if (!confirm(msg)) return;
+        state.teams = state.teams.filter(t => t.id !== id);
+        state.games = state.games.filter(g => g.teamId !== id);
+        renderAll();
+    }
+
+    function renderTeams() {
+        $('teamsList').innerHTML = state.teams.map(t => `
+            <div class="item-card">
+                <span class="main">${escapeHtml(t.name)} <span class="sub">· 선수 ${t.players.length}명</span></span>
+                <button type="button" class="btn-remove" data-action="remove-team" data-team="${t.id}">삭제</button>
+            </div>
+        `).join('');
+    }
+
+    // ===== 선수 =====
+    function renderPlayerSection() {
+        const teams = activeTeams();
+        const section = $('playerSection');
+
+        if (state.teamType === 'multiple' && teams.length === 0) {
+            section.innerHTML = `<div class="empty-note">먼저 대회정보에서 참가 팀을 추가하세요.</div>`;
+            return;
+        }
+
+        section.innerHTML = teams.map(t => `
+            <div class="team-block" data-team="${t.id}">
+                <div class="team-block-title">
+                    <span>${escapeHtml(teamLabel(t))}</span>
+                    <span class="count">${t.players.length}명</span>
+                </div>
+                <div class="player-input">
+                    <input type="text" class="p-name" placeholder="선수 이름" maxlength="10">
+                    <input type="text" class="p-number" placeholder="등번호" maxlength="3" inputmode="numeric" style="text-align:center;">
+                    <label class="check-label"><input type="checkbox" class="p-captain"> 주장</label>
+                    <button type="button" class="btn-add" data-action="add-player" data-team="${t.id}">추가</button>
+                </div>
+                <details class="bulk">
+                    <summary>여러 명 한 번에 입력</summary>
+                    <div class="bulk-body">
+                        <textarea class="p-bulk" placeholder="한 줄에 한 명씩: 등번호 이름 (주장)&#10;7 홍길동 주장&#10;10 김철수&#10;23 이영희"></textarea>
+                        <div class="help">형식: <b>등번호 이름</b> 또는 <b>이름 등번호</b>, 줄 끝에 '주장' 또는 'C'를 붙이면 주장으로 지정됩니다.</div>
+                        <button type="button" class="btn-ghost btn-block" data-action="bulk-add" data-team="${t.id}" style="margin-top:8px;">목록 추가</button>
+                    </div>
+                </details>
+                <div class="item-list">${t.players
+                    .slice()
+                    .sort((a, b) => (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0))
+                    .map(p => `
+                    <div class="item-card">
+                        <span class="main">${escapeHtml(p.number)}번 ${escapeHtml(p.name)}${p.isCaptain ? '<span class="badge">주장</span>' : ''}</span>
+                        <button type="button" class="btn-remove" data-action="remove-player" data-team="${t.id}" data-number="${escapeHtml(p.number)}">삭제</button>
+                    </div>
+                `).join('')}</div>
+            </div>
+        `).join('');
+    }
+
+    function pushPlayer(team, name, number, isCaptain) {
+        if (team.players.some(p => p.number === number)) {
+            return `${number}번은 이미 등록된 등번호입니다.`;
+        }
+        if (isCaptain) team.players.forEach(p => { p.isCaptain = false; });
+        team.players.push({ name, number, isCaptain });
+        return null;
+    }
+
+    function addPlayer(teamId) {
+        const team = findTeam(teamId);
+        const block = document.querySelector(`.team-block[data-team="${teamId}"]`);
+        if (!team || !block) return;
+
+        const nameEl = block.querySelector('.p-name');
+        const numEl = block.querySelector('.p-number');
+        const capEl = block.querySelector('.p-captain');
+        const name = nameEl.value.trim();
+        const number = numEl.value.trim();
+
+        if (!name) { markInvalid(nameEl); toast('선수 이름을 입력하세요.', true); nameEl.focus(); return; }
+        if (!/^\d{1,3}$/.test(number)) { markInvalid(numEl); toast('등번호는 숫자로 입력하세요.', true); numEl.focus(); return; }
+
+        const err = pushPlayer(team, name, number, capEl.checked);
+        if (err) { markInvalid(numEl); toast(err, true); return; }
+
+        renderAll();
+        const newBlock = document.querySelector(`.team-block[data-team="${teamId}"] .p-name`);
+        if (newBlock) newBlock.focus();
+    }
+
+    function parseBulkLine(line) {
+        let text = line.trim();
+        if (!text) return null;
+        let isCaptain = false;
+        const capMatch = text.match(/\s*[\(\[]?(주장|C|c)[\)\]]?$/);
+        if (capMatch && text.length > capMatch[0].length) {
+            isCaptain = true;
+            text = text.slice(0, -capMatch[0].length).trim();
+        }
+        text = text.replace(/번/g, ' ').replace(/[,\t.#]/g, ' ').trim();
+        let m = text.match(/^(\d{1,3})\s+(.+)$/);
+        if (m) return { number: m[1], name: m[2].trim(), isCaptain };
+        m = text.match(/^(.+?)\s+(\d{1,3})$/);
+        if (m) return { number: m[2], name: m[1].trim(), isCaptain };
+        return { error: line.trim() };
+    }
+
+    function bulkAdd(teamId) {
+        const team = findTeam(teamId);
+        const block = document.querySelector(`.team-block[data-team="${teamId}"]`);
+        if (!team || !block) return;
+        const textarea = block.querySelector('.p-bulk');
+        const lines = textarea.value.split('\n');
+
+        let added = 0;
+        const failed = [];
+        lines.forEach(line => {
+            const parsed = parseBulkLine(line);
+            if (!parsed) return;
+            if (parsed.error) { failed.push(parsed.error); return; }
+            const err = pushPlayer(team, parsed.name, parsed.number, parsed.isCaptain);
+            if (err) failed.push(line.trim()); else added++;
+        });
+
+        renderAll();
+        if (failed.length) {
+            const newBlock = document.querySelector(`.team-block[data-team="${teamId}"]`);
+            newBlock.querySelector('details.bulk').open = true;
+            newBlock.querySelector('.p-bulk').value = failed.join('\n');
+            toast(`${added}명 추가 · ${failed.length}줄은 확인이 필요합니다 (형식 오류/중복 등번호)`, true);
+        } else {
+            toast(`${added}명을 추가했습니다.`);
+        }
+    }
+
+    function removePlayer(teamId, number) {
+        const team = findTeam(teamId);
+        if (!team) return;
+        team.players = team.players.filter(p => p.number !== number);
+        renderAll();
+    }
+
+    // ===== 경기 =====
+    function renderGameTeamSelect() {
+        const select = $('gameTeam');
+        const prev = select.value;
+        const teams = activeTeams();
+        if (state.teamType === 'single') {
+            select.innerHTML = `<option value="${state.singleTeam.id}">${escapeHtml(teamLabel(state.singleTeam))}</option>`;
+            select.disabled = true;
+        } else {
+            select.disabled = false;
+            select.innerHTML = `<option value="">${teams.length ? '선택하세요' : '먼저 팀을 추가하세요'}</option>` +
+                teams.map(t => `<option value="${t.id}">${escapeHtml(t.name)}</option>`).join('');
+            if (teams.some(t => t.id === prev)) select.value = prev;
+        }
+    }
+
+    function addGame() {
+        const nameEl = $('gameName');
+        const startEl = $('gameStartTime');
+        const endEl = $('gameEndTime');
+        const teamEl = $('gameTeam');
+        const oppEl = $('gameOpponent');
+
+        const gameName = nameEl.value.trim();
+        const startTime = startEl.value;
+        const endTime = endEl.value;
+        const teamId = teamEl.value;
+        const opponent = oppEl.value.trim();
+
+        const missing = [];
+        if (!gameName) missing.push(nameEl);
+        if (!startTime) missing.push(startEl);
+        if (!teamId) missing.push(teamEl);
+        if (!opponent) missing.push(oppEl);
+        if (missing.length) {
+            missing.forEach(markInvalid);
+            missing[0].focus();
+            toast('필수 경기 정보를 입력하세요.', true);
+            return;
+        }
+        if (endTime && endTime <= startTime) {
+            markInvalid(endEl);
+            toast('종료 시각은 시작 시각보다 늦어야 합니다.', true);
+            return;
+        }
+
+        state.games.push({ id: uid(), gameName, startTime, endTime, teamId, opponent });
+        nameEl.value = '';
+        startEl.value = endTime || '';
+        endEl.value = '';
+        oppEl.value = '';
+        nameEl.focus();
+        renderAll();
+    }
+
+    function sortedGames() {
+        return state.games
+            .filter(g => findTeam(g.teamId))
+            .slice()
+            .sort((a, b) => a.startTime.localeCompare(b.startTime));
+    }
+
+    function renderGames() {
+        $('gameList').innerHTML = sortedGames().map(g => `
+            <div class="item-card">
+                <div class="main">
+                    <div style="font-weight:600;">${escapeHtml(g.gameName)}</div>
+                    <div class="sub">${formatTime(g.startTime)}${g.endTime ? ' ~ ' + formatTime(g.endTime) : ''}</div>
+                    <div style="font-size:13px;">${escapeHtml(teamLabel(findTeam(g.teamId)))} vs ${escapeHtml(g.opponent)}</div>
+                </div>
+                <button type="button" class="btn-remove" data-action="remove-game" data-id="${g.id}">삭제</button>
+            </div>
+        `).join('');
+    }
+
+    // ===== 조 =====
+    function addGroup() {
+        const nameEl = $('groupName');
+        const teamsEl = $('groupTeams');
+        const name = nameEl.value.trim();
+        if (!name) { markInvalid(nameEl); toast('조 이름을 입력하세요.', true); nameEl.focus(); return; }
+        const teams = teamsEl.value.split(/[,，\n]/).map(s => s.trim()).filter(Boolean);
+        state.groups.push({ id: uid(), name, teams });
+        nameEl.value = '';
+        teamsEl.value = '';
+        nameEl.focus();
+        renderAll();
+    }
+
+    function renderGroups() {
+        $('groupList').innerHTML = state.groups.map(g => `
+            <div class="item-card">
+                <div class="main">
+                    <div style="font-weight:600;">${escapeHtml(g.name)}</div>
+                    ${g.teams.length ? `<div class="sub">${g.teams.map(escapeHtml).join(', ')}</div>` : ''}
+                </div>
+                <button type="button" class="btn-remove" data-action="remove-group" data-id="${g.id}">삭제</button>
+            </div>
+        `).join('');
+    }
+
+    // ===== 포맷 =====
+    function formatDate(value) {
+        if (!value) return '';
+        const [y, m, d] = value.split('-').map(Number);
+        const day = new Date(y, m - 1, d).getDay();
+        return `${y}년 ${m}월 ${d}일(${WEEKDAYS[day]})`;
+    }
+
+    function formatDateShort(value) {
+        if (!value) return '';
+        const [y, m, d] = value.split('-').map(Number);
+        const day = new Date(y, m - 1, d).getDay();
+        return `${m}/${d} ${WEEKDAYS[day]}`;
+    }
+
+    function formatTime(value) {
+        if (!value) return '';
+        const [h, m] = value.split(':');
+        return `${h}시 ${m}분`;
+    }
+
+    function maskName(name) {
+        const chars = Array.from(name);
+        if (chars.length <= 1) return name;
+        if (chars.length === 2) return chars[0] + '*';
+        return chars[0] + '*'.repeat(chars.length - 2) + chars[chars.length - 1];
+    }
+
+    // ===== 안내문 생성 =====
+    function validateForGenerate() {
+        const missing = [];
+        if (!$('tournamentDate').value) missing.push($('tournamentDate'));
+        if (!$('tournamentFormat').value) missing.push($('tournamentFormat'));
+        if (!$('tournamentName').value.trim()) missing.push($('tournamentName'));
+        if (state.teamType === 'single' && !state.singleTeam.name.trim()) missing.push($('singleTeamName'));
+        if (state.teamType === 'multiple' && state.teams.length === 0) missing.push($('newTeamInput'));
+        return missing;
+    }
+
+    function buildNotice() {
+        const v = id => $(id).value.trim();
+        const date = v('tournamentDate');
+        const teams = activeTeams();
+        const games = sortedGames();
+        const mask = $('maskNames').checked;
+        const lines = [];
+
+        lines.push(`-(${formatDateShort(date)})(형식(${v('tournamentFormat')}))대회안내-`);
+        lines.push('');
+
+        lines.push('|대회정보|');
+        lines.push(`대회명: ${v('tournamentName')}`);
+        lines.push(`일시: ${formatDate(date)}`);
+        if (v('venue')) lines.push(`장소: ${v('venue')}`);
+        lines.push(`팀: ${teams.map(teamLabel).join(', ')}`);
+        lines.push('');
+
+        lines.push('|중계정보[변동 가능성 있음]|');
+        if (state.broadcast === 'yes') {
+            const bStart = v('broadcastStartTime') || (games[0] && games[0].startTime) || '';
+            lines.push('중계예정: 있음');
+            lines.push(`중계일: ${formatDate(v('broadcastDate') || date)}`);
+            lines.push(`중계 시각: ${bStart ? formatTime(bStart) + '부터 ' : ''}대회 종료 시까지`);
+            lines.push(`중계 채널: ${v('broadcastChannel')}`);
+            lines.push(`시청 제한: ${v('viewingLimit') || '없음'}`);
+        } else {
+            lines.push('중계예정: 없음');
+        }
+        lines.push('');
+
+        const teamsWithPlayers = teams.filter(t => t.players.length);
+        if (teamsWithPlayers.length) {
+            lines.push('|선수정보|');
+            teamsWithPlayers.forEach(t => {
+                if (state.teamType === 'multiple') lines.push(`[${t.name}]`);
+                t.players
+                    .slice()
+                    .sort((a, b) => (parseInt(a.number, 10) || 0) - (parseInt(b.number, 10) || 0))
+                    .forEach(p => {
+                        const name = mask ? maskName(p.name) : p.name;
+                        lines.push(`${p.number}번 ${name}${p.isCaptain ? ' [주장]' : ''}`);
+                    });
+                lines.push('');
+            });
+        }
+
+        if (state.groups.length) {
+            lines.push('|조 정보|');
+            state.groups.forEach(g => {
+                lines.push(g.teams.length ? `${g.name}: ${g.teams.join(', ')}` : g.name);
+            });
+            lines.push('');
+        }
+
+        if (games.length) {
+            lines.push('|경기 일정|');
+            games.forEach(g => {
+                const time = formatTime(g.startTime) + (g.endTime ? ` ~ ${formatTime(g.endTime)}` : '');
+                lines.push(`${g.gameName} [${time}]`);
+                lines.push(`${teamLabel(findTeam(g.teamId))} vs ${g.opponent}`);
+                lines.push('');
+            });
+        }
+
+        const contact = [];
+        if (v('academyInsta')) contact.push(`학원 인스타: ${v('academyInsta')}`);
+        if (v('managerInsta')) contact.push(`관리 인스타: ${v('managerInsta')}`);
+        if (v('kakaoUrl')) {
+            contact.push(`카카오톡 링크: ${v('kakaoUrl')}`);
+            if (v('kakaoName')) contact.push(`(${v('kakaoName')})`);
+        }
+        if (contact.length) {
+            lines.push('|생방송 및 기타 문의|');
+            lines.push(...contact);
+            lines.push('');
+        }
+
+        if (v('extraNotes')) {
+            lines.push('|추가 안내|');
+            lines.push(v('extraNotes'));
+        }
+
+        return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim() + '\n';
+    }
+
+    function generatePreview() {
+        const missing = validateForGenerate();
+        if (missing.length) {
+            missing.forEach(markInvalid);
+            missing[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            missing[0].focus({ preventScroll: true });
+            toast('필수 항목(*)을 입력하세요.', true);
+            return;
+        }
+        $('previewContent').value = buildNotice();
+        $('previewSection').classList.remove('hidden');
+        $('previewSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    async function copyPreview() {
+        const textarea = $('previewContent');
+        const text = textarea.value;
+        try {
+            await navigator.clipboard.writeText(text);
+            toast('텍스트가 복사되었습니다!');
+        } catch (e) {
+            // file:// 등 클립보드 API를 쓸 수 없는 환경 대비
+            textarea.focus();
+            textarea.select();
+            const ok = document.execCommand && document.execCommand('copy');
+            toast(ok ? '텍스트가 복사되었습니다!' : '복사에 실패했습니다. 직접 선택해 복사하세요.', !ok);
+        }
+    }
+
+    function resetAll() {
+        if (!confirm('입력한 모든 내용을 지우고 처음 상태로 되돌릴까요?\n(연락처 기본값은 유지됩니다)')) return;
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* 무시 */ }
+        location.reload();
+    }
+
+    // ===== 렌더링 =====
+    function renderAll() {
+        $('singleTeamSection').classList.toggle('hidden', state.teamType !== 'single');
+        $('multipleTeamsSection').classList.toggle('hidden', state.teamType !== 'multiple');
+        $('broadcastDetails').classList.toggle('hidden', state.broadcast !== 'yes');
+        renderTeams();
+        renderPlayerSection();
+        renderGameTeamSelect();
+        renderGames();
+        renderGroups();
+        save();
+    }
+
+    // ===== 이벤트 =====
+    document.querySelectorAll('input[name="teamType"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            state.teamType = radio.value;
+            renderAll();
+        });
+    });
+
+    document.querySelectorAll('input[name="broadcast"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            state.broadcast = radio.value;
+            renderAll();
+        });
+    });
+
+    $('singleTeamName').addEventListener('input', e => {
+        state.singleTeam.name = e.target.value.trim();
+        // 입력 중 포커스를 잃지 않도록 제목/선택지만 갱신
+        const title = document.querySelector(`.team-block[data-team="single"] .team-block-title span`);
+        if (title) title.textContent = teamLabel(state.singleTeam);
+        renderGameTeamSelect();
+        renderGames();
+        save();
+    });
+
+    $('tournamentDate').addEventListener('change', save);
+    document.querySelectorAll('[data-save]').forEach(el => {
+        el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', save);
+    });
+
+    $('addTeamBtn').addEventListener('click', addTeam);
+    $('addGameBtn').addEventListener('click', addGame);
+    $('addGroupBtn').addEventListener('click', addGroup);
+    $('generateBtn').addEventListener('click', generatePreview);
+    $('copyBtn').addEventListener('click', copyPreview);
+    $('resetBtn').addEventListener('click', resetAll);
+
+    // Enter 키로 바로 추가
+    const enterMap = {
+        newTeamInput: addTeam,
+        gameOpponent: addGame,
+        gameName: addGame,
+        groupName: addGroup,
+        groupTeams: addGroup
+    };
+    Object.entries(enterMap).forEach(([id, fn]) => {
+        $(id).addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); fn(); }
+        });
+    });
+
+    // 동적으로 생성되는 버튼/입력은 위임으로 처리
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('[data-action]');
+        if (!btn) return;
+        const teamId = btn.dataset.team;
+        switch (btn.dataset.action) {
+            case 'remove-team': removeTeam(teamId); break;
+            case 'add-player': addPlayer(teamId); break;
+            case 'bulk-add': bulkAdd(teamId); break;
+            case 'remove-player': removePlayer(teamId, btn.dataset.number); break;
+            case 'remove-game':
+                state.games = state.games.filter(g => g.id !== btn.dataset.id);
+                renderAll();
+                break;
+            case 'remove-group':
+                state.groups = state.groups.filter(g => g.id !== btn.dataset.id);
+                renderAll();
+                break;
+        }
+    });
+
+    $('playerSection').addEventListener('keydown', e => {
+        if (e.key !== 'Enter' || e.isComposing) return;
+        if (!e.target.matches('.p-name, .p-number')) return;
+        e.preventDefault();
+        const block = e.target.closest('.team-block');
+        if (block) addPlayer(block.dataset.team);
+    });
+
+    // ===== 초기화 =====
+    load();
+    renderAll();
+})();
+</script>
+</body>
+</html>
