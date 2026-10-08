@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<title>페이스메이커</title>
+<style>
+:root{
+  --bg:#111827;
+  --card:#1f2937;
+  --line:#374151;
+  --text:#f9fafb;
+  --muted:#9ca3af;
+  --accent:#3b82f6;
+  --slow:#1e3a8a;   /* 느림: 파랑 (저음) */
+  --fast:#b91c1c;   /* 빠름: 빨강 (고음) */
+  --ok:#15803d;     /* 맞음: 초록 (무음) */
+  --wait:#374151;   /* 측정 중 */
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none;
+}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+.hidden{display:none !important}
+
+/* ---------- 설정 화면 ---------- */
+#setup{max-width:480px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:24px;margin:8px 0 20px}
+h2{font-size:15px;color:var(--muted);font-weight:600;margin:0 0 12px}
+.card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px}
+.row{display:flex;align-items:center;gap:8px}
+.num{
+  width:76px;padding:12px 8px;font-size:26px;text-align:center;
+  background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;
+  -webkit-user-select:text;user-select:text;
+}
+.unit{font-size:18px;color:var(--muted)}
+.hint{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5}
+.btns{display:flex;gap:10px}
+.btn{flex:1;padding:14px;border-radius:12px;background:var(--line);font-size:16px;font-weight:600}
+.btn.low{background:var(--slow)}
+.btn.high{background:var(--fast)}
+.btn.start{width:100%;padding:20px;font-size:22px;background:var(--accent);border-radius:16px;margin:6px 0 14px}
+.btn:active{opacity:.7}
+#records{list-style:none;margin:0;padding:0}
+#records li{display:flex;align-items:center;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+#records li:first-child{border-top:0}
+.rec-main{flex:1;min-width:0}
+.rec-date{font-size:13px;color:var(--muted)}
+.rec-stat{font-size:16px;margin-top:2px}
+.rec-pace{font-size:13px;margin-top:2px}
+.rec-pace .good{color:#4ade80}.rec-pace .bad{color:#f87171}
+.del{background:transparent;color:var(--muted);font-size:20px;padding:6px 10px}
+.empty{color:var(--muted);font-size:14px}
+
+/* ---------- 러닝 화면 ---------- */
+#run{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+  background:var(--wait);transition:background-color .4s;
+}
+#run.slow{background:var(--slow)}
+#run.fast{background:var(--fast)}
+#run.ok{background:var(--ok)}
+#status{font-size:clamp(40px,13vw,72px);font-weight:800;text-align:center;margin-top:12px}
+#diff{font-size:clamp(20px,6vw,30px);text-align:center;opacity:.9;min-height:1.3em}
+.pace-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center}
+#pace{font-size:clamp(72px,26vw,150px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1}
+.pace-label{font-size:16px;opacity:.8;margin-top:6px}
+.target-label{font-size:14px;opacity:.7;margin-top:4px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.stat{background:rgba(0,0,0,.25);border-radius:12px;padding:10px 6px;text-align:center}
+.stat b{display:block;font-size:clamp(20px,6.5vw,30px);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;opacity:.8}
+#stopBtn{width:100%;padding:18px;border-radius:16px;font-size:20px;font-weight:700;background:rgba(0,0,0,.45)}
+#msg{font-size:13px;text-align:center;opacity:.85;min-height:1.2em;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<!-- ========== 설정 화면 ========== -->
+<main id="setup">
+  <h1>🏃 페이스메이커</h1>
+
+  <section class="card">
+    <h2>목표 평균 페이스 (1km당)</h2>
+    <div class="row">
+      <input id="paceMin" class="num" type="number" inputmode="numeric" min="2" max="20" value="6">
+      <span class="unit">분</span>
+      <input id="paceSec" class="num" type="number" inputmode="numeric" min="0" max="59" value="0">
+      <span class="unit">초</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>허용 오차</h2>
+    <div class="row">
+      <span class="unit">±</span>
+      <input id="tolerance" class="num" type="number" inputmode="numeric" min="1" max="60" value="5">
+      <span class="unit">초</span>
+    </div>
+    <div class="hint">목표 페이스 ± 오차 안이면 "맞음"으로 보고 소리를 내지 않습니다.</div>
+  </section>
+
+  <section class="card">
+    <h2>효과음 테스트</h2>
+    <div class="btns">
+      <button id="testLow" class="btn low">🔈 저음 (느림)</button>
+      <button id="testHigh" class="btn high">🔔 고음 (빠름)</button>
+    </div>
+    <div class="hint">저음 = 목표보다 느림 → 더 빨리<br>고음 두 번 = 목표보다 빠름 → 조금 천천히<br>무음 = 목표 페이스 유지 중</div>
+  </section>
+
+  <button id="startBtn" class="btn start">시작</button>
+
+  <section class="card">
+    <h2>기록</h2>
+    <ul id="records"></ul>
+  </section>
+
+  <div class="hint">※ 웹앱이라 화면이 꺼지거나 다른 앱으로 전환하면 GPS 추적이 멈출 수 있습니다. 뛰는 동안 화면을 켜 둔 채로 사용하세요.</div>
+</main>
+
+<!-- ========== 러닝 화면 ========== -->
+<main id="run" class="hidden">
+  <div id="status">GPS 찾는 중</div>
+  <div id="diff"></div>
+
+  <div class="pace-wrap">
+    <div id="pace">--'--"</div>
+    <div class="pace-label">현재 평균 페이스 /km</div>
+    <div class="target-label" id="targetLabel"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="dist">0.00</b><span>거리 km</span></div>
+    <div class="stat"><b id="time">0:00</b><span>시간</span></div>
+    <div class="stat"><b id="acc">-</b><span>GPS 정확도 m</span></div>
+  </div>
+  <div id="msg"></div>
+  <button id="stopBtn">종료</button>
+</main>
+
+<script>
+'use strict';
+
+// ===== 설정값 =====
+const MAX_ACCURACY_M = 30;   // 이보다 정확도가 나쁜 좌표는 무시
+const MIN_MOVE_M     = 3;    // 이보다 작은 이동은 거리에 더하지 않음 (제자리 노이즈 방지)
+const MAX_SPEED_MS   = 12;   // 이보다 빠른 이동(약 1'23"/km)은 GPS 튐으로 간주
+const WARMUP_M       = 50;   // 이 거리 전에는 피드백 없이 "측정 중"
+const TICK_MS        = 2000; // 페이스 계산/피드백 주기
+const RECORDS_KEY    = 'pacemaker.records';
+const SETTINGS_KEY   = 'pacemaker.settings';
+
+const $ = id => document.getElementById(id);
+
+// ===== 공통 유틸 =====
+function fmtPace(secPerKm){
+  if (!isFinite(secPerKm) || secPerKm <= 0) return `--'--"`;
+  const s = Math.round(secPerKm);
+  return `${Math.floor(s / 60)}'${String(s % 60).padStart(2, '0')}"`;
+}
+function fmtTime(sec){
+  sec = Math.floor(sec);
+  const h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s = sec % 60;
+  const mm = h ? String(m).padStart(2, '0') : m;
+  return (h ? h + ':' : '') + mm + ':' + String(s).padStart(2, '0');
+}
+// 두 좌표 사이 거리 (m), 하버사인 공식
+function haversine(a, b){
+  const R = 6371000, rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
+  const h = Math.sin(dLat / 2) ** 2 +
+            Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+
+// ===== 설정 저장/불러오기 =====
+function readSettings(){
+  const min = parseInt($('paceMin').value, 10) || 0;
+  const sec = Math.min(59, Math.max(0, parseInt($('paceSec').value, 10) || 0));
+  const tol = Math.max(1, parseInt($('tolerance').value, 10) || 5);
+  return { targetSec: min * 60 + sec, tolerance: tol };
+}
+function saveSettings(){
+  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(readSettings())); } catch (e) {}
+}
+function loadSettings(){
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (s && s.targetSec) {
+      $('paceMin').value = Math.floor(s.targetSec / 60);
+      $('paceSec').value = s.targetSec % 60;
+      $('tolerance').value = s.tolerance;
+    }
+  } catch (e) {}
+}
+['paceMin', 'paceSec', 'tolerance'].forEach(id => $(id).addEventListener('change', saveSettings));
+
+// ===== 효과음 (Web Audio API) =====
+let audioCtx = null;
+// 반드시 사용자 클릭 안에서 호출 (자동재생 정책)
+function ensureAudio(){
+  if (!audioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    audioCtx = new AC();
+  }
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function tone(freq, start, dur, type){
+  const ctx = audioCtx;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  // 짧은 페이드 인/아웃으로 '딱' 소리 방지
+  gain.gain.setValueAtTime(0.0001, start);
+  gain.gain.exponentialRampToValueAtTime(0.6, start + 0.015);
+  gain.gain.setValueAtTime(0.6, start + dur - 0.04);
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(start);
+  osc.stop(start + dur + 0.02);
+}
+// 느림: 300Hz 길게 1번
+function playLow(){
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  tone(300, audioCtx.currentTime + 0.02, 0.6, 'square');
+}
+// 빠름: 1200Hz 짧게 2번
+function playHigh(){
+  if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const t = audioCtx.currentTime + 0.02;
+  tone(1200, t, 0.1, 'sine');
+  tone(1200, t + 0.2, 0.1, 'sine');
+}
+$('testLow').addEventListener('click', () => { ensureAudio(); playLow(); });
+$('testHigh').addEventListener('click', () => { ensureAudio(); playHigh(); });
+
+// ===== 화면 꺼짐 방지 (Wake Lock API) =====
+let wakeLock = null;
+async function requestWakeLock(){
+  if (!('wakeLock' in navigator)) { showMsg('이 브라우저는 화면 꺼짐 방지를 지원하지 않습니다'); return; }
+  try {
+    wakeLock = await navigator.wakeLock.request('screen');
+    wakeLock.addEventListener('release', () => { wakeLock = null; });
+  } catch (e) {
+    showMsg('화면 꺼짐 방지 실패: ' + e.message);
+  }
+}
+function releaseWakeLock(){
+  if (wakeLock) { wakeLock.release().catch(() => {}); wakeLock = null; }
+}
+// 탭을 떠났다 돌아오면 Wake Lock이 자동 해제되므로 재요청
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && run.active) {
+    if (!wakeLock) requestWakeLock();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  }
+});
+
+// ===== 러닝 상태 =====
+const run = {
+  active: false,
+  watchId: null,
+  tickId: null,
+  startTime: null,  // 첫 유효 GPS 좌표를 받은 시각 (ms)
+  lastPoint: null,  // 마지막으로 거리에 반영한 기준 좌표
+  distance: 0,      // 누적 거리 (m)
+  accuracy: null,
+  targetSec: 0,
+  tolerance: 5,
+};
+
+function showMsg(text){ $('msg').textContent = text || ''; }
+
+function onPosition(pos){
+  const { latitude: lat, longitude: lon, accuracy } = pos.coords;
+  const now = pos.timestamp || Date.now();
+  run.accuracy = accuracy;
+  $('acc').textContent = Math.round(accuracy);
+
+  if (accuracy > MAX_ACCURACY_M) {
+    showMsg(`GPS 정확도 낮음 (${Math.round(accuracy)}m) — 좌표 무시 중`);
+    return;
+  }
+  showMsg('');
+
+  const point = { lat, lon, t: now };
+  if (!run.lastPoint) {
+    // 첫 유효 좌표: 이때부터 시간 측정 시작
+    run.lastPoint = point;
+    if (!run.startTime) run.startTime = Date.now();
+    tick();
+    return;
+  }
+
+  const d = haversine(run.lastPoint, point);
+  // 3m 미만 이동은 무시. 기준점을 갱신하지 않아야 천천히 움직여도 누적되어 결국 반영됨.
+  if (d < MIN_MOVE_M) return;
+
+  const dt = (point.t - run.lastPoint.t) / 1000;
+  if (dt > 0 && d / dt > MAX_SPEED_MS) {
+    // 비정상적인 순간이동 → 거리에는 넣지 않고 기준점만 옮김
+    run.lastPoint = point;
+    return;
+  }
+
+  run.distance += d;
+  run.lastPoint = point;
+}
+
+function onPositionError(err){
+  const msgs = {
+    1: '위치 권한이 거부되었습니다. 브라우저 설정에서 위치 권한을 허용해 주세요.',
+    2: '위치를 확인할 수 없습니다.',
+    3: 'GPS 응답 시간 초과 — 계속 시도 중',
+  };
+  showMsg(msgs[err.code] || err.message);
+  if (err.code === 1) $('status').textContent = '권한 없음';
+}
+
+function elapsedSec(){
+  return run.startTime ? (Date.now() - run.startTime) / 1000 : 0;
+}
+
+// 2초마다: 평균 페이스 계산 → 목표와 비교 → 효과음/배경색
+function tick(){
+  if (!run.active) return;
+  const el = elapsedSec();
+  $('time').textContent = fmtTime(el);
+  $('dist').textContent = (run.distance / 1000).toFixed(2);
+
+  if (!run.startTime) {
+    setState('', 'GPS 찾는 중', '');
+    return;
+  }
+  if (run.distance < WARMUP_M) {
+    setState('', '측정 중', `${Math.round(run.distance)} / ${WARMUP_M}m`);
+    $('pace').textContent = `--'--"`;
+    return;
+  }
+
+  const pace = el / (run.distance / 1000); // 초/km
+  $('pace').textContent = fmtPace(pace);
+  const diff = pace - run.targetSec;       // +면 느림, -면 빠름
+  const diffText = `목표보다 ${Math.abs(Math.round(diff))}초 ${diff >= 0 ? '느림' : '빠름'}`;
+
+  if (diff > run.tolerance) {
+    setState('slow', '느림 ▼', diffText);
+    playLow();
+  } else if (diff < -run.tolerance) {
+    setState('fast', '빠름 ▲', diffText);
+    playHigh();
+  } else {
+    setState('ok', '맞음 ✓', Math.round(diff) === 0 ? '목표 페이스' : diffText);
+  }
+}
+function setState(cls, status, diff){
+  const el = $('run');
+  el.classList.remove('slow', 'fast', 'ok');
+  if (cls) el.classList.add(cls);
+  $('status').textContent = status;
+  $('diff').textContent = diff;
+}
+
+async function startRun(){
+  if (!('geolocation' in navigator)) { alert('이 브라우저는 GPS(위치)를 지원하지 않습니다.'); return; }
+  if (!window.isSecureContext) { alert('GPS는 HTTPS에서만 동작합니다. HTTPS 주소로 접속해 주세요.'); return; }
+
+  const s = readSettings();
+  if (s.targetSec < 120) { alert('목표 페이스를 확인해 주세요.'); return; }
+  saveSettings();
+
+  ensureAudio(); // 클릭 이벤트 안에서 AudioContext 생성
+
+  Object.assign(run, {
+    active: true, startTime: null, lastPoint: null, distance: 0, accuracy: null,
+    targetSec: s.targetSec, tolerance: s.tolerance,
+  });
+
+  $('targetLabel').textContent = `목표 ${fmtPace(s.targetSec)} (±${s.tolerance}초)`;
+  $('pace').textContent = `--'--"`;
+  $('dist').textContent = '0.00';
+  $('time').textContent = '0:00';
+  $('acc').textContent = '-';
+  setState('', 'GPS 찾는 중', '');
+  showMsg('');
+  $('setup').classList.add('hidden');
+  $('run').classList.remove('hidden');
+
+  requestWakeLock();
+  run.watchId = navigator.geolocation.watchPosition(onPosition, onPositionError, {
+    enableHighAccuracy: true, maximumAge: 0, timeout: 15000,
+  });
+  run.tickId = setInterval(tick, TICK_MS);
+}
+
+function stopRun(){
+  if (!confirm('러닝을 종료할까요?')) return;
+  run.active = false;
+  if (run.watchId !== null) navigator.geolocation.clearWatch(run.watchId);
+  clearInterval(run.tickId);
+  run.watchId = run.tickId = null;
+  releaseWakeLock();
+
+  const el = elapsedSec();
+  if (run.distance > 0 && el > 0) {
+    saveRecord({
+      date: new Date().toISOString(),
+      distance: Math.round(run.distance),             // m
+      duration: Math.round(el),                       // 초
+      avgPace: Math.round(el / (run.distance / 1000)),// 초/km
+      targetPace: run.targetSec,                      // 초/km
+    });
+  } else {
+    alert('이동 거리가 없어 기록을 저장하지 않았습니다.');
+  }
+
+  $('run').classList.add('hidden');
+  $('setup').classList.remove('hidden');
+  renderRecords();
+}
+
+$('startBtn').addEventListener('click', startRun);
+$('stopBtn').addEventListener('click', stopRun);
+
+// ===== 기록 (localStorage) =====
+function loadRecords(){
+  try { return JSON.parse(localStorage.getItem(RECORDS_KEY)) || []; } catch (e) { return []; }
+}
+function saveRecord(rec){
+  const list = loadRecords();
+  list.unshift(rec);
+  try { localStorage.setItem(RECORDS_KEY, JSON.stringify(list)); }
+  catch (e) { alert('기록 저장 실패: ' + e.message); }
+}
+function deleteRecord(i){
+  if (!confirm('이 기록을 삭제할까요?')) return;
+  const list = loadRecords();
+  list.splice(i, 1);
+  localStorage.setItem(RECORDS_KEY, JSON.stringify(list));
+  renderRecords();
+}
+function renderRecords(){
+  const ul = $('records');
+  const list = loadRecords();
+  ul.innerHTML = '';
+  if (!list.length) {
+    ul.innerHTML = '<li class="empty">아직 기록이 없습니다.</li>';
+    return;
+  }
+  list.forEach((r, i) => {
+    const d = new Date(r.date);
+    const dateText = d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'short', day: 'numeric', weekday: 'short' }) +
+                     ' ' + d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    const diff = r.avgPace - r.targetPace;
+    const diffCls = diff <= 0 ? 'good' : 'bad';
+    const diffText = diff === 0 ? '목표 달성' : `${Math.abs(diff)}초 ${diff < 0 ? '빠름' : '느림'}`;
+
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="rec-main">
+        <div class="rec-date">${dateText}</div>
+        <div class="rec-stat">${(r.distance / 1000).toFixed(2)}km · ${fmtTime(r.duration)} · ${fmtPace(r.avgPace)}/km</div>
+        <div class="rec-pace">목표 ${fmtPace(r.targetPace)} → <span class="${diffCls}">${diffText}</span></div>
+      </div>`;
+    const del = document.createElement('button');
+    del.className = 'del';
+    del.textContent = '✕';
+    del.setAttribute('aria-label', '기록 삭제');
+    del.addEventListener('click', () => deleteRecord(i));
+    li.appendChild(del);
+    ul.appendChild(li);
+  });
+}
+
+// 실수로 페이지를 닫는 것 방지
+window.addEventListener('beforeunload', e => {
+  if (run.active) { e.preventDefault(); e.returnValue = ''; }
+});
+
+loadSettings();
+renderRecords();
+</script>
+</body>
+</html>
