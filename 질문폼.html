@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>질문 폼</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    background: #f3f4f8; color: #222;
+  }
+  .screen { display: none; min-height: 100vh; padding: 24px 16px; }
+  .screen.active { display: block; }
+  .card {
+    max-width: 520px; margin: 0 auto; background: #fff; border-radius: 16px;
+    padding: 28px 22px; box-shadow: 0 4px 20px rgba(0,0,0,.06);
+  }
+  label.q { display: block; font-weight: 700; font-size: 17px; margin: 18px 0 8px; }
+  textarea, input[type=text] {
+    width: 100%; padding: 12px; border: 1px solid #d4d7e0; border-radius: 10px;
+    font-size: 15px; font-family: inherit; resize: vertical;
+  }
+  textarea { min-height: 90px; }
+  textarea:focus, input:focus { outline: 2px solid #5b6cff; border-color: transparent; }
+  .agree {
+    margin-top: 22px; padding: 14px; background: #f7f8fb; border-radius: 10px;
+    font-size: 13px; color: #555; line-height: 1.5;
+  }
+  .agree label { display: flex; gap: 8px; align-items: flex-start; margin-top: 8px; font-weight: 600; color: #333; }
+  button {
+    border: none; border-radius: 10px; padding: 14px; font-size: 16px; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .primary { width: 100%; margin-top: 20px; background: #5b6cff; color: #fff; }
+  .primary:disabled { background: #b8bfe8; cursor: not-allowed; }
+  .secondary { background: #e7e9f0; color: #333; }
+
+  /* 팝업 */
+  .modal-bg {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    align-items: center; justify-content: center; padding: 16px; z-index: 10;
+  }
+  .modal-bg.show { display: flex; }
+  .modal { background: #fff; border-radius: 16px; padding: 24px 20px; width: 100%; max-width: 440px; }
+  .modal h3 { margin: 0 0 14px; }
+  .modal .qa { margin-bottom: 14px; }
+  .modal .qa b { display: block; font-size: 14px; color: #5b6cff; margin-bottom: 4px; }
+  .modal .qa div { background: #f7f8fb; padding: 10px; border-radius: 8px; white-space: pre-wrap; word-break: break-word; }
+  .modal .ask { text-align: center; margin: 18px 0 4px; color: #444; }
+  .modal .btns { display: flex; gap: 8px; margin-top: 12px; }
+  .modal .btns button { flex: 1; }
+  .modal .btns .primary { margin-top: 0; }
+
+  /* 로딩 */
+  #loading { background: #fff; text-align: center; }
+  #loading .wrap {
+    max-width: 520px; margin: 0 auto; min-height: calc(100vh - 48px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  #loadTitle { font-size: 26px; font-weight: 800; margin: 0 0 28px; white-space: pre-wrap; }
+  .spinner {
+    width: 64px; height: 64px; border: 6px solid #e3e6f0; border-top-color: #5b6cff;
+    border-radius: 50%; animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  #loadSub { font-size: 16px; color: #666; margin: 28px 0 0; white-space: pre-wrap; }
+  #loadWarn {
+    margin-top: auto; padding-top: 40px; font-size: 13px; color: #999; line-height: 1.6; white-space: pre-wrap;
+  }
+
+  /* 관리자 */
+  #admin h2 { margin-top: 0; }
+  #admin h4 { margin: 26px 0 6px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+  #admin .field { margin-bottom: 12px; }
+  #admin .field span { display: block; font-size: 13px; color: #666; margin-bottom: 4px; }
+  #admin textarea { min-height: 60px; }
+  .resp { background: #f7f8fb; border-radius: 10px; padding: 12px; margin-bottom: 10px; font-size: 14px; }
+  .resp .t { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .resp p { margin: 4px 0; white-space: pre-wrap; word-break: break-word; }
+  .row { display: flex; gap: 8px; }
+  .row button { flex: 1; }
+  .danger { background: #ffe3e3; color: #c0392b; }
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #333; color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 14px;
+    opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- 1. 질문 화면 -->
+<section id="form" class="screen active">
+  <div class="card">
+    <label class="q" id="q1Label"></label>
+    <textarea id="a1"></textarea>
+
+    <label class="q" id="q2Label"></label>
+    <textarea id="a2"></textarea>
+
+    <div class="agree">
+      <div id="agreeText"></div>
+      <label><input type="checkbox" id="agreeChk"> <span id="agreeLabel"></span></label>
+    </div>
+
+    <button class="primary" id="submitBtn" disabled>제출</button>
+  </div>
+</section>
+
+<!-- 2. 확인 팝업 -->
+<div class="modal-bg" id="confirmModal">
+  <div class="modal">
+    <h3>입력 내용 확인</h3>
+    <div class="qa"><b id="cQ1"></b><div id="cA1"></div></div>
+    <div class="qa"><b id="cQ2"></b><div id="cA2"></div></div>
+    <p class="ask">제대로 입력한 게 맞나요?</p>
+    <div class="btns">
+      <button class="secondary" id="backBtn">수정하기</button>
+      <button class="primary" id="okBtn">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. 로딩 화면 -->
+<section id="loading" class="screen">
+  <div class="wrap">
+    <h1 id="loadTitle"></h1>
+    <div class="spinner"></div>
+    <p id="loadSub"></p>
+    <div id="loadWarn"></div>
+  </div>
+</section>
+
+<!-- 4. 관리자 모드 -->
+<section id="admin" class="screen">
+  <div class="card">
+    <h2>🔧 관리자 모드</h2>
+
+    <h4>질문 화면</h4>
+    <div class="field"><span>질문 1</span><input type="text" data-key="q1"></div>
+    <div class="field"><span>질문 1 답장란 도움말</span><input type="text" data-key="p1"></div>
+    <div class="field"><span>질문 2</span><input type="text" data-key="q2"></div>
+    <div class="field"><span>질문 2 답장란 도움말</span><input type="text" data-key="p2"></div>
+    <div class="field"><span>정보 수집 동의 안내문</span><textarea data-key="agreeText"></textarea></div>
+    <div class="field"><span>동의 체크 문구</span><input type="text" data-key="agreeLabel"></div>
+
+    <h4>로딩 화면</h4>
+    <div class="field"><span>위쪽 글자 (제목)</span><input type="text" data-key="loadTitle"></div>
+    <div class="field"><span>아래쪽 글자 (소제목)</span><input type="text" data-key="loadSub"></div>
+    <div class="field"><span>맨 아래 경고 문구 (본문)</span><textarea data-key="loadWarn"></textarea></div>
+
+    <div class="row">
+      <button class="secondary" id="resetBtn">기본값으로</button>
+      <button class="primary" id="saveBtn" style="margin-top:0">저장</button>
+    </div>
+
+    <h4>받은 대답 (<span id="respCount">0</span>)</h4>
+    <div id="respList"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="danger" id="clearBtn">대답 전체 삭제</button>
+    </div>
+
+    <button class="primary" id="exitBtn">일반 모드로 돌아가기</button>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DEFAULTS = {
+  q1: "질문1",
+  p1: "여기에 답을 적어주세요",
+  q2: "질문2",
+  p2: "여기에 답을 적어주세요",
+  agreeText: "[개인정보 수집 및 이용 동의]\n수집 항목: 위 질문에 대한 답변\n수집 목적: 설문 결과 확인\n보유 기간: 설문 종료 시까지",
+  agreeLabel: "위 내용을 확인했으며 정보 수집 및 이용에 동의합니다. (필수)",
+  loadTitle: "제출 중입니다",
+  loadSub: "잠시만 기다려 주세요...",
+  loadWarn: "※ 이 화면을 닫거나 새로고침하지 마세요."
+};
+const CFG_KEY = "qform_config", RESP_KEY = "qform_responses";
+const $ = id => document.getElementById(id);
+
+function load(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+}
+function store(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+}
+let cfg = { ...DEFAULTS, ...load(CFG_KEY, {}) };
+
+function applyConfig() {
+  $("q1Label").textContent = cfg.q1;
+  $("q2Label").textContent = cfg.q2;
+  $("a1").placeholder = cfg.p1;
+  $("a2").placeholder = cfg.p2;
+  $("agreeText").innerText = cfg.agreeText;
+  $("agreeLabel").textContent = cfg.agreeLabel;
+  $("loadTitle").textContent = cfg.loadTitle;
+  $("loadSub").textContent = cfg.loadSub;
+  $("loadWarn").textContent = cfg.loadWarn;
+}
+
+function show(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.toggle("active", s.id === id));
+  window.scrollTo(0, 0);
+}
+function toast(msg) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 1500);
+}
+
+// 제출 흐름
+$("agreeChk").addEventListener("change", e => $("submitBtn").disabled = !e.target.checked);
+$("submitBtn").addEventListener("click", () => {
+  const a1 = $("a1").value.trim(), a2 = $("a2").value.trim();
+  if (!a1 || !a2) { toast("모든 질문에 답해주세요"); return; }
+  $("cQ1").textContent = cfg.q1; $("cA1").textContent = a1;
+  $("cQ2").textContent = cfg.q2; $("cA2").textContent = a2;
+  $("confirmModal").classList.add("show");
+});
+$("backBtn").addEventListener("click", () => $("confirmModal").classList.remove("show"));
+$("okBtn").addEventListener("click", () => {
+  const list = load(RESP_KEY, []);
+  list.push({ time: new Date().toLocaleString("ko-KR"), q1: cfg.q1, a1: $("a1").value.trim(), q2: cfg.q2, a2: $("a2").value.trim() });
+  store(RESP_KEY, list);
+  $("confirmModal").classList.remove("show");
+  show("loading"); // 동글뱅이 계속 돌아감
+});
+
+// 질문1 답장란 5번 연속 탭 → 관리자 모드
+let taps = 0, tapTimer;
+$("a1").addEventListener("click", () => {
+  taps++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => taps = 0, 800);
+  if (taps >= 5) { taps = 0; $("a1").blur(); openAdmin(); }
+});
+
+// 관리자 모드
+function openAdmin() {
+  document.querySelectorAll("#admin [data-key]").forEach(el => el.value = cfg[el.dataset.key]);
+  renderResponses();
+  show("admin");
+}
+function renderResponses() {
+  const list = load(RESP_KEY, []);
+  $("respCount").textContent = list.length;
+  const box = $("respList");
+  box.innerHTML = "";
+  if (!list.length) { box.innerHTML = '<p style="color:#999;font-size:14px">아직 받은 대답이 없어요.</p>'; return; }
+  list.slice().reverse().forEach(r => {
+    const d = document.createElement("div");
+    d.className = "resp";
+    const t = document.createElement("div"); t.className = "t"; t.textContent = r.time;
+    const p1 = document.createElement("p"); p1.textContent = `${r.q1}: ${r.a1}`;
+    const p2 = document.createElement("p"); p2.textContent = `${r.q2}: ${r.a2}`;
+    d.append(t, p1, p2);
+    box.appendChild(d);
+  });
+}
+$("saveBtn").addEventListener("click", () => {
+  document.querySelectorAll("#admin [data-key]").forEach(el => cfg[el.dataset.key] = el.value);
+  store(CFG_KEY, cfg); applyConfig(); toast("저장했어요");
+});
+$("resetBtn").addEventListener("click", () => {
+  if (!confirm("모든 문구를 기본값으로 되돌릴까요?")) return;
+  cfg = { ...DEFAULTS }; store(CFG_KEY, cfg); applyConfig(); openAdmin(); toast("기본값으로 되돌렸어요");
+});
+$("clearBtn").addEventListener("click", () => {
+  if (!confirm("받은 대답을 모두 삭제할까요?")) return;
+  store(RESP_KEY, []); renderResponses();
+});
+$("exitBtn").addEventListener("click", () => {
+  $("a1").value = ""; $("a2").value = ""; $("agreeChk").checked = false; $("submitBtn").disabled = true;
+  show("form");
+});
+
+applyConfig();
+</script>
+</body>
+</html>
