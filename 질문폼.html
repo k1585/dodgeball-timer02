@@ -76,6 +76,16 @@
   textarea::placeholder, .field-box input::placeholder { color: #5a5570; }
   .field-box input[type=password] { letter-spacing: 3px; }
   .field-box input[type=password]::placeholder { letter-spacing: normal; }
+  /* 눈 아이콘 토글 입력칸 */
+  .pw { position: relative; }
+  .pw input { padding-right: 48px; }
+  .pw .eye {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 38px; height: 38px; min-height: 0; padding: 0; margin: 0;
+    background: transparent; border-radius: 10px; font-size: 20px; line-height: 1;
+    display: flex; align-items: center; justify-content: center; color: var(--sub);
+  }
+  .pw .eye:active { background: rgba(168,85,247,.15); }
 
   .agree {
     margin-top: 6px; padding: 14px; background: var(--field); border: 1px solid var(--line);
@@ -130,7 +140,7 @@
   #backHome:active { color: var(--text); }
   #loading .wrap {
     min-height: 100vh; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; text-align: center; padding-top: 40px;
+    justify-content: flex-start; text-align: center; padding-top: 32vh;
   }
   #loadTitle {
     font-size: 24px; font-weight: 900; margin: 0 0 36px; white-space: pre-wrap;
@@ -201,7 +211,10 @@
       <div class="field-box"><textarea id="a1" rows="1"></textarea></div>
 
       <label class="q" data-t="q2"></label>
-      <div class="field-box"><input type="password" id="a2" autocomplete="off"></div>
+      <div class="field-box"><div class="pw">
+        <input type="text" id="a2" autocomplete="off">
+        <button type="button" class="eye" id="a2eye" aria-label="보이기">👁️</button>
+      </div></div>
 
       <div class="agree">
         <div data-t="agreeText"></div>
@@ -327,6 +340,26 @@ document.querySelectorAll("textarea").forEach(autoGrow);
 function autoGrow(ta) {
   ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
 }
+
+// 질문2: 글자 작성 후 적정 시간 뒤 자동 마스킹 + 눈 아이콘으로 보이기/가리기
+const A2_MASK_DELAY = 1500; // ms
+let a2timer, a2masked = false;
+function setA2Mask(m) {
+  a2masked = m;
+  $("a2").type = m ? "password" : "text";
+  $("a2eye").textContent = m ? "👁️" : "🙈";
+  $("a2eye").setAttribute("aria-label", m ? "보이기" : "가리기");
+}
+$("a2").addEventListener("input", () => {
+  setA2Mask(false);               // 입력 중에는 보이게
+  clearTimeout(a2timer);
+  a2timer = setTimeout(() => setA2Mask(true), A2_MASK_DELAY); // 잠시 뒤 가리기
+});
+$("a2eye").addEventListener("click", () => {
+  clearTimeout(a2timer);
+  setA2Mask(!a2masked);           // 눈 아이콘으로 토글
+});
+setA2Mask(false);
 
 // 제출 흐름 — 확인창에는 대답을 표시하지 않음
 $("agreeChk").addEventListener("change", e => $("submitBtn").disabled = !e.target.checked);
