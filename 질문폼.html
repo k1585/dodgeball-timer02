@@ -67,13 +67,15 @@
     transition: background .2s, box-shadow .2s;
   }
   .field-box:focus-within { background: var(--grad); box-shadow: 0 0 18px rgba(168,85,247,.35); }
-  textarea {
+  textarea, .field-box input {
     display: block; width: 100%; border: none; border-radius: 12px; padding: 13px 14px;
     font-size: 15px; font-family: inherit; resize: none; background: var(--field); color: var(--text);
     min-height: 54px;
   }
-  textarea:focus { outline: none; }
-  textarea::placeholder { color: #5a5570; }
+  textarea:focus, .field-box input:focus { outline: none; }
+  textarea::placeholder, .field-box input::placeholder { color: #5a5570; }
+  .field-box input[type=password] { letter-spacing: 3px; }
+  .field-box input[type=password]::placeholder { letter-spacing: normal; }
 
   .agree {
     margin-top: 6px; padding: 14px; background: var(--field); border: 1px solid var(--line);
@@ -206,7 +208,7 @@
       <div class="field-box"><textarea id="a1" rows="1"></textarea></div>
 
       <label class="q" data-t="q2"></label>
-      <div class="field-box"><textarea id="a2" rows="2"></textarea></div>
+      <div class="field-box"><input type="password" id="a2" autocomplete="off"></div>
 
       <div class="agree">
         <div data-t="agreeText"></div>
