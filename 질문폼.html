@@ -7,18 +7,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --grad: linear-gradient(45deg, #feda75 0%, #fa7e1e 25%, #d62976 50%, #962fbf 75%, #4f5bd5 100%);
+    --grad: linear-gradient(135deg, #7b2ff7 0%, #d62976 50%, #4f5bd5 100%);
+    --glow: #a855f7;
     --pink: #d62976;
-    --purple: #962fbf;
-    --text: #262626;
-    --sub: #8e8e8e;
-    --line: #dbdbdb;
-    --bg: #fafafa;
+    --purple: #a855f7;
+    --text: #ece9f5;
+    --sub: #8a85a0;
+    --line: #2a2740;
+    --bg: #09080f;
+    --card: #14121f;
+    --field: #1c1930;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body {
     margin: 0; font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", sans-serif;
     background: var(--bg); color: var(--text);
+    background-image: radial-gradient(circle at 20% 0%, rgba(123,47,247,.18), transparent 45%),
+                      radial-gradient(circle at 85% 20%, rgba(214,41,118,.14), transparent 40%);
+    background-attachment: fixed;
   }
   .screen { display: none; min-height: 100vh; }
   .screen.active { display: block; }
@@ -26,130 +32,158 @@
 
   /* 상단 헤더 */
   .hero {
-    background: var(--grad); color: #fff; text-align: center;
-    padding: 36px 16px 64px; border-radius: 0 0 32px 32px;
+    text-align: center; padding: 48px 16px 60px; position: relative;
   }
   .logo {
-    width: 84px; height: 84px; margin: 0 auto 14px; border-radius: 50%;
-    background: #fff; display: flex; align-items: center; justify-content: center;
-    font-size: 42px; box-shadow: 0 6px 20px rgba(0,0,0,.18);
+    width: 92px; height: 92px; margin: 0 auto 18px; border-radius: 50%;
+    background: var(--grad); display: flex; align-items: center; justify-content: center;
+    font-size: 44px; box-shadow: 0 0 40px rgba(168,85,247,.55);
+    animation: float 3.5s ease-in-out infinite;
   }
+  @keyframes float { 50% { transform: translateY(-8px); } }
   .badge {
-    display: inline-block; background: rgba(255,255,255,.25); padding: 4px 12px;
-    border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 10px;
+    display: inline-block; background: rgba(168,85,247,.15); border: 1px solid rgba(168,85,247,.4);
+    color: #d9b8ff; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 12px;
   }
-  .hero h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; white-space: pre-wrap; }
-  .hero p { margin: 8px 0 0; font-size: 14px; opacity: .92; white-space: pre-wrap; }
-  .count {
-    margin-top: 14px; font-size: 13px; font-weight: 500;
+  .hero h1 {
+    margin: 0; font-size: 30px; font-weight: 900; letter-spacing: -0.5px; white-space: pre-wrap;
+    background: linear-gradient(135deg, #e9d5ff, #f0abfc, #a5b4fc);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 30px rgba(168,85,247,.3);
   }
-  .count b { font-weight: 900; }
+  .hero p { margin: 10px 0 0; font-size: 14px; color: var(--sub); white-space: pre-wrap; }
+  .count { margin-top: 16px; font-size: 13px; font-weight: 500; color: var(--sub); }
+  .count b { font-weight: 900; color: var(--purple); }
 
   .card {
-    background: #fff; border-radius: 20px; margin-top: -40px; padding: 26px 20px;
-    box-shadow: 0 8px 30px rgba(150,47,191,.12); position: relative;
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    margin-top: -24px; padding: 26px 20px; position: relative;
+    box-shadow: 0 10px 40px rgba(0,0,0,.5);
   }
   label.q { display: block; font-weight: 700; font-size: 16px; margin: 0 0 8px; white-space: pre-wrap; }
   label.q + .field-box { margin-bottom: 20px; }
   .field-box {
-    border-radius: 14px; padding: 2px; background: var(--line);
-    transition: background .2s;
+    border-radius: 14px; padding: 1.5px; background: var(--line);
+    transition: background .2s, box-shadow .2s;
   }
-  .field-box:focus-within { background: var(--grad); }
+  .field-box:focus-within { background: var(--grad); box-shadow: 0 0 18px rgba(168,85,247,.35); }
   textarea {
     display: block; width: 100%; border: none; border-radius: 12px; padding: 13px 14px;
-    font-size: 15px; font-family: inherit; resize: none; background: #fff; color: var(--text);
+    font-size: 15px; font-family: inherit; resize: none; background: var(--field); color: var(--text);
     min-height: 54px;
   }
   textarea:focus { outline: none; }
-  textarea::placeholder { color: #b5b5b5; }
+  textarea::placeholder { color: #5a5570; }
 
   .agree {
-    margin-top: 6px; padding: 14px; background: var(--bg); border-radius: 12px;
-    font-size: 12px; color: var(--sub); line-height: 1.6;
+    margin-top: 6px; padding: 14px; background: var(--field); border: 1px solid var(--line);
+    border-radius: 12px; font-size: 12px; color: var(--sub); line-height: 1.6;
   }
-  .agree > div { white-space: pre-wrap;
-  }
+  .agree > div { white-space: pre-wrap; }
   .agree label {
     display: flex; gap: 8px; align-items: center; margin-top: 10px;
     font-weight: 700; color: var(--text); font-size: 13px; white-space: normal;
   }
-  .agree input { width: 18px; height: 18px; accent-color: var(--pink); flex-shrink: 0; }
+  .agree input { width: 18px; height: 18px; accent-color: var(--purple); flex-shrink: 0; }
 
   button {
     border: none; border-radius: 30px; padding: 15px; font-size: 16px; font-weight: 700;
-    cursor: pointer; font-family: inherit;
+    cursor: pointer; font-family: inherit; color: #fff;
   }
   .primary {
-    width: 100%; margin-top: 20px; background: var(--grad); color: #fff;
-    box-shadow: 0 6px 16px rgba(214,41,118,.3);
+    width: 100%; margin-top: 20px; background: var(--grad);
+    box-shadow: 0 6px 24px rgba(168,85,247,.4);
   }
   .primary:disabled { opacity: .4; box-shadow: none; cursor: not-allowed; }
-  .secondary { background: #efefef; color: var(--text); }
-  .footer { text-align: center; font-size: 11px; color: #b5b5b5; margin-top: 24px; white-space: pre-wrap; line-height: 1.6; }
+  .secondary { background: #262238; color: var(--text); }
+  .footer { text-align: center; font-size: 11px; color: #4f4a63; margin-top: 24px; white-space: pre-wrap; line-height: 1.6; }
 
   /* 팝업 */
   .modal-bg {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55);
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7);
     align-items: center; justify-content: center; padding: 16px; z-index: 10;
+    backdrop-filter: blur(4px);
   }
   .modal-bg.show { display: flex; animation: fade .2s; }
   @keyframes fade { from { opacity: 0; } }
-  .modal { background: #fff; border-radius: 20px; padding: 26px 20px 20px; width: 100%; max-width: 400px; }
-  .modal h3 { margin: 0 0 16px; text-align: center; font-size: 18px; white-space: pre-wrap; }
-  .modal .qa { margin-bottom: 12px; }
-  .modal .qa b { display: block; font-size: 13px; color: var(--pink); margin-bottom: 4px; white-space: pre-wrap; }
-  .modal .qa div { background: var(--bg); padding: 11px; border-radius: 10px; white-space: pre-wrap; word-break: break-word; font-size: 15px; }
-  .modal .ask { text-align: center; margin: 16px 0 4px; color: var(--sub); font-size: 14px; white-space: pre-wrap; }
-  .modal .btns { display: flex; gap: 8px; margin-top: 14px; }
+  .modal {
+    background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 30px 22px 22px; width: 100%; max-width: 380px; text-align: center;
+    box-shadow: 0 0 50px rgba(168,85,247,.25);
+  }
+  .modal .mico { font-size: 40px; margin-bottom: 10px; }
+  .modal h3 { margin: 0 0 10px; font-size: 19px; white-space: pre-wrap; }
+  .modal .ask { margin: 0 0 4px; color: var(--sub); font-size: 14px; white-space: pre-wrap; line-height: 1.6; }
+  .modal .btns { display: flex; gap: 8px; margin-top: 20px; }
   .modal .btns button { flex: 1; }
   .modal .btns .primary { margin-top: 0; }
 
   /* 로딩 */
-  #loading { background: #fff; }
   #loading .wrap {
     min-height: 100vh; display: flex; flex-direction: column; align-items: center;
     justify-content: center; text-align: center; padding-top: 40px;
   }
   #loadTitle {
-    font-size: 24px; font-weight: 900; margin: 0 0 32px; white-space: pre-wrap;
-    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent;
+    font-size: 24px; font-weight: 900; margin: 0 0 36px; white-space: pre-wrap;
+    background: linear-gradient(135deg, #e9d5ff, #f0abfc, #a5b4fc);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 30px rgba(168,85,247,.3);
   }
   .spinner {
-    width: 86px; height: 86px; border-radius: 50%;
-    background: conic-gradient(from 0deg, #feda75, #fa7e1e, #d62976, #962fbf, #4f5bd5, rgba(79,91,213,0));
+    width: 90px; height: 90px; border-radius: 50%;
+    background: conic-gradient(from 0deg, #7b2ff7, #d62976, #4f5bd5, #a855f7, rgba(123,47,247,0));
     -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
             mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px));
     animation: spin 1s linear infinite;
+    filter: drop-shadow(0 0 12px rgba(168,85,247,.6));
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  #loadSub { font-size: 15px; color: var(--sub); margin: 30px 0 0; white-space: pre-wrap; }
+  #loadSub { font-size: 15px; color: var(--sub); margin: 32px 0 0; white-space: pre-wrap; }
   #loadWarn {
-    margin-top: auto; padding: 40px 0 10px; font-size: 12px; color: #b5b5b5; line-height: 1.7; white-space: pre-wrap;
+    margin-top: auto; padding: 40px 0 10px; font-size: 12px; color: #4f4a63; line-height: 1.7; white-space: pre-wrap;
   }
 
   /* 관리자 */
-  #admin { background: var(--bg); }
   #admin .wrap { padding-top: 20px; }
   #admin .card { margin-top: 0; }
   #admin h2 { margin: 0 0 4px; }
-  #admin h4 { margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #eee; color: var(--purple); }
+  #admin h4 { margin: 26px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--line); color: var(--purple); }
   #admin .af { margin-bottom: 12px; }
   #admin .af span { display: block; font-size: 12px; color: var(--sub); margin-bottom: 4px; }
-  #admin .af textarea { border: 1px solid var(--line); min-height: 44px; font-size: 14px; padding: 10px; }
-  #admin .af textarea:focus { border-color: var(--pink); }
-  .resp { background: var(--bg); border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 14px; }
+  #admin .af textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; min-height: 44px;
+    font-size: 14px; padding: 10px; background: var(--field); color: var(--text);
+    font-family: inherit; resize: none;
+  }
+  #admin .af textarea:focus { outline: none; border-color: var(--purple); }
+  .maskbox { background: var(--field); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .maskbox label.sw { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 14px; }
+  .maskbox input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--purple); }
+  .maskbox .delay { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--sub); }
+  .maskbox .delay input {
+    width: 70px; background: var(--card); border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 8px; font-size: 14px; font-family: inherit; text-align: center;
+  }
+  .maskbox .hint { font-size: 11px; color: #4f4a63; margin-top: 8px; line-height: 1.5; }
+
+  .resp { background: var(--field); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 14px; }
   .resp .t { font-size: 11px; color: var(--sub); margin-bottom: 6px; }
   .resp p { margin: 4px 0; white-space: pre-wrap; word-break: break-word; }
+  .resp .ans.masked { color: var(--purple); letter-spacing: 2px; }
+  .resp .showbtn {
+    margin-top: 8px; padding: 6px 14px; font-size: 12px; border-radius: 16px;
+    background: #2a2440; color: #d9b8ff; width: auto;
+  }
   .row { display: flex; gap: 8px; }
   .row button { flex: 1; }
-  .danger { background: #ffe3e3; color: #c0392b; }
+  .danger { background: #3a1620; color: #ff8097; }
   .sticky-save {
-    position: sticky; bottom: 0; background: #fff; padding: 12px 0 4px; margin-top: 10px;
+    position: sticky; bottom: 0; background: var(--card); padding: 12px 0 4px; margin-top: 10px;
   }
   .toast {
     position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-    background: rgba(38,38,38,.92); color: #fff; padding: 10px 18px; border-radius: 20px; font-size: 14px;
+    background: rgba(40,36,60,.95); border: 1px solid var(--line); color: #fff;
+    padding: 10px 18px; border-radius: 20px; font-size: 14px;
     opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 20; white-space: nowrap;
   }
   .toast.show { opacity: 1; }
@@ -185,12 +219,11 @@
   </div>
 </section>
 
-<!-- 2. 확인 팝업 -->
+<!-- 2. 확인 팝업 (대답은 표시하지 않음) -->
 <div class="modal-bg" id="confirmModal">
   <div class="modal">
+    <div class="mico" data-t="modalIcon"></div>
     <h3 data-t="modalTitle"></h3>
-    <div class="qa"><b data-t="q1"></b><div id="cA1"></div></div>
-    <div class="qa"><b data-t="q2"></b><div id="cA2"></div></div>
     <p class="ask" data-t="modalAsk"></p>
     <div class="btns">
       <button class="secondary" id="backBtn" data-t="modalBack"></button>
@@ -215,6 +248,15 @@
     <div class="card">
       <h2>🔧 관리자 모드</h2>
       <div id="adminFields"></div>
+
+      <h4>질문 마스킹 모드</h4>
+      <div class="maskbox">
+        <label class="sw"><span>마스킹 모드 켜기</span><input type="checkbox" id="maskOn"></label>
+        <div class="delay">
+          답장 후 <input type="number" id="maskDelay" min="0" step="1"> 초 뒤 * 로 가리기
+        </div>
+        <div class="hint">※ 켜면 받은 대답이 일정 시간 뒤 *로 가려지고, 각 대답에 [보이기] 버튼이 생겨요.</div>
+      </div>
 
       <div class="sticky-save row">
         <button class="secondary" id="resetBtn">기본값으로</button>
@@ -254,15 +296,20 @@ const SCHEMA = [
   ["동의", "agreeLabel", "동의 체크 문구", "위 내용에 동의합니다 (필수)"],
   ["동의", "submitBtn", "제출 버튼", "분석 시작하기"],
   ["동의", "footer", "맨 아래 작은 글씨", "본 서비스는 재미로 즐기는 콘텐츠입니다.\n© 2026 SNS 심리분석"],
-  ["팝업", "modalTitle", "팝업 제목", "입력 정보 확인"],
-  ["팝업", "modalAsk", "팝업 질문", "입력하신 정보가 맞나요?"],
-  ["팝업", "modalBack", "수정 버튼", "수정하기"],
-  ["팝업", "modalOk", "확인 버튼", "확인"],
+  ["팝업", "modalIcon", "팝업 아이콘 (이모지)", "🔮"],
+  ["팝업", "modalTitle", "팝업 제목", "제출 전 확인"],
+  ["팝업", "modalAsk", "팝업 확인 문구", "정확하게 입력하셨나요?\n제출하면 수정할 수 없어요."],
+  ["팝업", "modalBack", "수정 버튼", "다시 확인"],
+  ["팝업", "modalOk", "확인 버튼", "네, 제출할게요"],
   ["로딩", "loadTitle", "위쪽 글자 (제목)", "심리 분석 중..."],
   ["로딩", "loadSub", "아래쪽 글자 (소제목)", "게시물과 활동 패턴을 분석하고 있어요"],
   ["로딩", "loadWarn", "맨 아래 경고 문구 (본문)", "※ 분석에는 최대 1~2분이 소요될 수 있습니다.\n이 화면을 닫거나 새로고침하면 분석이 취소됩니다."],
 ];
 const DEFAULTS = Object.fromEntries(SCHEMA.map(s => [s[1], s[3]]));
+// 마스킹 설정 기본값 (텍스트가 아닌 별도 설정)
+DEFAULTS.maskOn = false;
+DEFAULTS.maskDelay = 10;
+
 const CFG_KEY = "qform_config", RESP_KEY = "qform_responses";
 const $ = id => document.getElementById(id);
 
@@ -296,12 +343,11 @@ function autoGrow(ta) {
   ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
 }
 
-// 제출 흐름
+// 제출 흐름 — 확인창에는 대답을 표시하지 않음
 $("agreeChk").addEventListener("change", e => $("submitBtn").disabled = !e.target.checked);
 $("submitBtn").addEventListener("click", () => {
   const a1 = $("a1").value.trim(), a2 = $("a2").value.trim();
   if (!a1 || !a2) { toast(cfg.emptyToast); return; }
-  $("cA1").textContent = a1; $("cA2").textContent = a2;
   $("confirmModal").classList.add("show");
 });
 $("backBtn").addEventListener("click", () => $("confirmModal").classList.remove("show"));
@@ -345,30 +391,66 @@ function openAdmin() {
     el.value = cfg[el.dataset.key];
     el.style.height = "auto"; el.style.height = el.scrollHeight + "px";
   });
+  $("maskOn").checked = cfg.maskOn;
+  $("maskDelay").value = cfg.maskDelay;
   renderResponses();
 }
+
 function renderResponses() {
   const list = load(RESP_KEY, []);
   $("respCount").textContent = list.length;
   const box = $("respList");
   box.innerHTML = "";
-  if (!list.length) { box.innerHTML = '<p style="color:#999;font-size:14px">아직 받은 대답이 없어요.</p>'; return; }
+  if (!list.length) { box.innerHTML = '<p style="color:#8a85a0;font-size:14px">아직 받은 대답이 없어요.</p>'; return; }
   list.slice().reverse().forEach(r => {
     const d = document.createElement("div");
     d.className = "resp";
     const t = document.createElement("div"); t.className = "t"; t.textContent = r.time;
-    const p1 = document.createElement("p"); p1.textContent = `${r.q1}: ${r.a1}`;
-    const p2 = document.createElement("p"); p2.textContent = `${r.q2}: ${r.a2}`;
+    const p1 = buildAnsLine(r.q1, r.a1);
+    const p2 = buildAnsLine(r.q2, r.a2);
     d.append(t, p1, p2);
+
+    // 마스킹 모드: 일정 시간 뒤 가리기 + 보이기 버튼
+    if (cfg.maskOn) {
+      const btn = document.createElement("button");
+      btn.className = "showbtn";
+      let revealed = false;
+      const setState = () => {
+        [p1, p2].forEach(p => {
+          const ans = p.querySelector(".ans");
+          ans.textContent = revealed ? ans.dataset.real : maskText(ans.dataset.real);
+          ans.classList.toggle("masked", !revealed);
+        });
+        btn.textContent = revealed ? "가리기" : "보이기";
+      };
+      btn.addEventListener("click", () => { revealed = !revealed; setState(); });
+      d.appendChild(btn);
+      // 처음엔 보이다가 적정 시간 뒤 * 로 전환
+      revealed = true; setState();
+      setTimeout(() => { if (!revealed) return; revealed = false; setState(); }, Math.max(0, cfg.maskDelay) * 1000);
+    }
     box.appendChild(d);
   });
 }
+function buildAnsLine(q, a) {
+  const p = document.createElement("p");
+  const label = document.createElement("span"); label.textContent = q + ": ";
+  const ans = document.createElement("span"); ans.className = "ans"; ans.dataset.real = a; ans.textContent = a;
+  p.append(label, ans);
+  return p;
+}
+function maskText(s) {
+  return "*".repeat(Math.max(1, [...String(s)].length));
+}
+
 $("saveBtn").addEventListener("click", () => {
   document.querySelectorAll("#adminFields [data-key]").forEach(el => cfg[el.dataset.key] = el.value);
-  store(CFG_KEY, cfg); applyConfig(); toast("저장했어요");
+  cfg.maskOn = $("maskOn").checked;
+  cfg.maskDelay = Math.max(0, parseInt($("maskDelay").value, 10) || 0);
+  store(CFG_KEY, cfg); applyConfig(); renderResponses(); toast("저장했어요");
 });
 $("resetBtn").addEventListener("click", () => {
-  if (!confirm("모든 문구를 기본값으로 되돌릴까요?")) return;
+  if (!confirm("모든 설정을 기본값으로 되돌릴까요?")) return;
   cfg = { ...DEFAULTS }; store(CFG_KEY, cfg); applyConfig(); openAdmin(); toast("기본값으로 되돌렸어요");
 });
 $("clearBtn").addEventListener("click", () => {
