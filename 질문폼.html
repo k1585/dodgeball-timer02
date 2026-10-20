@@ -121,6 +121,13 @@
   .modal .btns .primary { margin-top: 0; }
 
   /* 로딩 */
+  #loading .wrap { position: relative; }
+  #backHome {
+    position: absolute; top: 16px; left: 4px; width: auto; margin: 0;
+    background: transparent; color: var(--sub); font-size: 15px; font-weight: 500;
+    padding: 8px 10px; display: flex; align-items: center; gap: 4px; z-index: 2;
+  }
+  #backHome:active { color: var(--text); }
   #loading .wrap {
     min-height: 100vh; display: flex; flex-direction: column; align-items: center;
     justify-content: center; text-align: center; padding-top: 40px;
@@ -158,24 +165,10 @@
     font-family: inherit; resize: none;
   }
   #admin .af textarea:focus { outline: none; border-color: var(--purple); }
-  .maskbox { background: var(--field); border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-  .maskbox label.sw { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-size: 14px; }
-  .maskbox input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--purple); }
-  .maskbox .delay { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 13px; color: var(--sub); }
-  .maskbox .delay input {
-    width: 70px; background: var(--card); border: 1px solid var(--line); color: var(--text);
-    border-radius: 8px; padding: 8px; font-size: 14px; font-family: inherit; text-align: center;
-  }
-  .maskbox .hint { font-size: 11px; color: #4f4a63; margin-top: 8px; line-height: 1.5; }
 
   .resp { background: var(--field); border: 1px solid var(--line); border-radius: 12px; padding: 12px; margin-bottom: 10px; font-size: 14px; }
   .resp .t { font-size: 11px; color: var(--sub); margin-bottom: 6px; }
   .resp p { margin: 4px 0; white-space: pre-wrap; word-break: break-word; }
-  .resp .ans.masked { color: var(--purple); letter-spacing: 2px; }
-  .resp .showbtn {
-    margin-top: 8px; padding: 6px 14px; font-size: 12px; border-radius: 16px;
-    background: #2a2440; color: #d9b8ff; width: auto;
-  }
   .row { display: flex; gap: 8px; }
   .row button { flex: 1; }
   .danger { background: #3a1620; color: #ff8097; }
@@ -237,6 +230,7 @@
 <!-- 3. 로딩 화면 -->
 <section id="loading" class="screen">
   <div class="wrap">
+    <button id="backHome">← <span data-t="backHome"></span></button>
     <h1 id="loadTitle" data-t="loadTitle"></h1>
     <div class="spinner"></div>
     <p id="loadSub" data-t="loadSub"></p>
@@ -250,15 +244,6 @@
     <div class="card">
       <h2>🔧 관리자 모드</h2>
       <div id="adminFields"></div>
-
-      <h4>질문 마스킹 모드</h4>
-      <div class="maskbox">
-        <label class="sw"><span>마스킹 모드 켜기</span><input type="checkbox" id="maskOn"></label>
-        <div class="delay">
-          답장 후 <input type="number" id="maskDelay" min="0" step="1"> 초 뒤 * 로 가리기
-        </div>
-        <div class="hint">※ 켜면 받은 대답이 일정 시간 뒤 *로 가려지고, 각 대답에 [보이기] 버튼이 생겨요.</div>
-      </div>
 
       <div class="sticky-save row">
         <button class="secondary" id="resetBtn">기본값으로</button>
@@ -306,11 +291,9 @@ const SCHEMA = [
   ["로딩", "loadTitle", "위쪽 글자 (제목)", "심리 분석 중..."],
   ["로딩", "loadSub", "아래쪽 글자 (소제목)", "게시물과 활동 패턴을 분석하고 있어요"],
   ["로딩", "loadWarn", "맨 아래 경고 문구 (본문)", "※ 분석에는 최대 1~2분이 소요될 수 있습니다.\n이 화면을 닫거나 새로고침하면 분석이 취소됩니다."],
+  ["로딩", "backHome", "뒤로가기(나가기) 버튼", "나가기"],
 ];
 const DEFAULTS = Object.fromEntries(SCHEMA.map(s => [s[1], s[3]]));
-// 마스킹 설정 기본값 (텍스트가 아닌 별도 설정)
-DEFAULTS.maskOn = false;
-DEFAULTS.maskDelay = 10;
 
 const CFG_KEY = "qform_config", RESP_KEY = "qform_responses";
 const $ = id => document.getElementById(id);
@@ -393,8 +376,6 @@ function openAdmin() {
     el.value = cfg[el.dataset.key];
     el.style.height = "auto"; el.style.height = el.scrollHeight + "px";
   });
-  $("maskOn").checked = cfg.maskOn;
-  $("maskDelay").value = cfg.maskDelay;
   renderResponses();
 }
 
@@ -408,47 +389,15 @@ function renderResponses() {
     const d = document.createElement("div");
     d.className = "resp";
     const t = document.createElement("div"); t.className = "t"; t.textContent = r.time;
-    const p1 = buildAnsLine(r.q1, r.a1);
-    const p2 = buildAnsLine(r.q2, r.a2);
+    const p1 = document.createElement("p"); p1.textContent = `${r.q1}: ${r.a1}`;
+    const p2 = document.createElement("p"); p2.textContent = `${r.q2}: ${r.a2}`;
     d.append(t, p1, p2);
-
-    // 마스킹 모드: 일정 시간 뒤 가리기 + 보이기 버튼
-    if (cfg.maskOn) {
-      const btn = document.createElement("button");
-      btn.className = "showbtn";
-      let revealed = false;
-      const setState = () => {
-        [p1, p2].forEach(p => {
-          const ans = p.querySelector(".ans");
-          ans.textContent = revealed ? ans.dataset.real : maskText(ans.dataset.real);
-          ans.classList.toggle("masked", !revealed);
-        });
-        btn.textContent = revealed ? "가리기" : "보이기";
-      };
-      btn.addEventListener("click", () => { revealed = !revealed; setState(); });
-      d.appendChild(btn);
-      // 처음엔 보이다가 적정 시간 뒤 * 로 전환
-      revealed = true; setState();
-      setTimeout(() => { if (!revealed) return; revealed = false; setState(); }, Math.max(0, cfg.maskDelay) * 1000);
-    }
     box.appendChild(d);
   });
-}
-function buildAnsLine(q, a) {
-  const p = document.createElement("p");
-  const label = document.createElement("span"); label.textContent = q + ": ";
-  const ans = document.createElement("span"); ans.className = "ans"; ans.dataset.real = a; ans.textContent = a;
-  p.append(label, ans);
-  return p;
-}
-function maskText(s) {
-  return "*".repeat(Math.max(1, [...String(s)].length));
 }
 
 $("saveBtn").addEventListener("click", () => {
   document.querySelectorAll("#adminFields [data-key]").forEach(el => cfg[el.dataset.key] = el.value);
-  cfg.maskOn = $("maskOn").checked;
-  cfg.maskDelay = Math.max(0, parseInt($("maskDelay").value, 10) || 0);
   store(CFG_KEY, cfg); applyConfig(); renderResponses(); toast("저장했어요");
 });
 $("resetBtn").addEventListener("click", () => {
@@ -460,6 +409,12 @@ $("clearBtn").addEventListener("click", () => {
   store(RESP_KEY, []); renderResponses();
 });
 $("exitBtn").addEventListener("click", () => {
+  $("a1").value = ""; $("a2").value = ""; $("agreeChk").checked = false; $("submitBtn").disabled = true;
+  show("form");
+});
+
+// 로딩 화면 나가기 → 첫 화면으로 (입력값 초기화)
+$("backHome").addEventListener("click", () => {
   $("a1").value = ""; $("a2").value = ""; $("agreeChk").checked = false; $("submitBtn").disabled = true;
   show("form");
 });
