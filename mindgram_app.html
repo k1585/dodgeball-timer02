@@ -46,7 +46,7 @@
   @media (max-width: 500px) {
     body { padding: 0; }
     .phone { width: 100%; height: 100%; max-height: none; border-radius: 0; border: 0; box-shadow: none; }
-    .status, .home-bar { display: none; }
+    .home-bar { display: none; }
   }
 
   .wave {
@@ -58,11 +58,6 @@
   }
   .wave.right { transform: translateX(40%) rotate(-30deg); }
 
-  .status {
-    position: absolute; top: 18px; left: 30px; right: 28px; z-index: 5;
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 14px; font-weight: 500; color: #e8e9ee;
-  }
   .home-bar {
     position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5;
     width: 134px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.75);
@@ -79,7 +74,7 @@
   .screen.active { opacity: 1; visibility: visible; transform: none; }
 
   .back {
-    position: absolute; top: 64px; left: 22px; padding: 8px;
+    position: absolute; top: 28px; left: 18px; padding: 8px;
     background: none; border: 0; color: #e8e9ee; cursor: pointer;
   }
 
@@ -95,6 +90,7 @@
     border: 1px solid rgba(255,255,255,0.12);
     color: #f2f3f7; font-size: 16px; font-weight: 500; font-family: inherit;
     cursor: pointer; transition: filter .15s, transform .1s;
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
   .btn:hover { filter: brightness(1.15); }
   .btn:active { transform: scale(0.98); }
@@ -120,7 +116,9 @@
     font-size: 15px; font-family: inherit;
   }
   .field input::placeholder { color: var(--muted); }
-  .hint { font-size: 13px; color: #ff9b9b; height: 18px; margin-top: 10px; }
+  .hint { font-size: 13px; color: #ff9b9b; min-height: 18px; margin-top: 10px; }
+  [data-screen="login"] { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  [data-screen="login"] input { user-select: text; -webkit-user-select: text; }
 
   .icon-ring {
     width: 110px; height: 110px; border-radius: 50%;
@@ -160,6 +158,18 @@
     <symbol id="star" viewBox="0 0 40 40">
       <path d="M20 0C21.5 12 28 18.5 40 20C28 21.5 21.5 28 20 40C18.5 28 12 21.5 0 20C12 18.5 18.5 12 20 0Z" fill="url(#starGrad)"/>
     </symbol>
+    <linearGradient id="igGrad" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#feda75"/>
+      <stop offset=".3" stop-color="#fa7e1e"/>
+      <stop offset=".6" stop-color="#d62976"/>
+      <stop offset=".85" stop-color="#962fbf"/>
+      <stop offset="1" stop-color="#4f5bd5"/>
+    </linearGradient>
+    <symbol id="instagram" viewBox="0 0 48 48">
+      <rect x="3" y="3" width="42" height="42" rx="12" fill="none" stroke="url(#igGrad)" stroke-width="3.6"/>
+      <circle cx="24" cy="24" r="9.5" fill="none" stroke="url(#igGrad)" stroke-width="3.6"/>
+      <circle cx="35.5" cy="12.5" r="2.6" fill="url(#igGrad)"/>
+    </symbol>
     <symbol id="bubble" viewBox="0 0 20 20">
       <path d="M10 3c4.4 0 7.5 2.8 7.5 6.3S14.4 15.6 10 15.6c-.9 0-1.8-.1-2.6-.4L3.5 17l1-3.2C3.2 12.6 2.5 11 2.5 9.3 2.5 5.8 5.6 3 10 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
     </symbol>
@@ -172,25 +182,12 @@
 <div class="phone">
   <div class="wave" id="wave"></div>
 
-  <div class="status">
-    <span id="clock">9:41</span>
-    <svg width="66" height="16" viewBox="0 0 44 11">
-      <rect x="0" y="7" width="2.2" height="3" rx=".5" fill="#fff"/>
-      <rect x="3.2" y="5" width="2.2" height="5" rx=".5" fill="#fff"/>
-      <rect x="6.4" y="3" width="2.2" height="7" rx=".5" fill="#fff"/>
-      <rect x="9.6" y="1" width="2.2" height="9" rx=".5" fill="#fff"/>
-      <path d="M15 4.2a7 7 0 0 1 9.6 0l-1 1a5.6 5.6 0 0 0-7.6 0zM17 6.2a4.2 4.2 0 0 1 5.6 0l-1 1a2.8 2.8 0 0 0-3.6 0zM19.8 9.6l-1.2-1.2a1.7 1.7 0 0 1 2.4 0z" fill="#fff"/>
-      <rect x="28" y="1.5" width="14" height="8" rx="2" fill="none" stroke="#fff" stroke-opacity=".5"/>
-      <rect x="29.4" y="2.9" width="11.2" height="5.2" rx="1" fill="#fff"/>
-      <rect x="42.6" y="4" width="1.2" height="3" rx=".5" fill="#fff" fill-opacity=".5"/>
-    </svg>
-  </div>
-
   <!-- 1. 시작 화면 -->
-  <section class="screen active" data-screen="start" data-wave="left" style="cursor:pointer">
+  <section class="screen active" data-screen="start" data-wave="left">
     <svg class="star" width="64" height="64"><use href="#star"/></svg>
     <div class="logo">Mindgram</div>
     <p class="desc" style="margin-top:20px">지금, 당신의 마음을<br>AI가 들여다볼게요</p>
+    <button class="btn" data-go="login" style="margin-top:90px">시작하기</button>
   </section>
 
   <!-- 2. 질문 입력 (로그인) -->
@@ -198,8 +195,8 @@
     <button class="back" data-go="start" aria-label="뒤로">
       <svg width="14" height="20" viewBox="0 0 12 16"><path d="M9 2L3 8l6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <svg class="star" width="46" height="46"><use href="#star"/></svg>
-    <h1 style="margin-top:26px">로그인하기</h1>
+    <svg width="52" height="52" style="filter:drop-shadow(0 0 12px rgba(214,41,118,0.35))"><use href="#instagram"/></svg>
+    <h1 style="margin-top:24px">로그인하기</h1>
     <p class="desc" style="margin-top:12px">두 가지 질문에 답해주세요</p>
     <form id="loginForm" style="width:100%;margin-top:34px" novalidate>
       <label class="field"><svg width="22" height="22"><use href="#bubble"/></svg><input id="q1" placeholder="질문 1을 입력하세요" autocomplete="off"></label>
@@ -210,6 +207,13 @@
       </button>
     </form>
     <button class="link" id="helpBtn" style="font-size:13px;margin-top:18px">문제가 있으신가요?</button>
+  </section>
+
+  <!-- 로그인 중 화면 -->
+  <section class="screen" data-screen="loginLoading" data-wave="right">
+    <div class="loader"></div>
+    <h1 style="margin-top:46px">로그인 중이에요...</h1>
+    <p class="desc">잠시만 기다려주세요</p>
   </section>
 
   <!-- 3. 로그인 성공 화면 -->
@@ -300,9 +304,6 @@
     el.addEventListener('click', e => { e.stopPropagation(); go(el.dataset.go); })
   );
 
-  // 1. 시작 화면: 터치하면 로그인으로
-  document.querySelector('[data-screen="start"]').addEventListener('click', () => go('login'));
-
   // 2. 로그인: 두 칸 모두 입력해야 통과
   document.getElementById('loginForm').addEventListener('submit', e => {
     e.preventDefault();
@@ -320,12 +321,52 @@
     });
     if (!ok) { hint.textContent = '두 질문에 모두 답해주세요'; return; }
     hint.textContent = '';
-    go('loginDone');
+    document.activeElement.blur();
+    go('loginLoading');
+    timer = setTimeout(() => go('loginDone'), 2000);
   });
   ['q1', 'q2'].forEach(id => document.getElementById(id).addEventListener('input', e => {
     e.target.closest('.field').classList.remove('invalid');
     document.getElementById('loginHint').textContent = '';
   }));
+  // 길게 누르기: ms 동안 누르고 있으면 onLong 실행, 뒤따르는 클릭은 무시
+  function longPress(el, ms, onLong, skip) {
+    let t, fired = false;
+    el.addEventListener('pointerdown', e => {
+      fired = false;
+      if (skip && skip(e)) return;
+      t = setTimeout(() => { fired = true; onLong(); }, ms);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => el.addEventListener(ev, () => clearTimeout(t)));
+    el.addEventListener('click', e => {
+      if (fired) { e.preventDefault(); e.stopPropagation(); fired = false; }
+    }, true);
+    el.addEventListener('contextmenu', e => e.preventDefault());
+  }
+
+  // 4. 로그인 화면을 3초 이상 누르면 로그인 실패
+  longPress(document.querySelector('[data-screen="login"]'), 3000, () => {
+    document.activeElement.blur();
+    go('loginLoading');
+    timer = setTimeout(() => {
+      go('login');
+      document.getElementById('loginHint').textContent = '아이디 또는 비밀번호가 일치하지 않아요';
+      ['q1', 'q2'].forEach(id => {
+        const field = document.getElementById(id).closest('.field');
+        field.classList.remove('invalid');
+        void field.offsetWidth;
+        field.classList.add('invalid');
+      });
+    }, 1500);
+  }, e => e.target.closest('input, .back, #helpBtn'));
+
+  // 5. (테스트용) 파일 선택하기를 1초 이상 누르면 파일 없이 다음으로
+  longPress(document.getElementById('fileInput').closest('label'), 1000, () => {
+    document.getElementById('fileName').textContent = '테스트 모드';
+    go('analyzing');
+    timer = setTimeout(() => go('done'), 2500);
+  });
+
   document.getElementById('helpBtn').addEventListener('click', () => toast('고객센터: help@mindgram.app'));
 
   // 4. 권한 허용
@@ -363,12 +404,6 @@
     reader.readAsText(file);
   });
 
-  // 상태바 시계
-  function tick() {
-    const d = new Date();
-    document.getElementById('clock').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
-  }
-  tick(); setInterval(tick, 30000);
 </script>
 </body>
 </html>
