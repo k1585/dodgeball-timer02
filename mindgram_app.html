@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mindgram</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #17181d;
+    --stroke: rgba(255,255,255,0.14);
+    --text: #f2f3f7;
+    --sub: #a6a9b6;
+    --muted: #7d8191;
+    --field: rgba(255,255,255,0.05);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    background:
+      radial-gradient(1200px 600px at 100% 100%, rgba(120,130,160,0.18), transparent 60%),
+      radial-gradient(900px 500px at 0% 0%, rgba(60,66,90,0.25), transparent 60%),
+      var(--bg);
+    color: var(--text);
+    font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 16px;
+  }
+
+  /* 데스크톱: 폰 프레임 / 모바일: 전체 화면 */
+  .phone {
+    position: relative;
+    width: 390px; height: 800px; max-height: calc(100vh - 48px);
+    border-radius: 40px;
+    border: 1px solid var(--stroke);
+    background:
+      radial-gradient(140% 80% at 110% 115%, rgba(80,90,130,0.30), transparent 55%),
+      linear-gradient(160deg, #141722 0%, #0b0d13 55%, #0e1019 100%);
+    overflow: hidden;
+    box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+  }
+  .phone::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(120% 60% at 100% 0%, rgba(255,255,255,0.05), transparent 50%);
+  }
+  @media (max-width: 500px) {
+    body { padding: 0; }
+    .phone { width: 100%; height: 100%; max-height: none; border-radius: 0; border: 0; box-shadow: none; }
+    .status, .home-bar { display: none; }
+  }
+
+  .wave {
+    position: absolute; left: -10%; right: -90%; bottom: -78%; height: 100%;
+    border-radius: 50%;
+    border-top: 1px solid rgba(140,160,220,0.16);
+    background: radial-gradient(50% 30% at 30% 0%, rgba(90,105,160,0.12), transparent 70%);
+    pointer-events: none; transition: transform 1.2s ease;
+  }
+  .wave.right { transform: translateX(40%) rotate(-30deg); }
+
+  .status {
+    position: absolute; top: 18px; left: 30px; right: 28px; z-index: 5;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 14px; font-weight: 500; color: #e8e9ee;
+  }
+  .home-bar {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); z-index: 5;
+    width: 134px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.75);
+  }
+
+  /* 화면 전환 */
+  .screen {
+    position: absolute; inset: 0; z-index: 1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 0 32px;
+    opacity: 0; visibility: hidden; transform: translateY(12px);
+    transition: opacity .4s ease, transform .4s ease, visibility .4s;
+  }
+  .screen.active { opacity: 1; visibility: visible; transform: none; }
+
+  .back {
+    position: absolute; top: 64px; left: 22px; padding: 8px;
+    background: none; border: 0; color: #e8e9ee; cursor: pointer;
+  }
+
+  .logo { font-size: 38px; font-weight: 400; margin-top: 30px; letter-spacing: -0.4px; }
+  h1 { font-size: 22px; font-weight: 500; letter-spacing: -0.5px; }
+  .desc { font-size: 15px; color: var(--sub); line-height: 1.75; margin-top: 14px; font-weight: 300; }
+
+  .btn {
+    position: relative;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; max-width: 300px; height: 60px; border-radius: 30px;
+    background: linear-gradient(180deg, #2a2f40, #222634);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #f2f3f7; font-size: 16px; font-weight: 500; font-family: inherit;
+    cursor: pointer; transition: filter .15s, transform .1s;
+  }
+  .btn:hover { filter: brightness(1.15); }
+  .btn:active { transform: scale(0.98); }
+  .btn.outline { background: rgba(20,24,36,0.6); border-color: rgba(170,185,230,0.35); }
+  .btn.wide { max-width: none; }
+  .link {
+    background: none; border: 0; font-family: inherit; cursor: pointer;
+    font-size: 15px; color: var(--sub); margin-top: 22px; padding: 4px 8px;
+  }
+  .link:hover { color: var(--text); }
+
+  .field {
+    width: 100%; height: 60px; border-radius: 14px;
+    background: var(--field); border: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; gap: 12px; padding: 0 18px;
+    color: var(--muted); transition: border-color .2s;
+  }
+  .field:focus-within { border-color: rgba(160,180,255,0.4); }
+  .field.invalid { border-color: rgba(255,120,120,0.55); animation: shake .35s; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .field input {
+    flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text);
+    font-size: 15px; font-family: inherit;
+  }
+  .field input::placeholder { color: var(--muted); }
+  .hint { font-size: 13px; color: #ff9b9b; height: 18px; margin-top: 10px; }
+
+  .icon-ring {
+    width: 110px; height: 110px; border-radius: 50%;
+    border: 2px solid #8ea4f0;
+    box-shadow: 0 0 22px rgba(140,165,255,0.45), inset 0 0 14px rgba(140,165,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .loader {
+    width: 130px; height: 130px; border-radius: 50%;
+    border: 2px solid rgba(150,175,255,0.35);
+    border-top-color: #b9c8ff;
+    box-shadow: 0 0 28px rgba(130,160,255,0.45), inset 0 0 20px rgba(130,160,255,0.25);
+    animation: spin 2.4s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .star { filter: drop-shadow(0 0 12px rgba(150,175,255,0.75)); }
+  .filename { font-size: 13px; color: var(--muted); margin-top: 8px; word-break: break-all; }
+
+  .toast {
+    position: absolute; left: 50%; bottom: 46px; z-index: 10;
+    transform: translate(-50%, 20px); opacity: 0;
+    background: rgba(40,45,62,0.95); border: 1px solid rgba(255,255,255,0.1);
+    padding: 12px 18px; border-radius: 12px; font-size: 14px; white-space: nowrap;
+    transition: opacity .25s, transform .25s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="starGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#8fa6ff"/>
+    </linearGradient>
+    <symbol id="star" viewBox="0 0 40 40">
+      <path d="M20 0C21.5 12 28 18.5 40 20C28 21.5 21.5 28 20 40C18.5 28 12 21.5 0 20C12 18.5 18.5 12 20 0Z" fill="url(#starGrad)"/>
+    </symbol>
+    <symbol id="bubble" viewBox="0 0 20 20">
+      <path d="M10 3c4.4 0 7.5 2.8 7.5 6.3S14.4 15.6 10 15.6c-.9 0-1.8-.1-2.6-.4L3.5 17l1-3.2C3.2 12.6 2.5 11 2.5 9.3 2.5 5.8 5.6 3 10 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="check" viewBox="0 0 32 24">
+      <path d="M3 12l9 9L29 3" fill="none" stroke="#c2cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="phone">
+  <div class="wave" id="wave"></div>
+
+  <div class="status">
+    <span id="clock">9:41</span>
+    <svg width="66" height="16" viewBox="0 0 44 11">
+      <rect x="0" y="7" width="2.2" height="3" rx=".5" fill="#fff"/>
+      <rect x="3.2" y="5" width="2.2" height="5" rx=".5" fill="#fff"/>
+      <rect x="6.4" y="3" width="2.2" height="7" rx=".5" fill="#fff"/>
+      <rect x="9.6" y="1" width="2.2" height="9" rx=".5" fill="#fff"/>
+      <path d="M15 4.2a7 7 0 0 1 9.6 0l-1 1a5.6 5.6 0 0 0-7.6 0zM17 6.2a4.2 4.2 0 0 1 5.6 0l-1 1a2.8 2.8 0 0 0-3.6 0zM19.8 9.6l-1.2-1.2a1.7 1.7 0 0 1 2.4 0z" fill="#fff"/>
+      <rect x="28" y="1.5" width="14" height="8" rx="2" fill="none" stroke="#fff" stroke-opacity=".5"/>
+      <rect x="29.4" y="2.9" width="11.2" height="5.2" rx="1" fill="#fff"/>
+      <rect x="42.6" y="4" width="1.2" height="3" rx=".5" fill="#fff" fill-opacity=".5"/>
+    </svg>
+  </div>
+
+  <!-- 1. 시작 화면 -->
+  <section class="screen active" data-screen="start" data-wave="left" style="cursor:pointer">
+    <svg class="star" width="64" height="64"><use href="#star"/></svg>
+    <div class="logo">Mindgram</div>
+    <p class="desc" style="margin-top:20px">지금, 당신의 마음을<br>AI가 들여다볼게요</p>
+  </section>
+
+  <!-- 2. 질문 입력 (로그인) -->
+  <section class="screen" data-screen="login">
+    <button class="back" data-go="start" aria-label="뒤로">
+      <svg width="14" height="20" viewBox="0 0 12 16"><path d="M9 2L3 8l6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <svg class="star" width="46" height="46"><use href="#star"/></svg>
+    <h1 style="margin-top:26px">로그인하기</h1>
+    <p class="desc" style="margin-top:12px">두 가지 질문에 답해주세요</p>
+    <form id="loginForm" style="width:100%;margin-top:34px" novalidate>
+      <label class="field"><svg width="22" height="22"><use href="#bubble"/></svg><input id="q1" placeholder="질문 1을 입력하세요" autocomplete="off"></label>
+      <label class="field" style="margin-top:12px"><svg width="22" height="22"><use href="#bubble"/></svg><input id="q2" placeholder="질문 2를 입력하세요" autocomplete="off"></label>
+      <div class="hint" id="loginHint"></div>
+      <button class="btn wide" type="submit" style="margin-top:18px">로그인
+        <svg style="position:absolute;right:24px" width="9" height="14" viewBox="0 0 8 12"><path d="M2 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
+    <button class="link" id="helpBtn" style="font-size:13px;margin-top:18px">문제가 있으신가요?</button>
+  </section>
+
+  <!-- 3. 로그인 성공 화면 -->
+  <section class="screen" data-screen="loginDone" data-wave="right">
+    <div class="icon-ring"><svg width="44" height="33"><use href="#check"/></svg></div>
+    <h1 style="margin-top:36px">로그인 완료</h1>
+    <p class="desc">이제 분석을 시작할 수 있어요</p>
+    <button class="btn outline" data-go="permission" style="margin-top:110px">계속하기</button>
+  </section>
+
+  <!-- 4. 접근권한 확인 -->
+  <section class="screen" data-screen="permission">
+    <svg width="74" height="66" viewBox="0 0 54 48"><path d="M3 8a4 4 0 0 1 4-4h13l5 6h22a4 4 0 0 1 4 4v26a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z M3 16h48" fill="none" stroke="#c9cdd9" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <h1 style="margin-top:32px">계정 접근 권한이 필요해요</h1>
+    <p class="desc" style="margin-top:18px">더 정확한 분석을 위해<br>Instagram 계정에 접근할 수 있는<br>권한을 허용해주세요.</p>
+    <button class="btn" id="allowBtn" style="margin-top:56px">권한 허용하기</button>
+    <button class="link" data-go="upload">나중에 하기</button>
+  </section>
+
+  <!-- 5. JSON 파일 업로드 화면 -->
+  <section class="screen" data-screen="upload" data-wave="left">
+    <svg width="68" height="82" viewBox="0 0 50 60"><path d="M4 4h28l14 14v38H4z M32 4v14h14 M25 46V28 M18 35l7-7 7 7" fill="none" stroke="#c9cdd9" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <h1 style="margin-top:32px">JSON 파일을 업로드해주세요</h1>
+    <p class="desc">Instagram에서 다운로드한<br>데이터 파일을 선택해주세요</p>
+    <label class="btn" style="margin-top:54px">
+      <svg width="22" height="20" viewBox="0 0 18 16"><path d="M1 3a1.5 1.5 0 0 1 1.5-1.5H7l2 2h6.5A1.5 1.5 0 0 1 17 5v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 1 13.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      파일 선택하기
+      <input type="file" id="fileInput" accept=".json,application/json" hidden>
+    </label>
+    <p class="link" style="font-size:13px;cursor:default">지원하는 파일 형식: .json</p>
+  </section>
+
+  <!-- 6. 분석 중 화면 -->
+  <section class="screen" data-screen="analyzing" data-wave="right">
+    <div class="loader"></div>
+    <h1 style="margin-top:46px">분석 중이에요...</h1>
+    <p class="desc">잠시만 기다려주세요</p>
+    <p class="filename" id="fileName"></p>
+  </section>
+
+  <!-- 분석 완료 화면 -->
+  <section class="screen" data-screen="done" data-wave="right">
+    <div class="icon-ring"><svg width="44" height="33"><use href="#check"/></svg></div>
+    <h1 style="margin-top:36px">분석 완료</h1>
+    <p class="desc">데이터 분석이 끝났어요</p>
+    <button class="btn outline" data-go="start" style="margin-top:110px">처음으로</button>
+  </section>
+
+  <!-- 7. 오류 화면 -->
+  <section class="screen" data-screen="error" data-wave="left">
+    <svg width="72" height="72" viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" fill="none" stroke="#c9cdd9" stroke-width="1.6"/><path d="M26 14v16" stroke="#e6e8ef" stroke-width="2.2" stroke-linecap="round"/><circle cx="26" cy="37" r="1.6" fill="#e6e8ef"/></svg>
+    <h1 style="margin-top:36px">오류가 발생했어요</h1>
+    <p class="desc" id="errorMsg">파일을 다시 업로드하거나<br>잠시 후 다시 시도해주세요.</p>
+    <button class="btn outline" data-go="upload" style="margin-top:56px">다시 시도하기</button>
+    <button class="link" data-go="start">홈으로 가기</button>
+  </section>
+
+  <div class="toast" id="toast"></div>
+  <div class="home-bar"></div>
+</div>
+
+<script>
+  const screens = document.querySelectorAll('.screen');
+  const wave = document.getElementById('wave');
+  let current = 'start';
+  let timer = null;
+
+  function go(name) {
+    clearTimeout(timer);
+    screens.forEach(s => s.classList.toggle('active', s.dataset.screen === name));
+    const target = document.querySelector(`[data-screen="${name}"]`);
+    wave.style.opacity = target.dataset.wave ? 1 : 0;
+    wave.classList.toggle('right', target.dataset.wave === 'right');
+    current = name;
+    if (name === 'login') setTimeout(() => document.getElementById('q1').focus(), 400);
+    if (name === 'upload') document.getElementById('fileInput').value = '';
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2000);
+  }
+
+  // data-go 버튼 공통 처리
+  document.querySelectorAll('[data-go]').forEach(el =>
+    el.addEventListener('click', e => { e.stopPropagation(); go(el.dataset.go); })
+  );
+
+  // 1. 시작 화면: 터치하면 로그인으로
+  document.querySelector('[data-screen="start"]').addEventListener('click', () => go('login'));
+
+  // 2. 로그인: 두 칸 모두 입력해야 통과
+  document.getElementById('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const hint = document.getElementById('loginHint');
+    let ok = true;
+    ['q1', 'q2'].forEach(id => {
+      const input = document.getElementById(id);
+      const field = input.closest('.field');
+      field.classList.remove('invalid');
+      if (!input.value.trim()) {
+        void field.offsetWidth; // 흔들림 애니메이션 재시작
+        field.classList.add('invalid');
+        ok = false;
+      }
+    });
+    if (!ok) { hint.textContent = '두 질문에 모두 답해주세요'; return; }
+    hint.textContent = '';
+    go('loginDone');
+  });
+  ['q1', 'q2'].forEach(id => document.getElementById(id).addEventListener('input', e => {
+    e.target.closest('.field').classList.remove('invalid');
+    document.getElementById('loginHint').textContent = '';
+  }));
+  document.getElementById('helpBtn').addEventListener('click', () => toast('고객센터: help@mindgram.app'));
+
+  // 4. 권한 허용
+  document.getElementById('allowBtn').addEventListener('click', () => {
+    if (confirm('Mindgram이 Instagram 계정에 접근하도록 허용할까요?')) {
+      toast('권한이 허용되었어요');
+      go('upload');
+    }
+  });
+
+  // 5. 파일 선택 → 6. 분석 중 → 완료 / 7. 오류
+  document.getElementById('fileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    document.getElementById('fileName').textContent = file.name;
+    go('analyzing');
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      let valid = file.name.toLowerCase().endsWith('.json');
+      try { JSON.parse(reader.result); } catch { valid = false; }
+      timer = setTimeout(() => {
+        if (current !== 'analyzing') return;
+        if (valid) go('done');
+        else {
+          document.getElementById('errorMsg').innerHTML = '올바른 JSON 파일이 아니에요.<br>파일을 다시 업로드해주세요.';
+          go('error');
+        }
+      }, 2500);
+    };
+    reader.onerror = () => {
+      document.getElementById('errorMsg').innerHTML = '파일을 다시 업로드하거나<br>잠시 후 다시 시도해주세요.';
+      go('error');
+    };
+    reader.readAsText(file);
+  });
+
+  // 상태바 시계
+  function tick() {
+    const d = new Date();
+    document.getElementById('clock').textContent = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+  tick(); setInterval(tick, 30000);
+</script>
+</body>
+</html>
