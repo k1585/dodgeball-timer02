@@ -13,6 +13,7 @@
     --sub: #a6a9b6;
     --muted: #7d8191;
     --field: rgba(255,255,255,0.05);
+    --accent: #9fb4ff;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html, body { height: 100%; }
@@ -38,6 +39,7 @@
       linear-gradient(160deg, #141722 0%, #0b0d13 55%, #0e1019 100%);
     overflow: hidden;
     box-shadow: 0 30px 70px rgba(0,0,0,0.5);
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
   .phone::before {
     content: ""; position: absolute; inset: 0; pointer-events: none;
@@ -54,7 +56,7 @@
     border-radius: 50%;
     border-top: 1px solid rgba(140,160,220,0.16);
     background: radial-gradient(50% 30% at 30% 0%, rgba(90,105,160,0.12), transparent 70%);
-    pointer-events: none; transition: transform 1.2s ease;
+    pointer-events: none; transition: transform 1.2s ease, opacity .4s;
   }
   .wave.right { transform: translateX(40%) rotate(-30deg); }
 
@@ -72,6 +74,7 @@
     transition: opacity .4s ease, transform .4s ease, visibility .4s;
   }
   .screen.active { opacity: 1; visibility: visible; transform: none; }
+  [data-t], [data-sf] { white-space: pre-line; }
 
   .back {
     position: absolute; top: 28px; left: 18px; padding: 8px;
@@ -90,18 +93,19 @@
     border: 1px solid rgba(255,255,255,0.12);
     color: #f2f3f7; font-size: 16px; font-weight: 500; font-family: inherit;
     cursor: pointer; transition: filter .15s, transform .1s;
-    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
   }
   .btn:hover { filter: brightness(1.15); }
   .btn:active { transform: scale(0.98); }
   .btn.outline { background: rgba(20,24,36,0.6); border-color: rgba(170,185,230,0.35); }
   .btn.wide { max-width: none; }
+  .btn .chev { position: absolute; right: 24px; }
   .link {
     background: none; border: 0; font-family: inherit; cursor: pointer;
     font-size: 15px; color: var(--sub); margin-top: 22px; padding: 4px 8px;
   }
   .link:hover { color: var(--text); }
 
+  .qlabel { width: 100%; text-align: left; font-size: 13px; color: var(--sub); margin: 0 0 8px 4px; }
   .field {
     width: 100%; height: 60px; border-radius: 14px;
     background: var(--field); border: 1px solid rgba(255,255,255,0.06);
@@ -113,12 +117,11 @@
   @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
   .field input {
     flex: 1; min-width: 0; background: none; border: 0; outline: 0; color: var(--text);
-    font-size: 15px; font-family: inherit;
+    font-size: 15px; font-family: inherit; user-select: text; -webkit-user-select: text;
   }
   .field input::placeholder { color: var(--muted); }
-  .hint { font-size: 13px; color: #ff9b9b; min-height: 18px; margin-top: 10px; }
-  [data-screen="login"] { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-  [data-screen="login"] input { user-select: text; -webkit-user-select: text; }
+  .hint { font-size: 13px; color: #ff9b9b; min-height: 18px; margin-top: 10px; visibility: hidden; }
+  .hint.show { visibility: visible; }
 
   .icon-ring {
     width: 110px; height: 110px; border-radius: 50%;
@@ -136,15 +139,117 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .star { filter: drop-shadow(0 0 12px rgba(150,175,255,0.75)); }
   .filename { font-size: 13px; color: var(--muted); margin-top: 8px; word-break: break-all; }
+  .scene-help {
+    position: absolute; left: 32px; right: 32px; bottom: 64px;
+    font-size: 13px; color: var(--muted); line-height: 1.7;
+  }
+  .scene-help:empty { display: none; }
+  .scene-text { transition: opacity .3s; }
+  .scene-text.fade { opacity: 0; }
 
   .toast {
-    position: absolute; left: 50%; bottom: 46px; z-index: 10;
+    position: absolute; left: 50%; bottom: 46px; z-index: 40;
     transform: translate(-50%, 20px); opacity: 0;
     background: rgba(40,45,62,0.95); border: 1px solid rgba(255,255,255,0.1);
     padding: 12px 18px; border-radius: 12px; font-size: 14px; white-space: nowrap;
     transition: opacity .25s, transform .25s; pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  /* ===== 관리자 모드 ===== */
+  .screen.admin { justify-content: flex-start; text-align: left; padding: 28px 22px 40px; overflow-y: auto; align-items: stretch; }
+  .admin-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .admin-head h1 { font-size: 20px; }
+  .badge { font-size: 11px; color: var(--accent); border: 1px solid rgba(159,180,255,0.4); padding: 3px 8px; border-radius: 10px; }
+  .admin-desc { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .card {
+    background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; padding: 16px; margin-bottom: 14px;
+  }
+  .card h2 { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+  .card .note { font-size: 12px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+  .row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .row > span { font-size: 13px; color: var(--sub); width: 64px; flex-shrink: 0; }
+  .inp {
+    flex: 1; min-width: 0; height: 40px; border-radius: 10px; padding: 0 12px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    color: var(--text); font-size: 14px; font-family: inherit; outline: 0;
+    user-select: text; -webkit-user-select: text;
+  }
+  .inp:focus { border-color: rgba(160,180,255,0.4); }
+  .inp.num { flex: 0 0 72px; text-align: center; }
+  .seg { display: flex; flex: 1; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 3px; gap: 3px; }
+  .seg button {
+    flex: 1; height: 34px; border: 0; border-radius: 8px; background: none; cursor: pointer;
+    color: var(--sub); font-size: 12.5px; font-family: inherit;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .seg button.on { background: #2a2f40; color: var(--text); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+  .qsub { font-size: 13px; color: var(--text); margin-top: 14px; }
+  .qsub:first-of-type { margin-top: 0; }
+  .scene {
+    border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; margin-top: 10px;
+    background: rgba(0,0,0,0.15);
+  }
+  .scene-top { display: flex; align-items: center; gap: 8px; }
+  .scene-top b { font-size: 13px; font-weight: 500; flex: 1; }
+  .scene-sum { font-size: 12px; color: var(--muted); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini {
+    height: 32px; padding: 0 12px; border-radius: 8px; cursor: pointer;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
+    color: var(--sub); font-size: 12px; font-family: inherit;
+  }
+  .mini:hover { color: var(--text); }
+  .mini.danger { color: #ff9b9b; }
+  .admin .btn { max-width: none; height: 52px; font-size: 15px; }
+  .admin-foot { display: flex; gap: 10px; margin-top: 6px; }
+  .admin-foot .btn { flex: 1; }
+
+  /* ===== 문구 수정 모드 ===== */
+  .editbar {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 30;
+    display: none; align-items: center; gap: 6px;
+    padding: 12px 12px 10px; background: rgba(13,15,22,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .editing .editbar { display: flex; }
+  .editbar .nav { width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--text); cursor: pointer; font-size: 15px; }
+  .editbar .title { flex: 1; text-align: center; font-size: 13px; line-height: 1.3; }
+  .editbar .title small { display: block; font-size: 11px; color: var(--muted); }
+  .editbar .done { height: 34px; padding: 0 14px; border-radius: 10px; border: 0; background: #3a4366; color: #fff; font-family: inherit; font-size: 13px; cursor: pointer; }
+  .editing .screen [data-t], .editing .screen [data-ph], .editing .screen [data-sf] {
+    outline: 1px dashed rgba(160,180,255,0.55); outline-offset: 4px; border-radius: 4px;
+  }
+  .editing .screen .field:has([data-ph]) { outline: 1px dashed rgba(160,180,255,0.55); outline-offset: 2px; }
+  .editing .screen .field [data-ph] { outline: none; }
+  .editing .hint { visibility: visible; }
+  .editing .scene-help:empty { display: block; }
+  .editing .scene-help:empty::before { content: "(도움말 없음 · 길게 눌러 추가)"; opacity: .6; }
+  .editing .back { display: none; }
+  .pressing { background-color: rgba(159,180,255,0.18) !important; transition: background-color .5s; }
+
+  .modal {
+    position: absolute; inset: 0; z-index: 50; display: none;
+    align-items: center; justify-content: center; padding: 24px;
+    background: rgba(5,6,10,0.6); backdrop-filter: blur(4px);
+  }
+  .modal.show { display: flex; }
+  .sheet {
+    width: 100%; background: #181b26; border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; padding: 20px;
+  }
+  .sheet h2 { font-size: 16px; font-weight: 500; }
+  .sheet .note { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .sheet textarea {
+    width: 100%; min-height: 96px; margin-top: 14px; resize: vertical;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px;
+    color: var(--text); font-size: 15px; font-family: inherit; padding: 12px; outline: 0; line-height: 1.6;
+    user-select: text; -webkit-user-select: text;
+  }
+  .sheet textarea:focus { border-color: rgba(160,180,255,0.4); }
+  .sheet .acts { display: flex; gap: 8px; margin-top: 14px; }
+  .sheet .acts button { flex: 1; height: 44px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: var(--sub); font-family: inherit; font-size: 14px; cursor: pointer; }
+  .sheet .acts .save { background: #3a4366; color: #fff; border-color: transparent; }
 </style>
 </head>
 <body>
@@ -158,36 +263,55 @@
     <symbol id="star" viewBox="0 0 40 40">
       <path d="M20 0C21.5 12 28 18.5 40 20C28 21.5 21.5 28 20 40C18.5 28 12 21.5 0 20C12 18.5 18.5 12 20 0Z" fill="url(#starGrad)"/>
     </symbol>
-    <linearGradient id="igGrad" x1="0" y1="1" x2="1" y2="0">
-      <stop offset="0" stop-color="#feda75"/>
-      <stop offset=".3" stop-color="#fa7e1e"/>
-      <stop offset=".6" stop-color="#d62976"/>
-      <stop offset=".85" stop-color="#962fbf"/>
-      <stop offset="1" stop-color="#4f5bd5"/>
-    </linearGradient>
     <symbol id="instagram" viewBox="0 0 48 48">
-      <rect x="3" y="3" width="42" height="42" rx="12" fill="none" stroke="url(#igGrad)" stroke-width="3.6"/>
-      <circle cx="24" cy="24" r="9.5" fill="none" stroke="url(#igGrad)" stroke-width="3.6"/>
-      <circle cx="35.5" cy="12.5" r="2.6" fill="url(#igGrad)"/>
+      <rect x="4" y="4" width="40" height="40" rx="12" fill="none" stroke="#c9cdd9" stroke-width="2.2"/>
+      <circle cx="24" cy="24" r="9" fill="none" stroke="#c9cdd9" stroke-width="2.2"/>
+      <circle cx="35" cy="13" r="2" fill="#c9cdd9"/>
     </symbol>
-    <symbol id="bubble" viewBox="0 0 20 20">
+    <symbol id="ic-bubble" viewBox="0 0 20 20">
       <path d="M10 3c4.4 0 7.5 2.8 7.5 6.3S14.4 15.6 10 15.6c-.9 0-1.8-.1-2.6-.4L3.5 17l1-3.2C3.2 12.6 2.5 11 2.5 9.3 2.5 5.8 5.6 3 10 3z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-user" viewBox="0 0 20 20">
+      <circle cx="10" cy="7" r="3.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M3.5 17c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-lock" viewBox="0 0 20 20">
+      <rect x="4" y="9" width="12" height="8.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M6.8 9V6.5a3.2 3.2 0 0 1 6.4 0V9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="10" cy="13.2" r="1.1" fill="currentColor"/>
     </symbol>
     <symbol id="check" viewBox="0 0 32 24">
       <path d="M3 12l9 9L29 3" fill="none" stroke="#c2cfff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+    <symbol id="chev" viewBox="0 0 8 12">
+      <path d="M2 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="err" viewBox="0 0 52 52">
+      <circle cx="26" cy="26" r="24" fill="none" stroke="#c9cdd9" stroke-width="1.6"/><path d="M26 14v16" stroke="#e6e8ef" stroke-width="2.2" stroke-linecap="round"/><circle cx="26" cy="37" r="1.6" fill="#e6e8ef"/>
+    </symbol>
   </defs>
 </svg>
 
-<div class="phone">
+<div class="phone" id="phone">
   <div class="wave" id="wave"></div>
+
+  <!-- 문구 수정 모드 상단 바 -->
+  <div class="editbar">
+    <button class="nav" id="editPrev" aria-label="이전 화면">‹</button>
+    <div class="title"><span id="editName"></span><small>글자를 길게 눌러 수정</small></div>
+    <button class="nav" id="editNext" aria-label="다음 화면">›</button>
+    <button class="done" id="editDone">완료</button>
+  </div>
 
   <!-- 1. 시작 화면 -->
   <section class="screen active" data-screen="start" data-wave="left">
     <svg class="star" width="64" height="64"><use href="#star"/></svg>
-    <div class="logo">Mindgram</div>
-    <p class="desc" style="margin-top:20px">지금, 당신의 마음을<br>AI가 들여다볼게요</p>
-    <button class="btn" data-go="login" style="margin-top:90px">시작하기</button>
+    <div class="logo" data-t="start.logo">Mindgram</div>
+    <p class="desc" style="margin-top:20px" data-t="start.desc">지금, 당신의 마음을&#10;AI가 들여다볼게요</p>
+    <button class="btn" id="startBtn" style="margin-top:90px">
+      <span data-t="start.btn">시작하기</span>
+      <svg class="chev" width="9" height="14"><use href="#chev"/></svg>
+    </button>
   </section>
 
   <!-- 2. 질문 입력 (로그인) -->
@@ -195,91 +319,210 @@
     <button class="back" data-go="start" aria-label="뒤로">
       <svg width="14" height="20" viewBox="0 0 12 16"><path d="M9 2L3 8l6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <svg width="52" height="52" style="filter:drop-shadow(0 0 12px rgba(214,41,118,0.35))"><use href="#instagram"/></svg>
-    <h1 style="margin-top:24px">로그인하기</h1>
-    <p class="desc" style="margin-top:12px">두 가지 질문에 답해주세요</p>
-    <form id="loginForm" style="width:100%;margin-top:34px" novalidate>
-      <label class="field"><svg width="22" height="22"><use href="#bubble"/></svg><input id="q1" placeholder="질문 1을 입력하세요" autocomplete="off"></label>
-      <label class="field" style="margin-top:12px"><svg width="22" height="22"><use href="#bubble"/></svg><input id="q2" placeholder="질문 2를 입력하세요" autocomplete="off"></label>
-      <div class="hint" id="loginHint"></div>
-      <button class="btn wide" type="submit" style="margin-top:18px">로그인
-        <svg style="position:absolute;right:24px" width="9" height="14" viewBox="0 0 8 12"><path d="M2 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg width="50" height="50"><use href="#instagram"/></svg>
+    <h1 style="margin-top:24px" data-t="login.title">로그인하기</h1>
+    <p class="desc" style="margin-top:10px" data-t="login.desc">두 가지 질문에 답해주세요</p>
+    <form id="loginForm" style="width:100%;margin-top:28px" novalidate>
+      <div class="qlabel" data-t="login.q1name">질문 1</div>
+      <label class="field"><svg width="22" height="22"><use id="q1icon" href="#ic-bubble"/></svg><input id="q1" data-ph="login.q1ph" placeholder="질문 1을 입력하세요" autocomplete="off"></label>
+      <div class="qlabel" style="margin-top:16px" data-t="login.q2name">질문 2</div>
+      <label class="field"><svg width="22" height="22"><use id="q2icon" href="#ic-bubble"/></svg><input id="q2" data-ph="login.q2ph" placeholder="질문 2를 입력하세요" autocomplete="off"></label>
+      <div class="hint" id="loginHint" data-t="login.hintEmpty">두 질문에 모두 답해주세요</div>
+      <button class="btn wide" type="submit" style="margin-top:14px">
+        <span data-t="login.btn">로그인</span>
+        <svg class="chev" width="9" height="14"><use href="#chev"/></svg>
       </button>
     </form>
-    <button class="link" id="helpBtn" style="font-size:13px;margin-top:18px">문제가 있으신가요?</button>
+    <button class="link" id="helpBtn" style="font-size:13px;margin-top:18px"><span data-t="login.help">문제가 있으신가요?</span></button>
   </section>
 
-  <!-- 로그인 중 화면 -->
+  <!-- 로그인 중 화면 (장면은 관리자 모드에서 구성) -->
   <section class="screen" data-screen="loginLoading" data-wave="right">
     <div class="loader"></div>
-    <h1 style="margin-top:46px">로그인 중이에요...</h1>
-    <p class="desc">잠시만 기다려주세요</p>
+    <h1 class="scene-text" style="margin-top:46px" data-sf="title"></h1>
+    <p class="desc scene-text" data-sf="sub"></p>
+    <p class="scene-help scene-text" data-sf="help"></p>
   </section>
 
   <!-- 3. 로그인 성공 화면 -->
   <section class="screen" data-screen="loginDone" data-wave="right">
     <div class="icon-ring"><svg width="44" height="33"><use href="#check"/></svg></div>
-    <h1 style="margin-top:36px">로그인 완료</h1>
-    <p class="desc">이제 분석을 시작할 수 있어요</p>
-    <button class="btn outline" data-go="permission" style="margin-top:110px">계속하기</button>
+    <h1 style="margin-top:36px" data-t="loginDone.title">로그인 완료</h1>
+    <p class="desc" data-t="loginDone.desc">이제 분석을 시작할 수 있어요</p>
+    <button class="btn outline" data-go="permission" style="margin-top:110px"><span data-t="loginDone.btn">계속하기</span></button>
+  </section>
+
+  <!-- 로그인 오류 화면 -->
+  <section class="screen" data-screen="loginError" data-wave="left">
+    <svg width="72" height="72"><use href="#err"/></svg>
+    <h1 style="margin-top:36px" data-t="loginError.title">로그인에 실패했어요</h1>
+    <p class="desc" data-t="loginError.desc">아이디 또는 비밀번호가&#10;일치하지 않아요.</p>
+    <button class="btn outline" data-go="login" style="margin-top:56px"><span data-t="loginError.btn">다시 시도하기</span></button>
+    <button class="link" data-go="start"><span data-t="loginError.home">홈으로 가기</span></button>
   </section>
 
   <!-- 4. 접근권한 확인 -->
   <section class="screen" data-screen="permission">
     <svg width="74" height="66" viewBox="0 0 54 48"><path d="M3 8a4 4 0 0 1 4-4h13l5 6h22a4 4 0 0 1 4 4v26a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4z M3 16h48" fill="none" stroke="#c9cdd9" stroke-width="1.6" stroke-linejoin="round"/></svg>
-    <h1 style="margin-top:32px">계정 접근 권한이 필요해요</h1>
-    <p class="desc" style="margin-top:18px">더 정확한 분석을 위해<br>Instagram 계정에 접근할 수 있는<br>권한을 허용해주세요.</p>
-    <button class="btn" id="allowBtn" style="margin-top:56px">권한 허용하기</button>
-    <button class="link" data-go="upload">나중에 하기</button>
+    <h1 style="margin-top:32px" data-t="perm.title">계정 접근 권한이 필요해요</h1>
+    <p class="desc" style="margin-top:18px" data-t="perm.desc">더 정확한 분석을 위해&#10;Instagram 계정에 접근할 수 있는&#10;권한을 허용해주세요.</p>
+    <button class="btn" id="allowBtn" style="margin-top:56px"><span data-t="perm.btn">권한 허용하기</span></button>
+    <button class="link" data-go="start"><span data-t="perm.exit">종료하기</span></button>
   </section>
 
   <!-- 5. JSON 파일 업로드 화면 -->
   <section class="screen" data-screen="upload" data-wave="left">
     <svg width="68" height="82" viewBox="0 0 50 60"><path d="M4 4h28l14 14v38H4z M32 4v14h14 M25 46V28 M18 35l7-7 7 7" fill="none" stroke="#c9cdd9" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>
-    <h1 style="margin-top:32px">JSON 파일을 업로드해주세요</h1>
-    <p class="desc">Instagram에서 다운로드한<br>데이터 파일을 선택해주세요</p>
-    <label class="btn" style="margin-top:54px">
+    <h1 style="margin-top:32px" data-t="upload.title">JSON 파일을 업로드해주세요</h1>
+    <p class="desc" data-t="upload.desc">Instagram에서 다운로드한&#10;데이터 파일을 선택해주세요</p>
+    <label class="btn" id="fileBtn" style="margin-top:54px">
       <svg width="22" height="20" viewBox="0 0 18 16"><path d="M1 3a1.5 1.5 0 0 1 1.5-1.5H7l2 2h6.5A1.5 1.5 0 0 1 17 5v8.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 1 13.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-      파일 선택하기
+      <span data-t="upload.btn">파일 선택하기</span>
       <input type="file" id="fileInput" accept=".json,application/json" hidden>
     </label>
-    <p class="link" style="font-size:13px;cursor:default">지원하는 파일 형식: .json</p>
+    <p class="link" style="font-size:13px;cursor:default"><span data-t="upload.note">지원하는 파일 형식: .json</span></p>
   </section>
 
   <!-- 6. 분석 중 화면 -->
   <section class="screen" data-screen="analyzing" data-wave="right">
     <div class="loader"></div>
-    <h1 style="margin-top:46px">분석 중이에요...</h1>
-    <p class="desc">잠시만 기다려주세요</p>
+    <h1 style="margin-top:46px" data-t="analyzing.title">분석 중이에요...</h1>
+    <p class="desc" data-t="analyzing.desc">잠시만 기다려주세요</p>
     <p class="filename" id="fileName"></p>
   </section>
 
   <!-- 분석 완료 화면 -->
   <section class="screen" data-screen="done" data-wave="right">
     <div class="icon-ring"><svg width="44" height="33"><use href="#check"/></svg></div>
-    <h1 style="margin-top:36px">분석 완료</h1>
-    <p class="desc">데이터 분석이 끝났어요</p>
-    <button class="btn outline" data-go="start" style="margin-top:110px">처음으로</button>
+    <h1 style="margin-top:36px" data-t="done.title">분석 완료</h1>
+    <p class="desc" data-t="done.desc">데이터 분석이 끝났어요</p>
+    <button class="btn outline" data-go="start" style="margin-top:110px"><span data-t="done.btn">처음으로</span></button>
   </section>
 
-  <!-- 7. 오류 화면 -->
+  <!-- 7. 분석 오류 화면 -->
   <section class="screen" data-screen="error" data-wave="left">
-    <svg width="72" height="72" viewBox="0 0 52 52"><circle cx="26" cy="26" r="24" fill="none" stroke="#c9cdd9" stroke-width="1.6"/><path d="M26 14v16" stroke="#e6e8ef" stroke-width="2.2" stroke-linecap="round"/><circle cx="26" cy="37" r="1.6" fill="#e6e8ef"/></svg>
-    <h1 style="margin-top:36px">오류가 발생했어요</h1>
-    <p class="desc" id="errorMsg">파일을 다시 업로드하거나<br>잠시 후 다시 시도해주세요.</p>
-    <button class="btn outline" data-go="upload" style="margin-top:56px">다시 시도하기</button>
-    <button class="link" data-go="start">홈으로 가기</button>
+    <svg width="72" height="72"><use href="#err"/></svg>
+    <h1 style="margin-top:36px" data-t="error.title">오류가 발생했어요</h1>
+    <p class="desc" data-t="error.desc">파일을 다시 업로드하거나&#10;잠시 후 다시 시도해주세요.</p>
+    <button class="btn outline" data-go="upload" style="margin-top:56px"><span data-t="error.btn">다시 시도하기</span></button>
+    <button class="link" data-go="start"><span data-t="error.home">홈으로 가기</span></button>
   </section>
+
+  <!-- 관리자 모드 -->
+  <section class="screen admin" data-screen="admin">
+    <div class="admin-head"><h1>관리자 모드</h1><span class="badge">ADMIN</span></div>
+    <p class="admin-desc">설정은 이 브라우저에 자동 저장돼요.</p>
+
+    <div class="card">
+      <h2>문구 수정</h2>
+      <button class="btn" id="openEdit">문구 수정하기</button>
+      <p class="note">사용자 화면이 열리면 바꾸고 싶은 글자를 길게 누르세요. 질문 이름, 입력칸 도움말, 오류 문구, 완료 문구 등 모든 글자를 여기서 수정해요.</p>
+    </div>
+
+    <div class="card">
+      <h2>질문 설정</h2>
+      <div id="qSettings"></div>
+      <p class="note">정답을 비워두면 아무 답이나 통과해요. 정답이 틀리면 로그인 오류 화면이 떠요. 비밀번호 아이콘을 고르면 입력한 글자가 ●로 가려져요.</p>
+    </div>
+
+    <div class="card">
+      <h2>로그인 중 화면 장면</h2>
+      <div id="sceneList"></div>
+      <button class="mini" id="addScene" style="width:100%;height:40px;margin-top:10px">+ 장면 추가</button>
+      <p class="note">장면이 순서대로 지정한 시간만큼 보인 뒤 로그인 결과 화면으로 넘어가요. 제목·소제목·도움말은 [문구 수정]으로 바꿔요.</p>
+    </div>
+
+    <div class="card">
+      <h2>분석 결과</h2>
+      <div class="seg" id="resultSeg">
+        <button data-v="success">분석 완료 화면</button>
+        <button data-v="fail">분석 실패 화면</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>기타 설정</h2>
+      <div class="row"><span>고객센터</span><input class="inp" id="emailInput" type="email"></div>
+      <div class="row"><span>권한 알림</span><input class="inp" id="permToastInput"></div>
+      <p class="note">고객센터 메일은 "문제가 있으신가요?"를 누르면 보여요. 권한 알림은 권한 허용 후 잠깐 뜨는 문구예요.</p>
+    </div>
+
+    <div class="admin-foot">
+      <button class="btn outline" id="resetAll">초기화</button>
+      <button class="btn" id="exitAdmin">관리자 모드 종료</button>
+    </div>
+  </section>
+
+  <!-- 문구 수정 팝업 -->
+  <div class="modal" id="editModal">
+    <div class="sheet">
+      <h2>문구 수정</h2>
+      <p class="note" id="editWhere"></p>
+      <textarea id="editText"></textarea>
+      <div class="acts">
+        <button id="editCancel">취소</button>
+        <button id="editReset">기본값</button>
+        <button class="save" id="editSave">저장</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast" id="toast"></div>
   <div class="home-bar"></div>
 </div>
 
 <script>
+  const $ = id => document.getElementById(id);
+  const phone = $('phone');
   const screens = document.querySelectorAll('.screen');
-  const wave = document.getElementById('wave');
+  const wave = $('wave');
+  const STORE = 'mindgram.cfg';
+
+  // ===== 설정 =====
+  const DEFAULT_TEXT = {};
+  document.querySelectorAll('[data-t]').forEach(el => DEFAULT_TEXT[el.dataset.t] = el.textContent);
+  document.querySelectorAll('[data-ph]').forEach(el => DEFAULT_TEXT[el.dataset.ph] = el.placeholder);
+  const DEFAULT_SCENE = { dur: 2, title: '로그인 중이에요...', sub: '잠시만 기다려주세요', help: '' };
+  const defaults = () => ({
+    text: {},
+    icons: ['bubble', 'bubble'],
+    answers: ['', ''],
+    email: 'help@mindgram.app',
+    permToast: '권한이 허용되었어요',
+    scenes: [{ ...DEFAULT_SCENE }],
+    result: 'success',
+  });
+
+  let cfg = defaults();
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE));
+    if (saved) cfg = { ...cfg, ...saved };
+  } catch {}
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch {}
+  }
+
+  // ===== 화면 상태 =====
   let current = 'start';
   let timer = null;
+  let editMode = false;
+  let sceneIdx = 0;
+  let suppressClick = false;
+
+  function render() {
+    document.querySelectorAll('[data-t]').forEach(el => el.textContent = cfg.text[el.dataset.t] ?? DEFAULT_TEXT[el.dataset.t]);
+    document.querySelectorAll('[data-ph]').forEach(el => el.placeholder = cfg.text[el.dataset.ph] ?? DEFAULT_TEXT[el.dataset.ph]);
+    [0, 1].forEach(i => {
+      $('q' + (i + 1) + 'icon').setAttribute('href', '#ic-' + cfg.icons[i]);
+      $('q' + (i + 1)).type = cfg.icons[i] === 'lock' ? 'password' : 'text';
+    });
+    renderScene();
+  }
+
+  function renderScene() {
+    const s = cfg.scenes[Math.min(sceneIdx, cfg.scenes.length - 1)];
+    document.querySelectorAll('[data-sf]').forEach(el => el.textContent = s[el.dataset.sf]);
+  }
 
   function go(name) {
     clearTimeout(timer);
@@ -288,122 +531,281 @@
     wave.style.opacity = target.dataset.wave ? 1 : 0;
     wave.classList.toggle('right', target.dataset.wave === 'right');
     current = name;
-    if (name === 'login') setTimeout(() => document.getElementById('q1').focus(), 400);
-    if (name === 'upload') document.getElementById('fileInput').value = '';
+    if (editMode) return;
+    if (name === 'start') { $('q1').value = ''; $('q2').value = ''; }
+    if (name === 'login') {
+      $('loginHint').classList.remove('show');
+      document.querySelectorAll('#loginForm .field').forEach(f => f.classList.remove('invalid'));
+      setTimeout(() => $('q1').focus(), 400);
+    }
+    if (name === 'upload') $('fileInput').value = '';
   }
 
   function toast(msg) {
-    const t = document.getElementById('toast');
+    const t = $('toast');
     t.textContent = msg;
     t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2000);
+    clearTimeout(t._h);
+    t._h = setTimeout(() => t.classList.remove('show'), 2000);
   }
 
-  // data-go 버튼 공통 처리
+  // 로그인 중 장면을 차례로 보여준 뒤 next 화면으로
+  function runScenes(next) {
+    document.activeElement.blur();
+    sceneIdx = 0;
+    renderScene();
+    go('loginLoading');
+    const step = () => {
+      timer = setTimeout(() => {
+        sceneIdx++;
+        if (sceneIdx >= cfg.scenes.length) { go(next); return; }
+        const els = document.querySelectorAll('.scene-text');
+        els.forEach(el => el.classList.add('fade'));
+        setTimeout(() => { renderScene(); els.forEach(el => el.classList.remove('fade')); }, 300);
+        step();
+      }, Math.max(0.5, +cfg.scenes[sceneIdx].dur || 0) * 1000);
+    };
+    step();
+  }
+
+  // ===== 클릭 공통 처리 =====
+  // 길게 누른 뒤 따라오는 클릭, 문구 수정 모드에서 화면 안 클릭은 무시
+  document.addEventListener('pointerdown', () => { suppressClick = false; }, true);
+  document.addEventListener('click', e => {
+    if (suppressClick || (editMode && e.target.closest('.screen'))) {
+      e.preventDefault(); e.stopPropagation(); suppressClick = false;
+    }
+  }, true);
+  phone.addEventListener('contextmenu', e => e.preventDefault());
+
   document.querySelectorAll('[data-go]').forEach(el =>
-    el.addEventListener('click', e => { e.stopPropagation(); go(el.dataset.go); })
+    el.addEventListener('click', () => go(el.dataset.go))
   );
 
-  // 2. 로그인: 두 칸 모두 입력해야 통과
-  document.getElementById('loginForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const hint = document.getElementById('loginHint');
-    let ok = true;
-    ['q1', 'q2'].forEach(id => {
-      const input = document.getElementById(id);
-      const field = input.closest('.field');
-      field.classList.remove('invalid');
-      if (!input.value.trim()) {
-        void field.offsetWidth; // 흔들림 애니메이션 재시작
-        field.classList.add('invalid');
-        ok = false;
-      }
-    });
-    if (!ok) { hint.textContent = '두 질문에 모두 답해주세요'; return; }
-    hint.textContent = '';
-    document.activeElement.blur();
-    go('loginLoading');
-    timer = setTimeout(() => go('loginDone'), 2000);
-  });
-  ['q1', 'q2'].forEach(id => document.getElementById(id).addEventListener('input', e => {
-    e.target.closest('.field').classList.remove('invalid');
-    document.getElementById('loginHint').textContent = '';
-  }));
-  // 길게 누르기: ms 동안 누르고 있으면 onLong 실행, 뒤따르는 클릭은 무시
+  // 길게 누르기: ms 동안 누르고 있으면 onLong 실행
   function longPress(el, ms, onLong, skip) {
-    let t, fired = false;
+    let t;
     el.addEventListener('pointerdown', e => {
-      fired = false;
-      if (skip && skip(e)) return;
-      t = setTimeout(() => { fired = true; onLong(); }, ms);
+      if (editMode || (skip && skip(e))) return;
+      t = setTimeout(() => { suppressClick = true; onLong(); }, ms);
     });
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => el.addEventListener(ev, () => clearTimeout(t)));
-    el.addEventListener('click', e => {
-      if (fired) { e.preventDefault(); e.stopPropagation(); fired = false; }
-    }, true);
-    el.addEventListener('contextmenu', e => e.preventDefault());
   }
 
-  // 4. 로그인 화면을 3초 이상 누르면 로그인 실패
-  longPress(document.querySelector('[data-screen="login"]'), 3000, () => {
-    document.activeElement.blur();
-    go('loginLoading');
-    timer = setTimeout(() => {
-      go('login');
-      document.getElementById('loginHint').textContent = '아이디 또는 비밀번호가 일치하지 않아요';
-      ['q1', 'q2'].forEach(id => {
-        const field = document.getElementById(id).closest('.field');
-        field.classList.remove('invalid');
-        void field.offsetWidth;
-        field.classList.add('invalid');
-      });
-    }, 1500);
-  }, e => e.target.closest('input, .back, #helpBtn'));
+  // 1. 시작하기 (2초 길게 누르면 관리자 모드)
+  $('startBtn').addEventListener('click', () => go('login'));
+  longPress($('startBtn'), 2000, openAdmin);
 
-  // 5. (테스트용) 파일 선택하기를 1초 이상 누르면 파일 없이 다음으로
-  longPress(document.getElementById('fileInput').closest('label'), 1000, () => {
-    document.getElementById('fileName').textContent = '테스트 모드';
-    go('analyzing');
-    timer = setTimeout(() => go('done'), 2500);
+  // 2. 로그인
+  $('loginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    let ok = true;
+    ['q1', 'q2'].forEach(id => {
+      const field = $(id).closest('.field');
+      field.classList.remove('invalid');
+      if (!$(id).value.trim()) { void field.offsetWidth; field.classList.add('invalid'); ok = false; }
+    });
+    if (!ok) { $('loginHint').classList.add('show'); return; }
+    const correct = [0, 1].every(i => !cfg.answers[i].trim() || $('q' + (i + 1)).value.trim() === cfg.answers[i].trim());
+    runScenes(correct ? 'loginDone' : 'loginError');
   });
-
-  document.getElementById('helpBtn').addEventListener('click', () => toast('고객센터: help@mindgram.app'));
+  ['q1', 'q2'].forEach(id => $(id).addEventListener('input', () => {
+    $(id).closest('.field').classList.remove('invalid');
+    $('loginHint').classList.remove('show');
+  }));
+  // 로그인 화면을 3초 이상 누르면 로그인 실패
+  longPress(document.querySelector('[data-screen="login"]'), 3000, () => runScenes('loginError'),
+    e => e.target.closest('input, .back, #helpBtn'));
+  $('helpBtn').addEventListener('click', () => toast('고객센터: ' + cfg.email));
 
   // 4. 권한 허용
-  document.getElementById('allowBtn').addEventListener('click', () => {
-    if (confirm('Mindgram이 Instagram 계정에 접근하도록 허용할까요?')) {
-      toast('권한이 허용되었어요');
-      go('upload');
-    }
+  $('allowBtn').addEventListener('click', () => {
+    toast(cfg.permToast);
+    go('upload');
   });
 
-  // 5. 파일 선택 → 6. 분석 중 → 완료 / 7. 오류
-  document.getElementById('fileInput').addEventListener('change', e => {
+  // 5. 파일 선택 → 6. 분석 중 → 완료 / 오류
+  function analyze(valid) {
+    go('analyzing');
+    timer = setTimeout(() => go(valid && cfg.result === 'success' ? 'done' : 'error'), 2500);
+  }
+  $('fileInput').addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-    document.getElementById('fileName').textContent = file.name;
-    go('analyzing');
-
+    $('fileName').textContent = file.name;
     const reader = new FileReader();
     reader.onload = () => {
       let valid = file.name.toLowerCase().endsWith('.json');
       try { JSON.parse(reader.result); } catch { valid = false; }
-      timer = setTimeout(() => {
-        if (current !== 'analyzing') return;
-        if (valid) go('done');
-        else {
-          document.getElementById('errorMsg').innerHTML = '올바른 JSON 파일이 아니에요.<br>파일을 다시 업로드해주세요.';
-          go('error');
-        }
-      }, 2500);
+      analyze(valid);
     };
-    reader.onerror = () => {
-      document.getElementById('errorMsg').innerHTML = '파일을 다시 업로드하거나<br>잠시 후 다시 시도해주세요.';
-      go('error');
-    };
+    reader.onerror = () => analyze(false);
     reader.readAsText(file);
   });
+  // (테스트용) 파일 선택하기를 1초 이상 누르면 파일 없이 다음으로
+  longPress($('fileBtn'), 1000, () => {
+    $('fileName').textContent = '테스트 모드';
+    analyze(true);
+  });
 
+  // ===== 관리자 모드 =====
+  const ICONS = [['bubble', '말풍선'], ['user', '아이디'], ['lock', '비밀번호']];
+
+  function openAdmin() {
+    buildAdmin();
+    go('admin');
+  }
+
+  function buildAdmin() {
+    $('qSettings').innerHTML = [0, 1].map(i => `
+      <div class="qsub">${escapeHtml(cfg.text['login.q' + (i + 1) + 'name'] ?? DEFAULT_TEXT['login.q' + (i + 1) + 'name'])}</div>
+      <div class="row"><span>아이콘</span>
+        <div class="seg">${ICONS.map(([v, label]) =>
+          `<button data-q="${i}" data-icon="${v}" class="${cfg.icons[i] === v ? 'on' : ''}"><svg width="15" height="15"><use href="#ic-${v}"/></svg>${label}</button>`).join('')}
+        </div>
+      </div>
+      <div class="row"><span>정답</span><input class="inp" data-answer="${i}" placeholder="비워두면 아무 답이나 통과" value="${escapeHtml(cfg.answers[i])}"></div>
+    `).join('');
+
+    $('sceneList').innerHTML = cfg.scenes.map((s, i) => `
+      <div class="scene">
+        <div class="scene-top">
+          <b>장면 ${i + 1}</b>
+          <input class="inp num" type="number" min="0.5" step="0.5" data-dur="${i}" value="${s.dur}"><span style="font-size:13px;color:var(--sub)">초</span>
+          <button class="mini" data-edit-scene="${i}">문구</button>
+          <button class="mini danger" data-del-scene="${i}" ${cfg.scenes.length === 1 ? 'disabled style="opacity:.35"' : ''}>삭제</button>
+        </div>
+        <div class="scene-sum">${escapeHtml([s.title, s.sub, s.help].filter(Boolean).join(' · ').replace(/\n/g, ' '))}</div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('#resultSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === cfg.result));
+    $('emailInput').value = cfg.email;
+    $('permToastInput').value = cfg.permToast;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  }
+
+  const admin = document.querySelector('[data-screen="admin"]');
+  admin.addEventListener('click', e => {
+    const icon = e.target.closest('[data-icon]');
+    if (icon) { cfg.icons[+icon.dataset.q] = icon.dataset.icon; save(); render(); buildAdmin(); return; }
+    const del = e.target.closest('[data-del-scene]');
+    if (del && cfg.scenes.length > 1) { cfg.scenes.splice(+del.dataset.delScene, 1); save(); buildAdmin(); return; }
+    const ed = e.target.closest('[data-edit-scene]');
+    if (ed) { openEdit({ screen: 'loginLoading', scene: +ed.dataset.editScene }); return; }
+    const res = e.target.closest('#resultSeg button');
+    if (res) { cfg.result = res.dataset.v; save(); buildAdmin(); }
+  });
+  admin.addEventListener('input', e => {
+    const t = e.target;
+    if (t.dataset.answer) cfg.answers[+t.dataset.answer] = t.value;
+    if (t.dataset.dur) cfg.scenes[+t.dataset.dur].dur = parseFloat(t.value) || 0.5;
+    if (t.id === 'emailInput') cfg.email = t.value;
+    if (t.id === 'permToastInput') cfg.permToast = t.value;
+    save();
+  });
+  $('addScene').addEventListener('click', () => {
+    cfg.scenes.push({ ...DEFAULT_SCENE, title: '장면 ' + (cfg.scenes.length + 1), sub: '', help: '' });
+    save(); buildAdmin();
+  });
+  $('resetAll').addEventListener('click', () => {
+    if (!confirm('모든 설정과 문구를 처음 상태로 되돌릴까요?')) return;
+    cfg = defaults(); save(); render(); buildAdmin(); toast('초기화했어요');
+  });
+  $('exitAdmin').addEventListener('click', () => go('start'));
+  $('openEdit').addEventListener('click', () => openEdit({ screen: 'start' }));
+
+  // ===== 문구 수정 모드 =====
+  const SCREEN_NAMES = {
+    start: '시작', login: '로그인', loginLoading: '로그인 중', loginDone: '로그인 완료', loginError: '로그인 오류',
+    permission: '접근 권한', upload: '파일 업로드', analyzing: '분석 중', done: '분석 완료', error: '분석 오류',
+  };
+  function editPages() {
+    const pages = [{ screen: 'start' }, { screen: 'login' }];
+    cfg.scenes.forEach((_, i) => pages.push({ screen: 'loginLoading', scene: i }));
+    ['loginDone', 'loginError', 'permission', 'upload', 'analyzing', 'done', 'error'].forEach(s => pages.push({ screen: s }));
+    return pages;
+  }
+  let editPage = 0;
+
+  function openEdit(target) {
+    editMode = true;
+    phone.classList.add('editing');
+    const pages = editPages();
+    editPage = Math.max(0, pages.findIndex(p => p.screen === target.screen && (p.scene ?? 0) === (target.scene ?? 0)));
+    showEditPage();
+  }
+  function showEditPage() {
+    const pages = editPages();
+    const p = pages[editPage];
+    sceneIdx = p.scene ?? 0;
+    renderScene();
+    go(p.screen);
+    $('editName').textContent = SCREEN_NAMES[p.screen] + (p.scene != null ? ` · 장면 ${p.scene + 1}` : '') + ` (${editPage + 1}/${pages.length})`;
+  }
+  $('editPrev').addEventListener('click', () => { const n = editPages().length; editPage = (editPage - 1 + n) % n; showEditPage(); });
+  $('editNext').addEventListener('click', () => { editPage = (editPage + 1) % editPages().length; showEditPage(); });
+  $('editDone').addEventListener('click', () => {
+    editMode = false;
+    phone.classList.remove('editing');
+    buildAdmin();
+    go('admin');
+  });
+
+  // 수정 모드에서 글자를 길게 누르면 수정 팝업
+  let editTarget = null;
+  function editableFrom(el) {
+    const btn = el.closest('.btn, .link');
+    return el.closest('[data-t], [data-sf]') || el.closest('.field')?.querySelector('[data-ph]') || btn?.querySelector('[data-t]');
+  }
+  let pressT, pressEl;
+  phone.addEventListener('pointerdown', e => {
+    if (!editMode || !e.target.closest('.screen')) return;
+    const el = editableFrom(e.target);
+    if (!el) return;
+    pressEl = el.closest('.field') || el;
+    pressEl.classList.add('pressing');
+    pressT = setTimeout(() => { pressEl.classList.remove('pressing'); openEditor(el); }, 600);
+  });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => phone.addEventListener(ev, () => {
+    clearTimeout(pressT);
+    pressEl?.classList.remove('pressing');
+  }));
+
+  function openEditor(el) {
+    let value, where;
+    if (el.dataset.sf) {
+      editTarget = { kind: 'scene', i: sceneIdx, f: el.dataset.sf };
+      value = cfg.scenes[sceneIdx][el.dataset.sf];
+      where = `로그인 중 · 장면 ${sceneIdx + 1} · ` + { title: '제목', sub: '소제목', help: '도움말 (비우면 숨김)' }[el.dataset.sf];
+    } else {
+      const key = el.dataset.t || el.dataset.ph;
+      editTarget = { kind: 'text', key };
+      value = cfg.text[key] ?? DEFAULT_TEXT[key];
+      where = SCREEN_NAMES[current] + (el.dataset.ph ? ' · 입력칸 도움말' : '');
+    }
+    $('editWhere').textContent = where;
+    $('editText').value = value;
+    $('editModal').classList.add('show');
+    setTimeout(() => $('editText').focus(), 50);
+  }
+  function closeEditor() { $('editModal').classList.remove('show'); editTarget = null; }
+  $('editCancel').addEventListener('click', closeEditor);
+  $('editReset').addEventListener('click', () => {
+    $('editText').value = editTarget.kind === 'text' ? DEFAULT_TEXT[editTarget.key]
+      : (editTarget.i === 0 ? DEFAULT_SCENE[editTarget.f] : '');
+  });
+  $('editSave').addEventListener('click', () => {
+    const v = $('editText').value;
+    if (editTarget.kind === 'text') cfg.text[editTarget.key] = v;
+    else cfg.scenes[editTarget.i][editTarget.f] = v;
+    save(); render(); closeEditor();
+  });
+
+  render();
 </script>
 </body>
 </html>
