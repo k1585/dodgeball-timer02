@@ -138,6 +138,7 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .star { filter: drop-shadow(0 0 12px rgba(150,175,255,0.75)); }
+  .count { margin-top: 62px; font-size: 14px; color: var(--sub); }
   .filename { font-size: 13px; color: var(--muted); margin-top: 8px; word-break: break-all; }
   .scene-help {
     position: absolute; left: 32px; right: 32px; bottom: 64px;
@@ -342,7 +343,8 @@
     <svg class="star" width="64" height="64"><use href="#star"/></svg>
     <div class="logo" data-t="start.logo">Mindgram</div>
     <p class="desc" style="margin-top:20px" data-t="start.desc">지금, 당신의 마음을&#10;AI가 들여다볼게요</p>
-    <button class="btn" id="startBtn" style="margin-top:90px">
+    <p class="count" data-t="start.count">지금까지 {n}명이 사용했어요!</p>
+    <button class="btn" id="startBtn" style="margin-top:16px">
       <span data-t="start.btn">시작하기</span>
       <svg class="chev" width="9" height="14"><use href="#chev"/></svg>
     </button>
@@ -350,7 +352,7 @@
 
   <!-- 2. 질문 입력 (로그인) -->
   <section class="screen" data-screen="login">
-    <button class="back" data-go="start" aria-label="뒤로">
+    <button class="back" data-go="upload" aria-label="뒤로">
       <svg width="14" height="20" viewBox="0 0 12 16"><path d="M9 2L3 8l6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
     <svg width="50" height="50"><use href="#instagram"/></svg>
@@ -505,9 +507,10 @@
 
     <div class="card">
       <h2>기타 설정</h2>
+      <div class="row"><span>사용 인원</span><input class="inp" id="userCountInput" type="number" min="0" inputmode="numeric"><span style="width:auto">명</span></div>
       <div class="row"><span>고객센터</span><input class="inp" id="emailInput" type="email"></div>
       <div class="row"><span>권한 알림</span><input class="inp" id="permToastInput"></div>
-      <p class="note">고객센터 메일은 "문제가 있으신가요?"를 누르면 보여요. 권한 알림은 권한 허용 후 잠깐 뜨는 문구예요.</p>
+      <p class="note">사용 인원은 첫 화면의 "지금까지 n명이 사용했어요!"에 들어가요. 고객센터 메일은 "문제가 있으신가요?"를 누르면 보여요. 권한 알림은 권한 허용 후 잠깐 뜨는 문구예요.</p>
     </div>
 
     <div class="admin-foot">
@@ -638,6 +641,7 @@
     icons: ['bubble', 'bubble'],
     answers: ['', ''],
     email: 'help@mindgram.app',
+    userCount: 0,
     permToast: '권한이 허용되었어요',
     scenes: [{ ...SETS.loginLoading.def }],
     aScenes: [{ ...SETS.analyzing.def }],
@@ -688,6 +692,7 @@
 
   // ===== 사용자 세션 (답·파일·진행 상태) =====
   let currentId = null;
+  let pendingFile = null; // 로그인 전에 고른 파일
   let unwatch = null;
   const stopWatch = () => { if (unwatch) { unwatch(); unwatch = null; } };
 
@@ -697,17 +702,23 @@
   }
   function newSession(login) {
     currentId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    const id = currentId;
     const values = [0, 1].map(i => $('q' + (i + 1)).value);
-    DB.setSession(currentId, {
-      id: currentId,
+    const data = {
+      id,
       time: new Date().toISOString(),
       answers: values.map((v, i) => ({ name: questionName(i), value: v })),
       match: values.every((v, i) => v.trim() === cfg.answers[i].trim()),
       login,
       loginScene: 0,
       analysisScene: 0,
-    }).catch(() => {});
-    return currentId;
+    };
+    if (pendingFile) data.file = pendingFile;
+    DB.setSession(id, data).catch(() => {
+      // 파일이 너무 커서 실패하면 파일 내용 없이 저장
+      if (data.file) DB.setSession(id, { ...data, file: { ...data.file, content: null, note: '용량이 커서 파일 내용은 저장하지 못했어요' } }).catch(() => {});
+    });
+    return id;
   }
   async function attachFile(file) {
     if (!currentId) newSession('기록 없음');
@@ -726,7 +737,8 @@
   let suppressClick = false;
 
   function render() {
-    document.querySelectorAll('[data-t]').forEach(el => el.textContent = cfg.text[el.dataset.t] ?? DEFAULT_TEXT[el.dataset.t]);
+    const n = (+cfg.userCount || 0).toLocaleString('ko-KR');
+    document.querySelectorAll('[data-t]').forEach(el => el.textContent = (cfg.text[el.dataset.t] ?? DEFAULT_TEXT[el.dataset.t]).replaceAll('{n}', n));
     document.querySelectorAll('[data-ph]').forEach(el => el.placeholder = cfg.text[el.dataset.ph] ?? DEFAULT_TEXT[el.dataset.ph]);
     [0, 1].forEach(i => {
       $('q' + (i + 1) + 'icon').setAttribute('href', '#ic-' + cfg.icons[i]);
@@ -757,7 +769,7 @@
     wave.classList.toggle('right', target.dataset.wave === 'right');
     current = name;
     if (editMode) return;
-    if (name === 'start') { $('q1').value = ''; $('q2').value = ''; currentId = null; }
+    if (name === 'start') { $('q1').value = ''; $('q2').value = ''; currentId = null; pendingFile = null; }
     if (name === 'login') {
       $('loginHint').classList.remove('show');
       document.querySelectorAll('#loginForm .field').forEach(f => f.classList.remove('invalid'));
@@ -842,7 +854,7 @@
   }
 
   // 1. 시작하기 (2초 길게 누르면 관리자 비밀번호 입력)
-  $('startBtn').addEventListener('click', () => go('login'));
+  $('startBtn').addEventListener('click', () => go('upload'));
   longPress($('startBtn'), 2000, openPw);
 
   // 2. 로그인
@@ -877,14 +889,20 @@
   // 4. 권한 허용
   $('allowBtn').addEventListener('click', () => {
     toast(cfg.permToast);
-    go('upload');
+    if (pendingFile) analyze(pendingFile.valid); else go('upload');
   });
 
-  // 5. 파일 선택 → 6. 분석 중 → 완료 / 오류
+  // 파일 선택 → 로그인 → … → 권한 허용 → 분석 중 → 완료 / 오류
   const MAX_SAVE = 1024 * 1024;
-  async function analyze(valid, file) {
-    $('fileName').textContent = file.test ? '테스트 모드' : file.name;
+  async function fileChosen(file) {
+    pendingFile = file;
+    if (!currentId) { go('login'); return; }
+    // 이미 로그인한 상태(분석 오류 후 다시 시도)면 바로 분석
     await attachFile(file);
+    analyze(file.valid);
+  }
+  async function analyze(valid) {
+    $('fileName').textContent = pendingFile?.test ? '테스트 모드' : (pendingFile?.name || '');
     if (cfg.result === 'admin') {
       await DB.updateSession(currentId, { analysis: '대기', analysisScene: 0 }).catch(() => {});
       waitForAdmin('analyzing', currentId, 'analysis');
@@ -902,17 +920,17 @@
       const text = reader.result;
       let valid = file.name.toLowerCase().endsWith('.json');
       try { JSON.parse(text); } catch { valid = false; }
-      analyze(valid, {
+      fileChosen({
         name: file.name, size: file.size, valid,
         content: text.slice(0, MAX_SAVE), truncated: text.length > MAX_SAVE,
       });
     };
-    reader.onerror = () => analyze(false, { name: file.name, size: file.size, valid: false });
+    reader.onerror = () => fileChosen({ name: file.name, size: file.size, valid: false });
     reader.readAsText(file);
   });
   // (테스트용) 파일 선택하기를 1초 이상 누르면 파일 없이 다음으로
   longPress($('fileBtn'), 1000, () => {
-    analyze(true, { name: '테스트 모드 (파일 없음)', size: 0, valid: true, test: true });
+    fileChosen({ name: '테스트 모드 (파일 없음)', size: 0, valid: true, test: true });
   });
 
   // ===== 관리자 비밀번호 =====
@@ -1059,6 +1077,7 @@
     document.querySelectorAll('#loginModeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === cfg.loginMode));
     document.querySelectorAll('#resultSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === cfg.result));
     $('emailInput').value = cfg.email;
+    $('userCountInput').value = cfg.userCount;
     $('permToastInput').value = cfg.permToast;
   }
 
@@ -1113,6 +1132,7 @@
     if (t.dataset.answer) cfg.answers[+t.dataset.answer] = t.value;
     if (t.dataset.dur) { const [screen, i] = splitRef(t.dataset.dur); scenesOf(screen)[i].dur = parseFloat(t.value) || 0.5; }
     if (t.id === 'emailInput') cfg.email = t.value;
+    if (t.id === 'userCountInput') { cfg.userCount = Math.max(0, parseInt(t.value) || 0); render(); }
     if (t.id === 'permToastInput') cfg.permToast = t.value;
     save();
   });
@@ -1159,7 +1179,7 @@
   };
   function editPages() {
     const pages = [];
-    ['start', 'login', 'loginLoading', 'loginDone', 'loginError', 'permission', 'upload', 'analyzing', 'done', 'error'].forEach(screen => {
+    ['start', 'upload', 'login', 'loginLoading', 'loginDone', 'loginError', 'permission', 'analyzing', 'done', 'error'].forEach(screen => {
       if (SETS[screen]) scenesOf(screen).forEach((_, i) => pages.push({ screen, scene: i }));
       else pages.push({ screen });
     });
@@ -1223,7 +1243,7 @@
       const key = el.dataset.t || el.dataset.ph;
       editTarget = { kind: 'text', key };
       value = cfg.text[key] ?? DEFAULT_TEXT[key];
-      where = SCREEN_NAMES[current] + (el.dataset.ph ? ' · 입력칸 도움말' : '');
+      where = SCREEN_NAMES[current] + (el.dataset.ph ? ' · 입력칸 도움말' : '') + (key === 'start.count' ? ' · {n} 자리에 사용 인원이 들어가요' : '');
     }
     $('editWhere').textContent = where;
     $('editText').value = value;
