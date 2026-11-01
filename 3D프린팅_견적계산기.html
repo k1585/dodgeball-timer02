@@ -80,6 +80,35 @@ table.info th{text-align:left;color:var(--muted);font-weight:500;width:110px;pad
 table.info td{padding:9px 0;border-bottom:1px solid var(--line);word-break:break-all}
 table.info tr.sum td,table.info tr.sum th{border-bottom:none;font-size:18px;font-weight:800;color:var(--text)}
 table.info tr.sum td{color:var(--accent)}
+.storeLink{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.order-guide{margin:-6px 0 16px;padding:12px 14px;border-radius:10px;border:1px dashed var(--accent);
+  font-size:14.5px;text-align:center;word-break:keep-all}
+.order-guide b{color:var(--accent)}
+.pin-box{max-width:320px;text-align:center}
+.pin-dots{display:flex;justify-content:center;gap:14px;margin:14px 0 6px}
+.pin-dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted)}
+.pin-dots i.on{background:var(--accent);border-color:var(--accent)}
+.pin-msg{min-height:20px;font-size:13px;color:#dc2626}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.keypad button{padding:14px 0;font-size:20px;font-weight:600}
+.keypad button.sm{font-size:14px;font-weight:500}
+.admin-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.admin-head h1{margin:0}
+.order-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+.order-card.done{opacity:.6}
+.oc-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.oc-no{font-size:26px;font-weight:800;letter-spacing:3px;color:var(--accent)}
+.oc-date{color:var(--muted);font-size:13px;margin-left:auto}
+.st{font-size:12px;padding:2px 9px;border-radius:99px;font-weight:700}
+.st.new{background:#fde68a;color:#92400e}
+.st.done{background:var(--line);color:var(--muted)}
+.oc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px 16px;font-size:14px}
+.oc-grid span{color:var(--muted)}
+.oc-grid b{color:var(--text);font-weight:600;word-break:break-all}
+.oc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn-danger{color:#dc2626}
 .sec-title{font-size:14px;font-weight:700;margin:16px 0 4px;color:var(--muted)}
 </style>
 </head>
@@ -144,7 +173,7 @@ table.info tr.sum td{color:var(--accent)}
       </div>
       <div class="btn-row">
         <button id="orderBtn" class="btn-primary" disabled>주문 신청하기</button>
-        <a class="btn-store storeLink" href="#" target="_blank" rel="noopener">스마트스토어 바로가기</a>
+        <a class="btn-store storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
       </div>
       <div class="btn-row" style="margin-top:8px">
         <button id="copyBtn">견적 내용 복사</button>
@@ -157,16 +186,17 @@ table.info tr.sum td{color:var(--accent)}
  <!-- 주문 완료 화면 -->
  <div id="orderView" hidden>
   <h1 style="text-align:center">주문 신청 완료</h1>
-  <p class="sub" style="text-align:center">아래 주문번호를 꼭 기억해 주세요. 스마트스토어 주문 시 요청사항(메모)에 주문번호를 적어 주세요.</p>
+  <p class="sub" style="text-align:center">주문 파일이 접수되었어요. 아래 주문번호를 꼭 기억해 주세요.</p>
   <div class="card" style="max-width:560px;margin:0 auto">
     <div class="order-no"><small>주문번호</small><div class="num" id="orderNo">0000</div></div>
+    <div class="order-guide">📌 스마트스토어에서 주문할 때 <b>옵션</b>에 이 번호 <b id="orderNo2">0000</b>을(를) 입력해 주세요.</div>
     <div class="sec-title">파일 정보</div>
     <table class="info" id="orderInfo"></table>
     <div class="sec-title">출력 설정</div>
     <table class="info" id="orderSettings"></table>
     <table class="info" style="margin-top:6px"><tr class="sum"><th>총 가격</th><td id="orderTotal"></td></tr></table>
     <div class="btn-row">
-      <a class="btn-store storeLink" href="#" target="_blank" rel="noopener">스마트스토어 바로가기</a>
+      <a class="btn-store storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
     </div>
     <div class="btn-row" style="margin-top:8px">
       <button id="orderCopyBtn">주문 내용 복사</button>
@@ -182,11 +212,37 @@ table.info tr.sum td{color:var(--accent)}
     <div style="font-size:14px;color:var(--muted)">주문할 파일</div>
     <div class="modal-file" id="cfFile"></div>
     <div style="font-size:14px">총 가격 <b id="cfTotal" style="color:var(--accent);font-size:17px"></b></div>
-    <div class="btn-row" style="margin-top:18px">
+    <div class="note" id="cfStatus"></div>
+    <div class="btn-row" style="margin-top:14px">
       <button id="cfCancel">취소</button>
       <button id="cfOk" class="btn-primary">확인</button>
     </div>
   </div>
+ </div>
+
+  <!-- 관리자 비밀번호 -->
+ <div class="modal" id="pinModal" hidden>
+  <div class="modal-box pin-box" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
+    <h3 id="pinTitle">관리자 비밀번호</h3>
+    <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+    <div class="pin-msg" id="pinMsg"></div>
+    <div class="keypad" id="keypad">
+      <button>1</button><button>2</button><button>3</button>
+      <button>4</button><button>5</button><button>6</button>
+      <button>7</button><button>8</button><button>9</button>
+      <button class="sm" data-k="close">닫기</button><button>0</button><button class="sm" data-k="back">←</button>
+    </div>
+  </div>
+ </div>
+
+ <!-- 관리자: 주문 목록 -->
+ <div id="adminView" hidden>
+  <div class="admin-head">
+    <h1>주문 관리</h1>
+    <button id="adminOut">로그아웃</button>
+  </div>
+  <p class="sub" id="adminSub">불러오는 중…</p>
+  <div id="adminList"></div>
  </div>
 
   <!-- 내부 계산값 (화면에 표시 안 함) -->
@@ -205,6 +261,22 @@ const $ = id => document.getElementById(id);
 /* ======== 설정: 스마트스토어 주소를 여기에 넣으세요 ======== */
 const SMARTSTORE_URL = "https://smartstore.naver.com/";
 const MAX_SIZE = 300;   // 최대 출력 크기 (mm, 가로·세로·높이 각각)
+const MAX_FILE_MB = 50; // 주문 시 올릴 수 있는 최대 파일 크기 (MB)
+
+/* ======== Firebase 설정: 새 Firebase 프로젝트 값으로 바꾸세요 ======== */
+const FIREBASE_CONFIG = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.firebasestorage.app",
+  messagingSenderId: "",
+  appId: ""
+};
+// 관리자 계정 (Firebase Authentication 에 만든 계정)
+// 비밀번호는 "네자리숫자 + ADMIN_PW_SUFFIX" 로 만들어 주세요. 예) 1234-3dprint
+const ADMIN_EMAIL = "admin@my3dprint.com";
+const ADMIN_PW_SUFFIX = "-3dprint";
 /* ========================================================= */
 document.querySelectorAll(".storeLink").forEach(a => a.href = SMARTSTORE_URL);
 
@@ -269,7 +341,7 @@ async function handleFile(file){
     else throw new Error("지원하지 않는 형식입니다.");
     if (result.sliced && !(result.sliced.g > 0 || result.sliced.sec > 0)) result.sliced = null;
     if (!result.geo && !result.sliced) throw new Error("모델 데이터나 슬라이싱 정보를 찾지 못했습니다.");
-    current = {name: file.name, ...result};
+    current = {name: file.name, file, ...result};
     showResult();
   }catch(err){
     console.error(err);
@@ -671,43 +743,46 @@ function orderData(){
        ["서포트", $("support").selectedOptions[0].text], ["수량", qty + "개"]];
   return {name: current.name, weight: g.toFixed(1) + "g", size, time: fmtMin(m), settings, total: won(total)};
 }
-function newOrderNo(){
-  let used = [];
-  try { used = JSON.parse(localStorage.getItem("usedOrderNos") || "[]"); } catch(e){}
-  let no;
-  for (let i=0;i<50;i++){
-    no = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, "0");
-    if (!used.includes(no)) break;
-  }
-  try { used.push(no); localStorage.setItem("usedOrderNos", JSON.stringify(used.slice(-5000))); } catch(e){}
-  return no;
-}
 const rows = arr => arr.map(([k,v]) => `<tr><th>${k}</th><td>${escapeHtml(v)}</td></tr>`).join("");
 let lastOrder = null;
 
 $("orderBtn").addEventListener("click", () => {
   if (!current || current.tooBig) return;
+  $("cfStatus").textContent = ""; $("cfOk").textContent = "확인";
   const d = orderData();
   $("cfFile").textContent = d.name;
   $("cfTotal").textContent = d.total;
   $("confirmModal").hidden = false;
   $("cfOk").focus();
 });
-$("cfCancel").addEventListener("click", () => $("confirmModal").hidden = true);
-$("confirmModal").addEventListener("click", e => { if (e.target.id === "confirmModal") $("confirmModal").hidden = true; });
-document.addEventListener("keydown", e => { if (e.key === "Escape") $("confirmModal").hidden = true; });
-$("cfOk").addEventListener("click", () => {
+const closeConfirm = () => { if (!$("cfCancel").disabled) $("confirmModal").hidden = true; };
+$("cfCancel").addEventListener("click", closeConfirm);
+$("confirmModal").addEventListener("click", e => { if (e.target.id === "confirmModal") closeConfirm(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape"){ closeConfirm(); closePin(); } });
+$("cfOk").addEventListener("click", async () => {
+  if (!current) return;
   const d = orderData();
-  d.no = newOrderNo();
+  const ok = $("cfOk"), cancel = $("cfCancel"), st = $("cfStatus");
+  if (!fbReady()){ st.innerHTML = '<span class="err">주문 서버가 아직 설정되지 않았어요. 판매자에게 문의해 주세요.</span>'; return; }
+  if (current.file.size > MAX_FILE_MB*1024*1024){ st.innerHTML = `<span class="err">파일이 너무 커요. (최대 ${MAX_FILE_MB}MB)</span>`; return; }
+  ok.disabled = cancel.disabled = true; ok.textContent = "전송 중…";
+  try{
+    d.no = await submitOrder(d, current.file, msg => st.textContent = msg);
+  }catch(err){
+    console.error(err);
+    st.innerHTML = '<span class="err">주문 전송에 실패했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.</span>';
+    ok.disabled = cancel.disabled = false; ok.textContent = "다시 시도";
+    return;
+  }
+  ok.disabled = cancel.disabled = false; ok.textContent = "확인"; st.textContent = "";
   lastOrder = d;
   $("orderNo").textContent = d.no;
+  $("orderNo2").textContent = d.no;
   $("orderInfo").innerHTML = rows([["파일명", d.name], ["무게", d.weight], ["크기", d.size], ["소요시간", d.time]]);
   $("orderSettings").innerHTML = rows(d.settings);
   $("orderTotal").textContent = d.total;
   $("confirmModal").hidden = true;
-  $("quoteView").hidden = true;
-  $("orderView").hidden = false;
-  window.scrollTo(0, 0);
+  showView("orderView");
 });
 $("orderCopyBtn").addEventListener("click", () => {
   if (!lastOrder) return;
@@ -719,14 +794,196 @@ $("orderCopyBtn").addEventListener("click", () => {
     setTimeout(() => $("orderCopyBtn").textContent = "주문 내용 복사", 1200);
   });
 });
-$("backBtn").addEventListener("click", () => {
-  $("orderView").hidden = true;
-  $("quoteView").hidden = false;
-  requestAnimationFrame(draw);
-});
+$("backBtn").addEventListener("click", () => showView("quoteView"));
+function showView(id){
+  for (const v of ["quoteView","orderView","adminView"]) $(v).hidden = v !== id;
+  window.scrollTo(0, 0);
+  if (id === "quoteView") requestAnimationFrame(draw);
+}
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 updatePrice();
+</script>
+
+<script>
+"use strict";
+/* ================= Firebase 연결 ================= */
+let _fb = null;
+function fbReady(){ return !!FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith("YOUR"); }
+async function fb(){
+  if (_fb) return _fb;
+  const base = "https://www.gstatic.com/firebasejs/12.0.0/";
+  const [A, D, U] = await Promise.all([import(base+"firebase-app.js"), import(base+"firebase-database.js"), import(base+"firebase-auth.js")]);
+  const app = A.initializeApp(FIREBASE_CONFIG);
+  _fb = {db: D.getDatabase(app), auth: U.getAuth(app), D, U};
+  return _fb;
+}
+function toB64(u8){
+  let s = "";
+  for (let i=0;i<u8.length;i+=0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i+0x8000));
+  return btoa(s);
+}
+function fromB64(b){
+  const s = atob(b), u8 = new Uint8Array(s.length);
+  for (let i=0;i<s.length;i++) u8[i] = s.charCodeAt(i);
+  return u8;
+}
+
+/* ---- 주문 전송: 번호 예약 → 파일(압축·분할) 업로드 → 주문정보 저장 ---- */
+async function submitOrder(d, file, progress){
+  const {db, D} = await fb();
+  progress("주문번호 만드는 중…");
+  let no = null;
+  for (let i=0;i<40 && !no;i++){
+    const cand = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, "0");
+    const r = await D.runTransaction(D.ref(db, "orderNos/" + cand), cur => cur === null ? true : undefined);
+    if (r.committed) no = cand;
+  }
+  if (!no) throw new Error("주문번호를 만들지 못했어요.");
+
+  progress("파일 준비 중…");
+  const gz = new Uint8Array(await new Response(file.stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer());
+  const CH = 3*1024*1024, n = Math.max(1, Math.ceil(gz.length / CH));
+  for (let i=0;i<n;i++){
+    progress(`파일 전송 중… ${Math.round(i/n*100)}%`);
+    await D.set(D.ref(db, `files/${no}/${i}`), toB64(gz.subarray(i*CH, (i+1)*CH)));
+  }
+  progress("주문 정보 저장 중…");
+  await D.set(D.ref(db, "orders/" + no), {
+    no, name: d.name, weight: d.weight, size: d.size, time: d.time, total: d.total,
+    settings: d.settings.map(([k, v]) => ({k, v})),
+    fileBytes: file.size, chunks: n, status: "new", createdAt: D.serverTimestamp()
+  });
+  return no;
+}
+
+/* ================= 관리자 ================= */
+// 스마트스토어 버튼 3초 이상 누르기 → 비밀번호 입력
+document.querySelectorAll(".storeLink").forEach(a => {
+  let timer = null, fired = false;
+  a.addEventListener("pointerdown", () => {
+    fired = false; clearTimeout(timer);
+    timer = setTimeout(() => { fired = true; openPin(); }, 3000);
+  });
+  ["pointerup","pointerleave","pointercancel"].forEach(ev => a.addEventListener(ev, () => clearTimeout(timer)));
+  a.addEventListener("click", e => { if (fired){ e.preventDefault(); fired = false; } });
+  a.addEventListener("contextmenu", e => e.preventDefault());
+});
+
+let pin = "", pinBusy = false;
+function openPin(){
+  pin = ""; renderPin(); $("pinMsg").textContent = fbReady() ? "" : "Firebase 설정이 아직 안 되어 있어요.";
+  $("pinModal").hidden = false;
+}
+function closePin(){ $("pinModal").hidden = true; pin = ""; }
+function renderPin(){ [...$("pinDots").children].forEach((d, i) => d.classList.toggle("on", i < pin.length)); }
+function pinKey(k){
+  if (pinBusy) return;
+  if (k === "close") return closePin();
+  if (k === "back"){ pin = pin.slice(0, -1); renderPin(); return; }
+  if (!/^\d$/.test(k) || pin.length >= 4) return;
+  pin += k; renderPin(); $("pinMsg").textContent = "";
+  if (pin.length === 4) adminLogin(pin);
+}
+$("keypad").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (b) pinKey(b.dataset.k || b.textContent.trim());
+});
+document.addEventListener("keydown", e => {
+  if ($("pinModal").hidden) return;
+  if (/^\d$/.test(e.key)) pinKey(e.key);
+  else if (e.key === "Backspace") pinKey("back");
+});
+$("pinModal").addEventListener("click", e => { if (e.target.id === "pinModal") closePin(); });
+
+async function adminLogin(code){
+  if (!fbReady()){ pinFail("Firebase 설정이 아직 안 되어 있어요."); return; }
+  pinBusy = true; $("pinMsg").style.color = "var(--muted)"; $("pinMsg").textContent = "확인 중…";
+  try{
+    const {auth, U} = await fb();
+    await U.signInWithEmailAndPassword(auth, ADMIN_EMAIL, code + ADMIN_PW_SUFFIX);
+    closePin(); openAdmin();
+  }catch(err){
+    console.error(err);
+    pinFail(err.code === "auth/too-many-requests" ? "시도가 너무 많아요. 잠시 후 다시 해 주세요." : "비밀번호가 틀렸어요.");
+  }finally{ pinBusy = false; }
+}
+function pinFail(msg){
+  $("pinMsg").style.color = ""; $("pinMsg").textContent = msg;
+  pin = ""; renderPin();
+  const box = $("pinDots"); box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
+}
+
+let ordersUnsub = null, ordersData = {};
+async function openAdmin(){
+  showView("adminView");
+  const {db, D} = await fb();
+  if (ordersUnsub) ordersUnsub();
+  ordersUnsub = D.onValue(D.ref(db, "orders"), snap => { ordersData = snap.val() || {}; renderOrders(); },
+    err => { $("adminSub").innerHTML = `<span class="err">주문 목록을 불러올 수 없어요. (${escapeHtml(err.code || err.message)})</span>`; });
+}
+function renderOrders(){
+  const list = Object.values(ordersData).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const nNew = list.filter(o => o.status !== "done").length;
+  $("adminSub").textContent = `전체 ${list.length}건 · 처리 대기 ${nNew}건`;
+  if (!list.length){ $("adminList").innerHTML = '<div class="card" style="text-align:center;color:var(--muted)">아직 들어온 주문이 없어요.</div>'; return; }
+  const fmtDate = t => t ? new Date(t).toLocaleString("ko-KR", {month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"}) : "";
+  const kb = b => b > 1048576 ? (b/1048576).toFixed(1) + "MB" : Math.ceil(b/1024) + "KB";
+  $("adminList").innerHTML = list.map(o => {
+    const done = o.status === "done";
+    const sets = (o.settings ? Object.values(o.settings) : []).map(x => `${x.k}: ${x.v}`).join(" / ");
+    return `<div class="order-card ${done ? "done" : ""}">
+      <div class="oc-top"><span class="oc-no">${escapeHtml(o.no)}</span>
+        <span class="st ${done ? "done" : "new"}">${done ? "처리 완료" : "새 주문"}</span>
+        <span class="oc-date">${fmtDate(o.createdAt)}</span></div>
+      <div class="oc-grid">
+        <div><span>파일명</span> <b>${escapeHtml(o.name)}</b></div>
+        <div><span>파일 크기</span> <b>${kb(o.fileBytes || 0)}</b></div>
+        <div><span>무게</span> <b>${escapeHtml(o.weight)}</b></div>
+        <div><span>크기</span> <b>${escapeHtml(o.size)}</b></div>
+        <div><span>소요시간</span> <b>${escapeHtml(o.time)}</b></div>
+        <div><span>총 가격</span> <b style="color:var(--accent)">${escapeHtml(o.total)}</b></div>
+        <div style="grid-column:1/-1"><span>설정</span> <b>${escapeHtml(sets)}</b></div>
+      </div>
+      <div class="oc-btns">
+        <button class="btn-primary" data-act="dl" data-no="${escapeHtml(o.no)}">파일 다운로드</button>
+        <button data-act="toggle" data-no="${escapeHtml(o.no)}">${done ? "새 주문으로 되돌리기" : "처리 완료로 표시"}</button>
+        <button class="btn-danger" data-act="del" data-no="${escapeHtml(o.no)}">삭제</button>
+      </div></div>`;
+  }).join("");
+}
+$("adminList").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const no = b.dataset.no, o = ordersData[no]; if (!o) return;
+  const {db, D} = await fb();
+  try{
+    if (b.dataset.act === "dl"){
+      const label = b.textContent; b.disabled = true; b.textContent = "받는 중…";
+      try{
+        const v = (await D.get(D.ref(db, "files/" + no))).val();
+        const parts = Array.isArray(v) ? v : Object.keys(v).sort((x, y) => x - y).map(k => v[k]);
+        const gz = new Blob(parts.map(fromB64));
+        const blob = await new Response(gz.stream().pipeThrough(new DecompressionStream("gzip"))).blob();
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = `${no}_${o.name}`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      } finally { b.disabled = false; b.textContent = label; }
+    } else if (b.dataset.act === "toggle"){
+      await D.set(D.ref(db, `orders/${no}/status`), o.status === "done" ? "new" : "done");
+    } else if (b.dataset.act === "del"){
+      if (!confirm(`주문 ${no} (${o.name})을(를) 삭제할까요?\n파일도 함께 지워지고 되돌릴 수 없어요.`)) return;
+      await D.update(D.ref(db), {[`orders/${no}`]: null, [`files/${no}`]: null, [`orderNos/${no}`]: null});
+    }
+  }catch(err){
+    console.error(err); alert("작업에 실패했어요: " + (err.code || err.message));
+  }
+});
+$("adminOut").addEventListener("click", async () => {
+  if (ordersUnsub){ ordersUnsub(); ordersUnsub = null; }
+  ordersData = {}; $("adminList").innerHTML = "";
+  try{ const {auth, U} = await fb(); await U.signOut(auth); }catch(e){}
+  showView("quoteView");
+});
 </script>
 </body>
 </html>

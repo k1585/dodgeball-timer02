@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "orderNos": {
+      "$no": {
+        ".read": true,
+        ".write": "!data.exists() || (auth != null && auth.token.email == 'admin@my3dprint.com')",
+        ".validate": "$no.matches(/^[0-9]{4}$/) && newData.val() == true"
+      }
+    },
+    "files": {
+      ".read": "auth != null && auth.token.email == 'admin@my3dprint.com'",
+      ".write": "auth != null && auth.token.email == 'admin@my3dprint.com'",
+      "$no": {
+        "$chunk": {
+          ".write": "!data.exists() && root.child('orderNos').child($no).exists() && !root.child('orders').child($no).exists()",
+          ".validate": "newData.isString() && newData.val().length < 5000000"
+        }
+      }
+    },
+    "orders": {
+      ".read": "auth != null && auth.token.email == 'admin@my3dprint.com'",
+      "$no": {
+        ".write": "(!data.exists() && root.child('orderNos').child($no).exists()) || (auth != null && auth.token.email == 'admin@my3dprint.com')",
+        ".validate": "newData.hasChildren(['no', 'name', 'total', 'status'])"
+      }
+    }
+  }
+}
