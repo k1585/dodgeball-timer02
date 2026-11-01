@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D 프린팅 견적계산기</title>
+<style>
+:root{
+  --bg:#f4f5f7; --card:#fff; --text:#1d2129; --muted:#6b7280; --line:#e3e6ea;
+  --accent:#00a862; --accent-soft:#e6f6ee; --warn:#b45309; --warn-soft:#fff4e5;
+  --drop:#fafbfc;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#121417; --card:#1c1f24; --text:#e8eaed; --muted:#9aa0a6; --line:#2e3238;
+    --accent:#2ecc85; --accent-soft:#16352a; --warn:#fbbf24; --warn-soft:#3a2c10;
+    --drop:#181b1f;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:24px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.card h2{font-size:16px;margin:0 0 12px}
+#drop{border:2px dashed var(--line);border-radius:12px;background:var(--drop);
+  padding:28px 12px;text-align:center;cursor:pointer;transition:.15s}
+#drop.over{border-color:var(--accent);background:var(--accent-soft)}
+#drop b{display:block;font-size:16px;margin-bottom:4px}
+#drop small{color:var(--muted)}
+#fileInfo{margin-top:12px;font-size:14px}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;font-weight:600}
+.badge.ok{background:var(--accent-soft);color:var(--accent)}
+.badge.est{background:var(--warn-soft);color:var(--warn)}
+canvas{width:100%;height:260px;display:block;margin-top:12px;border-radius:10px;
+  background:var(--drop);border:1px solid var(--line);touch-action:none;cursor:grab}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13px;margin-top:10px;color:var(--muted)}
+.stats span b{color:var(--text);font-weight:600}
+label.f{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:14px}
+label.f input,label.f select{width:130px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;
+  background:var(--card);color:var(--text);font-size:14px;text-align:right}
+label.f select{text-align:left}
+.big input{font-size:18px !important;font-weight:700;width:150px !important}
+.price{margin-top:14px;padding:16px;border-radius:12px;background:var(--accent-soft)}
+.price .total{font-size:32px;font-weight:800;color:var(--accent)}
+.formula{font-size:13px;color:var(--muted);margin-top:6px;word-break:keep-all}
+details{margin-top:6px}
+summary{cursor:pointer;font-weight:600;font-size:14px;margin:6px 0}
+.note{font-size:12.5px;color:var(--muted);margin-top:10px}
+.err{color:#dc2626;font-size:14px}
+button{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:14px}
+button:hover{border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>3D 프린팅 견적계산기</h1>
+  <p class="sub">STL · 3MF · G-code · 뱀부 스튜디오 슬라이싱 파일(.gcode.3mf)을 넣으면 필라멘트 사용량과 출력시간을 계산하고 가격을 자동으로 산출합니다.</p>
+
+  <div class="grid">
+    <!-- 왼쪽: 파일 -->
+    <div class="card">
+      <h2>① 3D 파일 넣기</h2>
+      <div id="drop">
+        <b>여기로 파일을 끌어다 놓거나 클릭</b>
+        <small>.stl / .3mf / .gcode.3mf / .gcode</small>
+        <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
+      </div>
+      <div id="fileInfo"></div>
+      <canvas id="view" style="display:none"></canvas>
+      <div id="stats" class="stats"></div>
+    </div>
+
+    <!-- 오른쪽: 결과 / 가격 -->
+    <div class="card">
+      <h2>② 사용량 · 가격</h2>
+      <label class="f big">필라멘트 사용량 g (g)
+        <input id="g" type="number" min="0" step="0.01" value="0"></label>
+      <label class="f big">출력시간 m (분)
+        <input id="m" type="number" min="0" step="1" value="0"></label>
+      <div class="note" id="timeHuman"></div>
+
+      <div class="price">
+        <div style="font-size:14px;font-weight:600">예상 가격</div>
+        <div class="total" id="total">0원</div>
+        <div class="formula" id="breakdown"></div>
+        <div class="formula">공식: (18 × g + 8.33 × m + 2,000) × 1.35</div>
+      </div>
+      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+        <button id="copyBtn">견적 복사</button>
+      </div>
+      <p class="note">값은 직접 수정할 수 있어요. 수정하면 가격이 바로 다시 계산됩니다.</p>
+    </div>
+  </div>
+
+  <!-- 자체 계산 설정 -->
+  <div class="card" style="margin-top:16px">
+    <h2>③ 자체 계산 설정 <span style="font-weight:400;color:var(--muted);font-size:13px">(STL / 슬라이싱 안 된 3MF에 사용)</span></h2>
+    <div class="grid">
+      <div>
+        <label class="f">필라멘트 종류
+          <select id="mat">
+            <option value="1.24">PLA (1.24)</option>
+            <option value="1.27">PETG (1.27)</option>
+            <option value="1.04">ABS (1.04)</option>
+            <option value="1.07">ASA (1.07)</option>
+            <option value="1.21">TPU (1.21)</option>
+            <option value="1.30">PLA-CF (1.30)</option>
+            <option value="1.25">PETG-CF (1.25)</option>
+          </select></label>
+        <label class="f">밀도 (g/cm³)<input id="density" type="number" step="0.01" value="1.24"></label>
+        <label class="f">내부 채움 (%)<input id="infill" type="number" min="0" max="100" step="1" value="15"></label>
+        <label class="f">벽 개수<input id="walls" type="number" min="1" step="1" value="2"></label>
+        <label class="f">레이어 높이 (mm)<input id="layerH" type="number" step="0.02" value="0.2"></label>
+      </div>
+      <div>
+        <label class="f">상단 셸 레이어<input id="topL" type="number" min="0" step="1" value="5"></label>
+        <label class="f">하단 셸 레이어<input id="botL" type="number" min="0" step="1" value="3"></label>
+        <label class="f">서포트 추가 (모델부피 %)<input id="support" type="number" min="0" step="1" value="0"></label>
+        <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
+      </div>
+    </div>
+    <details>
+      <summary>고급 (시간 보정)</summary>
+      <div class="grid">
+        <div>
+          <label class="f">선 폭 (mm)<input id="lineW" type="number" step="0.01" value="0.42"></label>
+          <label class="f">평균 출력 유량 (mm³/s)<input id="flow" type="number" step="0.5" value="7"></label>
+        </div>
+        <div>
+          <label class="f">레이어당 추가 시간 (초)<input id="layerSec" type="number" step="0.5" value="2"></label>
+          <label class="f">준비 시간 (분)<input id="prepMin" type="number" step="1" value="4"></label>
+          <label class="f">추가 손실 (g)<input id="extraG" type="number" step="0.1" value="0.5"></label>
+        </div>
+      </div>
+      <p class="note">뱀부랩 X1/P1/A1 기본 "0.20mm Standard" 프로파일 기준 대략값입니다. 같은 파일을 뱀부 스튜디오로 슬라이싱한 결과와 비교해서 <b>평균 출력 유량</b>을 조정하면 정확도가 올라갑니다.</p>
+    </details>
+    <p class="note">
+      💡 <b>가장 정확한 방법:</b> 뱀부 스튜디오에서 슬라이싱 → <b>파일 › 내보내기 › 플레이트 슬라이스 파일 내보내기</b>(.gcode.3mf)로 저장한 뒤 여기 넣으면, 슬라이서가 계산한 실제 시간·무게를 그대로 읽어옵니다.
+      (웹페이지가 뱀부 스튜디오 프로그램을 직접 실행할 수는 없어서, STL·일반 3MF는 모델 부피·표면적으로 자체 추정합니다.)
+    </p>
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+/* ---------------- 가격 계산 ---------------- */
+const won = n => Math.round(n).toLocaleString("ko-KR") + "원";
+function fmtMin(min){
+  min = Math.round(min);
+  const h = Math.floor(min/60), mm = min%60;
+  return h ? `${h}시간 ${mm}분` : `${mm}분`;
+}
+function updatePrice(){
+  const g = Math.max(0, parseFloat($("g").value) || 0);
+  const m = Math.max(0, parseFloat($("m").value) || 0);
+  const base = 18*g + 8.33*m + 2000;
+  const total = base * 1.35;
+  $("total").textContent = won(total);
+  $("breakdown").innerHTML =
+    `(18 × ${g.toFixed(2)}g = ${won(18*g)}) + (8.33 × ${m}분 = ${won(8.33*m)}) + 2,000원 = ${won(base)}<br>× 1.35 = <b>${won(total)}</b>`;
+  $("timeHuman").textContent = m ? `= ${fmtMin(m)}` : "";
+  return {g, m, total};
+}
+$("g").addEventListener("input", updatePrice);
+$("m").addEventListener("input", updatePrice);
+$("copyBtn").addEventListener("click", () => {
+  const {g, m, total} = updatePrice();
+  const name = current ? current.name + "\n" : "";
+  const txt = `${name}필라멘트 ${g.toFixed(2)}g / 출력시간 ${fmtMin(m)}\n견적: ${won(total)}`;
+  navigator.clipboard?.writeText(txt).then(() => {
+    $("copyBtn").textContent = "복사됨!";
+    setTimeout(() => $("copyBtn").textContent = "견적 복사", 1200);
+  });
+});
+
+/* ---------------- 파일 입력 ---------------- */
+const drop = $("drop");
+drop.addEventListener("click", () => $("file").click());
+$("file").addEventListener("change", e => e.target.files[0] && handleFile(e.target.files[0]));
+["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => e.dataTransfer.files[0] && handleFile(e.dataTransfer.files[0]));
+
+let current = null;   // {name, mode:'sliced'|'est', geo, sliced:{g,sec,source}}
+
+async function handleFile(file){
+  $("fileInfo").innerHTML = `<b>${escapeHtml(file.name)}</b> 분석 중…`;
+  $("stats").innerHTML = "";
+  try{
+    const buf = await file.arrayBuffer();
+    const lower = file.name.toLowerCase();
+    let result;
+    if (lower.endsWith(".stl")) result = {geo: parseSTL(buf)};
+    else if (lower.endsWith(".3mf")) result = await parse3MF(buf);
+    else if (/\.(gcode|gco|g)$/.test(lower)) result = {sliced: parseGcodeText(gcodeHeadTail(buf))};
+    else throw new Error("지원하지 않는 형식입니다.");
+    if (result.sliced && !(result.sliced.g > 0 || result.sliced.sec > 0)) result.sliced = null;
+    if (!result.geo && !result.sliced) throw new Error("모델 데이터나 슬라이싱 정보를 찾지 못했습니다.");
+    current = {name: file.name, ...result};
+    showResult();
+  }catch(err){
+    console.error(err);
+    current = null;
+    $("fileInfo").innerHTML = `<span class="err">오류: ${escapeHtml(err.message || String(err))}</span>`;
+    $("view").style.display = "none";
+  }
+}
+
+function showResult(){
+  if (!current) return;
+  const {name, geo, sliced} = current;
+  const qty = Math.max(1, parseInt($("qty").value) || 1);
+  let html = `<b>${escapeHtml(name)}</b><br>`;
+  if (sliced){
+    html += `<span class="badge ok">슬라이서 계산값</span> <small style="color:var(--muted)">${escapeHtml(sliced.source)}</small>`;
+    if (sliced.g > 0) $("g").value = (sliced.g*qty).toFixed(2);
+    if (sliced.sec > 0) $("m").value = Math.ceil(sliced.sec*qty/60);
+    if (!(sliced.g > 0) && geo) $("g").value = (estimate(geo).g*qty).toFixed(2);
+  } else {
+    const e = estimate(geo);
+    html += `<span class="badge est">자체 추정값</span> <small style="color:var(--muted)">설정값 기준 근사치</small>`;
+    $("g").value = (e.g*qty).toFixed(2);
+    $("m").value = Math.ceil(e.min*qty);
+  }
+  if (qty > 1) html += `<br><small style="color:var(--muted)">수량 ${qty}개 기준</small>`;
+  $("fileInfo").innerHTML = html;
+
+  let st = "";
+  if (geo){
+    const d = geo.max.map((v,i)=>v-geo.min[i]);
+    st += `<span>크기 <b>${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
+    st += `<span>부피 <b>${(geo.vol/1000).toFixed(2)} cm³</b></span>`;
+    st += `<span>표면적 <b>${(geo.area/100).toFixed(1)} cm²</b></span>`;
+    st += `<span>삼각형 <b>${geo.tris.toLocaleString()}</b></span>`;
+    if (sliced){
+      const e = estimate(geo);
+      st += `<span>참고 자체추정 <b>${e.g.toFixed(1)}g / ${fmtMin(e.min)}</b></span>`;
+    }
+    $("view").style.display = "block";
+    preparePreview(geo);
+  } else {
+    $("view").style.display = "none";
+  }
+  if (sliced && sliced.plates > 1) st += `<span>플레이트 <b>${sliced.plates}개 합산</b></span>`;
+  $("stats").innerHTML = st;
+  updatePrice();
+}
+
+/* ---------------- 자체 추정 ---------------- */
+function num(id){ return parseFloat($(id).value) || 0; }
+function estimate(geo){
+  const layerH = Math.max(0.04, num("layerH"));
+  const wallT  = Math.max(1, num("walls")) * Math.max(0.1, num("lineW"));
+  const tbT    = (num("topL") + num("botL")) / 2 * layerH;   // 수평면(윗면+아랫면) 평균 두께
+  const V      = geo.vol;
+  const shell  = Math.min(V, geo.areaV*wallT + geo.areaH*tbT);
+  const infill = (V - shell) * Math.min(100, Math.max(0, num("infill"))) / 100;
+  const supp   = V * Math.max(0, num("support")) / 100;
+  const ext    = shell + infill + supp;                      // mm³
+  const g      = ext/1000 * num("density") + Math.max(0, num("extraG"));
+  const layers = Math.ceil((geo.max[2]-geo.min[2]) / layerH);
+  const sec    = ext / Math.max(0.5, num("flow")) + layers*num("layerSec") + num("prepMin")*60;
+  return {g, min: sec/60, ext, layers};
+}
+$("mat").addEventListener("change", () => { $("density").value = $("mat").value; showResult(); });
+["density","infill","walls","layerH","topL","botL","support","qty","lineW","flow","layerSec","prepMin","extraG"]
+  .forEach(id => $(id).addEventListener("input", showResult));
+
+/* ---------------- 지오메트리 누적 ---------------- */
+function newGeo(){
+  return {vol:0, area:0, areaH:0, areaV:0, tris:0,
+          min:[Infinity,Infinity,Infinity], max:[-Infinity,-Infinity,-Infinity], chunks:[]};
+}
+// 하나의 메쉬(정점 배열 pos[x,y,z...], 인덱스 idx) + 4x3 변환행렬 누적
+function addMesh(geo, pos, idx, mtx){
+  const n = idx.length/3;
+  const out = new Float32Array(n*9);
+  let vol = 0;
+  const T = mtx || [1,0,0, 0,1,0, 0,0,1, 0,0,0];
+  const tx = (i) => {
+    const x=pos[i*3], y=pos[i*3+1], z=pos[i*3+2];
+    return [x*T[0]+y*T[3]+z*T[6]+T[9], x*T[1]+y*T[4]+z*T[7]+T[10], x*T[2]+y*T[5]+z*T[8]+T[11]];
+  };
+  for (let t=0;t<n;t++){
+    const a=tx(idx[t*3]), b=tx(idx[t*3+1]), c=tx(idx[t*3+2]);
+    vol += triStats(geo, a, b, c);
+    out.set(a, t*9); out.set(b, t*9+3); out.set(c, t*9+6);
+  }
+  geo.vol += Math.abs(vol);
+  geo.chunks.push(out);
+}
+function triStats(geo, a, b, c){
+  const ux=b[0]-a[0], uy=b[1]-a[1], uz=b[2]-a[2];
+  const vx=c[0]-a[0], vy=c[1]-a[1], vz=c[2]-a[2];
+  const cx=uy*vz-uz*vy, cy=uz*vx-ux*vz, cz=ux*vy-uy*vx;
+  const len = Math.hypot(cx,cy,cz);
+  const area = len/2;
+  geo.area += area;
+  if (len > 0){
+    const nz = Math.abs(cz/len);
+    geo.areaH += area*nz;
+    geo.areaV += area*Math.sqrt(Math.max(0,1-nz*nz));
+  }
+  geo.tris++;
+  for (const p of [a,b,c]) for (let k=0;k<3;k++){
+    if (p[k]<geo.min[k]) geo.min[k]=p[k];
+    if (p[k]>geo.max[k]) geo.max[k]=p[k];
+  }
+  // 부호 있는 사면체 부피
+  return (a[0]*(b[1]*c[2]-b[2]*c[1]) - a[1]*(b[0]*c[2]-b[2]*c[0]) + a[2]*(b[0]*c[1]-b[1]*c[0])) / 6;
+}
+
+/* ---------------- STL ---------------- */
+function parseSTL(buf){
+  const dv = new DataView(buf);
+  const geo = newGeo();
+  const isBinary = buf.byteLength >= 84 && 84 + dv.getUint32(80, true)*50 === buf.byteLength;
+  let vol = 0;
+  if (isBinary){
+    const n = dv.getUint32(80, true);
+    const out = new Float32Array(n*9);
+    for (let i=0;i<n;i++){
+      const o = 84 + i*50 + 12;
+      const p = [];
+      for (let k=0;k<3;k++) p.push([dv.getFloat32(o+k*12,true), dv.getFloat32(o+k*12+4,true), dv.getFloat32(o+k*12+8,true)]);
+      vol += triStats(geo, p[0], p[1], p[2]);
+      out.set(p[0], i*9); out.set(p[1], i*9+3); out.set(p[2], i*9+6);
+    }
+    geo.chunks.push(out);
+  } else {
+    const text = new TextDecoder().decode(buf);
+    const re = /vertex\s+([-+\d.eE]+)\s+([-+\d.eE]+)\s+([-+\d.eE]+)/g;
+    const v = []; let mt;
+    while ((mt = re.exec(text))) v.push(+mt[1], +mt[2], +mt[3]);
+    const n = Math.floor(v.length/9);
+    if (!n) throw new Error("STL에서 삼각형을 찾지 못했습니다.");
+    const out = new Float32Array(v.slice(0, n*9));
+    for (let i=0;i<n;i++){
+      const a=[v[i*9],v[i*9+1],v[i*9+2]], b=[v[i*9+3],v[i*9+4],v[i*9+5]], c=[v[i*9+6],v[i*9+7],v[i*9+8]];
+      vol += triStats(geo, a, b, c);
+    }
+    geo.chunks.push(out);
+  }
+  geo.vol = Math.abs(vol);
+  return geo;
+}
+
+/* ---------------- ZIP (3MF) ---------------- */
+async function readZip(buf){
+  const dv = new DataView(buf), u8 = new Uint8Array(buf);
+  let eocd = -1;
+  for (let i = buf.byteLength-22; i >= Math.max(0, buf.byteLength-65557); i--)
+    if (dv.getUint32(i, true) === 0x06054b50){ eocd = i; break; }
+  if (eocd < 0) throw new Error("3MF(zip) 파일 구조를 읽을 수 없습니다.");
+  let count = dv.getUint16(eocd+10, true), cdOff = dv.getUint32(eocd+16, true);
+  if (cdOff === 0xFFFFFFFF || count === 0xFFFF){          // ZIP64
+    const loc = eocd - 20;
+    if (dv.getUint32(loc, true) === 0x07064b50){
+      const z = Number(dv.getBigUint64(loc+8, true));
+      count = Number(dv.getBigUint64(z+32, true));
+      cdOff = Number(dv.getBigUint64(z+48, true));
+    }
+  }
+  const files = {};
+  const dec = new TextDecoder();
+  let p = cdOff;
+  for (let i=0;i<count;i++){
+    if (dv.getUint32(p, true) !== 0x02014b50) break;
+    const method = dv.getUint16(p+10, true);
+    let csize = dv.getUint32(p+20, true), usize = dv.getUint32(p+24, true);
+    const nl = dv.getUint16(p+28, true), el = dv.getUint16(p+30, true), cl = dv.getUint16(p+32, true);
+    let lo = dv.getUint32(p+42, true);
+    const name = dec.decode(u8.subarray(p+46, p+46+nl));
+    // ZIP64 extra
+    let e = p+46+nl; const eEnd = e+el;
+    while (e+4 <= eEnd){
+      const id = dv.getUint16(e, true), sz = dv.getUint16(e+2, true);
+      if (id === 0x0001){
+        let q = e+4;
+        if (usize === 0xFFFFFFFF){ usize = Number(dv.getBigUint64(q, true)); q += 8; }
+        if (csize === 0xFFFFFFFF){ csize = Number(dv.getBigUint64(q, true)); q += 8; }
+        if (lo === 0xFFFFFFFF){ lo = Number(dv.getBigUint64(q, true)); }
+      }
+      e += 4+sz;
+    }
+    files[name] = {method, csize, lo};
+    p = eEnd + cl;
+  }
+  async function get(name){
+    const f = files[name]; if (!f) return null;
+    const nl = dv.getUint16(f.lo+26, true), el = dv.getUint16(f.lo+28, true);
+    const start = f.lo + 30 + nl + el;
+    const data = u8.subarray(start, start + f.csize);
+    if (f.method === 0) return data;
+    if (f.method !== 8) throw new Error("지원하지 않는 압축 방식입니다.");
+    if (typeof DecompressionStream === "undefined") throw new Error("이 브라우저는 3MF 압축 해제를 지원하지 않습니다. 최신 Chrome/Edge/Safari를 사용하세요.");
+    const stream = new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }
+  return {names: Object.keys(files), get, text: async n => { const d = await get(n); return d ? dec.decode(d) : null; }};
+}
+
+/* ---------------- 3MF ---------------- */
+async function parse3MF(buf){
+  const zip = await readZip(buf);
+  const result = {};
+
+  // 1) 뱀부 스튜디오 슬라이싱 정보
+  const si = zip.names.find(n => /slice_info\.config$/i.test(n));
+  if (si){
+    const xml = await zip.text(si);
+    let sec = 0, g = 0, plates = 0;
+    for (const plate of xml.split(/<plate[\s>]/).slice(1)){
+      const pr = plate.match(/key="prediction"\s+value="([\d.]+)"/);
+      const wt = plate.match(/key="weight"\s+value="([\d.]+)"/);
+      if (pr || wt){ plates++; sec += pr ? +pr[1] : 0; g += wt ? +wt[1] : 0; }
+    }
+    if (sec > 0 || g > 0) result.sliced = {sec, g, plates, source: "뱀부 스튜디오 slice_info"};
+  }
+  // 2) 내부 G-code 헤더 (slice_info가 없을 때)
+  if (!result.sliced){
+    const gc = zip.names.filter(n => /\.gcode$/i.test(n));
+    let sec = 0, g = 0;
+    for (const n of gc){
+      const d = await zip.get(n);
+      const r = parseGcodeText(gcodeHeadTail(d.buffer.slice(d.byteOffset, d.byteOffset + d.byteLength)));
+      sec += r.sec || 0; g += r.g || 0;
+    }
+    if (sec > 0 || g > 0) result.sliced = {sec, g, plates: gc.length, source: "내장 G-code"};
+  }
+
+  // 3) 메쉬
+  const modelNames = zip.names.filter(n => /\.model$/i.test(n));
+  if (modelNames.length){
+    const docs = {};
+    for (const n of modelNames){
+      const t = await zip.text(n);
+      docs["/" + n.replace(/^\//, "")] = new DOMParser().parseFromString(t, "application/xml");
+    }
+    const rootName = Object.keys(docs).find(k => /^\/3D\/3dmodel\.model$/i.test(k)) || Object.keys(docs)[0];
+    const geo = newGeo();
+    const objIndex = {};
+    for (const [path, doc] of Object.entries(docs)){
+      const unit = (doc.documentElement.getAttribute("unit") || "millimeter").toLowerCase();
+      const scale = {micron:0.001, millimeter:1, centimeter:10, inch:25.4, foot:304.8, meter:1000}[unit] || 1;
+      for (const o of doc.getElementsByTagNameNS("*", "object")) objIndex[path + "#" + o.getAttribute("id")] = {o, scale};
+    }
+    const meshCache = {};
+    function meshOf(key){
+      if (key in meshCache) return meshCache[key];
+      const {o, scale} = objIndex[key];
+      const mesh = [...o.children].find(c => c.localName === "mesh");
+      if (!mesh){ meshCache[key] = null; return null; }
+      const vs = mesh.getElementsByTagNameNS("*", "vertex"), ts = mesh.getElementsByTagNameNS("*", "triangle");
+      const pos = new Float64Array(vs.length*3), idx = new Uint32Array(ts.length*3);
+      for (let i=0;i<vs.length;i++){
+        pos[i*3] = +vs[i].getAttribute("x")*scale; pos[i*3+1] = +vs[i].getAttribute("y")*scale; pos[i*3+2] = +vs[i].getAttribute("z")*scale;
+      }
+      for (let i=0;i<ts.length;i++){
+        idx[i*3] = +ts[i].getAttribute("v1"); idx[i*3+1] = +ts[i].getAttribute("v2"); idx[i*3+2] = +ts[i].getAttribute("v3");
+      }
+      return meshCache[key] = {pos, idx};
+    }
+    const pathAttr = el => { for (const a of el.attributes) if (a.localName === "path") return a.value; return null; };
+    function walk(key, mtx, depth){
+      if (!objIndex[key] || depth > 16) return;
+      const {o} = objIndex[key];
+      const m = meshOf(key);
+      if (m) addMesh(geo, m.pos, m.idx, mtx);
+      const comps = [...o.children].find(c => c.localName === "components");
+      if (comps) for (const c of comps.children){
+        if (c.localName !== "component") continue;
+        const p = pathAttr(c) || key.split("#")[0];
+        walk(p + "#" + c.getAttribute("objectid"), mul(parseT(c.getAttribute("transform")), mtx), depth+1);
+      }
+    }
+    const items = [...docs[rootName].getElementsByTagNameNS("*", "item")];
+    if (items.length){
+      for (const it of items){
+        if (it.getAttribute("printable") === "0") continue;
+        walk((pathAttr(it) || rootName) + "#" + it.getAttribute("objectid"), parseT(it.getAttribute("transform")), 0);
+      }
+    } else {
+      for (const k of Object.keys(objIndex)) if (k.startsWith(rootName)) walk(k, null, 0);
+    }
+    if (geo.tris) result.geo = geo;
+  }
+  return result;
+}
+// 3MF 변환: "m00 m01 m02 m10 m11 m12 m20 m21 m22 m30 m31 m32"
+function parseT(s){
+  if (!s) return [1,0,0, 0,1,0, 0,0,1, 0,0,0];
+  const v = s.trim().split(/\s+/).map(Number);
+  return v.length === 12 ? v : [1,0,0, 0,1,0, 0,0,1, 0,0,0];
+}
+// 먼저 A, 다음 B를 적용하는 합성 변환
+function mul(A, B){
+  if (!B) return A;
+  const r = new Array(12);
+  for (let i=0;i<4;i++) for (let j=0;j<3;j++){
+    r[i*3+j] = A[i*3]*B[j] + A[i*3+1]*B[3+j] + A[i*3+2]*B[6+j] + (i===3 ? B[9+j] : 0);
+  }
+  return r;
+}
+
+/* ---------------- G-code ---------------- */
+function gcodeHeadTail(buf){
+  const u8 = new Uint8Array(buf), N = 400000, dec = new TextDecoder();
+  if (u8.length <= N*2) return dec.decode(u8);
+  return dec.decode(u8.subarray(0, N)) + "\n" + dec.decode(u8.subarray(u8.length - N));
+}
+function parseDuration(s){
+  let sec = 0, m;
+  const re = /([\d.]+)\s*([dhms])/g;
+  while ((m = re.exec(s))) sec += +m[1] * {d:86400, h:3600, m:60, s:1}[m[2]];
+  return sec;
+}
+function parseGcodeText(t){
+  let sec = 0, g = 0, m;
+  if ((m = t.match(/total estimated time:\s*([^;\n]+)/i))) sec = parseDuration(m[1]);
+  else if ((m = t.match(/estimated printing time \(normal mode\)\s*=\s*([^\n]+)/i))) sec = parseDuration(m[1]);
+  else if ((m = t.match(/model printing time:\s*([^;\n]+)/i))) sec = parseDuration(m[1]);
+  else if ((m = t.match(/;\s*TIME:\s*(\d+)/))) sec = +m[1];
+  if ((m = t.match(/total filament weight \[g\]\s*[:=]\s*([\d.]+)/i))) g = +m[1];
+  else if ((m = t.match(/filament used \[g\]\s*[:=]\s*([\d.,\s]+)/i))) g = m[1].split(",").reduce((a,b)=>a+(parseFloat(b)||0),0);
+  else if ((m = t.match(/;\s*Filament used:\s*([\d.]+)\s*m/i))){
+    const L = +m[1]*1000; // mm, 1.75mm 필라멘트 기준
+    g = Math.PI*0.875*0.875*L/1000 * (parseFloat($("density").value)||1.24);
+  }
+  return {sec, g, plates: 1, source: "G-code 헤더"};
+}
+
+/* ---------------- 3D 미리보기 (간단 캔버스 렌더) ---------------- */
+const cv = $("view"), ctx = cv.getContext("2d");
+let prev = null, yaw = -0.6, pitch = 0.9;
+function preparePreview(geo){
+  const total = geo.tris, maxT = 30000, step = Math.max(1, Math.ceil(total/maxT));
+  const arr = []; let t = 0;
+  for (const ch of geo.chunks) for (let i=0;i<ch.length/9;i++,t++) if (t%step===0) arr.push(ch.subarray(i*9, i*9+9));
+  const c = geo.min.map((v,i)=>(v+geo.max[i])/2);
+  const r = Math.max(...geo.max.map((v,i)=>v-geo.min[i]))/2 || 1;
+  prev = {tris: arr, c, r};
+  draw();
+}
+function draw(){
+  if (!prev) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W*dpr; cv.height = H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  const cy = Math.cos(yaw), sy = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+  const s = Math.min(W,H)*0.42/prev.r, {c} = prev;
+  const proj = (x,y,z) => {
+    x-=c[0]; y-=c[1]; z-=c[2];
+    const x1 = x*cy - y*sy, y1 = x*sy + y*cy;           // Z축 회전
+    const y2 = y1*cp - z*sp, z2 = y1*sp + z*cp;         // X축 기울기
+    return [W/2 + x1*s, H/2 - z2*s, y2];
+  };
+  const list = [];
+  for (const t of prev.tris){
+    const a = proj(t[0],t[1],t[2]), b = proj(t[3],t[4],t[5]), d = proj(t[6],t[7],t[8]);
+    // 법선 (밝기용)
+    const ux3=t[3]-t[0], uy3=t[4]-t[1], uz3=t[5]-t[2], vx3=t[6]-t[0], vy3=t[7]-t[1], vz3=t[8]-t[2];
+    let nx=uy3*vz3-uz3*vy3, ny=uz3*vx3-ux3*vz3, nz=ux3*vy3-uy3*vx3;
+    const l = Math.hypot(nx,ny,nz)||1; nx/=l; ny/=l; nz/=l;
+    const vnx = nx*cy - ny*sy, vny0 = nx*sy + ny*cy;
+    const vny = vny0*cp - nz*sp, vnz = vny0*sp + nz*cp;
+    const light = Math.abs(-0.3*vnx + -0.75*vny + 0.6*vnz);
+    list.push([a[2]+b[2]+d[2], a, b, d, light]);
+  }
+  list.sort((p,q)=>q[0]-p[0]);
+  const dark = matchMedia("(prefers-color-scheme: dark)").matches;
+  for (const [, a, b, d, L] of list){
+    const k = 0.35 + 0.65*L;
+    const col = dark ? `rgb(${46*k+20|0},${204*k+20|0},${133*k+20|0})` : `rgb(${20+40*k|0},${120+70*k|0},${80+40*k|0})`;
+    ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.lineTo(d[0],d[1]); ctx.closePath();
+    ctx.fill(); ctx.stroke();
+  }
+}
+let dragging = null;
+cv.addEventListener("pointerdown", e => { dragging = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointermove", e => {
+  if (!dragging) return;
+  yaw += (e.clientX - dragging[0]) * 0.01;
+  pitch = Math.max(-1.5, Math.min(1.5, pitch + (e.clientY - dragging[1]) * 0.01));
+  dragging = [e.clientX, e.clientY];
+  requestAnimationFrame(draw);
+});
+cv.addEventListener("pointerup", () => dragging = null);
+window.addEventListener("resize", () => requestAnimationFrame(draw));
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+updatePrice();
+</script>
+</body>
+</html>
