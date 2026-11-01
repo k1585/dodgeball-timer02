@@ -34,9 +34,6 @@ h1{font-size:24px;margin:0 0 4px}
 #drop b{display:block;font-size:16px;margin-bottom:4px}
 #drop small{color:var(--muted)}
 #fileInfo{margin-top:12px;font-size:14px}
-.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:99px;font-weight:600}
-.badge.ok{background:var(--accent-soft);color:var(--accent)}
-.badge.est{background:var(--warn-soft);color:var(--warn)}
 canvas{width:100%;height:260px;display:block;margin-top:12px;border-radius:10px;
   background:var(--drop);border:1px solid var(--line);touch-action:none;cursor:grab}
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:13px;margin-top:10px;color:var(--muted)}
@@ -59,16 +56,15 @@ button:hover{border-color:var(--accent)}
 </head>
 <body>
 <div class="wrap">
-  <h1>3D 프린팅 견적계산기</h1>
-  <p class="sub">STL · 3MF · G-code · 뱀부 스튜디오 슬라이싱 파일(.gcode.3mf)을 넣으면 필라멘트 사용량과 출력시간을 계산하고 가격을 자동으로 산출합니다.</p>
+  <h1>3D 프린팅 자동 견적</h1>
+  <p class="sub">3D 파일을 올리면 예상 견적을 바로 확인할 수 있어요.</p>
 
   <div class="grid">
-    <!-- 왼쪽: 파일 -->
     <div class="card">
-      <h2>① 3D 파일 넣기</h2>
+      <h2>① 3D 파일 올리기</h2>
       <div id="drop">
-        <b>여기로 파일을 끌어다 놓거나 클릭</b>
-        <small>.stl / .3mf / .gcode.3mf / .gcode</small>
+        <b>여기로 파일을 끌어다 놓거나 클릭하세요</b>
+        <small>STL · 3MF · G-code 파일 지원</small>
         <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
       </div>
       <div id="fileInfo"></div>
@@ -76,74 +72,55 @@ button:hover{border-color:var(--accent)}
       <div id="stats" class="stats"></div>
     </div>
 
-    <!-- 오른쪽: 결과 / 가격 -->
     <div class="card">
-      <h2>② 사용량 · 가격</h2>
-      <label class="f big">필라멘트 사용량 g (g)
-        <input id="g" type="number" min="0" step="0.01" value="0"></label>
-      <label class="f big">출력시간 m (분)
-        <input id="m" type="number" min="0" step="1" value="0"></label>
-      <div class="note" id="timeHuman"></div>
+      <h2>② 옵션 선택</h2>
+      <div id="optMat">
+        <label class="f">재료
+          <select id="mat">
+            <option value="1.24">PLA (기본)</option>
+            <option value="1.27">PETG</option>
+            <option value="1.04">ABS</option>
+            <option value="1.07">ASA</option>
+            <option value="1.21">TPU (유연)</option>
+            <option value="1.30">PLA-CF (카본)</option>
+            <option value="1.25">PETG-CF (카본)</option>
+          </select></label>
+        <label class="f">내부 채움 (튼튼함)
+          <select id="infill">
+            <option value="10">가볍게 (10%)</option>
+            <option value="15" selected>표준 (15%)</option>
+            <option value="30">튼튼하게 (30%)</option>
+            <option value="50">매우 튼튼 (50%)</option>
+            <option value="100">꽉 채움 (100%)</option>
+          </select></label>
+        <label class="f">서포트
+          <select id="support">
+            <option value="0">필요 없음</option>
+            <option value="10">조금 필요</option>
+            <option value="25">많이 필요</option>
+          </select></label>
+      </div>
+      <p class="note" id="slicedNote" style="display:none">슬라이싱된 파일은 파일에 저장된 출력 설정으로 계산돼요.</p>
+      <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
 
       <div class="price">
-        <div style="font-size:14px;font-weight:600">예상 가격</div>
-        <div class="total" id="total">0원</div>
-        <div class="formula" id="breakdown"></div>
-        <div class="formula">공식: (18 × g + 8.33 × m + 2,000) × 1.35</div>
+        <div style="font-size:14px;font-weight:600">예상 견적</div>
+        <div class="total" id="total">-</div>
+        <div class="formula" id="summary">파일을 올리면 견적이 표시돼요.</div>
       </div>
       <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
-        <button id="copyBtn">견적 복사</button>
+        <button id="copyBtn">견적 내용 복사</button>
       </div>
-      <p class="note">값은 직접 수정할 수 있어요. 수정하면 가격이 바로 다시 계산됩니다.</p>
+      <p class="note">표시된 금액은 예상 견적이며, 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
     </div>
   </div>
 
-  <!-- 자체 계산 설정 -->
-  <div class="card" style="margin-top:16px">
-    <h2>③ 자체 계산 설정 <span style="font-weight:400;color:var(--muted);font-size:13px">(STL / 슬라이싱 안 된 3MF에 사용)</span></h2>
-    <div class="grid">
-      <div>
-        <label class="f">필라멘트 종류
-          <select id="mat">
-            <option value="1.24">PLA (1.24)</option>
-            <option value="1.27">PETG (1.27)</option>
-            <option value="1.04">ABS (1.04)</option>
-            <option value="1.07">ASA (1.07)</option>
-            <option value="1.21">TPU (1.21)</option>
-            <option value="1.30">PLA-CF (1.30)</option>
-            <option value="1.25">PETG-CF (1.25)</option>
-          </select></label>
-        <label class="f">밀도 (g/cm³)<input id="density" type="number" step="0.01" value="1.24"></label>
-        <label class="f">내부 채움 (%)<input id="infill" type="number" min="0" max="100" step="1" value="15"></label>
-        <label class="f">벽 개수<input id="walls" type="number" min="1" step="1" value="2"></label>
-        <label class="f">레이어 높이 (mm)<input id="layerH" type="number" step="0.02" value="0.2"></label>
-      </div>
-      <div>
-        <label class="f">상단 셸 레이어<input id="topL" type="number" min="0" step="1" value="5"></label>
-        <label class="f">하단 셸 레이어<input id="botL" type="number" min="0" step="1" value="3"></label>
-        <label class="f">서포트 추가 (모델부피 %)<input id="support" type="number" min="0" step="1" value="0"></label>
-        <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
-      </div>
-    </div>
-    <details>
-      <summary>고급 (시간 보정)</summary>
-      <div class="grid">
-        <div>
-          <label class="f">선 폭 (mm)<input id="lineW" type="number" step="0.01" value="0.42"></label>
-          <label class="f">평균 출력 유량 (mm³/s)<input id="flow" type="number" step="0.5" value="7"></label>
-        </div>
-        <div>
-          <label class="f">레이어당 추가 시간 (초)<input id="layerSec" type="number" step="0.5" value="2"></label>
-          <label class="f">준비 시간 (분)<input id="prepMin" type="number" step="1" value="4"></label>
-          <label class="f">추가 손실 (g)<input id="extraG" type="number" step="0.1" value="0.5"></label>
-        </div>
-      </div>
-      <p class="note">뱀부랩 X1/P1/A1 기본 "0.20mm Standard" 프로파일 기준 대략값입니다. 같은 파일을 뱀부 스튜디오로 슬라이싱한 결과와 비교해서 <b>평균 출력 유량</b>을 조정하면 정확도가 올라갑니다.</p>
-    </details>
-    <p class="note">
-      💡 <b>가장 정확한 방법:</b> 뱀부 스튜디오에서 슬라이싱 → <b>파일 › 내보내기 › 플레이트 슬라이스 파일 내보내기</b>(.gcode.3mf)로 저장한 뒤 여기 넣으면, 슬라이서가 계산한 실제 시간·무게를 그대로 읽어옵니다.
-      (웹페이지가 뱀부 스튜디오 프로그램을 직접 실행할 수는 없어서, STL·일반 3MF는 모델 부피·표면적으로 자체 추정합니다.)
-    </p>
+  <!-- 내부 계산값 (화면에 표시 안 함) -->
+  <div hidden>
+    <input id="g" type="hidden" value="0"><input id="m" type="hidden" value="0">
+    <input id="density" value="1.24"><input id="walls" value="2"><input id="layerH" value="0.2">
+    <input id="topL" value="5"><input id="botL" value="3"><input id="lineW" value="0.42">
+    <input id="flow" value="7"><input id="layerSec" value="2"><input id="prepMin" value="4"><input id="extraG" value="0.5">
   </div>
 </div>
 
@@ -163,21 +140,20 @@ function updatePrice(){
   const m = Math.max(0, parseFloat($("m").value) || 0);
   const base = 18*g + 8.33*m + 2000;
   const total = base * 1.35;
+  if (!current){ $("total").textContent = "-"; $("summary").textContent = "파일을 올리면 견적이 표시돼요."; return {g, m, total}; }
   $("total").textContent = won(total);
-  $("breakdown").innerHTML =
-    `(18 × ${g.toFixed(2)}g = ${won(18*g)}) + (8.33 × ${m}분 = ${won(8.33*m)}) + 2,000원 = ${won(base)}<br>× 1.35 = <b>${won(total)}</b>`;
-  $("timeHuman").textContent = m ? `= ${fmtMin(m)}` : "";
+  $("summary").innerHTML = `예상 필라멘트 <b>${g.toFixed(1)}g</b> · 예상 출력시간 <b>${fmtMin(m)}</b>`;
   return {g, m, total};
 }
-$("g").addEventListener("input", updatePrice);
-$("m").addEventListener("input", updatePrice);
 $("copyBtn").addEventListener("click", () => {
+  if (!current) return;
   const {g, m, total} = updatePrice();
-  const name = current ? current.name + "\n" : "";
-  const txt = `${name}필라멘트 ${g.toFixed(2)}g / 출력시간 ${fmtMin(m)}\n견적: ${won(total)}`;
+  const qty = Math.max(1, parseInt($("qty").value) || 1);
+  const opt = current.sliced ? "" : `재료: ${$("mat").selectedOptions[0].text} / 내부 채움: ${$("infill").selectedOptions[0].text}\n`;
+  const txt = `파일: ${current.name} (${qty}개)\n${opt}예상 필라멘트 ${g.toFixed(1)}g / 예상 출력시간 ${fmtMin(m)}\n예상 견적: ${won(total)}`;
   navigator.clipboard?.writeText(txt).then(() => {
     $("copyBtn").textContent = "복사됨!";
-    setTimeout(() => $("copyBtn").textContent = "견적 복사", 1200);
+    setTimeout(() => $("copyBtn").textContent = "견적 내용 복사", 1200);
   });
 });
 
@@ -209,7 +185,7 @@ async function handleFile(file){
   }catch(err){
     console.error(err);
     current = null;
-    $("fileInfo").innerHTML = `<span class="err">오류: ${escapeHtml(err.message || String(err))}</span>`;
+    $("fileInfo").innerHTML = `<span class="err">파일을 읽을 수 없어요. STL, 3MF, G-code 파일인지 확인해 주세요.</span>`;
     $("view").style.display = "none";
   }
 }
@@ -218,19 +194,18 @@ function showResult(){
   if (!current) return;
   const {name, geo, sliced} = current;
   const qty = Math.max(1, parseInt($("qty").value) || 1);
-  let html = `<b>${escapeHtml(name)}</b><br>`;
+  const html = `<b>${escapeHtml(name)}</b>`;
+  $("optMat").style.display = sliced ? "none" : "";
+  $("slicedNote").style.display = sliced ? "" : "none";
   if (sliced){
-    html += `<span class="badge ok">슬라이서 계산값</span> <small style="color:var(--muted)">${escapeHtml(sliced.source)}</small>`;
     if (sliced.g > 0) $("g").value = (sliced.g*qty).toFixed(2);
     if (sliced.sec > 0) $("m").value = Math.ceil(sliced.sec*qty/60);
     if (!(sliced.g > 0) && geo) $("g").value = (estimate(geo).g*qty).toFixed(2);
   } else {
     const e = estimate(geo);
-    html += `<span class="badge est">자체 추정값</span> <small style="color:var(--muted)">설정값 기준 근사치</small>`;
     $("g").value = (e.g*qty).toFixed(2);
     $("m").value = Math.ceil(e.min*qty);
   }
-  if (qty > 1) html += `<br><small style="color:var(--muted)">수량 ${qty}개 기준</small>`;
   $("fileInfo").innerHTML = html;
 
   let st = "";
@@ -238,18 +213,11 @@ function showResult(){
     const d = geo.max.map((v,i)=>v-geo.min[i]);
     st += `<span>크기 <b>${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
     st += `<span>부피 <b>${(geo.vol/1000).toFixed(2)} cm³</b></span>`;
-    st += `<span>표면적 <b>${(geo.area/100).toFixed(1)} cm²</b></span>`;
-    st += `<span>삼각형 <b>${geo.tris.toLocaleString()}</b></span>`;
-    if (sliced){
-      const e = estimate(geo);
-      st += `<span>참고 자체추정 <b>${e.g.toFixed(1)}g / ${fmtMin(e.min)}</b></span>`;
-    }
     $("view").style.display = "block";
     preparePreview(geo);
   } else {
     $("view").style.display = "none";
   }
-  if (sliced && sliced.plates > 1) st += `<span>플레이트 <b>${sliced.plates}개 합산</b></span>`;
   $("stats").innerHTML = st;
   updatePrice();
 }
@@ -271,8 +239,8 @@ function estimate(geo){
   return {g, min: sec/60, ext, layers};
 }
 $("mat").addEventListener("change", () => { $("density").value = $("mat").value; showResult(); });
-["density","infill","walls","layerH","topL","botL","support","qty","lineW","flow","layerSec","prepMin","extraG"]
-  .forEach(id => $(id).addEventListener("input", showResult));
+["infill","support"].forEach(id => $(id).addEventListener("change", showResult));
+$("qty").addEventListener("input", showResult);
 
 /* ---------------- 지오메트리 누적 ---------------- */
 function newGeo(){
