@@ -52,12 +52,42 @@ summary{cursor:pointer;font-weight:600;font-size:14px;margin:6px 0}
 .err{color:#dc2626;font-size:14px}
 button{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:14px}
 button:hover{border-color:var(--accent)}
+.btn-row{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+.btn-row button,.btn-row a{flex:1;min-width:140px}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700;padding:12px 14px;font-size:15px}
+.btn-primary:hover{filter:brightness(1.05)}
+.btn-primary:disabled{background:var(--line);border-color:var(--line);color:var(--muted);cursor:not-allowed}
+.btn-store{display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;
+  background:#03c75a;color:#fff;border-radius:8px;font-weight:700;padding:12px 14px;font-size:15px}
+.btn-store:hover{filter:brightness(1.05)}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.tile small{display:block;color:var(--muted);font-size:12.5px}
+.tile b{font-size:20px}
+.limit-err{margin-top:10px;padding:10px 12px;border-radius:10px;background:#fdecec;color:#b91c1c;font-size:14px}
+@media (prefers-color-scheme: dark){.limit-err{background:#3b1717;color:#fca5a5}}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal[hidden]{display:none}
+.modal-box{background:var(--card);border-radius:16px;padding:22px;max-width:400px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.modal-box h3{margin:0 0 10px;font-size:18px}
+.modal-file{padding:10px 12px;border-radius:10px;background:var(--drop);border:1px solid var(--line);
+  word-break:break-all;font-weight:600;margin:10px 0}
+.order-no{text-align:center;padding:24px 12px;border-radius:14px;background:var(--accent-soft);margin-bottom:16px}
+.order-no small{display:block;color:var(--muted);font-size:14px}
+.order-no .num{font-size:56px;font-weight:800;letter-spacing:10px;color:var(--accent);line-height:1.2}
+table.info{width:100%;border-collapse:collapse;font-size:15px}
+table.info th{text-align:left;color:var(--muted);font-weight:500;width:110px;padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.info td{padding:9px 0;border-bottom:1px solid var(--line);word-break:break-all}
+table.info tr.sum td,table.info tr.sum th{border-bottom:none;font-size:18px;font-weight:800;color:var(--text)}
+table.info tr.sum td{color:var(--accent)}
+.sec-title{font-size:14px;font-weight:700;margin:16px 0 4px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
+ <div id="quoteView">
   <h1>3D 프린팅 자동 견적</h1>
-  <p class="sub">3D 파일을 올리면 예상 견적을 바로 확인할 수 있어요.</p>
+  <p class="sub">3D 파일을 올리면 예상 견적을 바로 확인할 수 있어요. (최대 출력 크기 300 × 300 × 300 mm)</p>
 
   <div class="grid">
     <div class="card">
@@ -103,17 +133,61 @@ button:hover{border-color:var(--accent)}
       <p class="note" id="slicedNote" style="display:none">슬라이싱된 파일은 파일에 저장된 출력 설정으로 계산돼요.</p>
       <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
 
+      <div class="tiles">
+        <div class="tile"><small>예상 무게</small><b id="wOut">-</b></div>
+        <div class="tile"><small>예상 출력 소요시간</small><b id="tOut">-</b></div>
+      </div>
       <div class="price">
         <div style="font-size:14px;font-weight:600">예상 견적</div>
         <div class="total" id="total">-</div>
         <div class="formula" id="summary">파일을 올리면 견적이 표시돼요.</div>
       </div>
-      <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <div class="btn-row">
+        <button id="orderBtn" class="btn-primary" disabled>주문 신청하기</button>
+        <a class="btn-store storeLink" href="#" target="_blank" rel="noopener">스마트스토어 바로가기</a>
+      </div>
+      <div class="btn-row" style="margin-top:8px">
         <button id="copyBtn">견적 내용 복사</button>
       </div>
       <p class="note">표시된 금액은 예상 견적이며, 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
     </div>
   </div>
+ </div>
+
+ <!-- 주문 완료 화면 -->
+ <div id="orderView" hidden>
+  <h1 style="text-align:center">주문 신청 완료</h1>
+  <p class="sub" style="text-align:center">아래 주문번호를 꼭 기억해 주세요. 스마트스토어 주문 시 요청사항(메모)에 주문번호를 적어 주세요.</p>
+  <div class="card" style="max-width:560px;margin:0 auto">
+    <div class="order-no"><small>주문번호</small><div class="num" id="orderNo">0000</div></div>
+    <div class="sec-title">파일 정보</div>
+    <table class="info" id="orderInfo"></table>
+    <div class="sec-title">출력 설정</div>
+    <table class="info" id="orderSettings"></table>
+    <table class="info" style="margin-top:6px"><tr class="sum"><th>총 가격</th><td id="orderTotal"></td></tr></table>
+    <div class="btn-row">
+      <a class="btn-store storeLink" href="#" target="_blank" rel="noopener">스마트스토어 바로가기</a>
+    </div>
+    <div class="btn-row" style="margin-top:8px">
+      <button id="orderCopyBtn">주문 내용 복사</button>
+      <button id="backBtn">처음으로</button>
+    </div>
+  </div>
+ </div>
+
+ <!-- 주문 확인창 -->
+ <div class="modal" id="confirmModal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cfTitle">
+    <h3 id="cfTitle">정말 주문을 신청할까요?</h3>
+    <div style="font-size:14px;color:var(--muted)">주문할 파일</div>
+    <div class="modal-file" id="cfFile"></div>
+    <div style="font-size:14px">총 가격 <b id="cfTotal" style="color:var(--accent);font-size:17px"></b></div>
+    <div class="btn-row" style="margin-top:18px">
+      <button id="cfCancel">취소</button>
+      <button id="cfOk" class="btn-primary">확인</button>
+    </div>
+  </div>
+ </div>
 
   <!-- 내부 계산값 (화면에 표시 안 함) -->
   <div hidden>
@@ -128,6 +202,12 @@ button:hover{border-color:var(--accent)}
 "use strict";
 const $ = id => document.getElementById(id);
 
+/* ======== 설정: 스마트스토어 주소를 여기에 넣으세요 ======== */
+const SMARTSTORE_URL = "https://smartstore.naver.com/";
+const MAX_SIZE = 300;   // 최대 출력 크기 (mm, 가로·세로·높이 각각)
+/* ========================================================= */
+document.querySelectorAll(".storeLink").forEach(a => a.href = SMARTSTORE_URL);
+
 /* ---------------- 가격 계산 ---------------- */
 const won = n => Math.round(n).toLocaleString("ko-KR") + "원";
 function fmtMin(min){
@@ -140,13 +220,22 @@ function updatePrice(){
   const m = Math.max(0, parseFloat($("m").value) || 0);
   const base = 18*g + 8.33*m + 2000;
   const total = base * 1.35;
-  if (!current){ $("total").textContent = "-"; $("summary").textContent = "파일을 올리면 견적이 표시돼요."; return {g, m, total}; }
+  const ok = current && !current.tooBig;
+  $("orderBtn").disabled = !ok;
+  if (!ok){
+    $("total").textContent = "-"; $("wOut").textContent = "-"; $("tOut").textContent = "-";
+    $("summary").textContent = current ? "최대 크기를 넘어 견적을 낼 수 없어요." : "파일을 올리면 견적이 표시돼요.";
+    return {g, m, total};
+  }
   $("total").textContent = won(total);
-  $("summary").innerHTML = `예상 필라멘트 <b>${g.toFixed(1)}g</b> · 예상 출력시간 <b>${fmtMin(m)}</b>`;
+  $("wOut").textContent = g.toFixed(1) + "g";
+  $("tOut").textContent = fmtMin(m);
+  const qty = Math.max(1, parseInt($("qty").value) || 1);
+  $("summary").textContent = qty > 1 ? `수량 ${qty}개 기준` : "";
   return {g, m, total};
 }
 $("copyBtn").addEventListener("click", () => {
-  if (!current) return;
+  if (!current || current.tooBig) return;
   const {g, m, total} = updatePrice();
   const qty = Math.max(1, parseInt($("qty").value) || 1);
   const opt = current.sliced ? "" : `재료: ${$("mat").selectedOptions[0].text} / 내부 채움: ${$("infill").selectedOptions[0].text}\n`;
@@ -187,6 +276,7 @@ async function handleFile(file){
     current = null;
     $("fileInfo").innerHTML = `<span class="err">파일을 읽을 수 없어요. STL, 3MF, G-code 파일인지 확인해 주세요.</span>`;
     $("view").style.display = "none";
+    updatePrice();
   }
 }
 
@@ -194,7 +284,11 @@ function showResult(){
   if (!current) return;
   const {name, geo, sliced} = current;
   const qty = Math.max(1, parseInt($("qty").value) || 1);
-  const html = `<b>${escapeHtml(name)}</b>`;
+  let html = `<b>${escapeHtml(name)}</b>`;
+  current.dims = geo ? geo.max.map((v,i)=>v-geo.min[i]) : null;
+  current.tooBig = !!current.dims && current.dims.some(v => v > MAX_SIZE + 0.01);
+  if (current.tooBig)
+    html += `<div class="limit-err">모델 크기가 최대 출력 크기(${MAX_SIZE} × ${MAX_SIZE} × ${MAX_SIZE} mm)를 넘어서 주문할 수 없어요. 크기를 줄이거나 나눠서 올려 주세요.</div>`;
   $("optMat").style.display = sliced ? "none" : "";
   $("slicedNote").style.display = sliced ? "" : "none";
   if (sliced){
@@ -211,7 +305,7 @@ function showResult(){
   let st = "";
   if (geo){
     const d = geo.max.map((v,i)=>v-geo.min[i]);
-    st += `<span>크기 <b>${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
+    st += `<span>크기 <b style="${current.tooBig?"color:#dc2626":""}">${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
     st += `<span>부피 <b>${(geo.vol/1000).toFixed(2)} cm³</b></span>`;
     $("view").style.display = "block";
     preparePreview(geo);
@@ -565,6 +659,71 @@ cv.addEventListener("pointermove", e => {
 });
 cv.addEventListener("pointerup", () => dragging = null);
 window.addEventListener("resize", () => requestAnimationFrame(draw));
+
+/* ---------------- 주문 ---------------- */
+function orderData(){
+  const {g, m, total} = updatePrice();
+  const qty = Math.max(1, parseInt($("qty").value) || 1);
+  const size = current.dims ? current.dims.map(v=>v.toFixed(1)).join(" × ") + " mm" : "-";
+  const settings = current.sliced
+    ? [["출력 설정", "파일에 저장된 설정"], ["수량", qty + "개"]]
+    : [["재료", $("mat").selectedOptions[0].text], ["내부 채움", $("infill").selectedOptions[0].text],
+       ["서포트", $("support").selectedOptions[0].text], ["수량", qty + "개"]];
+  return {name: current.name, weight: g.toFixed(1) + "g", size, time: fmtMin(m), settings, total: won(total)};
+}
+function newOrderNo(){
+  let used = [];
+  try { used = JSON.parse(localStorage.getItem("usedOrderNos") || "[]"); } catch(e){}
+  let no;
+  for (let i=0;i<50;i++){
+    no = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, "0");
+    if (!used.includes(no)) break;
+  }
+  try { used.push(no); localStorage.setItem("usedOrderNos", JSON.stringify(used.slice(-5000))); } catch(e){}
+  return no;
+}
+const rows = arr => arr.map(([k,v]) => `<tr><th>${k}</th><td>${escapeHtml(v)}</td></tr>`).join("");
+let lastOrder = null;
+
+$("orderBtn").addEventListener("click", () => {
+  if (!current || current.tooBig) return;
+  const d = orderData();
+  $("cfFile").textContent = d.name;
+  $("cfTotal").textContent = d.total;
+  $("confirmModal").hidden = false;
+  $("cfOk").focus();
+});
+$("cfCancel").addEventListener("click", () => $("confirmModal").hidden = true);
+$("confirmModal").addEventListener("click", e => { if (e.target.id === "confirmModal") $("confirmModal").hidden = true; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("confirmModal").hidden = true; });
+$("cfOk").addEventListener("click", () => {
+  const d = orderData();
+  d.no = newOrderNo();
+  lastOrder = d;
+  $("orderNo").textContent = d.no;
+  $("orderInfo").innerHTML = rows([["파일명", d.name], ["무게", d.weight], ["크기", d.size], ["소요시간", d.time]]);
+  $("orderSettings").innerHTML = rows(d.settings);
+  $("orderTotal").textContent = d.total;
+  $("confirmModal").hidden = true;
+  $("quoteView").hidden = true;
+  $("orderView").hidden = false;
+  window.scrollTo(0, 0);
+});
+$("orderCopyBtn").addEventListener("click", () => {
+  if (!lastOrder) return;
+  const d = lastOrder;
+  const txt = [`주문번호: ${d.no}`, `파일명: ${d.name}`, `무게: ${d.weight}`, `크기: ${d.size}`, `소요시간: ${d.time}`,
+    ...d.settings.map(([k,v]) => `${k}: ${v}`), `총 가격: ${d.total}`].join("\n");
+  navigator.clipboard?.writeText(txt).then(() => {
+    $("orderCopyBtn").textContent = "복사됨!";
+    setTimeout(() => $("orderCopyBtn").textContent = "주문 내용 복사", 1200);
+  });
+});
+$("backBtn").addEventListener("click", () => {
+  $("orderView").hidden = true;
+  $("quoteView").hidden = false;
+  requestAnimationFrame(draw);
+});
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 updatePrice();
