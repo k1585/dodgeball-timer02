@@ -275,6 +275,14 @@
   .rec-a span { color: var(--muted); }
   .rec-file { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 12.5px; color: var(--sub); }
   .rec-file .fn { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tag.live { color: #c9d4ff; border-color: rgba(159,180,255,0.5); animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: .45; } }
+  .rec.live { border-color: rgba(159,180,255,0.4); background: rgba(80,95,160,0.12); }
+  .ctl { margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .ctl-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ctl-row { display: flex; align-items: center; gap: 6px; }
+  .ctl-row .seg button { height: 30px; }
+  .mini.ok { background: #3a4366; color: #fff; border-color: transparent; }
   .empty { font-size: 13px; color: var(--muted); text-align: center; padding: 18px 0 8px; }
 </style>
 </head>
@@ -438,7 +446,7 @@
   <!-- 관리자 모드 -->
   <section class="screen admin" data-screen="admin">
     <div class="admin-head"><h1>관리자 모드</h1><span class="badge">ADMIN</span></div>
-    <p class="admin-desc">설정은 이 브라우저에 자동 저장돼요.</p>
+    <p class="admin-desc" id="connInfo"></p>
 
     <div class="card">
       <div class="card-head">
@@ -446,7 +454,7 @@
         <button class="mini danger" id="clearRec">전체 삭제</button>
       </div>
       <div id="recList"></div>
-      <p class="note">프로토타입: 아직 서버와 연결되지 않아 이 기기에서 입력된 답과 파일만 보여요.</p>
+      <p class="note">사용자가 답을 내면 바로 여기에 떠요. 대기 중인 요청은 장면 번호를 눌러 사용자 로딩 화면을 바꾸고, 승인·거절(분석은 완료·실패)로 다음 화면을 정해요.</p>
     </div>
 
     <div class="card">
@@ -472,15 +480,27 @@
       <h2>분석 중 화면 장면</h2>
       <div id="sceneList-analyzing"></div>
       <button class="mini" data-add-scene="analyzing" style="width:100%;height:40px;margin-top:10px">+ 장면 추가</button>
-      <p class="note">장면이 모두 지나가면 아래 [분석 결과]에서 고른 화면이 떠요.</p>
+      <p class="note">자동 방식이면 장면이 모두 지나간 뒤 아래 [진행 방식]에서 고른 화면이 떠요.</p>
     </div>
 
     <div class="card">
-      <h2>분석 결과</h2>
-      <div class="seg" id="resultSeg">
-        <button data-v="success">분석 완료 화면</button>
-        <button data-v="fail">분석 실패 화면</button>
+      <h2>진행 방식</h2>
+      <div class="qsub">로그인</div>
+      <div class="row">
+        <div class="seg" id="loginModeSeg">
+          <button data-v="admin">관리자 승인</button>
+          <button data-v="auto">자동 (정답 비교)</button>
+        </div>
       </div>
+      <div class="qsub">분석 결과</div>
+      <div class="row">
+        <div class="seg" id="resultSeg">
+          <button data-v="admin">관리자 결정</button>
+          <button data-v="success">자동 완료</button>
+          <button data-v="fail">자동 실패</button>
+        </div>
+      </div>
+      <p class="note">관리자 방식에서는 사용자 로딩 화면이 첫 장면에 머물고, 장면 전환과 다음 화면을 위 [제출 기록]에서 직접 정해요. 자동 방식에서는 장면마다 정한 시간대로 넘어가요.</p>
     </div>
 
     <div class="card">
@@ -542,13 +562,63 @@
 </div>
 
 <script>
+  // ===== Firebase 설정 =====
+  // Firebase 콘솔 → 프로젝트 설정 → 내 앱(웹)의 firebaseConfig 를 아래 null 자리에 붙여넣으세요.
+  // 예: const FIREBASE_CONFIG = { apiKey: "...", authDomain: "...", databaseURL: "https://....firebaseio.com", projectId: "...", ... };
+  // 비워두면(null) 같은 브라우저의 탭끼리만 연결돼요.
+  const FIREBASE_CONFIG = null;
+
   const $ = id => document.getElementById(id);
   const phone = $('phone');
   const screens = document.querySelectorAll('.screen');
   const wave = $('wave');
   const STORE = 'mindgram.cfg';
-  const REC_STORE = 'mindgram.records';
+  const SESSION_STORE = 'mindgram.sessions';
   const ADMIN_PW = '0000';
+
+  // ===== 데이터 연결 (Firebase 또는 같은 브라우저) =====
+  // 같은 브라우저 연결: localStorage 에 저장하고 storage 이벤트로 다른 탭에 알림
+  function localDB() {
+    const listeners = new Set();
+    const read = () => { try { return JSON.parse(localStorage.getItem(SESSION_STORE)) || {}; } catch { return {}; } };
+    const write = all => { localStorage.setItem(SESSION_STORE, JSON.stringify(all)); emit(); };
+    const emit = () => listeners.forEach(f => f());
+    const sub = f => { listeners.add(f); f(); return () => listeners.delete(f); };
+    window.addEventListener('storage', e => { if (e.key === SESSION_STORE) emit(); });
+    return {
+      kind: 'local',
+      setSession: async (id, d) => { const a = read(); a[id] = d; write(a); },
+      updateSession: async (id, patch) => { const a = read(); if (!a[id]) return; Object.assign(a[id], patch); write(a); },
+      removeSession: async id => { const a = read(); delete a[id]; write(a); },
+      clearSessions: async () => write({}),
+      onSession: (id, cb) => sub(() => cb(read()[id] ?? null)),
+      onSessions: cb => sub(() => cb(read())),
+      setConfig: async () => {},
+      onConfig: cb => window.addEventListener('storage', e => {
+        if (e.key === STORE && e.newValue) { try { cb(JSON.parse(e.newValue)); } catch {} }
+      }),
+    };
+  }
+
+  async function firebaseDB(config) {
+    const { initializeApp } = await import('https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js');
+    const f = await import('https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js');
+    const db = f.getDatabase(initializeApp(config));
+    const r = path => f.ref(db, 'mindgram/' + path);
+    return {
+      kind: 'firebase',
+      setSession: (id, d) => f.set(r('sessions/' + id), d),
+      updateSession: (id, patch) => f.update(r('sessions/' + id), patch),
+      removeSession: id => f.remove(r('sessions/' + id)),
+      clearSessions: () => f.remove(r('sessions')),
+      onSession: (id, cb) => f.onValue(r('sessions/' + id), s => cb(s.val())),
+      onSessions: cb => f.onValue(r('sessions'), s => cb(s.val() || {})),
+      setConfig: c => f.set(r('config'), c),
+      onConfig: cb => f.onValue(r('config'), s => { if (s.val()) cb(s.val()); }),
+    };
+  }
+
+  let DB = localDB();
 
   // ===== 설정 =====
   const DEFAULT_TEXT = {};
@@ -568,14 +638,23 @@
     permToast: '권한이 허용되었어요',
     scenes: [{ ...SETS.loginLoading.def }],
     aScenes: [{ ...SETS.analyzing.def }],
+    loginMode: 'admin',
     result: 'success',
   });
+  // Firebase 는 빈 값을 저장하지 않으므로 받은 설정을 기본값 위에 덮어씀
+  const mergeCfg = c => {
+    const d = defaults();
+    const m = { ...d, ...c, text: { ...(c.text || {}) } };
+    m.answers = [0, 1].map(i => c.answers?.[i] ?? '');
+    m.icons = [0, 1].map(i => c.icons?.[i] ?? 'bubble');
+    return m;
+  };
 
   let cfg = defaults();
   try {
     const saved = JSON.parse(localStorage.getItem(STORE));
     if (saved) {
-      cfg = { ...cfg, ...saved };
+      cfg = mergeCfg(saved);
       // 예전 버전에서 고친 분석 중 문구를 첫 장면으로 옮김
       if (!saved.aScenes) {
         cfg.aScenes[0].title = saved.text?.['analyzing.title'] ?? cfg.aScenes[0].title;
@@ -585,40 +664,54 @@
   } catch {}
   function save() {
     try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch {}
+    DB.setConfig(cfg).catch(() => {});
   }
   const scenesOf = screen => cfg[SETS[screen].key];
 
-  // ===== 제출 기록 (프로토타입: 이 브라우저에만 저장) =====
-  let records = [];
-  try { records = JSON.parse(localStorage.getItem(REC_STORE)) || []; } catch {}
-  let currentRec = null;
-  function saveRecords() {
-    try { localStorage.setItem(REC_STORE, JSON.stringify(records)); return true; } catch { return false; }
+  function startSync() {
+    DB.onConfig(remote => {
+      cfg = mergeCfg(remote);
+      try { localStorage.setItem(STORE, JSON.stringify(cfg)); } catch {}
+      render();
+    });
   }
+  if (FIREBASE_CONFIG) {
+    firebaseDB(FIREBASE_CONFIG)
+      .then(db => { DB = db; startSync(); })
+      .catch(() => { startSync(); toast('서버에 연결하지 못했어요'); });
+  } else {
+    startSync();
+  }
+
+  // ===== 사용자 세션 (답·파일·진행 상태) =====
+  let currentId = null;
+  let unwatch = null;
+  const stopWatch = () => { if (unwatch) { unwatch(); unwatch = null; } };
+
   function questionName(i) {
     const k = 'login.q' + (i + 1) + 'name';
     return cfg.text[k] ?? DEFAULT_TEXT[k];
   }
-  function addRecord(login) {
-    const rec = {
-      id: Date.now(),
+  function newSession(login) {
+    currentId = Date.now() + '-' + Math.random().toString(36).slice(2, 7);
+    const values = [0, 1].map(i => $('q' + (i + 1)).value);
+    DB.setSession(currentId, {
+      id: currentId,
       time: new Date().toISOString(),
-      answers: [0, 1].map(i => ({ name: questionName(i), value: $('q' + (i + 1)).value })),
+      answers: values.map((v, i) => ({ name: questionName(i), value: v })),
+      match: values.every((v, i) => v.trim() === cfg.answers[i].trim()),
       login,
-      file: null,
-      analysis: null,
-    };
-    records.unshift(rec);
-    currentRec = rec;
-    saveRecords();
+      loginScene: 0,
+      analysisScene: 0,
+    }).catch(() => {});
+    return currentId;
   }
-  function attachFile(file) {
-    if (!currentRec) { addRecord('기록 없음'); }
-    currentRec.file = file;
-    if (!saveRecords() && file.content) {
-      // 저장 공간이 부족하면 내용 없이 저장
-      currentRec.file = { ...file, content: null, note: '저장 공간이 부족해 파일 내용은 저장하지 못했어요' };
-      saveRecords();
+  async function attachFile(file) {
+    if (!currentId) newSession('기록 없음');
+    try {
+      await DB.updateSession(currentId, { file });
+    } catch {
+      await DB.updateSession(currentId, { file: { ...file, content: null, note: '용량이 커서 파일 내용은 저장하지 못했어요' } }).catch(() => {});
     }
   }
 
@@ -641,19 +734,27 @@
 
   function renderScene(screen) {
     const list = scenesOf(screen);
-    const s = list[Math.min(sceneIdx[screen], list.length - 1)];
+    const s = list[Math.max(0, Math.min(sceneIdx[screen], list.length - 1))];
     document.querySelectorAll(`[data-screen="${screen}"] [data-sf]`).forEach(el => el.textContent = s[el.dataset.sf]);
+  }
+
+  // 장면 i 로 부드럽게 전환
+  function fadeTo(screen, i) {
+    const els = document.querySelectorAll(`[data-screen="${screen}"] .scene-text`);
+    els.forEach(el => el.classList.add('fade'));
+    setTimeout(() => { sceneIdx[screen] = i; renderScene(screen); els.forEach(el => el.classList.remove('fade')); }, 300);
   }
 
   function go(name) {
     clearTimeout(timer);
+    stopWatch();
     screens.forEach(s => s.classList.toggle('active', s.dataset.screen === name));
     const target = document.querySelector(`[data-screen="${name}"]`);
     wave.style.opacity = target.dataset.wave ? 1 : 0;
     wave.classList.toggle('right', target.dataset.wave === 'right');
     current = name;
     if (editMode) return;
-    if (name === 'start') { $('q1').value = ''; $('q2').value = ''; currentRec = null; }
+    if (name === 'start') { $('q1').value = ''; $('q2').value = ''; currentId = null; }
     if (name === 'login') {
       $('loginHint').classList.remove('show');
       document.querySelectorAll('#loginForm .field').forEach(f => f.classList.remove('invalid'));
@@ -670,24 +771,47 @@
     t._h = setTimeout(() => t.classList.remove('show'), 2000);
   }
 
-  // 장면이 있는 화면(screen)의 장면을 차례로 보여준 뒤 next 화면으로
+  // 자동 진행: 장면을 지정한 시간대로 차례로 보여준 뒤 next 화면으로
   function runScenes(screen, next) {
     document.activeElement.blur();
     const list = scenesOf(screen);
     sceneIdx[screen] = 0;
     renderScene(screen);
     go(screen);
-    const els = document.querySelectorAll(`[data-screen="${screen}"] .scene-text`);
+    let i = 0;
     const step = () => {
       timer = setTimeout(() => {
-        sceneIdx[screen]++;
-        if (sceneIdx[screen] >= list.length) { go(next); return; }
-        els.forEach(el => el.classList.add('fade'));
-        setTimeout(() => { renderScene(screen); els.forEach(el => el.classList.remove('fade')); }, 300);
+        i++;
+        if (i >= list.length) { go(next); return; }
+        fadeTo(screen, i);
         step();
-      }, Math.max(0.5, +list[sceneIdx[screen]].dur || 0) * 1000);
+      }, Math.max(0.5, +list[i].dur || 0) * 1000);
     };
     step();
+  }
+
+  // 관리자 진행: 장면 전환과 결과를 관리자가 정할 때까지 대기
+  // field: 'login' | 'analysis'
+  const OUTCOME = {
+    login: { ok: '성공', okScreen: 'loginDone', failScreen: 'loginError' },
+    analysis: { ok: '완료', okScreen: 'done', failScreen: 'error' },
+  };
+  function waitForAdmin(screen, id, field) {
+    document.activeElement.blur();
+    sceneIdx[screen] = 0;
+    renderScene(screen);
+    go(screen);
+    let shown = 0, seen = false;
+    unwatch = DB.onSession(id, s => {
+      if (current !== screen) return;
+      if (!s) { if (seen) go(OUTCOME[field].failScreen); return; }
+      seen = true;
+      const sc = Math.min(s[field + 'Scene'] ?? 0, scenesOf(screen).length - 1);
+      if (sc !== shown) { shown = sc; fadeTo(screen, sc); }
+      const st = s[field];
+      if (st === OUTCOME[field].ok) go(OUTCOME[field].okScreen);
+      else if (st === '실패') go(OUTCOME[field].failScreen);
+    });
   }
 
   // ===== 클릭 공통 처리 =====
@@ -728,8 +852,12 @@
       if (!$(id).value.trim()) { void field.offsetWidth; field.classList.add('invalid'); ok = false; }
     });
     if (!ok) { $('loginHint').classList.add('show'); return; }
+    if (cfg.loginMode === 'admin') {
+      waitForAdmin('loginLoading', newSession('대기'), 'login');
+      return;
+    }
     const correct = [0, 1].every(i => !cfg.answers[i].trim() || $('q' + (i + 1)).value.trim() === cfg.answers[i].trim());
-    addRecord(correct ? '성공' : '실패');
+    newSession(correct ? '성공' : '실패');
     runScenes('loginLoading', correct ? 'loginDone' : 'loginError');
   });
   ['q1', 'q2'].forEach(id => $(id).addEventListener('input', () => {
@@ -738,7 +866,7 @@
   }));
   // 로그인 화면을 3초 이상 누르면 로그인 실패
   longPress(document.querySelector('[data-screen="login"]'), 3000, () => {
-    addRecord('실패');
+    newSession('실패');
     runScenes('loginLoading', 'loginError');
   }, e => e.target.closest('input, .back, #helpBtn'));
   $('helpBtn').addEventListener('click', () => toast('고객센터: ' + cfg.email));
@@ -751,34 +879,37 @@
 
   // 5. 파일 선택 → 6. 분석 중 → 완료 / 오류
   const MAX_SAVE = 1024 * 1024;
-  function analyze(valid) {
+  async function analyze(valid, file) {
+    $('fileName').textContent = file.test ? '테스트 모드' : file.name;
+    await attachFile(file);
+    if (cfg.result === 'admin') {
+      await DB.updateSession(currentId, { analysis: '대기', analysisScene: 0 }).catch(() => {});
+      waitForAdmin('analyzing', currentId, 'analysis');
+      return;
+    }
     const next = valid && cfg.result === 'success' ? 'done' : 'error';
-    if (currentRec) { currentRec.analysis = next === 'done' ? '완료' : '실패'; saveRecords(); }
+    DB.updateSession(currentId, { analysis: next === 'done' ? '완료' : '실패' }).catch(() => {});
     runScenes('analyzing', next);
   }
   $('fileInput').addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
-    $('fileName').textContent = file.name;
     const reader = new FileReader();
     reader.onload = () => {
       const text = reader.result;
       let valid = file.name.toLowerCase().endsWith('.json');
       try { JSON.parse(text); } catch { valid = false; }
-      attachFile({
+      analyze(valid, {
         name: file.name, size: file.size, valid,
         content: text.slice(0, MAX_SAVE), truncated: text.length > MAX_SAVE,
       });
-      analyze(valid);
     };
-    reader.onerror = () => { attachFile({ name: file.name, size: file.size, valid: false, content: null }); analyze(false); };
+    reader.onerror = () => analyze(false, { name: file.name, size: file.size, valid: false });
     reader.readAsText(file);
   });
   // (테스트용) 파일 선택하기를 1초 이상 누르면 파일 없이 다음으로
   longPress($('fileBtn'), 1000, () => {
-    $('fileName').textContent = '테스트 모드';
-    attachFile({ name: '테스트 모드 (파일 없음)', size: 0, valid: true, content: null, test: true });
-    analyze(true);
+    analyze(true, { name: '테스트 모드 (파일 없음)', size: 0, valid: true, test: true });
   });
 
   // ===== 관리자 비밀번호 =====
@@ -811,11 +942,30 @@
 
   // ===== 관리자 모드 =====
   const ICONS = [['bubble', '말풍선'], ['user', '아이디'], ['lock', '비밀번호']];
+  let sessions = {};
+  let unwatchAll = null;
+  let knownWaiting = null;
 
   function openAdmin() {
     buildAdmin();
     go('admin');
     document.querySelector('[data-screen="admin"]').scrollTop = 0;
+    $('connInfo').textContent = DB.kind === 'firebase'
+      ? '실시간 연결됨 (Firebase) · 설정은 모든 사용자에게 바로 적용돼요.'
+      : 'Firebase 설정 전이라 이 브라우저의 다른 탭과만 연결돼요.';
+    knownWaiting = null;
+    unwatchAll = DB.onSessions(all => {
+      sessions = all;
+      // 새로 들어온 대기 요청 알림
+      const waiting = Object.values(all).filter(s => s.login === '대기' || s.analysis === '대기').map(s => s.id + s.login + s.analysis);
+      if (knownWaiting && waiting.some(w => !knownWaiting.has(w))) toast('새 요청이 왔어요');
+      knownWaiting = new Set(waiting);
+      if (current === 'admin') buildRecords();
+    });
+  }
+  function closeAdmin() {
+    if (unwatchAll) { unwatchAll(); unwatchAll = null; }
+    go('start');
   }
 
   function fmtTime(iso) {
@@ -826,22 +976,51 @@
     return n < 1024 ? n + 'B' : n < 1024 * 1024 ? (n / 1024).toFixed(1) + 'KB' : (n / 1024 / 1024).toFixed(1) + 'MB';
   }
   const tag = (label, v) => v == null ? '' :
+    v === '대기' ? `<span class="tag live">${label} 대기 중</span>` :
     `<span class="tag ${v === '성공' || v === '완료' ? 'ok' : v === '실패' ? 'no' : 'wait'}">${label} ${v}</span>`;
 
+  // 대기 중인 단계의 장면 전환 + 결과 버튼
+  function controlsHtml(s, field) {
+    const screen = field === 'login' ? 'loginLoading' : 'analyzing';
+    const list = scenesOf(screen);
+    const cur = Math.min(s[field + 'Scene'] ?? 0, list.length - 1);
+    const [failLabel, okLabel] = field === 'login' ? ['거절', '승인'] : ['실패', '완료'];
+    return `
+      <div class="ctl">
+        <div class="ctl-label">${field === 'login' ? '로그인 중' : '분석 중'} 화면 · 지금: ${escapeHtml(list[cur].title || '장면 ' + (cur + 1))}</div>
+        <div class="ctl-row">
+          ${list.length > 1 ? `<div class="seg">${list.map((sc, i) =>
+            `<button class="${cur === i ? 'on' : ''}" data-scene-set="${s.id}:${field}:${i}" title="${escapeHtml(sc.title)}">${i + 1}</button>`).join('')}</div>` : '<div style="flex:1"></div>'}
+          <button class="mini danger" data-decide="${s.id}:${field}:실패">${failLabel}</button>
+          <button class="mini ok" data-decide="${s.id}:${field}:${OUTCOME[field].ok}">${okLabel}</button>
+        </div>
+      </div>`;
+  }
+
   function buildRecords() {
-    $('recCount').textContent = records.length ? ` ${records.length}건` : '';
-    $('recList').innerHTML = records.length ? records.map(r => `
-      <div class="rec">
+    const list = Object.values(sessions).sort((a, b) => {
+      const wa = a.login === '대기' || a.analysis === '대기', wb = b.login === '대기' || b.analysis === '대기';
+      return wa !== wb ? (wa ? -1 : 1) : b.time.localeCompare(a.time);
+    });
+    const waitingCount = list.filter(s => s.login === '대기' || s.analysis === '대기').length;
+    $('recCount').textContent = list.length ? ` ${list.length}건` + (waitingCount ? ` · 대기 ${waitingCount}` : '') : '';
+    const hasAnswer = cfg.answers.some(a => a.trim());
+    $('recList').innerHTML = list.length ? list.map(s => `
+      <div class="rec ${s.login === '대기' || s.analysis === '대기' ? 'live' : ''}">
         <div class="rec-top">
-          <span class="time">${fmtTime(r.time)}</span>
-          ${tag('로그인', r.login)}${tag('분석', r.analysis)}
+          <span class="time">${fmtTime(s.time)}</span>
+          ${tag('로그인', s.login)}${tag('분석', s.analysis)}
         </div>
-        <div class="rec-a">${r.answers.map(a => `<span>${escapeHtml(a.name)}:</span> ${escapeHtml(a.value) || '<span>(빈칸)</span>'}`).join('<br>')}</div>
+        <div class="rec-a">${(s.answers || []).map(a => `<span>${escapeHtml(a.name)}:</span> ${escapeHtml(a.value) || '<span>(빈칸)</span>'}`).join('<br>')}
+          ${hasAnswer ? `<br><span style="color:${s.match ? '#9fe3b8' : '#ff9b9b'}">${s.match ? '설정한 정답과 일치' : '설정한 정답과 다름'}</span>` : ''}
+        </div>
+        ${s.login === '대기' ? controlsHtml(s, 'login') : ''}
         <div class="rec-file">
-          <span class="fn">${r.file ? '📄 ' + escapeHtml(r.file.name) + (r.file.size ? ` · ${fmtSize(r.file.size)}` : '') + (r.file.valid ? '' : ' · <span style="color:#ff9b9b">JSON 아님</span>') : '<span style="color:var(--muted)">파일 없음</span>'}</span>
-          ${r.file?.content != null ? `<button class="mini" data-view="${r.id}">보기</button><button class="mini" data-down="${r.id}">저장</button>` : ''}
-          <button class="mini danger" data-del-rec="${r.id}">삭제</button>
+          <span class="fn">${s.file ? '📄 ' + escapeHtml(s.file.name) + (s.file.size ? ` · ${fmtSize(s.file.size)}` : '') + (s.file.valid ? '' : ' · <span style="color:#ff9b9b">JSON 아님</span>') : '<span style="color:var(--muted)">파일 없음</span>'}</span>
+          ${s.file?.content != null ? `<button class="mini" data-view="${s.id}">보기</button><button class="mini" data-down="${s.id}">저장</button>` : ''}
+          <button class="mini danger" data-del-rec="${s.id}">삭제</button>
         </div>
+        ${s.analysis === '대기' ? controlsHtml(s, 'analysis') : ''}
       </div>
     `).join('') : '<p class="empty">아직 제출된 기록이 없어요</p>';
   }
@@ -874,19 +1053,31 @@
     `).join('');
 
     Object.keys(SETS).forEach(screen => $('sceneList-' + screen).innerHTML = sceneListHtml(screen));
+    document.querySelectorAll('#loginModeSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === cfg.loginMode));
     document.querySelectorAll('#resultSeg button').forEach(b => b.classList.toggle('on', b.dataset.v === cfg.result));
     $('emailInput').value = cfg.email;
     $('permToastInput').value = cfg.permToast;
   }
 
   function escapeHtml(s) {
-    return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   }
   const splitRef = v => { const [screen, i] = v.split(':'); return [screen, +i]; };
-  const findRec = id => records.find(r => String(r.id) === id);
 
   const admin = document.querySelector('[data-screen="admin"]');
   admin.addEventListener('click', e => {
+    const sceneSet = e.target.closest('[data-scene-set]');
+    if (sceneSet) {
+      const [id, field, i] = sceneSet.dataset.sceneSet.split(':');
+      DB.updateSession(id, { [field + 'Scene']: +i });
+      return;
+    }
+    const decide = e.target.closest('[data-decide]');
+    if (decide) {
+      const [id, field, value] = decide.dataset.decide.split(':');
+      DB.updateSession(id, { [field]: value });
+      return;
+    }
     const icon = e.target.closest('[data-icon]');
     if (icon) { cfg.icons[+icon.dataset.q] = icon.dataset.icon; save(); render(); buildAdmin(); return; }
     const add = e.target.closest('[data-add-scene]');
@@ -903,14 +1094,16 @@
     }
     const ed = e.target.closest('[data-edit-scene]');
     if (ed) { const [screen, i] = splitRef(ed.dataset.editScene); openEdit({ screen, scene: i }); return; }
+    const mode = e.target.closest('#loginModeSeg button');
+    if (mode) { cfg.loginMode = mode.dataset.v; save(); buildAdmin(); return; }
     const res = e.target.closest('#resultSeg button');
     if (res) { cfg.result = res.dataset.v; save(); buildAdmin(); return; }
     const view = e.target.closest('[data-view]');
-    if (view) { openView(findRec(view.dataset.view)); return; }
+    if (view) { openView(sessions[view.dataset.view]); return; }
     const down = e.target.closest('[data-down]');
-    if (down) { download(findRec(down.dataset.down)); return; }
+    if (down) { download(sessions[down.dataset.down]); return; }
     const delRec = e.target.closest('[data-del-rec]');
-    if (delRec) { records = records.filter(r => String(r.id) !== delRec.dataset.delRec); saveRecords(); buildRecords(); }
+    if (delRec && confirm('이 기록을 삭제할까요?')) DB.removeSession(delRec.dataset.delRec);
   });
   admin.addEventListener('input', e => {
     const t = e.target;
@@ -921,14 +1114,14 @@
     save();
   });
   $('clearRec').addEventListener('click', () => {
-    if (!records.length || !confirm('제출 기록을 모두 삭제할까요?')) return;
-    records = []; saveRecords(); buildRecords();
+    if (!Object.keys(sessions).length || !confirm('제출 기록을 모두 삭제할까요?')) return;
+    DB.clearSessions();
   });
   $('resetAll').addEventListener('click', () => {
     if (!confirm('모든 설정과 문구를 처음 상태로 되돌릴까요?\n(제출 기록은 지워지지 않아요)')) return;
     cfg = defaults(); save(); render(); buildAdmin(); toast('초기화했어요');
   });
-  $('exitAdmin').addEventListener('click', () => go('start'));
+  $('exitAdmin').addEventListener('click', closeAdmin);
   $('openEdit').addEventListener('click', () => openEdit({ screen: 'start' }));
 
   // 제출 파일 보기 / 다운로드
