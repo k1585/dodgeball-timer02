@@ -566,7 +566,10 @@
   // Firebase 콘솔 → 프로젝트 설정 → 내 앱(웹)의 firebaseConfig 를 아래 null 자리에 붙여넣으세요.
   // 예: const FIREBASE_CONFIG = { apiKey: "...", authDomain: "...", databaseURL: "https://....firebaseio.com", projectId: "...", ... };
   // 비워두면(null) 같은 브라우저의 탭끼리만 연결돼요.
-  const FIREBASE_CONFIG = null;
+  const FIREBASE_CONFIG = {
+    projectId: "mindgram-741d1",
+    databaseURL: "https://mindgram-741d1-default-rtdb.asia-southeast1.firebasedatabase.app",
+  };
 
   const $ = id => document.getElementById(id);
   const phone = $('phone');
