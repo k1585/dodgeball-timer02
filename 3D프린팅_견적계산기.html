@@ -604,6 +604,11 @@ const DESIGN_STEP_MIN = 30;     // 초과하면 이 시간(분)마다
 const DESIGN_STEP_FEE = 1000;   // 이 금액씩 추가 (원)
 const STUDENT_RATE = 0.15;      // 학생 할인 15%
 const STUDENT_MIN_SEC = 5;      // 학생 인증 영상 최소 길이 (초)
+/* ======== 주문 알림 (ntfy) ========
+   폰에 ntfy 앱을 설치하고 아래 채널 이름을 구독하면, 주문이 들어올 때 알림이 와요.
+   연락처 같은 개인정보는 보내지 않아요 (번호·종류·제목·금액만).                       */
+const NTFY_TOPIC = "formdot-biv93la4rq75";
+const SITE_URL = "https://k1585.github.io/formdot/";   // 알림을 누르면 열릴 사이트 주소
 /* ======== 출력비 기준: (재료 1g 가격 × g + perMin × 출력 분 + base) × margin ======== */
 const PRINT_PRICE = {perMin: 9.5, base: 2300, margin: 1.4};
 
@@ -2021,6 +2026,7 @@ $("cfOk").addEventListener("click", async () => {
   }
   ok.disabled = cancel.disabled = false; st.textContent = "";
   lastOrder = d;
+  notifyOrder(d);
   showDone(d);
   $("confirmModal").hidden = true;
   if (d.type !== "file") resetReqForm(d.type);
@@ -2063,6 +2069,16 @@ function showView(id){
   window.scrollTo(0, 0);
   if (id === "quoteView") requestAnimationFrame(draw);
 }
+// 주문 접수 알림 → 판매자 폰 (실패해도 주문에는 영향 없음)
+function notifyOrder(d){
+  if (!NTFY_TOPIC) return;
+  const kind = {file: "📦 3D 파일", sketch: "✏️ 스케치", idea: "💡 아이디어"}[d.type] || d.type;
+  const message = [kind, d.name, d.total, d.student ? "🎓 학생 할인" : "", d.test ? "🛠 테스트" : ""].filter(Boolean).join(" · ");
+  return fetch("https://ntfy.sh/", {method: "POST", body: JSON.stringify({
+    topic: NTFY_TOPIC, title: `FORMDOT 새 ${d.type === "file" ? "주문" : "견적 요청"} ${d.no}`,
+    message, tags: ["bell"], priority: 4, click: SITE_URL + "#admin"
+  })}).catch(() => {});
+}
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 /* ================= 시작 (사이트 문구를 불러온 뒤 실행) ================= */
@@ -2077,8 +2093,10 @@ function initUI(){
   renderReqMode("idea");
   bindStoreLinks();
   onLongPress(document.querySelector("#formArea .adminTrigger"), 3000, () => openPin());
-  history.replaceState({screen: "home"}, "");
+  const wantAdmin = location.hash === "#admin";
+  history.replaceState({screen: "home"}, "", wantAdmin ? location.pathname + location.search : undefined);
   route("home");
+  if (wantAdmin) openPin();
 }
 </script>
 
