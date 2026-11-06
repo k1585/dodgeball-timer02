@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D 프린팅 견적계산기</title>
+<title>FROMDOT. · 3D 모델링 · 프린팅</title>
 <style>
 :root{
   --bg:#f4f5f7; --card:#fff; --text:#1d2129; --muted:#6b7280; --line:#e3e6ea;
@@ -230,35 +230,99 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
   border-radius:99px;font-size:14px;z-index:30;box-shadow:0 4px 20px rgba(0,0,0,.3)}
 .st.test{background:#dbeafe;color:#1e40af}
 .sec-title{font-size:14px;font-weight:700;margin:16px 0 4px;color:var(--muted)}
+/* ---- FROMDOT 시작 화면 ---- */
+.home{max-width:960px;margin:0 auto;text-align:center;padding-top:28px}
+.brand{font-size:46px;font-weight:900;letter-spacing:-1px;line-height:1.1;display:inline-block}
+.brand .dot,.brand-sm .dot{color:var(--accent)}
+.adminTrigger{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:default}
+.slogan{font-size:20px;font-weight:700;margin-top:6px}
+.promo{color:var(--muted);font-size:15.5px;margin:14px auto 0;max-width:520px;word-break:keep-all}
+.start-btn{margin-top:24px;padding:15px 48px;font-size:17px;border-radius:99px}
+.pf-title{text-align:left;font-size:18px;margin:48px 0 12px}
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;text-align:left}
+.pf{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.pf img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--drop)}
+.pf > div{padding:10px 12px}
+.pf b{display:block;font-size:14.5px}
+.pf small{color:var(--muted);font-size:12.5px;display:block;word-break:keep-all}
+.pf .tag{font-size:11px;color:var(--muted);float:right;font-weight:600}
+.brand-sm{font-size:20px;font-weight:900;letter-spacing:-.5px}
+/* ---- 학생 인증 ---- */
+.stu{margin-top:18px;border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--card);text-align:left}
+.stu-head{display:flex;align-items:center;gap:10px}
+.stu-head b{font-size:16px}
+.switch{margin-left:auto;position:relative;width:52px;height:30px;border-radius:99px;background:var(--line);border:none;padding:0;flex:none}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.15s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.switch[aria-checked="true"]{background:var(--accent)}
+.switch[aria-checked="true"]::after{left:25px}
+.stu-body{margin-top:12px}
+.stu-state{margin-top:8px;font-size:14px;word-break:keep-all}
+.stu-state.ok{color:var(--accent);font-weight:700}
+.stu-state.bad{color:#dc2626}
+.price-old{text-decoration:line-through;color:var(--muted);font-size:.55em;font-weight:600;margin-right:6px}
+.mode-price{display:block;margin-top:8px;font-size:14px;font-weight:800;color:var(--accent)}
+.mode-price .price-old{font-size:13px}
+.tb-chip.stu{background:#dbeafe;color:#1e40af;cursor:pointer;border:none}
+.tb-chip.stu.need{background:#fde68a;color:#92400e}
+.fee-note{font-size:13px;color:var(--muted);margin-top:10px;word-break:keep-all}
+/* ---- 관리자 ---- */
+.admin-tabs{display:flex;gap:6px;margin:12px 0 14px;flex-wrap:wrap}
+.admin-tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.calc{margin-top:10px;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;font-size:14px}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:6px}
+.calc label{display:flex;flex-direction:column;gap:3px;font-size:12.5px;color:var(--muted)}
+.calc label.chk{flex-direction:row;align-items:center;gap:6px;color:var(--text);font-size:14px}
+.calc input,.calc select{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--text);font-size:14px}
+.calc-out{margin-top:8px;font-size:14px}
+.quote-line{margin-top:6px;font-size:14px;font-weight:700;color:var(--accent)}
+.tx-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tx-tools input{flex:1;min-width:200px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);font-size:14px}
+.tx-group{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card)}
+.tx-group summary{padding:12px 14px;font-weight:700}
+.tx-row{padding:8px 14px;border-top:1px solid var(--line)}
+.tx-row .tx-def{font-size:12.5px;color:var(--muted);word-break:break-all}
+.tx-row code{font-size:11px;color:var(--muted)}
+.tx-row textarea{width:100%;min-height:40px;margin-top:4px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;
+  background:var(--card);color:var(--text);font-size:13.5px;font-family:inherit;resize:vertical}
+.tx-row.changed textarea{border-color:var(--accent);background:var(--accent-soft)}
+.pf-admin{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:start;padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card)}
+@media (max-width:560px){.pf-admin{grid-template-columns:1fr}}
+.pf-admin img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:var(--drop)}
+.pf-admin input[type=text],.pf-admin textarea,.pf-new input[type=text],.pf-new textarea{width:100%;padding:7px 9px;border:1px solid var(--line);border-radius:8px;
+  background:var(--card);color:var(--text);font-size:14px;font-family:inherit;margin-bottom:6px}
+.sticky-save{position:sticky;bottom:0;background:var(--bg);padding:10px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.oc-thumbs video{width:260px;max-width:100%;border-radius:8px;background:#000}
+#drop.lp::after,.att-drop.lp::after{background:var(--accent)}
 </style>
 </head>
 <body>
 <div class="wrap">
  <div id="quoteView">
-  <!-- 시작 화면: 수준 → 모드 → 주문 방식 -->
+  <!-- 시작 화면 → 진행 방식 → 의뢰 선택 (스크립트에서 그림) -->
   <div id="wizard"></div>
 
   <!-- 주문 화면 -->
   <div id="formArea" hidden>
    <div class="topbar">
-     <span class="tb-title">3D 프린팅 주문</span>
+     <span class="brand-sm adminTrigger" data-t="brand.short">FROMDOT<span class="dot">.</span></span>
      <span class="tb-chip" id="tbMode"></span>
+     <button class="tb-chip stu" id="tbStu" hidden></button>
      <div class="tb-right">
-       <div class="seg sm" id="tbLevel"><button data-v="beg">🙂 초급자</button><button data-v="pro">⚡ 숙련자</button></div>
-       <div class="seg sm" id="tbStyle"><button data-v="quick">🚀 빠른 주문</button><button data-v="detail">🛠 상세 주문</button></div>
-       <button class="link-btn" id="tbRestart">처음부터 다시 선택</button>
+       <div class="seg sm" id="tbLevel"><button data-v="beg" data-t="top.beg">🙂 초보자</button><button data-v="pro" data-t="top.pro">⚡ 숙련자</button></div>
+       <div class="seg sm" id="tbStyle"><button data-v="quick" data-t="top.quick">🚀 빠른 모드</button><button data-v="detail" data-t="top.detail">🛠 상세 모드</button></div>
+       <button class="link-btn" id="tbRestart" data-t="top.restart">처음으로</button>
      </div>
    </div>
 
    <div id="mode-file" class="mode-panel">
-    <div class="flow beg-only"><b>① 파일 올리기</b> → <b>② 옵션 고르기</b> → <b>③ 주문 신청하기</b></div>
+    <div class="flow beg-only" data-t="file.flow"><b>① 파일 올리기</b> → <b>② 옵션 고르기</b> → <b>③ 주문 신청하기</b></div>
     <div class="grid">
       <div class="card">
-        <h2>3D 파일 올리기</h2>
-        <div class="guide beg-only">💡 STL·3MF는 3D 모델 파일이에요. MakerWorld·Thingiverse에서 받은 파일이나 직접 만든 파일을 올려 주세요. 뱀부 스튜디오에서 슬라이싱한 파일(.gcode.3mf)이면 가장 정확해요.</div>
-        <div id="drop">
-          <b>여기로 파일을 끌어다 놓거나 클릭하세요</b>
-          <small>STL · 3MF · G-code · 최대 300 × 300 × 300 mm</small>
+        <h2 data-t="file.title">3D 파일 올리기</h2>
+        <div class="guide beg-only" data-t="file.guide">💡 STL·3MF는 3D 모델 파일이에요. MakerWorld·Thingiverse에서 받은 파일이나 직접 만든 파일을 올려 주세요. 뱀부 스튜디오에서 슬라이싱한 파일(.gcode.3mf)이면 가장 정확해요.</div>
+        <div id="drop" class="lp" tabindex="0">
+          <b data-t="file.drop">여기로 파일을 끌어다 놓거나 클릭하세요</b>
+          <small data-t="file.dropSub">STL · 3MF · G-code · 최대 300 × 300 × 300 mm</small>
           <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
         </div>
         <div id="fileInfo"></div>
@@ -266,51 +330,51 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
         <div id="stats" class="stats"></div>
 
         <div id="quickOpts" class="quick-only">
-          <h2 style="margin-top:18px">옵션</h2>
-          <div class="qopt"><div class="qlabel">재료</div><select id="q_mat"></select>
-            <div class="hint beg-only">모르면 <b>PLA Basic</b>을 고르세요. 재료에 따라 가격이 달라져요.</div></div>
-          <div class="qopt"><div class="qlabel">색상</div><select id="q_color"></select></div>
-          <div class="qopt q-geo"><div class="qlabel">튼튼함</div>
-            <div class="seg full" data-q="strength"><button data-v="light">가볍게</button><button data-v="normal">표준</button><button data-v="strong">튼튼하게</button></div>
-            <div class="hint beg-only">장식품은 가볍게, 힘을 받는 부품은 튼튼하게. 튼튼할수록 무겁고 비싸져요.</div></div>
-          <div class="qopt q-geo"><div class="qlabel">품질</div>
-            <div class="seg full" data-q="quality"><button data-v="fast">빠르게</button><button data-v="normal">표준</button><button data-v="fine">곱게</button></div>
-            <div class="hint beg-only">곱게 하면 표면이 매끈하지만 시간이 오래 걸려요.</div></div>
-          <div class="qopt q-geo"><div class="qlabel">서포트</div>
-            <div class="seg full" data-q="support"><button data-v="none">필요 없음</button><button data-v="auto">자동으로 넣기</button></div>
-            <div class="hint beg-only">공중에 뜬 부분이 있으면 자동으로 넣기를 고르세요.</div></div>
-          <p class="note q-sliced" style="display:none">슬라이싱된 파일은 파일에 저장된 설정으로 계산돼요. 재료와 색상만 골라 주세요.</p>
+          <h2 style="margin-top:18px" data-t="quick.title">옵션</h2>
+          <div class="qopt"><div class="qlabel" data-t="quick.mat">재료</div><select id="q_mat"></select>
+            <div class="hint beg-only" data-t="quick.matHint">모르면 <b>PLA Basic</b>을 고르세요. 재료에 따라 가격이 달라져요.</div></div>
+          <div class="qopt"><div class="qlabel" data-t="quick.color">색상</div><select id="q_color"></select></div>
+          <div class="qopt q-geo"><div class="qlabel" data-t="quick.strength">튼튼함</div>
+            <div class="seg full" data-q="strength"><button data-v="light" data-t="quick.s.light">가볍게</button><button data-v="normal" data-t="quick.s.normal">표준</button><button data-v="strong" data-t="quick.s.strong">튼튼하게</button></div>
+            <div class="hint beg-only" data-t="quick.strengthHint">장식품은 가볍게, 힘을 받는 부품은 튼튼하게. 튼튼할수록 무겁고 비싸져요.</div></div>
+          <div class="qopt q-geo"><div class="qlabel" data-t="quick.quality">품질</div>
+            <div class="seg full" data-q="quality"><button data-v="fast" data-t="quick.q.fast">빠르게</button><button data-v="normal" data-t="quick.q.normal">표준</button><button data-v="fine" data-t="quick.q.fine">곱게</button></div>
+            <div class="hint beg-only" data-t="quick.qualityHint">곱게 하면 표면이 매끈하지만 시간이 오래 걸려요.</div></div>
+          <div class="qopt q-geo"><div class="qlabel" data-t="quick.support">서포트</div>
+            <div class="seg full" data-q="support"><button data-v="none" data-t="quick.p.none">필요 없음</button><button data-v="auto" data-t="quick.p.auto">자동으로 넣기</button></div>
+            <div class="hint beg-only" data-t="quick.supportHint">공중에 뜬 부분이 있으면 자동으로 넣기를 고르세요.</div></div>
+          <p class="note q-sliced" style="display:none" data-t="quick.sliced">슬라이싱된 파일은 파일에 저장된 설정으로 계산돼요. 재료와 색상만 골라 주세요.</p>
         </div>
       </div>
 
       <div class="card" id="priceCard">
-        <h2>견적</h2>
-        <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
+        <h2 data-t="price.title">견적</h2>
+        <label class="f"><span data-t="price.qty">수량 (개)</span><input id="qty" type="number" min="1" step="1" value="1"></label>
         <div class="tiles">
-          <div class="tile"><small>예상 무게</small><b id="wOut">-</b></div>
-          <div class="tile"><small>예상 출력 시간</small><b id="tOut">-</b></div>
+          <div class="tile"><small data-t="price.weight">예상 무게</small><b id="wOut">-</b></div>
+          <div class="tile"><small data-t="price.time">예상 출력 시간</small><b id="tOut">-</b></div>
         </div>
         <div class="price">
-          <div style="font-size:14px;font-weight:600">예상 견적</div>
+          <div style="font-size:14px;font-weight:600" data-t="price.label">예상 견적</div>
           <div class="total" id="total">-</div>
-          <div class="formula" id="summary">파일을 올리면 견적이 표시돼요.</div>
+          <div class="formula" id="summary"></div>
         </div>
-        <button id="orderBtn" class="btn-primary btn-wide lp is-disabled" aria-disabled="true">주문 신청하기</button>
+        <button id="orderBtn" class="btn-primary btn-wide is-disabled" aria-disabled="true" data-t="price.order">주문 신청하기</button>
         <div class="btn-sub">
-          <a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
-          <button id="copyBtn" class="link-btn">견적 복사</button>
+          <a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false" data-t="price.store">스마트스토어 바로가기</a>
+          <button id="copyBtn" class="link-btn" data-t="price.copy">견적 복사</button>
         </div>
-        <p class="note beg-only">표시된 금액은 예상 견적이에요. 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
+        <p class="note beg-only" data-t="price.note">표시된 금액은 예상 견적이에요. 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
       </div>
     </div>
 
     <div class="card detail-only" style="margin-top:16px">
       <div class="opt-head">
-        <h2>출력 옵션</h2>
-        <button id="resetOpts">기본값으로</button>
+        <h2 data-t="opt.title">출력 옵션</h2>
+        <button id="resetOpts" data-t="opt.reset">기본값으로</button>
       </div>
-      <p class="note beg-only" style="margin-top:0">잘 모르겠으면 기본값 그대로 두셔도 돼요. 옵션 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.</p>
-      <p class="note" id="slicedNote" style="display:none">⚠️ 슬라이싱된 파일은 파일에 저장된 출력 설정으로 무게·시간이 계산돼요. 재료와 색상만 골라 주세요.</p>
+      <p class="note beg-only" style="margin-top:0" data-t="opt.guide">잘 모르겠으면 기본값 그대로 두셔도 돼요. 옵션 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.</p>
+      <p class="note" id="slicedNote" style="display:none" data-t="opt.sliced">⚠️ 슬라이싱된 파일은 파일에 저장된 출력 설정으로 무게·시간이 계산돼요. 재료와 색상만 골라 주세요.</p>
       <div class="opt-sections" id="optSections"></div>
     </div>
    </div>
@@ -324,28 +388,28 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
  <!-- 복사 실패 시 직접 복사 -->
  <div class="modal" id="copyModal" hidden>
   <div class="modal-box">
-    <h3>아래 내용을 복사해 주세요</h3>
-    <div class="note" style="margin-top:0">자동 복사가 막혀 있어요. 글자를 길게 누르거나 Ctrl+C 로 복사하세요.</div>
+    <h3 data-t="copy.title">아래 내용을 복사해 주세요</h3>
+    <div class="note" style="margin-top:0" data-t="copy.desc">자동 복사가 막혀 있어요. 글자를 길게 누르거나 Ctrl+C 로 복사하세요.</div>
     <textarea class="copy-ta" id="copyTa" readonly></textarea>
-    <div class="btn-row"><button id="copyClose" class="btn-primary">닫기</button></div>
+    <div class="btn-row"><button id="copyClose" class="btn-primary" data-t="copy.close">닫기</button></div>
   </div>
  </div>
 
  <!-- 주문 완료 화면 -->
  <div id="orderView" hidden>
-  <h1 style="text-align:center" id="doneTitle">주문 신청 완료</h1>
-  <p class="sub" style="text-align:center" id="doneSub">주문 파일이 접수되었어요. 아래 주문번호를 꼭 기억해 주세요.</p>
+  <h1 style="text-align:center" id="doneTitle"></h1>
+  <p class="sub" style="text-align:center" id="doneSub"></p>
   <div class="card" style="max-width:560px;margin:0 auto">
-    <div class="order-no"><small id="noLabel">주문번호</small><div class="num" id="orderNo">0000</div></div>
-    <div class="order-guide">📌 스마트스토어에서 주문할 때 <b>옵션</b>에 이 번호 <b id="orderNo2">0000</b>을(를) 입력해 주세요.</div>
+    <div class="order-no"><small id="noLabel"></small><div class="num" id="orderNo">0000</div></div>
+    <div class="order-guide" id="doneGuide"></div>
     <div id="orderBody"></div>
-    <table class="info" style="margin-top:6px"><tr class="sum"><th>총 가격</th><td id="orderTotal"></td></tr></table>
+    <table class="info" style="margin-top:6px"><tr class="sum"><th data-t="done.total">총 가격</th><td id="orderTotal"></td></tr></table>
     <div class="btn-row">
-      <a class="btn-store storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
+      <a class="btn-store storeLink" href="#" target="_blank" rel="noopener" draggable="false" data-t="done.store">스마트스토어 바로가기</a>
     </div>
     <div class="btn-row" style="margin-top:8px">
-      <button id="orderCopyBtn">주문 내용 복사</button>
-      <button id="backBtn">처음으로</button>
+      <button id="orderCopyBtn"></button>
+      <button id="backBtn" data-t="done.back">처음으로</button>
     </div>
   </div>
  </div>
@@ -353,19 +417,19 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
  <!-- 주문 확인창 -->
  <div class="modal" id="confirmModal" hidden>
   <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="cfTitle">
-    <h3 id="cfTitle">정말 주문을 신청할까요?</h3>
-    <div style="font-size:14px;color:var(--muted)" id="cfLabel">주문할 파일</div>
+    <h3 id="cfTitle"></h3>
+    <div style="font-size:14px;color:var(--muted)" id="cfLabel"></div>
     <div class="modal-file" id="cfFile"></div>
-    <div style="font-size:14px">총 가격 <b id="cfTotal" style="color:var(--accent);font-size:17px"></b></div>
+    <div style="font-size:14px"><span data-t="confirm.total">총 가격</span> <b id="cfTotal" style="color:var(--accent);font-size:17px"></b></div>
     <div class="note" id="cfStatus"></div>
     <div class="btn-row" style="margin-top:14px">
-      <button id="cfCancel">취소</button>
-      <button id="cfOk" class="btn-primary">확인</button>
+      <button id="cfCancel" data-t="confirm.cancel">취소</button>
+      <button id="cfOk" class="btn-primary"></button>
     </div>
   </div>
  </div>
 
-  <!-- 관리자 비밀번호 -->
+ <!-- 관리자 비밀번호 -->
  <div class="modal" id="pinModal" hidden>
   <div class="modal-box pin-box" role="dialog" aria-modal="true" aria-labelledby="pinTitle">
     <h3 id="pinTitle">관리자 비밀번호</h3>
@@ -380,14 +444,39 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
   </div>
  </div>
 
- <!-- 관리자: 주문 목록 -->
+ <!-- 관리자 -->
  <div id="adminView" hidden>
   <div class="admin-head">
-    <h1>주문 관리</h1>
+    <h1>관리자</h1>
     <button id="adminOut">로그아웃</button>
   </div>
-  <p class="sub" id="adminSub">불러오는 중…</p>
-  <div id="adminList"></div>
+  <div class="admin-tabs" id="adminTabs">
+    <button data-tab="orders" class="on">📋 주문 관리</button>
+    <button data-tab="portfolio">🖼 포트폴리오</button>
+    <button data-tab="texts">✏️ 사이트 문구</button>
+  </div>
+  <div id="tab-orders">
+    <p class="sub" id="adminSub">불러오는 중…</p>
+    <div id="adminList"></div>
+  </div>
+  <div id="tab-portfolio" hidden>
+    <p class="sub">시작 화면 아래에 보이는 포트폴리오예요. 하나라도 등록하면 예시 사진 대신 이 목록이 보여요.</p>
+    <div id="pfList"></div>
+    <div class="card pf-new">
+      <h2>새 포트폴리오 추가</h2>
+      <input type="text" id="pfNewTitle" placeholder="제목 (예: 맞춤 수건걸이)">
+      <textarea id="pfNewDesc" placeholder="짧은 설명 (선택)"></textarea>
+      <input type="file" id="pfNewImg" accept="image/*">
+      <div class="btn-row"><button id="pfAdd" class="btn-primary">추가하기</button></div>
+      <div class="note" id="pfMsg"></div>
+    </div>
+  </div>
+  <div id="tab-texts" hidden>
+    <p class="sub">손님에게 보이는 모든 문구를 바꿀 수 있어요. 바꾼 칸은 초록색으로 표시돼요. <b>{no}</b>, <b>{price}</b> 같은 중괄호 부분은 자동으로 채워지는 값이니 지우지 마세요.</p>
+    <div class="tx-tools"><input type="search" id="txSearch" placeholder="문구 검색 (예: 주문 신청)"></div>
+    <div id="txList"></div>
+    <div class="sticky-save"><button id="txSave" class="btn-primary">저장하기</button><span class="note" id="txMsg" style="margin:0"></span></div>
+  </div>
  </div>
 
   <!-- 내부 계산값 (화면에 표시 안 함) -->
@@ -433,7 +522,132 @@ const FIREBASE_CONFIG = {
 const ADMIN_EMAIL = "admin@my3dprint.com";
 const ADMIN_PW_SUFFIX = "-3dprint";
 /* ========================================================= */
-document.querySelectorAll(".storeLink").forEach(a => a.href = SMARTSTORE_URL);
+
+
+/* ======== 디자인비 · 학생 할인 ======== */
+const DESIGN_FEE = {file: 0, sketch: 3000, idea: 6000};   // 성인 기본 디자인비 (기본 1시간 포함)
+const DESIGN_BASE_MIN = 60;     // 기본 포함 시간 (분)
+const DESIGN_STEP_MIN = 30;     // 초과하면 이 시간(분)마다
+const DESIGN_STEP_FEE = 1000;   // 이 금액씩 추가 (원)
+const STUDENT_RATE = 0.15;      // 학생 할인 15%
+const STUDENT_MIN_SEC = 5;      // 학생 인증 영상 최소 길이 (초)
+
+/* ================= 문구 (관리자 > 사이트 문구에서 모두 바꿀 수 있어요) ================= */
+const TDEF = {
+ "brand.name": "FROMDOT<span class=\"dot\">.</span>",
+ "home.slogan": "아이디어를 형태로.",
+ "home.promo": "3D 모델링부터 프린팅까지, 당신의 아이디어를 현실로 구현합니다.",
+ "home.start": "시작하기",
+ "home.pfTitle": "포트폴리오",
+ "home.pfExample": "예시",
+ "nav.back": "← 뒤로",
+ "way.title": "진행 방식을 골라 주세요",
+ "way.sub": "초보자·숙련자 모드는 화면 구성만 다르고 가격은 같아요.",
+ "way.beg.t": "초보자 모드", "way.beg.d": "하나씩 차근차근, 설명과 함께 친절하게 안내해 드려요",
+ "way.beg.ex": "3D 프린팅이 처음이거나 용어가 낯설다면 추천해요",
+ "way.pro.t": "숙련자 모드", "way.pro.d": "설명은 줄이고 직관적이고 빠르게 진행해요",
+ "way.pro.ex": "슬라이서 설정(레이어 높이, 인필 등)을 아는 분께 추천해요",
+ "way.next": "다음", "way.needLevel": "먼저 초보자 / 숙련자 모드를 골라 주세요.",
+ "stu.title": "🎓 학생 할인 15%",
+ "stu.desc": "학생이면 모든 금액(디자인비·출력비)에서 15% 할인돼요.",
+ "stu.how": "<b>학생증</b>과 <b>‘FROMDOT’이라고 적은 종이</b>가 함께 보이게 <b>5초 이상</b> 영상으로 찍어 올려 주세요. 판매자가 영상을 확인한 뒤 최종 적용돼요.",
+ "stu.upload": "🎥 인증 영상 올리기 · 촬영하기",
+ "stu.reupload": "🎥 다른 영상으로 바꾸기",
+ "stu.ok": "✅ 인증 영상 등록 완료 ({sec}초) · 학생가로 표시돼요",
+ "stu.okUnknown": "✅ 인증 영상 등록 완료 · 학생가로 표시돼요 (영상 길이는 판매자가 확인해요)",
+ "stu.short": "⚠️ 영상이 너무 짧아요 ({sec}초). 5초 이상 찍어 주세요.",
+ "stu.big": "⚠️ 영상이 너무 커요 (최대 {mb}MB). 짧게 다시 찍어 주세요.",
+ "stu.notVideo": "⚠️ 영상 파일만 올릴 수 있어요.",
+ "stu.need": "인증 영상을 올리면 학생가로 표시돼요.",
+ "stu.checking": "영상 확인 중…",
+ "stu.making": "🛠 테스트 영상을 만드는 중이에요… (약 6초)",
+ "stu.chipOk": "🎓 학생가 적용", "stu.chipNeed": "🎓 학생 인증 필요",
+ "stu.rowLabel": "학생 할인", "stu.rowValue": "15% 적용 (인증 영상 첨부)",
+ "pick.title": "어떤 의뢰인가요?",
+ "pick.sub": "가지고 있는 것에 맞춰 골라 주세요. (최대 출력 크기 300 × 300 × 300 mm)",
+ "pick.file.t": "3D 파일 있음", "pick.file.d": "바로 출력 가능 · 추가 비용 없음",
+ "pick.file.ex": "STL·3MF·G-code 파일을 올리면 바로 가격이 나와요",
+ "pick.sketch.t": "2D 도면 · 설계도 · 스케치만 있음", "pick.sketch.d": "그림을 보고 3D 모델로 만들어 드려요",
+ "pick.sketch.ex": "예) 치수를 적은 손그림, 캐드 PDF, 부러진 부품 사진",
+ "pick.idea.t": "아이디어 · 원하는 것만 있음", "pick.idea.d": "설명만 해 주시면 설계부터 해 드려요",
+ "pick.idea.ex": "예) 욕실 벽에 붙이는 수건걸이 겸 수세미 거치대, 핑거보드 트랙",
+ "pick.free": "디자인비 없음 · 출력비만",
+ "pick.fee": "디자인비 {price}~",
+ "pick.stuTag": "학생가",
+ "pick.feeRule": "디자인비는 기본 1시간 포함, 1시간을 넘으면 30분마다 1,000원이 추가돼요. 출력비는 3D 파일과 같은 방식으로 계산해요.",
+ "pick.styleLbl": "진행 모드",
+ "pick.quick": "🚀 빠른 모드", "pick.detail": "🛠 상세 모드",
+ "pick.quick.file": "재료·색상·튼튼함만 고르면 끝", "pick.quick.req": "꼭 필요한 항목만 적으면 끝",
+ "pick.detail.file": "레이어 높이, 벽, 내부 채움 패턴 등 슬라이서 설정을 직접 맞춰요",
+ "pick.detail.req": "크기, 사용 환경, 재료, 고정 방법, 희망일까지 자세히 맞춰요",
+ "pick.needMode": "먼저 의뢰 종류를 골라 주세요.",
+ "pick.needStyle": "진행 모드(빠른 / 상세)를 골라 주세요.",
+ "pick.go": "시작하기",
+ "mode.file": "📦 3D 파일", "mode.sketch": "✏️ 스케치·도면", "mode.idea": "💡 아이디어",
+ "price.empty": "파일을 올리면 견적이 표시돼요.",
+ "price.tooBig": "최대 크기를 넘어 견적을 낼 수 없어요.",
+ "price.qtyNote": "수량 {n}개 기준",
+ "price.stuNote": "🎓 학생 할인 15% 적용",
+ "req.priceTitle": "예상 금액",
+ "req.feeFrom": "디자인비 {price}~",
+ "req.feeRule": "기본 1시간 포함 · 초과 30분마다 1,000원",
+ "req.printLine": "+ 출력비 (설계 후 3D 파일과 같은 방식으로 계산)",
+ "req.submit": "견적 요청하기",
+ "req.store": "스마트스토어 바로가기",
+ "req.quickGuide": "🚀 빠른 모드예요. <b>*</b> 표시만 적으면 바로 요청할 수 있어요. 더 자세히 적고 싶으면 위에서 <b>상세 모드</b>를 누르세요.",
+ "req.note": "<span style=\"color:#dc2626\">*</span> 표시는 꼭 적어 주세요. 각 항목 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.",
+ "req.drop": "📎 여기를 눌러 파일을 고르거나 끌어다 놓으세요", "req.dropSub": "사진(JPG·PNG 등) · PDF",
+ "req.optional": "(선택)",
+ "req.stepsTitle": "진행 방법",
+ "req.must": "꼭 적어 주세요.", "req.needFile": "파일을 1개 이상 올려 주세요.",
+ "req.dimsBig": "한 변 최대 {max}mm까지 출력할 수 있어요. 더 크면 나눠서 만들 수 있으니 설명에 적어 주세요.",
+ "req.badContact": "연락처를 다시 확인해 주세요.",
+ "req.maxFiles": "파일은 최대 {n}개까지 올릴 수 있어요.",
+ "req.badType": "사진(이미지) 또는 PDF 파일만 올릴 수 있어요.",
+ "req.fileBig": "{name}: 파일이 너무 커요 (최대 20MB).",
+ "req.total": "디자인비 {fee}~ + 출력비 별도",
+ "req.typeRow": "요청 종류", "req.styleRow": "진행 모드",
+ "req.secInfo": "요청 정보", "req.secWant": "희망 사항", "req.secWho": "연락처",
+ "file.secInfo": "파일 정보", "file.secSet": "출력 설정",
+ "file.rowName": "파일명", "file.rowWeight": "무게", "file.rowSize": "크기", "file.rowTime": "소요시간", "file.rowQty": "수량",
+ "file.rowStyle": "진행 모드", "file.rowQS": "튼튼함", "file.rowQQ": "품질", "file.rowQP": "서포트",
+ "file.rowSliced": "출력 설정", "file.slicedVal": "파일에 저장된 설정",
+ "confirm.order": "정말 주문을 신청할까요?", "confirm.req": "정말 견적을 요청할까요?",
+ "confirm.fileLbl": "주문할 파일", "confirm.reqLbl": "요청 내용", "confirm.attach": "(첨부 {n}개)", "confirm.ok": "확인",
+ "done.order.title": "주문 신청 완료", "done.req.title": "견적 요청 완료",
+ "done.order.sub": "주문 파일이 접수되었어요. 아래 주문번호를 꼭 기억해 주세요.",
+ "done.req.sub": "요청이 접수되었어요. 판매자가 확인 후 남겨 주신 연락처로 설계·견적을 안내드려요.",
+ "done.noOrder": "주문번호", "done.noReq": "요청번호",
+ "done.guide": "📌 스마트스토어에서 주문할 때 <b>옵션</b>에 이 번호 <b>{no}</b>을(를) 입력해 주세요.",
+ "done.copyOrder": "주문 내용 복사", "done.copyReq": "요청 내용 복사", "done.copied": "복사됨!",
+ "msg.needFile": "먼저 3D 파일을 올려 주세요.",
+ "msg.analyzing": "분석 중…",
+ "msg.readFail": "파일을 읽을 수 없어요. STL, 3MF, G-code 파일인지 확인해 주세요.",
+ "msg.tooBig": "모델 크기가 최대 출력 크기({max} × {max} × {max} mm)를 넘어서 주문할 수 없어요. 크기를 줄이거나 나눠서 올려 주세요.",
+ "msg.noServer": "주문 서버가 아직 설정되지 않았어요. 판매자에게 문의해 주세요.",
+ "msg.fileBig": "파일이 너무 커요. (최대 {mb}MB)",
+ "msg.sending": "전송 중…", "msg.fail": "전송에 실패했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.", "msg.retry": "다시 시도",
+ "msg.test": "🛠 테스트 모드: 예시 파일로 채웠어요",
+ "msg.testDone": "🛠 테스트예요. 서버가 설정되지 않아 저장되지 않았어요.",
+ "msg.copyHead": "[FROMDOT. 예상 견적]",
+ "msg.loading": "불러오는 중…"
+};
+let TOV = {};                                   // 관리자가 바꾼 문구
+function t(key, vars){
+  let s = key in TOV ? TOV[key] : key in TDEF ? TDEF[key] : key;
+  if (vars) s = String(s).replace(/\{(\w+)\}/g, (m, k) => k in vars ? vars[k] : m);
+  return s;
+}
+const plain = s => String(s).replace(/<[^>]+>/g, "");
+const noEmoji = s => plain(s).replace(/^[^\p{L}\p{N}]+/u, "");
+function ov(key, def){ TDEF[key] = def; return key in TOV ? TOV[key] : def; }
+function applyStaticTexts(){
+  document.querySelectorAll("[data-t]").forEach(el => {
+    const k = el.dataset.t;
+    if (!(k in TDEF)) TDEF[k] = el.innerHTML.trim();
+    el.innerHTML = t(k);
+  });
+}
 
 /* ================= 출력 옵션 (뱀부 스튜디오 기준) =================
    select 항목: [값, 화면 표시, 추가 데이터]
@@ -516,6 +730,7 @@ const OPTS = [
  ]}
 ];
 
+
 // 숙련자용 영문 이름 (뱀부 스튜디오 표기)
 const EN = {mat:"Filament", color:"Color", layerH:"Layer height", firstLayerH:"Initial layer height", lineW:"Line width",
   ironing:"Ironing", walls:"Wall loops", topL:"Top shell layers", botL:"Bottom shell layers", topPattern:"Top surface pattern",
@@ -528,29 +743,7 @@ function hintOf(o){
   const m = t.match(/^.*?[.!?](?=\s|$)/);
   return (m ? m[0] : t).trim();
 }
-// 옵션 화면 만들기
-(function renderOpts(){
-  const box = $("optSections");
-  box.innerHTML = OPTS.map(sec => `<div class="opt-sec" data-always="${sec.always ? 1 : 0}">
-    <h3><span>${sec.icon}</span>${sec.sec}</h3>
-    ${sec.items.map(o => {
-      const ctl = o.type === "select"
-        ? `<select id="${o.id}">${o.list.map(([v, t]) => `<option value="${v}"${v === o.def ? " selected" : ""}>${t}</option>`).join("")}</select>`
-        : `<input id="${o.id}" type="number" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.def}">`;
-      return `<div class="opt">
-        <div class="opt-row"><label for="${o.id}">${o.label}${o.unit ? ` <small style="color:var(--muted)">(${o.unit})</small>` : ""}<span class="en pro-only">${EN[o.id] || ""}</span>
-          <div class="hint beg-only">${hintOf(o)}</div></label>
-          <button type="button" class="help-btn" aria-expanded="false" aria-controls="h-${o.id}" title="설명 보기">?</button>${ctl}</div>
-        <div class="help-text" id="h-${o.id}" hidden>${o.help}</div></div>`;
-    }).join("")}</div>`).join("");
-  box.addEventListener("click", e => {
-    const b = e.target.closest(".help-btn"); if (!b) return;
-    const t = $(b.getAttribute("aria-controls")), open = t.hidden;
-    t.hidden = !open; b.setAttribute("aria-expanded", open);
-  });
-  box.addEventListener("change", () => showResult());
-  box.addEventListener("input", e => { if (e.target.type === "number") showResult(); });
-})();
+
 const OPT_BY_ID = Object.fromEntries(OPTS.flatMap(s => s.items).map(o => [o.id, o]));
 function optVal(id){
   const o = OPT_BY_ID[id], el = $(id);
@@ -572,40 +765,7 @@ function settingsList(slicedFile){
   if (slicedFile) out.push(["출력 설정", "파일에 저장된 설정"]);
   return out;
 }
-$("resetOpts").addEventListener("click", () => {
-  for (const o of Object.values(OPT_BY_ID)) $(o.id).value = o.def;
-  showResult();
-});
 
-/* ---- 빠른 주문용 간단 옵션 → 상세 옵션 값으로 변환 ---- */
-const QUICK = {
-  strength: {light: {walls:2, infill:10}, normal: {walls:2, infill:15}, strong: {walls:4, infill:30, pattern:"cubic", topL:6, botL:4}},
-  quality:  {fast: {layerH:"0.28"}, normal: {layerH:"0.20"}, fine: {layerH:"0.12"}},
-  support:  {none: {supType:"none"}, auto: {supType:"tree"}}
-};
-const QUICK_TEXT = {strength:{light:"가볍게", normal:"표준", strong:"튼튼하게"}, quality:{fast:"빠르게", normal:"표준", fine:"곱게"}, support:{none:"필요 없음", auto:"자동"}};
-const qState = {strength: "normal", quality: "normal", support: "none"};
-$("q_mat").innerHTML = $("mat").innerHTML;
-$("q_color").innerHTML = $("color").innerHTML;
-function renderQuickSegs(){
-  document.querySelectorAll("#quickOpts .seg").forEach(sg =>
-    sg.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === qState[sg.dataset.q])));
-}
-function applyQuick(){
-  for (const o of Object.values(OPT_BY_ID)) if (o.id !== "mat" && o.id !== "color") $(o.id).value = o.def;
-  $("mat").value = $("q_mat").value; $("color").value = $("q_color").value;
-  for (const k in qState) for (const [id, v] of Object.entries(QUICK[k][qState[k]])) $(id).value = v;
-  renderQuickSegs(); showResult();
-}
-$("quickOpts").addEventListener("click", e => {
-  const b = e.target.closest(".seg button"); if (!b) return;
-  qState[b.parentElement.dataset.q] = b.dataset.v; applyQuick();
-});
-$("q_mat").addEventListener("change", applyQuick);
-$("q_color").addEventListener("change", applyQuick);
-renderQuickSegs();
-
-/* ================= 스케치 / 아이디어 요청 폼 ================= */
 const MAX_ATTACH = 6;
 const USE_LIST = [["indoor","실내 (일반)"],["outdoor","실외 (햇빛·비)"],["wet","욕실·주방 (물 닿는 곳)"],["hot","뜨거운 곳 (차 안·가전 근처)"],["unknown","잘 모르겠어요"]];
 const STRENGTH_LIST = [["deco","장식용 (힘 거의 안 받음)"],["normal","보통 (가끔 만지고 쓰는 정도)"],["strong","튼튼하게 (무게·힘을 받음)"]];
@@ -663,8 +823,117 @@ const REQ_MODES = {
     ]
   }
 };
-const reqFiles = {sketch: [], idea: []};
 
+// 두 모드가 같은 항목 객체를 같이 쓰지 않도록 복사 (문구를 모드별로 바꿀 수 있게)
+for (const M of Object.values(REQ_MODES)) M.fields = M.fields.map(f => ({...f, list: f.list ? f.list.map(x => [...x]) : undefined}));
+
+// 관리자 문구를 옵션·요청 항목에 적용 (+ 기본 문구 목록에 등록)
+function applyDefTexts(){
+  OPTS.forEach((sec, si) => {
+    sec.sec = ov(`opt.sec${si + 1}`, sec.sec);
+    for (const o of sec.items){
+      const h = hintOf(o);
+      o.label = ov(`opt.${o.id}.label`, o.label);
+      o.hint = ov(`opt.${o.id}.hint`, h);
+      o.help = ov(`opt.${o.id}.help`, o.help);
+      if (o.unit) o.unit = ov(`opt.${o.id}.unit`, o.unit);
+      if (o.list) for (const it of o.list) it[1] = ov(`opt.${o.id}.o.${it[0]}`, it[1]);
+    }
+  });
+  for (const [mode, M] of Object.entries(REQ_MODES)){
+    M.heading = ov(`req.${mode}.heading`, M.heading);
+    M.steps = M.steps.map((x, i) => ov(`req.${mode}.step${i + 1}`, x));
+    for (const f of M.fields){
+      const h = hintOf(f);
+      f.label = ov(`req.${mode}.${f.id}.label`, f.label);
+      f.hint = ov(`req.${mode}.${f.id}.hint`, h);
+      f.help = ov(`req.${mode}.${f.id}.help`, f.help);
+      if (f.ph) f.ph = ov(`req.${mode}.${f.id}.ph`, f.ph);
+      if (f.unit) f.unit = ov(`req.${mode}.${f.id}.unit`, f.unit);
+      if (f.list) for (const it of f.list) it[1] = ov(`req.${mode}.${f.id}.o.${it[0]}`, it[1]);
+    }
+  }
+}
+
+/* ================= 가격 ================= */
+const won = n => Math.round(n).toLocaleString("ko-KR") + "원";
+function fmtMin(min){
+  min = Math.round(min);
+  const h = Math.floor(min/60), mm = min%60;
+  return h ? `${h}시간 ${mm}분` : `${mm}분`;
+}
+// 디자인비: 기본 1시간 포함, 초과 30분마다 1,000원
+function designFee(mode, minutes){
+  const base = DESIGN_FEE[mode] || 0;
+  if (!base) return 0;
+  const over = Math.max(0, (minutes || 0) - DESIGN_BASE_MIN);
+  return base + Math.ceil(over / DESIGN_STEP_MIN) * DESIGN_STEP_FEE;
+}
+// 출력비: (재료 1g 가격 × g + 8.33 × 분 + 2,000) × 1.35
+function printPrice(matKey, g, m){
+  const perG = (FILAMENT_PRICE[matKey] || 18000) / 1000;
+  return (perG*g + 8.33*m + 2000) * 1.35;
+}
+const stuOn = () => student.on && student.ok;
+const stuPrice = v => v * (1 - STUDENT_RATE);
+const priceHtml = v => stuOn() ? `<span class="price-old">${won(v)}</span>${won(stuPrice(v))}` : won(v);
+
+/* ================= 상세 옵션 화면 ================= */
+function renderOpts(){
+  $("optSections").innerHTML = OPTS.map(sec => `<div class="opt-sec" data-always="${sec.always ? 1 : 0}">
+    <h3><span>${sec.icon}</span>${sec.sec}</h3>
+    ${sec.items.map(o => {
+      const ctl = o.type === "select"
+        ? `<select id="${o.id}">${o.list.map(([v, tx]) => `<option value="${v}"${v === o.def ? " selected" : ""}>${tx}</option>`).join("")}</select>`
+        : `<input id="${o.id}" type="number" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.def}">`;
+      return `<div class="opt">
+        <div class="opt-row"><label for="${o.id}">${o.label}${o.unit ? ` <small style="color:var(--muted)">(${o.unit})</small>` : ""}<span class="en pro-only">${EN[o.id] || ""}</span>
+          <div class="hint beg-only">${o.hint}</div></label>
+          <button type="button" class="help-btn" aria-expanded="false" aria-controls="h-${o.id}" title="설명 보기">?</button>${ctl}</div>
+        <div class="help-text" id="h-${o.id}" hidden>${o.help}</div></div>`;
+    }).join("")}</div>`).join("");
+}
+$("optSections").addEventListener("change", () => showResult());
+$("optSections").addEventListener("input", e => { if (e.target.type === "number") showResult(); });
+// ? 도움말 버튼 (모든 화면 공통)
+document.addEventListener("click", e => {
+  const b = e.target.closest(".help-btn"); if (!b) return;
+  const tg = $(b.getAttribute("aria-controls")); if (!tg) return;
+  const open = tg.hidden; tg.hidden = !open; b.setAttribute("aria-expanded", open);
+});
+$("resetOpts").addEventListener("click", () => {
+  for (const o of Object.values(OPT_BY_ID)) $(o.id).value = o.def;
+  showResult();
+});
+
+/* ---- 빠른 모드 간단 옵션 → 상세 옵션 값 ---- */
+const QUICK = {
+  strength: {light: {walls:2, infill:10}, normal: {walls:2, infill:15}, strong: {walls:4, infill:30, pattern:"cubic", topL:6, botL:4}},
+  quality:  {fast: {layerH:"0.28"}, normal: {layerH:"0.20"}, fine: {layerH:"0.12"}},
+  support:  {none: {supType:"none"}, auto: {supType:"tree"}}
+};
+const qState = {strength: "normal", quality: "normal", support: "none"};
+const quickText = q => document.querySelector(`#quickOpts [data-q="${q}"] [data-v="${qState[q]}"]`).textContent.trim();
+function renderQuickSegs(){
+  document.querySelectorAll("#quickOpts .seg").forEach(sg =>
+    sg.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === qState[sg.dataset.q])));
+}
+function applyQuick(){
+  for (const o of Object.values(OPT_BY_ID)) if (o.id !== "mat" && o.id !== "color") $(o.id).value = o.def;
+  $("mat").value = $("q_mat").value; $("color").value = $("q_color").value;
+  for (const k in qState) for (const [id, v] of Object.entries(QUICK[k][qState[k]])) $(id).value = v;
+  renderQuickSegs(); showResult();
+}
+$("quickOpts").addEventListener("click", e => {
+  const b = e.target.closest(".seg button"); if (!b) return;
+  qState[b.parentElement.dataset.q] = b.dataset.v; applyQuick();
+});
+$("q_mat").addEventListener("change", applyQuick);
+$("q_color").addEventListener("change", applyQuick);
+
+/* ================= 스케치 / 아이디어 요청 폼 ================= */
+const reqFiles = {sketch: [], idea: []};
+const reqTest = {sketch: false, idea: false};
 function renderReqMode(mode){
   const M = REQ_MODES[mode], P = id => `${mode}_${id}`;
   const field = f => {
@@ -674,39 +943,35 @@ function renderReqMode(mode){
     else if (f.type === "textarea") ctl = `<textarea id="${id}" placeholder="${escapeHtml(f.ph || "")}" maxlength="3000"></textarea>`;
     else if (f.type === "date") ctl = `<input type="date" id="${id}">`;
     else if (f.type === "number") ctl = `<input type="number" id="${id}" min="${f.min}" max="${f.max}" value="${f.def}" style="width:120px">`;
-    else if (f.type === "select") ctl = `<select id="${id}">${f.list.map(([v,t]) => `<option value="${v}"${v === f.def ? " selected" : ""}>${t}</option>`).join("")}</select>`;
-    else if (f.type === "dims") ctl = `<div class="dims">${["가로","세로","높이"].map((t, i) =>
-        `<input type="number" id="${id}_${i}" min="1" max="300" placeholder="${t}" aria-label="${t} (mm)">`).join("<span>×</span>")}<span>mm</span></div>`;
-    else if (f.type === "files") ctl = `<div class="att-drop" id="${id}_drop" tabindex="0">📎 여기를 눌러 파일을 고르거나 끌어다 놓으세요<br><small>사진(JPG·PNG 등) · PDF</small></div>
+    else if (f.type === "select") ctl = `<select id="${id}">${f.list.map(([v,tx]) => `<option value="${v}"${v === f.def ? " selected" : ""}>${tx}</option>`).join("")}</select>`;
+    else if (f.type === "dims") ctl = `<div class="dims">${["가로","세로","높이"].map((tx, i) =>
+        `<input type="number" id="${id}_${i}" min="1" max="300" placeholder="${tx}" aria-label="${tx} (mm)">`).join("<span>×</span>")}<span>mm</span></div>`;
+    else if (f.type === "files") ctl = `<div class="att-drop lp" id="${id}_drop" tabindex="0">${t("req.drop")}<br><small>${t("req.dropSub")}</small></div>
         <input type="file" id="${id}" accept="image/*,.pdf" multiple hidden><div class="att-list" id="${id}_list"></div>`;
     return `<div class="fld${M.quick.includes(f.id) ? "" : " detail-only"}" data-fid="${f.id}">
       <div class="fld-head"><label for="${f.type === "dims" ? id + "_0" : id}">${f.label}${f.unit ? ` (${f.unit})` : ""}</label>
-        ${f.req ? '<span class="req">*</span>' : '<span class="opt-tag">(선택)</span>'}
+        ${f.req ? '<span class="req">*</span>' : `<span class="opt-tag">${t("req.optional")}</span>`}
         <button type="button" class="help-btn" aria-expanded="false" aria-controls="h-${id}" title="설명 보기">?</button></div>
-      <div class="hint beg-only" style="margin:-2px 0 6px">${hintOf(f)}</div>
+      <div class="hint beg-only" style="margin:-2px 0 6px">${f.hint}</div>
       <div class="help-text" id="h-${id}" hidden>${f.help}</div>
       ${ctl}<div class="fld-err" hidden></div></div>`;
   };
-  $(`mode-${mode}`).innerHTML = `<div class="grid">
+  const panel = $(`mode-${mode}`);
+  panel.innerHTML = `<div class="grid">
     <div class="card"><h2>${M.heading}</h2>
-      <div class="guide beg-only quick-only">🚀 빠른 주문이에요. <b>*</b> 표시만 적으면 바로 요청할 수 있어요. 더 자세히 적고 싶으면 위에서 <b>상세 주문</b>을 누르세요.</div>
+      <div class="guide beg-only quick-only">${t("req.quickGuide")}</div>
       ${M.fields.map(field).join("")}</div>
     <div class="card" style="position:sticky;top:12px;align-self:start">
-      <div class="beg-only"><h2>진행 방법</h2>
+      <div class="beg-only"><h2>${t("req.stepsTitle")}</h2>
         <ol class="steps">${M.steps.map(x => `<li>${x}</li>`).join("")}</ol></div>
-      <div class="price" style="margin-top:0"><div style="font-size:14px;font-weight:600">예상 견적</div>
-        <div class="total req-total">검토 후 안내</div><div class="formula">${M.priceNote}</div></div>
-      <button class="btn-primary btn-wide lp" id="${P("submit")}">견적 요청하기</button>
-      <div class="btn-sub"><a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a></div>
-      <p class="note beg-only"><span class="req" style="color:#dc2626">*</span> 표시는 꼭 적어 주세요. 각 항목 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.</p>
+      <div class="price" style="margin-top:0"><div style="font-size:14px;font-weight:600">${t("req.priceTitle")}</div>
+        <div class="total req-total" id="${P("fee")}"></div>
+        <div class="formula">${t("req.feeRule")}<br>${t("req.printLine")}</div></div>
+      <button class="btn-primary btn-wide" id="${P("submit")}">${t("req.submit")}</button>
+      <div class="btn-sub"><a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false">${t("req.store")}</a></div>
+      <p class="note beg-only">${t("req.note")}</p>
     </div></div>`;
 
-  const panel = $(`mode-${mode}`);
-  panel.addEventListener("click", e => {
-    const b = e.target.closest(".help-btn"); if (!b) return;
-    const t = $(b.getAttribute("aria-controls")), open = t.hidden;
-    t.hidden = !open; b.setAttribute("aria-expanded", open);
-  });
   panel.addEventListener("input", e => { const f = e.target.closest(".fld"); if (f) setFieldErr(f, ""); });
   const fileIn = $(P("files")), dz = $(P("files_drop"));
   dz.addEventListener("click", () => fileIn.click());
@@ -715,14 +980,15 @@ function renderReqMode(mode){
   ["dragenter","dragover"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.add("over"); }));
   ["dragleave","drop"].forEach(ev => dz.addEventListener(ev, e => { e.preventDefault(); dz.classList.remove("over"); }));
   dz.addEventListener("drop", e => addReqFiles(mode, e.dataTransfer.files));
+  onLongPress(dz, 3000, () => testRequest(mode));          // 테스트 모드: 길게 누르면 예시 파일
   $(P("files_list")).addEventListener("click", e => {
     const b = e.target.closest("button[data-i]"); if (!b) return;
     const [it] = reqFiles[mode].splice(+b.dataset.i, 1); if (it.url) URL.revokeObjectURL(it.url);
     renderReqFiles(mode);
   });
   $(P("submit")).addEventListener("click", () => startRequest(mode));
-  onLongPress($(P("submit")), 3000, () => masterRequest(mode));
 }
+function updateReqFee(mode){ $(`${mode}_fee`).innerHTML = t("req.feeFrom", {price: priceHtml(DESIGN_FEE[mode])}); }
 function setFieldErr(fld, msg){
   fld.classList.toggle("bad", !!msg);
   const e = fld.querySelector(".fld-err"); e.textContent = msg; e.hidden = !msg;
@@ -731,10 +997,10 @@ function addReqFiles(mode, list){
   const fld = $(`mode-${mode}`).querySelector('.fld[data-fid="files"]');
   let msg = "";
   for (const f of list){
-    if (reqFiles[mode].length >= MAX_ATTACH){ msg = `파일은 최대 ${MAX_ATTACH}개까지 올릴 수 있어요.`; break; }
+    if (reqFiles[mode].length >= MAX_ATTACH){ msg = t("req.maxFiles", {n: MAX_ATTACH}); break; }
     const ok = /^image\//.test(f.type) || /\.(pdf|jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(f.name);
-    if (!ok){ msg = "사진(이미지) 또는 PDF 파일만 올릴 수 있어요."; continue; }
-    if (f.size > 20*1024*1024){ msg = `${f.name}: 파일이 너무 커요 (최대 20MB).`; continue; }
+    if (!ok){ msg = t("req.badType"); continue; }
+    if (f.size > 20*1024*1024){ msg = t("req.fileBig", {name: f.name}); continue; }
     reqFiles[mode].push({file: f, url: /^image\//.test(f.type) ? URL.createObjectURL(f) : null});
   }
   setFieldErr(fld, msg);
@@ -756,8 +1022,9 @@ function reqVal(mode, f){
   if (f.type === "number") return `${Math.max(f.min, parseInt($(id).value) || f.def)}${f.unit || ""}`;
   return $(id).value.trim();
 }
+const studentFiles = () => stuOn() && student.file ? [{file: student.file, kind: "student"}] : [];
 // 요청 내용 검사 → 확인창
-function startRequest(mode, test){
+function startRequest(mode){
   const M = REQ_MODES[mode], panel = $(`mode-${mode}`);
   const shown = f => prefs.style === "detail" || M.quick.includes(f.id);
   let firstBad = null;
@@ -765,191 +1032,54 @@ function startRequest(mode, test){
     const fld = panel.querySelector(`.fld[data-fid="${f.id}"]`);
     let msg = "";
     const v = reqVal(mode, f);
-    if (f.req && !v) msg = f.type === "files" ? "파일을 1개 이상 올려 주세요." : "꼭 적어 주세요.";
-    if (f.type === "dims" && [0,1,2].some(i => parseFloat($(`${mode}_dims_${i}`).value) > MAX_SIZE))
-      msg = `한 변 최대 ${MAX_SIZE}mm까지 출력할 수 있어요. 더 크면 나눠서 만들 수 있으니 설명에 적어 주세요.`;
-    if (f.id === "contact" && v && v.replace(/[^0-9a-zA-Z]/g, "").length < 4) msg = "연락처를 다시 확인해 주세요.";
+    if (f.req && !v) msg = f.type === "files" ? t("req.needFile") : t("req.must");
+    if (f.type === "dims" && [0,1,2].some(i => parseFloat($(`${mode}_dims_${i}`).value) > MAX_SIZE)) msg = t("req.dimsBig", {max: MAX_SIZE});
+    if (f.id === "contact" && v && v.replace(/[^0-9a-zA-Z]/g, "").length < 4) msg = t("req.badContact");
     setFieldErr(fld, msg);
     if (msg && !firstBad) firstBad = fld;
   }
   if (firstBad){ firstBad.scrollIntoView({behavior:"smooth", block:"center"}); return; }
 
-  const pick = ids => ids.map(id => M.fields.find(f => f.id === id)).filter(f => f && shown(f)).map(f => [f.label, reqVal(mode, f)]).filter(([, v]) => v);
-  const info = pick(["title","desc","category","place","mount","dims","use","strength","files"]);
-  const want = pick(["mat","color","qty","due"]);
-  const who  = pick(["cname","contact"]);
-  const title = reqVal(mode, M.fields.find(f => f.id === "title"));
+  const pick = ids => ids.map(id => M.fields.find(f => f.id === id)).filter(f => f && shown(f)).map(f => [plain(f.label), reqVal(mode, f)]).filter(([, v]) => v);
+  const test = reqTest[mode];
+  const fee = DESIGN_FEE[mode];
   const d = {
-    type: M.type, typeLabel: M.typeLabel, name: (test ? "[테스트] " : "") + title, total: "검토 후 안내", test: !!test,
-    contact: reqVal(mode, F.contact),
-    sections: [["요청 정보", [["요청 종류", M.typeLabel], ["주문 방식", styleText()], ...info]], ["희망 사항", want], ["연락처", who]]
+    type: M.type, typeLabel: noEmoji(t("mode." + mode)),
+    name: (test ? "[테스트] " : "") + reqVal(mode, M.fields.find(f => f.id === "title")),
+    total: t("req.total", {fee: won(stuOn() ? stuPrice(fee) : fee)}) + (stuOn() ? ` (${plain(t("pick.stuTag"))})` : ""),
+    test, student: stuOn(), designFee: fee,
+    contact: reqVal(mode, M.fields.find(f => f.id === "contact")),
+    sections: [
+      [plain(t("req.secInfo")), [[plain(t("req.typeRow")), noEmoji(t("mode." + mode))], [plain(t("req.styleRow")), styleText()],
+        ...pick(["title","desc","category","place","mount","dims","use","strength","files"]),
+        ...(stuOn() ? [[plain(t("stu.rowLabel")), plain(t("stu.rowValue"))]] : [])]],
+      [plain(t("req.secWant")), pick(["mat","color","qty","due"])],
+      [plain(t("req.secWho")), pick(["cname","contact"])]
+    ]
   };
-  openConfirm(d, reqFiles[mode].map(it => ({file: it.file, kind: "attach"})));
+  openConfirm(d, [...reqFiles[mode].map(it => ({file: it.file, kind: "attach"})), ...studentFiles()]);
 }
-/* ---- 길게 누르기 ---- */
+
+/* ================= 공통 도구 ================= */
 function onLongPress(el, ms, fn){
-  let t = null, fired = false;
+  if (!el) return;
+  let tm = null, fired = false;
   el.addEventListener("click", e => { if (fired){ e.preventDefault(); e.stopImmediatePropagation(); fired = false; } }, true);
   el.addEventListener("pointerdown", () => {
-    fired = false; clearTimeout(t); el.classList.add("pressing");
-    t = setTimeout(() => { fired = true; el.classList.remove("pressing"); fn(); }, ms);
+    fired = false; clearTimeout(tm); el.classList.add("pressing");
+    tm = setTimeout(() => { fired = true; el.classList.remove("pressing"); fn(); }, ms);
   });
-  ["pointerup","pointerleave","pointercancel"].forEach(ev => el.addEventListener(ev, () => { clearTimeout(t); el.classList.remove("pressing"); }));
+  ["pointerup","pointerleave","pointercancel"].forEach(ev => el.addEventListener(ev, () => { clearTimeout(tm); el.classList.remove("pressing"); }));
   el.addEventListener("contextmenu", e => e.preventDefault());
 }
 function toast(msg){
-  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
-  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+  const d = document.createElement("div"); d.className = "toast"; d.textContent = msg;
+  document.body.appendChild(d); setTimeout(() => d.remove(), 2400);
 }
-
-renderReqMode("sketch");
-renderReqMode("idea");
-document.querySelectorAll(".storeLink").forEach(a => a.href = SMARTSTORE_URL);
-
-/* ================= 시작 화면: 수준 → 모드 → 주문 방식 ================= */
-const MODE_INFO = {
-  file:   {ic:"📦", t:"3D 파일 있음",     d:"STL·3MF·G-code 파일을 올리면 바로 가격이 나와요", ex:"예) MakerWorld에서 받은 파일, 직접 모델링한 파일"},
-  sketch: {ic:"✏️", t:"스케치만 있음",     d:"손그림, 2D 도면, 그림, 사진을 보고 3D로 만들어 드려요", ex:"예) 치수를 적은 손그림, 캐드 PDF, 부러진 부품 사진"},
-  idea:   {ic:"💡", t:"아이디어만 있음",   d:"원하는 것만 설명하면 설계부터 해 드려요", ex:"예) 욕실 벽에 붙이는 수건걸이 겸 수세미 거치대, 핑거보드 트랙"}
-};
-const STYLE_INFO = {
-  quick:  {ic:"🚀", t:"빠른 주문", d:{file:"재료·색상·튼튼함만 고르면 끝", sketch:"그림·설명·연락처만 보내면 끝", idea:"원하는 것·연락처만 적으면 끝"}},
-  detail: {ic:"🛠", t:"상세 주문", d:{file:"레이어 높이, 벽, 내부 채움 패턴, 서포트 등 슬라이서 설정을 직접 맞춰요",
-                                     sketch:"크기, 사용 환경, 튼튼함, 재료, 희망일까지 자세히 맞춰요",
-                                     idea:"설치 장소, 고정 방법, 크기, 사용 환경, 재료, 희망일까지 자세히 맞춰요"}}
-};
-const PREF_KEY = "p3d_prefs";
-const prefs = {level: null, mode: null, style: null};
-try{ Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); }catch(e){}
-if (["file","sketch","idea"].includes(location.hash.slice(1))) prefs.mode = location.hash.slice(1);
-function savePrefs(){ try{ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }catch(e){} }
-const styleText = () => STYLE_INFO[prefs.style || "quick"].t;
-function setBodyClass(){
-  document.body.classList.remove("lv-beg","lv-pro","st-quick","st-detail");
-  document.body.classList.add("lv-" + (prefs.level || "beg"), "st-" + (prefs.style || "quick"));
-}
-function nav(screen){ history.pushState({screen}, ""); route(screen); }
-window.addEventListener("popstate", e => route((e.state && e.state.screen) || "level"));
-
-function route(screen){
-  showView("quoteView");
-  setBodyClass();
-  const inForm = screen === "form" && prefs.mode && prefs.style;
-  $("wizard").hidden = inForm; $("formArea").hidden = !inForm;
-  if (inForm) renderForm(); else renderWizard(screen === "form" ? "level" : screen);
-  window.scrollTo(0, 0);
-}
-function wzCard(sel, ic, t, d, ex, data){
-  return `<button class="wz-card${sel ? " sel" : ""}" ${data}><span class="ic">${ic}</span><span>
-    <b>${t}</b><span class="d">${d}</span>${ex ? `<span class="ex">${ex}</span>` : ""}</span></button>`;
-}
-function renderWizard(step){
-  const W = $("wizard");
-  const top = (n, total) => `<div class="wz-top">${step !== "level" ? '<button class="link-btn" id="wzBack">← 뒤로</button>' : ""}
-    ${total ? `<span class="wz-prog">${n} / ${total} ${Array.from({length: total}, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>` : ""}</div>`;
-  if (step === "level"){
-    W.innerHTML = `<div class="wz">${top(1, prefs.level === "pro" ? 2 : 3)}
-      <h1>3D 프린팅 주문 · 견적</h1>
-      <p class="sub">어떤 방식으로 진행할까요? 언제든 위에서 바꿀 수 있어요.</p>
-      <div class="wz-cards">
-        ${wzCard(prefs.level === "beg", "🙂", "처음이에요 (초급자)", "하나씩 차근차근, 설명과 함께 친절하게 안내해 드려요", "3D 프린팅이 처음이거나 용어가 낯설다면 추천해요", 'data-level="beg"')}
-        ${wzCard(prefs.level === "pro", "⚡", "익숙해요 (숙련자)", "설명은 줄이고 한 화면에서 빠르게 설정해요", "슬라이서 설정(레이어 높이, 인필 등)을 아는 분께 추천해요", 'data-level="pro"')}
-      </div></div>`;
-    W.querySelectorAll("[data-level]").forEach(b => b.onclick = () => {
-      prefs.level = b.dataset.level; savePrefs(); nav(prefs.level === "pro" ? "pro" : "mode");
-    });
-  } else if (step === "mode"){
-    W.innerHTML = `<div class="wz">${top(2, 3)}
-      <h1>지금 무엇을 가지고 계신가요?</h1>
-      <p class="sub">가지고 있는 것에 맞춰 주문 화면을 준비해 드려요. (최대 출력 크기 300 × 300 × 300 mm)</p>
-      <div class="wz-cards">${Object.entries(MODE_INFO).map(([k, m]) => wzCard(prefs.mode === k, m.ic, m.t, m.d, m.ex, `data-mode="${k}"`)).join("")}</div></div>`;
-    W.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { prefs.mode = b.dataset.mode; savePrefs(); nav("style"); });
-  } else if (step === "style"){
-    const m = prefs.mode || "file";
-    W.innerHTML = `<div class="wz">${top(3, 3)}
-      <h1>어떻게 주문할까요?</h1>
-      <p class="sub">${MODE_INFO[m].ic} ${MODE_INFO[m].t} · 주문 화면에서도 언제든 바꿀 수 있어요.</p>
-      <div class="wz-cards">${Object.entries(STYLE_INFO).map(([k, st]) =>
-        wzCard(prefs.style === k, st.ic, st.t, st.d[m], k === "quick" ? "처음이라면 빠른 주문을 추천해요" : "", `data-style="${k}"`)).join("")}</div></div>`;
-    W.querySelectorAll("[data-style]").forEach(b => b.onclick = () => { prefs.style = b.dataset.style; savePrefs(); nav("form"); });
-  } else {   // 숙련자: 한 화면
-    W.innerHTML = `<div class="wz">${top(2, 2)}
-      <h1>주문 설정</h1>
-      <p class="sub">⚡ 숙련자 모드 · 고르고 바로 시작하세요.</p>
-      <div class="pro-row"><div class="lbl">1. 무엇이 있나요?</div>
-        <div class="seg full" id="proMode">${Object.entries(MODE_INFO).map(([k, m]) => `<button data-v="${k}">${m.ic} ${m.t.replace(" 있음", "").replace("만", "")}</button>`).join("")}</div></div>
-      <div class="pro-row"><div class="lbl">2. 주문 방식</div>
-        <div class="seg full" id="proStyle">${Object.entries(STYLE_INFO).map(([k, st]) => `<button data-v="${k}">${st.ic} ${st.t}</button>`).join("")}</div>
-        <div class="hint" id="proHint" style="margin-top:6px"></div></div>
-      <button class="btn-primary btn-wide" id="proGo" style="margin-top:20px">시작하기 →</button></div>`;
-    const sync = () => {
-      $("proMode").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.mode));
-      $("proStyle").querySelectorAll("button").forEach(b => { b.disabled = !prefs.mode; b.classList.toggle("on", !!prefs.mode && b.dataset.v === prefs.style); });
-      $("proHint").textContent = !prefs.mode ? "먼저 1번을 골라 주세요." : prefs.style ? STYLE_INFO[prefs.style].d[prefs.mode] : "";
-      $("proGo").classList.toggle("is-disabled", !(prefs.mode && prefs.style));
-    };
-    $("proMode").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.mode = b.dataset.v; savePrefs(); sync(); } };
-    $("proStyle").onclick = e => { const b = e.target.closest("button"); if (b && !b.disabled){ prefs.style = b.dataset.v; savePrefs(); sync(); } };
-    $("proGo").onclick = () => { if (prefs.mode && prefs.style) nav("form"); };
-    sync();
-  }
-  const back = $("wzBack"); if (back) back.onclick = () => history.back();
-}
-function renderForm(){
-  const m = prefs.mode;
-  document.querySelectorAll(".mode-panel").forEach(p => p.hidden = p.id !== "mode-" + m);
-  $("tbMode").textContent = `${MODE_INFO[m].ic} ${MODE_INFO[m].t}`;
-  $("tbLevel").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === (prefs.level || "beg")));
-  $("tbStyle").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.style));
-  if (m === "file" && prefs.style === "quick"){ $("q_mat").value = $("mat").value; $("q_color").value = $("color").value; applyQuick(); }
-  requestAnimationFrame(() => draw());
-}
-$("tbLevel").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.level = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
-$("tbStyle").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.style = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
-$("tbRestart").onclick = () => nav("level");
-
-/* ---- 마스터 모드: 버튼 3초 이상 누르기 → 필수 항목을 예시로 채우고 다음 단계로 ---- */
-function sampleSTL(){
-  const v = [[0,0,0],[30,0,0],[30,20,0],[0,20,0],[0,0,10],[30,0,10],[30,20,10],[0,20,10]];
-  const f = [[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[1,2,6],[1,6,5],[2,3,7],[2,7,6],[3,0,4],[3,4,7]];
-  const buf = new ArrayBuffer(84 + f.length*50), dv = new DataView(buf);
-  dv.setUint32(80, f.length, true);
-  f.forEach((t, i) => t.forEach((vi, k) => v[vi].forEach((c, j) => dv.setFloat32(84 + i*50 + 12 + k*12 + j*4, c, true))));
-  return new File([buf], "마스터_샘플.stl", {type: "model/stl"});
-}
-async function sampleSketch(){
-  const c = document.createElement("canvas"); c.width = 600; c.height = 400;
-  const g = c.getContext("2d");
-  g.fillStyle = "#fff"; g.fillRect(0, 0, 600, 400); g.strokeStyle = "#222"; g.lineWidth = 4;
-  g.strokeRect(120, 120, 300, 40); g.strokeRect(120, 160, 40, 160);
-  g.font = "24px sans-serif"; g.fillStyle = "#222"; g.fillText("120mm", 230, 105); g.fillText("80mm", 20, 250); g.fillText("샘플 스케치", 380, 330);
-  const blob = await new Promise(r => c.toBlob(r, "image/png"));
-  return new File([blob], "마스터_샘플_스케치.png", {type: "image/png"});
-}
-async function masterFile(){
-  toast("🛠 마스터 모드: 예시로 채워서 진행해요");
-  if (!current || current.tooBig) await handleFile(sampleSTL());
-  if (!current || current.tooBig) return;
-  const d = orderData(); d.test = true; d.name = "[테스트] " + d.name;
-  openConfirm(d, [{file: current.file, kind: "model"}]);
-}
-async function masterRequest(mode){
-  toast("🛠 마스터 모드: 예시로 채워서 진행해요");
-  const fill = (id, v) => { const el = $(`${mode}_${id}`); if (el && !el.value.trim()) el.value = v; };
-  fill("title", mode === "sketch" ? "테스트 선반 받침 브래킷" : "테스트 수건걸이 겸 수세미 거치대");
-  fill("desc", "마스터 모드로 자동 입력된 테스트 요청이에요.");
-  fill("contact", "010-0000-0000");
-  if (mode === "sketch" && !reqFiles.sketch.length) addReqFiles("sketch", [await sampleSketch()]);
-  startRequest(mode, true);
-}
-onLongPress($("orderBtn"), 3000, masterFile);
-
-/* ---- 복사 (자동 복사가 막히면 직접 복사 창) ---- */
-async function copyText(txt, btn, label){
+async function copyText(txt, btn){
+  const label = btn.dataset.label || btn.textContent; btn.dataset.label = label;
   let ok = false;
-  try{
-    if (navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(txt); ok = true; }
-  }catch(e){}
+  try{ if (navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(txt); ok = true; } }catch(e){}
   if (!ok){
     const ta = document.createElement("textarea");
     ta.value = txt; ta.setAttribute("readonly", "");
@@ -958,60 +1088,302 @@ async function copyText(txt, btn, label){
     try{ ok = document.execCommand("copy"); }catch(e){}
     ta.remove();
   }
-  if (ok){ btn.textContent = "복사됨!"; setTimeout(() => btn.textContent = label, 1200); }
+  if (ok){ btn.textContent = plain(t("done.copied")); setTimeout(() => { btn.textContent = label; delete btn.dataset.label; }, 1200); }
   else { $("copyTa").value = txt; $("copyModal").hidden = false; $("copyTa").focus(); $("copyTa").select(); }
 }
 $("copyClose").addEventListener("click", () => $("copyModal").hidden = true);
 $("copyModal").addEventListener("click", e => { if (e.target.id === "copyModal") $("copyModal").hidden = true; });
 
-/* ---------------- 가격 계산 ---------------- */
-const won = n => Math.round(n).toLocaleString("ko-KR") + "원";
-function fmtMin(min){
-  min = Math.round(min);
-  const h = Math.floor(min/60), mm = min%60;
-  return h ? `${h}시간 ${mm}분` : `${mm}분`;
+/* ---- 테스트 모드: 업로드 칸을 3초 이상 누르면 예시 파일 ---- */
+function sampleSTL(){
+  const v = [[0,0,0],[30,0,0],[30,20,0],[0,20,0],[0,0,10],[30,0,10],[30,20,10],[0,20,10]];
+  const f = [[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[1,2,6],[1,6,5],[2,3,7],[2,7,6],[3,0,4],[3,4,7]];
+  const buf = new ArrayBuffer(84 + f.length*50), dv = new DataView(buf);
+  dv.setUint32(80, f.length, true);
+  f.forEach((tr, i) => tr.forEach((vi, k) => v[vi].forEach((c, j) => dv.setFloat32(84 + i*50 + 12 + k*12 + j*4, c, true))));
+  return new File([buf], "테스트_샘플.stl", {type: "model/stl"});
 }
+async function sampleSketch(){
+  const c = document.createElement("canvas"); c.width = 600; c.height = 400;
+  const g = c.getContext("2d");
+  g.fillStyle = "#fff"; g.fillRect(0, 0, 600, 400); g.strokeStyle = "#222"; g.lineWidth = 4;
+  g.strokeRect(120, 120, 300, 40); g.strokeRect(120, 160, 40, 160);
+  g.font = "24px sans-serif"; g.fillStyle = "#222";
+  g.fillText("120mm", 230, 105); g.fillText("80mm", 20, 250); g.fillText("테스트 스케치", 360, 330);
+  const blob = await new Promise(r => c.toBlob(r, "image/png"));
+  return new File([blob], "테스트_스케치.png", {type: "image/png"});
+}
+async function testFile(){
+  toast(plain(t("msg.test")));
+  await handleFile(sampleSTL());
+  if (current) current.test = true;
+}
+async function testRequest(mode){
+  toast(plain(t("msg.test")));
+  const fill = (id, v) => { const el = $(`${mode}_${id}`); if (el && !el.value.trim()) el.value = v; };
+  fill("title", mode === "sketch" ? "테스트 선반 받침 브래킷" : "테스트 수건걸이 겸 수세미 거치대");
+  fill("desc", "테스트 모드로 자동 입력된 요청이에요.");
+  fill("contact", "010-0000-0000");
+  addReqFiles(mode, [await sampleSketch()]);
+  reqTest[mode] = true;
+}
+async function makeTestVideo(){
+  const name = "테스트_학생인증.webm";
+  const c = document.createElement("canvas"); c.width = 320; c.height = 240;
+  if (!c.captureStream || typeof MediaRecorder === "undefined") return new File([new Uint8Array(2048)], name, {type: "video/webm"});
+  const g = c.getContext("2d"), stream = c.captureStream(15), rec = new MediaRecorder(stream), chunks = [];
+  rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  let f = 0;
+  const draw1 = () => { g.fillStyle = "#fff"; g.fillRect(0, 0, 320, 240); g.fillStyle = "#222"; g.font = "22px sans-serif";
+    g.fillText("학생증 (테스트)", 20, 80); g.fillText("FROMDOT", 20, 130); g.fillText(`${(f++/15).toFixed(1)}초`, 20, 190); };
+  draw1(); const tm = setInterval(draw1, 1000/15);
+  const stopped = new Promise(r => rec.onstop = r);
+  rec.start(500); await new Promise(r => setTimeout(r, 6000)); rec.stop(); await stopped; clearInterval(tm);
+  return new File(chunks, name, {type: "video/webm"});
+}
+
+/* ================= 진행 상태 ================= */
+const PREF_KEY = "fromdot_prefs";
+const prefs = {level: null, mode: null, style: null, student: false};
+try{ Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); }catch(e){}
+if (["file","sketch","idea"].includes(location.hash.slice(1))) prefs.mode = location.hash.slice(1);
+function savePrefs(){ try{ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }catch(e){} }
+const student = {on: !!prefs.student, file: null, sec: null, ok: false, test: false};
+const styleText = () => noEmoji(t(prefs.style === "detail" ? "pick.detail" : "pick.quick"));
+const MODE_IC = {file: "📦", sketch: "✏️", idea: "💡"};
+function setBodyClass(){
+  document.body.classList.remove("lv-beg","lv-pro","st-quick","st-detail");
+  document.body.classList.add("lv-" + (prefs.level || "beg"), "st-" + (prefs.style || "quick"));
+}
+
+/* ---- 학생 인증 ---- */
+function videoDuration(file){
+  return new Promise(res => {
+    const v = document.createElement("video"), url = URL.createObjectURL(file);
+    let done = false;
+    const fin = x => { if (done) return; done = true; URL.revokeObjectURL(url); res(x); };
+    v.preload = "metadata"; v.muted = true;
+    v.onloadedmetadata = () => {
+      if (v.duration === Infinity){ v.ontimeupdate = () => { v.ontimeupdate = null; fin(isFinite(v.duration) ? v.duration : null); }; v.currentTime = 1e9; }
+      else fin(isFinite(v.duration) ? v.duration : null);
+    };
+    v.onerror = () => fin(null);
+    setTimeout(() => fin(null), 8000);
+    v.src = url;
+  });
+}
+async function setStudentVideo(file, isTest){
+  if (!/^video\//.test(file.type) && !/\.(mp4|mov|webm|m4v|3gp|avi|mkv)$/i.test(file.name)) return stuMsg("bad", t("stu.notVideo"));
+  if (file.size > MAX_FILE_MB*1024*1024) return stuMsg("bad", t("stu.big", {mb: MAX_FILE_MB}));
+  stuMsg("", t("stu.checking"));
+  let sec = await videoDuration(file);
+  if (sec === null && isTest) sec = 6;
+  if (sec !== null && sec < STUDENT_MIN_SEC){
+    student.file = null; student.ok = false; refreshPrices();
+    return stuMsg("bad", t("stu.short", {sec: sec.toFixed(1)}));
+  }
+  Object.assign(student, {file, sec, ok: true, test: !!isTest});
+  renderStudentState(); refreshPrices();
+}
+function stuMsg(cls, msg){ const el = $("stuState"); if (el){ el.className = "stu-state " + cls; el.innerHTML = msg; } }
+function renderStudentState(){
+  if (!$("stuState")) return;
+  $("stuBody").hidden = !student.on;
+  $("stuSwitch").setAttribute("aria-checked", student.on);
+  $("stuDrop").innerHTML = student.ok ? t("stu.reupload") : t("stu.upload");
+  if (student.ok) stuMsg("ok", student.sec ? t("stu.ok", {sec: student.sec.toFixed(1)}) : t("stu.okUnknown"));
+  else stuMsg("", t("stu.need"));
+}
+function studentBox(){
+  return `<div class="stu">
+    <div class="stu-head"><b>${t("stu.title")}</b>
+      <button class="switch" id="stuSwitch" role="switch" aria-checked="${student.on}" aria-label="${escapeHtml(plain(t("stu.title")))}"></button></div>
+    <div class="hint" style="margin-top:4px">${t("stu.desc")}</div>
+    <div class="stu-body" id="stuBody" ${student.on ? "" : "hidden"}>
+      <div class="guide" style="margin:0 0 10px">${t("stu.how")}</div>
+      <div class="att-drop lp" id="stuDrop" tabindex="0"></div>
+      <input type="file" id="stuFile" accept="video/*" hidden>
+      <div class="stu-state" id="stuState"></div>
+    </div></div>`;
+}
+function bindStudentBox(){
+  $("stuSwitch").onclick = () => { student.on = !student.on; prefs.student = student.on; savePrefs(); renderStudentState(); refreshPrices(); };
+  $("stuDrop").addEventListener("click", () => $("stuFile").click());
+  $("stuDrop").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); $("stuFile").click(); } });
+  $("stuFile").onchange = () => { const f = $("stuFile").files[0]; $("stuFile").value = ""; if (f) setStudentVideo(f); };
+  onLongPress($("stuDrop"), 3000, async () => { stuMsg("", t("stu.making")); setStudentVideo(await makeTestVideo(), true); });
+  renderStudentState();
+}
+function refreshPrices(){
+  updatePrice();
+  if ($("sketch_fee")) { updateReqFee("sketch"); updateReqFee("idea"); }
+  const chip = $("tbStu");
+  chip.hidden = !student.on;
+  chip.className = "tb-chip stu" + (student.ok ? "" : " need");
+  chip.textContent = plain(t(student.ok ? "stu.chipOk" : "stu.chipNeed"));
+}
+
+/* ================= 화면 이동: 시작 → 진행 방식 → 의뢰 선택 → 주문 ================= */
+function nav(screen){ history.pushState({screen}, ""); route(screen); }
+window.addEventListener("popstate", e => route((e.state && e.state.screen) || "home"));
+function route(screen){
+  showView("quoteView");
+  setBodyClass();
+  const inForm = screen === "form" && prefs.level && prefs.mode && prefs.style;
+  $("wizard").hidden = !!inForm; $("formArea").hidden = !inForm;
+  if (inForm) renderForm(); else renderScreen(["home","way","pick"].includes(screen) ? screen : "home");
+  window.scrollTo(0, 0);
+}
+function wzCard(sel, ic, title, d, ex, data, extra, exAlways){
+  return `<button class="wz-card${sel ? " sel" : ""}" ${data}><span class="ic">${ic}</span><span>
+    <b>${title}</b><span class="d">${d}</span>${ex ? `<span class="ex${exAlways ? "" : " beg-only"}">${ex}</span>` : ""}${extra || ""}</span></button>`;
+}
+const topNav = n => `<div class="wz-top"><button class="link-btn" id="wzBack">${t("nav.back")}</button>
+  <span class="wz-prog">${n} / 2 <i class="on"></i><i class="${n >= 2 ? "on" : ""}"></i></span></div>`;
+
+/* 예시 포트폴리오 (관리자에서 등록하면 대신 그게 보여요) */
+const pfSvg = (c1, c2, art) => "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='${c1}'/><stop offset='1' stop-color='${c2}'/></linearGradient></defs><rect width='400' height='300' fill='url(#g)'/><ellipse cx='200' cy='252' rx='130' ry='14' fill='#000' opacity='.12'/>${art}</svg>`);
+const EXAMPLE_PF = [
+  {title: "수건걸이 겸 수세미 거치대", desc: "욕실 타일 벽 맞춤 · PETG HF", img: pfSvg("#e0f2fe", "#bae6fd",
+    "<rect x='90' y='90' width='220' height='22' rx='11' fill='#0ea5e9'/><rect x='110' y='112' width='14' height='60' fill='#0284c7'/><rect x='276' y='112' width='14' height='60' fill='#0284c7'/><path d='M140 170h120l-12 70h-96z' fill='#38bdf8'/><g stroke='#e0f2fe' stroke-width='5'><line x1='165' y1='185' x2='160' y2='230'/><line x1='200' y1='185' x2='200' y2='230'/><line x1='235' y1='185' x2='240' y2='230'/></g>")},
+  {title: "핑거보드 레일 · 계단", desc: "취미용 트랙 세트 · PLA Basic", img: pfSvg("#fef3c7", "#fde68a",
+    "<path d='M60 240h60v-30h60v-30h60v-30h60v90z' fill='#f59e0b'/><rect x='60' y='120' width='280' height='10' rx='5' fill='#78350f'/><rect x='80' y='130' width='8' height='110' fill='#92400e'/><rect x='312' y='130' width='8' height='110' fill='#92400e'/>")},
+  {title: "선반 받침 브래킷", desc: "손스케치로 설계 · PLA-CF", img: pfSvg("#ede9fe", "#ddd6fe",
+    "<path d='M120 70h40v130h130v40H120z' fill='#7c3aed'/><path d='M160 200l90-90v40l-50 50z' fill='#8b5cf6'/><circle cx='140' cy='100' r='7' fill='#ede9fe'/><circle cx='260' cy='220' r='7' fill='#ede9fe'/>")},
+  {title: "케이블 정리 클립", desc: "책상 모서리 끼움형 · PETG HF", img: pfSvg("#dcfce7", "#bbf7d0",
+    "<path d='M110 100h180v40h-30v-12H140v80h120v-12h30v40H110z' fill='#16a34a'/><circle cx='175' cy='168' r='16' fill='#22c55e'/><circle cx='225' cy='168' r='16' fill='#22c55e'/>")},
+  {title: "가게 명판 · 로고", desc: "다색 출력 · PLA Matte", img: pfSvg("#fee2e2", "#fecaca",
+    "<rect x='70' y='95' width='260' height='120' rx='14' fill='#dc2626'/><rect x='84' y='109' width='232' height='92' rx='8' fill='#fff1f2'/><text x='200' y='170' font-family='sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='#dc2626'>FROMDOT.</text>")},
+  {title: "피규어 받침대", desc: "이름 각인 · PLA Silk+", img: pfSvg("#f1f5f9", "#e2e8f0",
+    "<ellipse cx='200' cy='205' rx='110' ry='26' fill='#475569'/><rect x='90' y='180' width='220' height='25' fill='#64748b'/><ellipse cx='200' cy='180' rx='110' ry='26' fill='#94a3b8'/><circle cx='200' cy='120' r='34' fill='#f59e0b'/><rect x='186' y='150' width='28' height='32' fill='#f59e0b'/>")}
+];
+let SITE = {text: {}, portfolio: {}};          // 서버에서 불러온 사이트 설정
+const pfItems = () => Object.entries(SITE.portfolio || {}).map(([id, p]) => ({id, ...p})).sort((a, b) => (a.order || 0) - (b.order || 0));
+function renderPortfolio(){
+  const items = pfItems(), list = items.length ? items : EXAMPLE_PF;
+  return list.map(p => `<div class="pf"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.title)}" loading="lazy">
+    <div>${items.length ? "" : `<span class="tag">${t("home.pfExample")}</span>`}<b>${escapeHtml(p.title)}</b><small>${escapeHtml(p.desc || "")}</small></div></div>`).join("");
+}
+
+function renderScreen(step){
+  const W = $("wizard");
+  if (step === "home"){
+    W.innerHTML = `<div class="home">
+      <div class="brand adminTrigger" id="homeBrand">${t("brand.name")}</div>
+      <div class="slogan">${t("home.slogan")}</div>
+      <p class="promo">${t("home.promo")}</p>
+      <button class="btn-primary start-btn" id="homeStart">${t("home.start")}</button>
+      <h2 class="pf-title">${t("home.pfTitle")}</h2>
+      <div class="pf-grid">${renderPortfolio()}</div></div>`;
+    $("homeStart").onclick = () => nav("way");
+    onLongPress($("homeBrand"), 3000, () => openPin());
+    return;
+  }
+  if (step === "way"){
+    W.innerHTML = `<div class="wz">${topNav(1)}
+      <h1>${t("way.title")}</h1><p class="sub">${t("way.sub")}</p>
+      <div class="wz-cards">${["beg","pro"].map(k => wzCard(prefs.level === k, k === "beg" ? "🙂" : "⚡",
+        t(`way.${k}.t`), t(`way.${k}.d`), t(`way.${k}.ex`), `data-level="${k}"`, "", true)).join("")}</div>
+      ${studentBox()}
+      <div class="err" id="wayErr" style="margin-top:10px"></div>
+      <button class="btn-primary btn-wide" id="wayNext">${t("way.next")}</button></div>`;
+    W.querySelectorAll("[data-level]").forEach(b => b.onclick = () => {
+      prefs.level = b.dataset.level; savePrefs(); setBodyClass(); $("wayErr").textContent = "";
+      W.querySelectorAll("[data-level]").forEach(x => x.classList.toggle("sel", x === b));
+    });
+    $("wayNext").onclick = () => { if (!prefs.level){ $("wayErr").textContent = plain(t("way.needLevel")); return; } nav("pick"); };
+    bindStudentBox();
+  } else {   // pick
+    const modePrice = k => k === "file" ? t("pick.free")
+      : t("pick.fee", {price: priceHtml(DESIGN_FEE[k])}) + (stuOn() ? ` <small>(${t("pick.stuTag")})</small>` : "");
+    W.innerHTML = `<div class="wz">${topNav(2)}
+      <h1>${t("pick.title")}</h1><p class="sub">${t("pick.sub")}</p>
+      <div class="wz-cards">${["file","sketch","idea"].map(k => wzCard(prefs.mode === k, MODE_IC[k], t(`pick.${k}.t`), t(`pick.${k}.d`),
+        t(`pick.${k}.ex`), `data-mode="${k}"`, `<span class="mode-price">${modePrice(k)}</span>`)).join("")}</div>
+      <p class="fee-note">${t("pick.feeRule")}</p>
+      <div class="pro-row"><div class="lbl">${t("pick.styleLbl")}</div>
+        <div class="seg full" id="pickStyle"><button data-v="quick">${t("pick.quick")}</button><button data-v="detail">${t("pick.detail")}</button></div>
+        <div class="hint" id="pickHint" style="margin-top:6px"></div></div>
+      <div class="err" id="pickErr" style="margin-top:10px"></div>
+      <button class="btn-primary btn-wide" id="pickGo">${t("pick.go")}</button></div>`;
+    const sync = () => {
+      W.querySelectorAll("[data-mode]").forEach(x => x.classList.toggle("sel", x.dataset.mode === prefs.mode));
+      $("pickStyle").querySelectorAll("button").forEach(b => { b.disabled = !prefs.mode; b.classList.toggle("on", !!prefs.mode && b.dataset.v === prefs.style); });
+      $("pickHint").innerHTML = !prefs.mode ? t("pick.needMode")
+        : prefs.style ? t(`pick.${prefs.style}.${prefs.mode === "file" ? "file" : "req"}`) : t("pick.needStyle");
+      $("pickErr").textContent = "";
+    };
+    W.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { prefs.mode = b.dataset.mode; savePrefs(); sync(); });
+    $("pickStyle").onclick = e => { const b = e.target.closest("button"); if (b && !b.disabled){ prefs.style = b.dataset.v; savePrefs(); sync(); } };
+    $("pickGo").onclick = () => {
+      if (!prefs.mode) return $("pickErr").textContent = plain(t("pick.needMode"));
+      if (!prefs.style) return $("pickErr").textContent = plain(t("pick.needStyle"));
+      nav("form");
+    };
+    sync();
+  }
+  $("wzBack").onclick = () => history.back();
+}
+function renderForm(){
+  const m = prefs.mode;
+  document.querySelectorAll(".mode-panel").forEach(p => p.hidden = p.id !== "mode-" + m);
+  $("tbMode").textContent = plain(t("mode." + m));
+  $("tbLevel").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === (prefs.level || "beg")));
+  $("tbStyle").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.style));
+  if (m === "file" && prefs.style === "quick"){ $("q_mat").value = $("mat").value; $("q_color").value = $("color").value; applyQuick(); }
+  refreshPrices();
+  requestAnimationFrame(() => draw());
+}
+$("tbLevel").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.level = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
+$("tbStyle").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.style = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
+$("tbRestart").onclick = () => nav("home");
+$("tbStu").onclick = () => nav("way");
+
+/* ================= 3D 파일 모드: 가격 ================= */
 function updatePrice(){
   const g = Math.max(0, parseFloat($("g").value) || 0);
   const m = Math.max(0, parseFloat($("m").value) || 0);
-  const perG = (FILAMENT_PRICE[$("mat").value] || 18000) / 1000;   // 재료별 1g 가격
-  const base = perG*g + 8.33*m + 2000;
-  const total = base * 1.35;
+  const total = printPrice($("mat").value, g, m);
+  const final = stuOn() ? stuPrice(total) : total;
   const ok = current && !current.tooBig;
   $("orderBtn").classList.toggle("is-disabled", !ok);
   $("orderBtn").setAttribute("aria-disabled", !ok);
   if (!ok){
     $("total").textContent = "-"; $("wOut").textContent = "-"; $("tOut").textContent = "-";
-    $("summary").textContent = current ? "최대 크기를 넘어 견적을 낼 수 없어요." : "파일을 올리면 견적이 표시돼요.";
-    return {g, m, total};
+    $("summary").innerHTML = current ? t("price.tooBig") : t("price.empty");
+    return {g, m, total, final};
   }
-  $("total").textContent = won(total);
+  $("total").innerHTML = priceHtml(total);
   $("wOut").textContent = g.toFixed(1) + "g";
   $("tOut").textContent = fmtMin(m);
   const qty = Math.max(1, parseInt($("qty").value) || 1);
-  $("summary").textContent = qty > 1 ? `수량 ${qty}개 기준` : "";
-  return {g, m, total};
+  $("summary").innerHTML = [qty > 1 ? t("price.qtyNote", {n: qty}) : "", stuOn() ? t("price.stuNote") : ""].filter(Boolean).join(" · ");
+  return {g, m, total, final};
 }
+$("qty").addEventListener("input", () => showResult());
 $("copyBtn").addEventListener("click", () => {
-  if (!current || current.tooBig){ alert("먼저 3D 파일을 올려 주세요."); return; }
+  if (!current || current.tooBig){ toast(plain(t("msg.needFile"))); return; }
   const d = orderData();
-  const txt = ["[3D 프린팅 예상 견적]", `파일명: ${d.name}`, `크기: ${d.size}`, `예상 무게: ${d.weight}`, `예상 소요시간: ${d.time}`,
-    ...d.settings.map(([k, v]) => `${k}: ${v}`), `예상 견적: ${d.total}`].join("\n");
-  copyText(txt, $("copyBtn"), "견적 복사");
+  const txt = [plain(t("msg.copyHead")), ...d.sections.flatMap(([, r]) => r.map(([k, v]) => `${k}: ${v}`)),
+    `${plain(t("price.label"))}: ${d.total}`].join("\n");
+  copyText(txt, $("copyBtn"));
 });
 
 /* ---------------- 파일 입력 ---------------- */
 const drop = $("drop");
 drop.addEventListener("click", () => $("file").click());
-$("file").addEventListener("change", e => e.target.files[0] && handleFile(e.target.files[0]));
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); $("file").click(); } });
+$("file").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; if (f) handleFile(f); });
 ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
 ["dragleave","drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
 drop.addEventListener("drop", e => e.dataTransfer.files[0] && handleFile(e.dataTransfer.files[0]));
+onLongPress(drop, 3000, testFile);                  // 테스트 모드: 길게 누르면 예시 STL
 
 let current = null;   // {name, mode:'sliced'|'est', geo, sliced:{g,sec,source}}
 
 async function handleFile(file){
-  $("fileInfo").innerHTML = `<b>${escapeHtml(file.name)}</b> 분석 중…`;
+  $("fileInfo").innerHTML = `<b>${escapeHtml(file.name)}</b> ${t("msg.analyzing")}`;
   $("stats").innerHTML = "";
   try{
     const buf = await file.arrayBuffer();
@@ -1028,11 +1400,12 @@ async function handleFile(file){
   }catch(err){
     console.error(err);
     current = null;
-    $("fileInfo").innerHTML = `<span class="err">파일을 읽을 수 없어요. STL, 3MF, G-code 파일인지 확인해 주세요.</span>`;
+    $("fileInfo").innerHTML = `<span class="err">${t("msg.readFail")}</span>`;
     $("view").style.display = "none";
     updatePrice();
   }
 }
+
 
 function showResult(){
   if (!current) return;
@@ -1041,8 +1414,7 @@ function showResult(){
   let html = `<b>${escapeHtml(name)}</b>`;
   current.dims = geo ? geo.max.map((v,i)=>v-geo.min[i]) : null;
   current.tooBig = !!current.dims && current.dims.some(v => v > MAX_SIZE + 0.01);
-  if (current.tooBig)
-    html += `<div class="limit-err">모델 크기가 최대 출력 크기(${MAX_SIZE} × ${MAX_SIZE} × ${MAX_SIZE} mm)를 넘어서 주문할 수 없어요. 크기를 줄이거나 나눠서 올려 주세요.</div>`;
+  if (current.tooBig) html += `<div class="limit-err">${t("msg.tooBig", {max: MAX_SIZE})}</div>`;
   document.querySelectorAll(".opt-sec").forEach(el => el.style.display = (sliced && el.dataset.always !== "1") ? "none" : "");
   $("slicedNote").style.display = sliced ? "" : "none";
   document.querySelectorAll(".q-geo").forEach(el => el.style.display = sliced ? "none" : "");
@@ -1057,17 +1429,14 @@ function showResult(){
     $("m").value = Math.ceil(e.min*qty);
   }
   $("fileInfo").innerHTML = html;
-
   let st = "";
   if (geo){
-    const d = geo.max.map((v,i)=>v-geo.min[i]);
-    st += `<span>크기 <b style="${current.tooBig?"color:#dc2626":""}">${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
+    const d = current.dims;
+    st += `<span>${plain(t("file.rowSize"))} <b style="${current.tooBig ? "color:#dc2626" : ""}">${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
     st += `<span>부피 <b>${(geo.vol/1000).toFixed(2)} cm³</b></span>`;
     $("view").style.display = "block";
     preparePreview(geo);
-  } else {
-    $("view").style.display = "none";
-  }
+  } else $("view").style.display = "none";
   $("stats").innerHTML = st;
   updatePrice();
 }
@@ -1472,35 +1841,42 @@ cv.addEventListener("pointermove", e => {
 cv.addEventListener("pointerup", () => dragging = null);
 window.addEventListener("resize", () => requestAnimationFrame(draw));
 
-/* ---------------- 주문 ---------------- */
+
+/* ================= 주문 / 요청 ================= */
 function orderData(){
-  const {g, m, total} = updatePrice();
+  const {g, m, final} = updatePrice();
   const qty = Math.max(1, parseInt($("qty").value) || 1);
   const size = current.dims ? current.dims.map(v=>v.toFixed(1)).join(" × ") + " mm" : "-";
-  const quickRows = prefs.style === "quick" && !current.sliced
-    ? [["재료", optText("mat")], ["색상", optText("color")], ["튼튼함", QUICK_TEXT.strength[qState.strength]],
-       ["품질", QUICK_TEXT.quality[qState.quality]], ["서포트", QUICK_TEXT.support[qState.support]]]
-    : settingsList(!!current.sliced);
-  const settings = [["주문 방식", styleText()], ...quickRows, ["수량", qty + "개"]];
-  return {type: "file", typeLabel: "3D 파일", name: current.name, weight: g.toFixed(1) + "g", size, time: fmtMin(m), settings, total: won(total),
-          sections: [["파일 정보", [["파일명", current.name], ["무게", g.toFixed(1) + "g"], ["크기", size], ["소요시간", fmtMin(m)]]], ["출력 설정", settings]]};
+  const L = k => plain(t(k));
+  const optRows = current.sliced ? [[L("opt.mat.label"), optText("mat")], [L("opt.color.label"), optText("color")], [L("file.rowSliced"), L("file.slicedVal")]]
+    : prefs.style === "quick"
+      ? [[L("opt.mat.label"), optText("mat")], [L("opt.color.label"), optText("color")], [L("file.rowQS"), quickText("strength")],
+         [L("file.rowQQ"), quickText("quality")], [L("file.rowQP"), quickText("support")]]
+      : settingsList(false);
+  const settings = [[L("file.rowStyle"), styleText()], ...optRows, [L("file.rowQty"), qty + "개"],
+    ...(stuOn() ? [[L("stu.rowLabel"), L("stu.rowValue")]] : [])];
+  return {type: "file", typeLabel: noEmoji(t("mode.file")), test: !!current.test, student: stuOn(),
+          name: (current.test ? "[테스트] " : "") + current.name,
+          total: won(final) + (stuOn() ? ` (${L("pick.stuTag")})` : ""),
+          sections: [[L("file.secInfo"), [[L("file.rowName"), current.name], [L("file.rowWeight"), g.toFixed(1) + "g"],
+                       [L("file.rowSize"), size], [L("file.rowTime"), fmtMin(m)]]], [L("file.secSet"), settings]]};
 }
 const rows = arr => arr.map(([k,v]) => `<tr><th>${escapeHtml(k)}</th><td class="pre">${escapeHtml(v)}</td></tr>`).join("");
-let lastOrder = null;
+let lastOrder = null, pending = null;
 
 $("orderBtn").addEventListener("click", () => {
-  if (!current || current.tooBig){ if (!current) toast("먼저 3D 파일을 올려 주세요."); return; }
-  openConfirm(orderData(), [{file: current.file, kind: "model"}]);
+  if (!current || current.tooBig){ if (!current) toast(plain(t("msg.needFile"))); return; }
+  openConfirm(orderData(), [{file: current.file, kind: "model"}, ...studentFiles()]);
 });
-let pending = null;   // {d, files}
 function openConfirm(d, files){
   pending = {d, files};
   const isReq = d.type !== "file";
-  $("cfTitle").textContent = isReq ? "정말 견적을 요청할까요?" : "정말 주문을 신청할까요?";
-  $("cfLabel").textContent = isReq ? "요청 내용" : "주문할 파일";
-  $("cfFile").textContent = d.name + (isReq && files.length ? `  (첨부 ${files.length}개)` : "");
+  $("cfTitle").textContent = plain(t(isReq ? "confirm.req" : "confirm.order"));
+  $("cfLabel").textContent = plain(t(isReq ? "confirm.reqLbl" : "confirm.fileLbl"));
+  const nAtt = files.filter(f => f.kind === "attach").length;
+  $("cfFile").textContent = d.name + (isReq && nAtt ? "  " + plain(t("confirm.attach", {n: nAtt})) : "");
   $("cfTotal").textContent = d.total;
-  $("cfStatus").textContent = ""; $("cfOk").textContent = "확인";
+  $("cfStatus").textContent = ""; $("cfOk").textContent = plain(t("confirm.ok"));
   $("confirmModal").hidden = false;
   $("cfOk").focus();
 }
@@ -1512,25 +1888,25 @@ $("cfOk").addEventListener("click", async () => {
   if (!pending) return;
   const {d, files} = pending;
   const ok = $("cfOk"), cancel = $("cfCancel"), st = $("cfStatus");
-  if (!fbReady() && d.test){   // 마스터 테스트: 서버 없이 완료 화면까지 확인
+  if (!fbReady() && d.test){   // 테스트: 서버 없이 완료 화면까지 확인
     d.no = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, "0");
     lastOrder = d; showDone(d);
-    $("doneSub").textContent = "🛠 마스터 테스트예요. 서버가 설정되지 않아 저장되지 않았어요.";
+    $("doneSub").textContent = plain(t("msg.testDone"));
     $("confirmModal").hidden = true; showView("orderView"); return;
   }
-  if (!fbReady()){ st.innerHTML = '<span class="err">주문 서버가 아직 설정되지 않았어요. 판매자에게 문의해 주세요.</span>'; return; }
-  const big = files.find(x => x.kind === "model" && x.file.size > MAX_FILE_MB*1024*1024);
-  if (big){ st.innerHTML = `<span class="err">파일이 너무 커요. (최대 ${MAX_FILE_MB}MB)</span>`; return; }
-  ok.disabled = cancel.disabled = true; ok.textContent = "전송 중…";
+  if (!fbReady()){ st.innerHTML = `<span class="err">${t("msg.noServer")}</span>`; return; }
+  const big = files.find(x => x.kind !== "attach" && x.file.size > MAX_FILE_MB*1024*1024);
+  if (big){ st.innerHTML = `<span class="err">${t("msg.fileBig", {mb: MAX_FILE_MB})}</span>`; return; }
+  ok.disabled = cancel.disabled = true; ok.textContent = plain(t("msg.sending"));
   try{
     d.no = await submitOrder(d, files, msg => st.textContent = msg);
   }catch(err){
     console.error(err);
-    st.innerHTML = '<span class="err">전송에 실패했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.</span>';
-    ok.disabled = cancel.disabled = false; ok.textContent = "다시 시도";
+    st.innerHTML = `<span class="err">${t("msg.fail")}</span>`;
+    ok.disabled = cancel.disabled = false; ok.textContent = plain(t("msg.retry"));
     return;
   }
-  ok.disabled = cancel.disabled = false; ok.textContent = "확인"; st.textContent = "";
+  ok.disabled = cancel.disabled = false; st.textContent = "";
   lastOrder = d;
   showDone(d);
   $("confirmModal").hidden = true;
@@ -1539,15 +1915,14 @@ $("cfOk").addEventListener("click", async () => {
 });
 function showDone(d){
   const isReq = d.type !== "file";
-  $("doneTitle").textContent = isReq ? "견적 요청 완료" : "주문 신청 완료";
-  $("doneSub").textContent = isReq ? "요청이 접수되었어요. 판매자가 확인 후 남겨 주신 연락처로 설계·견적을 안내드려요."
-                                   : "주문 파일이 접수되었어요. 아래 주문번호를 꼭 기억해 주세요.";
-  $("noLabel").textContent = isReq ? "요청번호" : "주문번호";
-  $("orderCopyBtn").textContent = isReq ? "요청 내용 복사" : "주문 내용 복사";
+  $("doneTitle").textContent = plain(t(isReq ? "done.req.title" : "done.order.title"));
+  $("doneSub").textContent = plain(t(isReq ? "done.req.sub" : "done.order.sub"));
+  $("noLabel").textContent = plain(t(isReq ? "done.noReq" : "done.noOrder"));
+  $("orderCopyBtn").textContent = plain(t(isReq ? "done.copyReq" : "done.copyOrder"));
   $("orderNo").textContent = d.no;
-  $("orderNo2").textContent = d.no;
+  $("doneGuide").innerHTML = t("done.guide", {no: escapeHtml(d.no)});
   $("orderBody").innerHTML = d.sections.filter(([, r]) => r.length)
-    .map(([t, r]) => `<div class="sec-title">${escapeHtml(t)}</div><table class="info">${rows(r)}</table>`).join("");
+    .map(([tt, r]) => `<div class="sec-title">${escapeHtml(tt)}</div><table class="info">${rows(r)}</table>`).join("");
   $("orderTotal").textContent = d.total;
 }
 function resetReqForm(mode){
@@ -1560,13 +1935,14 @@ function resetReqForm(mode){
     else if (f.type === "number") $(id).value = f.def;
     else if (!["cname","contact"].includes(f.id)) $(id).value = "";
   }
+  reqTest[mode] = false;
 }
 $("orderCopyBtn").addEventListener("click", () => {
   if (!lastOrder) return;
   const d = lastOrder;
-  const txt = [`${d.type === "file" ? "주문번호" : "요청번호"}: ${d.no}`,
-    ...d.sections.flatMap(([, r]) => r.map(([k, v]) => `${k}: ${v}`)), `총 가격: ${d.total}`].join("\n");
-  copyText(txt, $("orderCopyBtn"), d.type === "file" ? "주문 내용 복사" : "요청 내용 복사");
+  const txt = [`${$("noLabel").textContent}: ${d.no}`,
+    ...d.sections.flatMap(([, r]) => r.map(([k, v]) => `${k}: ${v}`)), `${plain(t("done.total"))}: ${d.total}`].join("\n");
+  copyText(txt, $("orderCopyBtn"));
 });
 $("backBtn").addEventListener("click", () => { if (lastOrder) prefs.mode = lastOrder.type; route("form"); });
 function showView(id){
@@ -1574,12 +1950,23 @@ function showView(id){
   window.scrollTo(0, 0);
   if (id === "quoteView") requestAnimationFrame(draw);
 }
-
-history.replaceState({screen: "level"}, "");
-route("level");
-
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
-updatePrice();
+
+/* ================= 시작 (사이트 문구를 불러온 뒤 실행) ================= */
+function initUI(){
+  applyStaticTexts();
+  applyDefTexts();
+  renderOpts();
+  $("q_mat").innerHTML = $("mat").innerHTML;
+  $("q_color").innerHTML = $("color").innerHTML;
+  renderQuickSegs();
+  renderReqMode("sketch");
+  renderReqMode("idea");
+  bindStoreLinks();
+  onLongPress(document.querySelector("#formArea .adminTrigger"), 3000, () => openPin());
+  history.replaceState({screen: "home"}, "");
+  route("home");
+}
 </script>
 
 <script>
@@ -1642,7 +2029,7 @@ async function submitOrder(d, files, progress){
     let bytes, name = file.name, mime = file.type || "application/octet-stream", gz = false;
     const small = kind === "attach" ? await shrinkImage(file) : null;
     if (small){ bytes = new Uint8Array(await small.blob.arrayBuffer()); name = small.name; mime = small.mime; }
-    else if (kind === "model" || !/^image\//.test(mime)){
+    else if (kind === "model" || (!/^image\//.test(mime) && !/^video\//.test(mime))){
       bytes = new Uint8Array(await new Response(file.stream().pipeThrough(new CompressionStream("gzip"))).arrayBuffer()); gz = true;
     } else bytes = new Uint8Array(await file.arrayBuffer());
     const n = Math.max(1, Math.ceil(bytes.length / CH));
@@ -1655,26 +2042,35 @@ async function submitOrder(d, files, progress){
   }
   progress("정보 저장 중…");
   await D.set(D.ref(db, "orders/" + no), {
-    no, type: d.type, name: d.name, total: d.total, contact: d.contact || "", test: !!d.test,
+    no, type: d.type, name: d.name, total: d.total, contact: d.contact || "", test: !!d.test, student: !!d.student, designFee: d.designFee || 0,
     sections: d.sections.map(([t, r]) => ({t, rows: r.map(([k, v]) => ({k, v}))})),
     attachments, status: "new", createdAt: D.serverTimestamp()
   });
   return no;
 }
 
-/* ================= 관리자 ================= */
-// 스마트스토어 버튼 3초 이상 누르기 → 비밀번호 입력
-document.querySelectorAll(".storeLink").forEach(a => {
-  let timer = null, fired = false;
-  a.addEventListener("pointerdown", () => {
-    fired = false; clearTimeout(timer);
-    timer = setTimeout(() => { fired = true; openPin(); }, 3000);
-  });
-  ["pointerup","pointerleave","pointercancel"].forEach(ev => a.addEventListener(ev, () => clearTimeout(timer)));
-  a.addEventListener("click", e => { if (fired){ e.preventDefault(); fired = false; } });
-  a.addEventListener("contextmenu", e => e.preventDefault());
-});
 
+/* ================= 사이트 설정 (문구 · 포트폴리오) ================= */
+const encKey = k => k.replace(/\./g, "~"), decKey = k => k.replace(/~/g, ".");
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
+async function loadSite(){
+  if (!fbReady()) return;
+  try{
+    const {db, D} = await withTimeout(fb(), 6000);
+    const v = (await withTimeout(D.get(D.ref(db, "site")), 6000)).val() || {};
+    SITE.text = v.text || {}; SITE.portfolio = v.portfolio || {};
+  }catch(e){ console.warn("사이트 설정을 불러오지 못했어요", e); }
+  TOV = Object.fromEntries(Object.entries(SITE.text).map(([k, v]) => [decKey(k), v]));
+}
+// 스마트스토어 버튼: 주소 연결 + 3초 이상 누르면 관리자
+function bindStoreLinks(){
+  document.querySelectorAll(".storeLink").forEach(a => {
+    a.href = SMARTSTORE_URL;
+    if (!a.dataset.lp){ a.dataset.lp = "1"; onLongPress(a, 3000, () => openPin()); }
+  });
+}
+
+/* ================= 관리자 로그인 ================= */
 let pin = "", pinBusy = false;
 function openPin(){
   pin = ""; renderPin(); $("pinMsg").textContent = fbReady() ? "" : "Firebase 설정이 아직 안 되어 있어요.";
@@ -1718,33 +2114,77 @@ function pinFail(msg){
   const box = $("pinDots"); box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
 }
 
+
+/* ================= 관리자 화면 ================= */
 let ordersUnsub = null, ordersData = {};
 async function openAdmin(){
-  showView("adminView");
+  showView("adminView"); setTab("orders");
   const {db, D} = await fb();
   if (ordersUnsub) ordersUnsub();
   ordersUnsub = D.onValue(D.ref(db, "orders"), snap => { ordersData = snap.val() || {}; renderOrders(); },
     err => { $("adminSub").innerHTML = `<span class="err">주문 목록을 불러올 수 없어요. (${escapeHtml(err.code || err.message)})</span>`; });
 }
+function setTab(tab){
+  $("adminTabs").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  ["orders","portfolio","texts"].forEach(x => $("tab-" + x).hidden = x !== tab);
+  if (tab === "portfolio") renderPfAdmin();
+  if (tab === "texts") renderTexts();
+}
+$("adminTabs").onclick = e => { const b = e.target.closest("button[data-tab]"); if (b) setTab(b.dataset.tab); };
+$("adminOut").addEventListener("click", async () => {
+  if (ordersUnsub){ ordersUnsub(); ordersUnsub = null; }
+  ordersData = {}; $("adminList").innerHTML = "";
+  try{ const {auth, U} = await fb(); await U.signOut(auth); }catch(e){}
+  history.replaceState({screen: "home"}, ""); route("home");
+});
+
+/* ---- 주문 목록 ---- */
 const TYPE_LABEL = {file: "📦 3D 파일", sketch: "✏️ 스케치", idea: "💡 아이디어"};
 const valsOf = x => x ? (Array.isArray(x) ? x : Object.values(x)) : [];
 function attachmentsOf(o){
   if (o.attachments) return valsOf(o.attachments);
   return [{name: o.name, start: 0, count: o.chunks || 1, gz: true, bytes: o.fileBytes || 0, kind: "model"}];  // 예전 주문
 }
+const fmtDate = tm => tm ? new Date(tm).toLocaleString("ko-KR", {month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"}) : "";
+const kb = b => b > 1048576 ? (b/1048576).toFixed(1) + "MB" : Math.ceil(b/1024) + "KB";
+function calcHtml(o){
+  const q = o.quote || {}, no = escapeHtml(o.no);
+  return `<details class="calc"${q.total ? "" : " open"}><summary><b>🧮 견적 계산기</b> <span class="note">디자인 시간과 출력 결과를 넣으면 최종 금액이 나와요</span></summary>
+    <div class="calc-grid" data-no="${no}">
+      <label>디자인 시간 (분)<input type="number" min="0" step="5" data-c="dmin" value="${q.dmin ?? 60}"></label>
+      <label>출력 무게 (g, 전체)<input type="number" min="0" step="0.1" data-c="g" value="${q.g ?? ""}"></label>
+      <label>출력 시간 (분, 전체)<input type="number" min="0" step="1" data-c="m" value="${q.m ?? ""}"></label>
+      <label>재료<select data-c="mat">${Object.keys(FILAMENT_PRICE).map(k => `<option value="${k}"${(q.mat || "PLA") === k ? " selected" : ""}>${optLabel("mat", k)}</option>`).join("")}</select></label>
+      <label class="chk"><input type="checkbox" data-c="stu"${(q.stu ?? o.student) ? " checked" : ""}> 학생 할인 15%</label>
+    </div>
+    <div class="calc-out" id="calc-${no}"></div>
+    <div class="oc-btns"><button class="btn-primary" data-act="quote" data-no="${no}">이 견적 저장</button>
+      <button data-act="quoteCopy" data-no="${no}">안내 문구 복사</button></div></details>`;
+}
+const optLabel = (id, v) => { const it = OPT_BY_ID[id].list.find(x => x[0] === v); return it ? plain(it[1]) : v; };
+function calcCompute(no){
+  const box = document.querySelector(`.calc-grid[data-no="${no}"]`); if (!box) return null;
+  const v = c => box.querySelector(`[data-c="${c}"]`);
+  const o = ordersData[no];
+  const dmin = Math.max(0, +v("dmin").value || 0), g = Math.max(0, +v("g").value || 0), m = Math.max(0, +v("m").value || 0);
+  const mat = v("mat").value, stu = v("stu").checked;
+  const design = designFee(o.type, dmin), print = (g || m) ? printPrice(mat, g, m) : 0;
+  const sub = design + print, final = stu ? stuPrice(sub) : sub;
+  const text = `디자인비 ${won(design)} (${dmin}분) + 출력비 ${won(print)} (${optLabel("mat", mat)} ${g}g · ${m}분)` + (stu ? " − 학생 할인 15%" : "");
+  $("calc-" + no).innerHTML = `${escapeHtml(text)}<br><b style="font-size:17px;color:var(--accent)">합계 ${won(final)}</b>`;
+  return {dmin, g, m, mat, stu, design: Math.round(design), print: Math.round(print), total: won(final), text};
+}
 function renderOrders(){
   const list = Object.values(ordersData).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
   const nNew = list.filter(o => o.status !== "done").length;
   $("adminSub").textContent = `전체 ${list.length}건 · 처리 대기 ${nNew}건`;
   if (!list.length){ $("adminList").innerHTML = '<div class="card" style="text-align:center;color:var(--muted)">아직 들어온 주문이 없어요.</div>'; return; }
-  const fmtDate = t => t ? new Date(t).toLocaleString("ko-KR", {month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit"}) : "";
-  const kb = b => b > 1048576 ? (b/1048576).toFixed(1) + "MB" : Math.ceil(b/1024) + "KB";
   $("adminList").innerHTML = list.map(o => {
     const done = o.status === "done", no = escapeHtml(o.no), type = o.type || "file";
     let body;
     if (o.sections){
       body = valsOf(o.sections).map(sec => valsOf(sec.rows).filter(r => !["연락처","이름","요청 종류","무엇인가요?","만들고 싶은 것"].includes(r.k))
-        .map(r => `<div style="grid-column:${/설명/.test(r.k) || r.v.length > 40 ? "1/-1" : "auto"}"><span>${escapeHtml(r.k)}</span> <b class="oc-desc">${escapeHtml(r.v)}</b></div>`).join("")).join("");
+        .map(r => `<div style="grid-column:${/설명/.test(r.k) || String(r.v).length > 40 ? "1/-1" : "auto"}"><span>${escapeHtml(r.k)}</span> <b class="oc-desc">${escapeHtml(r.v)}</b></div>`).join("")).join("");
     } else {   // 예전 주문 형식
       const sets = valsOf(o.settings).map(x => `${x.k}: ${x.v}`).join(" / ");
       body = [["파일명", o.name], ["무게", o.weight], ["크기", o.size], ["소요시간", o.time]]
@@ -1753,25 +2193,31 @@ function renderOrders(){
     }
     const who = o.sections ? valsOf(o.sections).flatMap(sec => valsOf(sec.rows)).filter(r => r.k === "이름" || r.k === "연락처") : [];
     const atts = attachmentsOf(o);
-    const hasImg = atts.some(a => /^image\//.test(a.mime || ""));
+    const hasImg = atts.some(a => /^image\//.test(a.mime || "")), hasVid = atts.some(a => /^video\//.test(a.mime || ""));
     return `<div class="order-card ${done ? "done" : ""}">
       <div class="oc-top"><span class="oc-no">${no}</span>
-        <span class="oc-type">${TYPE_LABEL[type] || type}</span>${o.test ? '<span class="st test">🛠 테스트</span>' : ""}
+        <span class="oc-type">${TYPE_LABEL[type] || type}</span>
+        ${o.student ? '<span class="st" style="background:#ede9fe;color:#5b21b6">🎓 학생 (영상 확인)</span>' : ""}
+        ${o.test ? '<span class="st test">🛠 테스트</span>' : ""}
         <span class="st ${done ? "done" : "new"}">${done ? "처리 완료" : "새 주문"}</span>
         <span class="oc-date">${fmtDate(o.createdAt)}</span></div>
       ${type !== "file" ? `<div style="font-size:17px;font-weight:700;margin-bottom:4px">${escapeHtml(o.name)}</div>` : ""}
       ${who.length ? `<div class="oc-contact">📞 ${who.map(r => `${escapeHtml(r.k)}: <b>${escapeHtml(r.v)}</b>`).join(" · ")}</div>` : ""}
       <div class="oc-grid">${body}
-        <div><span>총 가격</span> <b style="color:var(--accent)">${escapeHtml(o.total)}</b></div></div>
+        <div><span>표시 금액</span> <b style="color:var(--accent)">${escapeHtml(o.total)}</b></div></div>
+      ${o.quote ? `<div class="quote-line">✅ 확정 견적 ${escapeHtml(o.quote.total)} <span class="note">${escapeHtml(o.quote.text)}</span></div>` : ""}
       ${atts.length ? `<div class="oc-files">${atts.map((a, i) =>
-          `<button data-act="dl" data-i="${i}" data-no="${no}">⬇ ${escapeHtml(a.name)} (${kb(a.bytes || 0)})</button>`).join("")}</div>` : ""}
+          `<button data-act="dl" data-i="${i}" data-no="${no}">⬇ ${a.kind === "student" ? "🎓 " : ""}${escapeHtml(a.name)} (${kb(a.bytes || 0)})</button>`).join("")}</div>` : ""}
       <div class="oc-thumbs" id="thumbs-${no}"></div>
+      ${type !== "file" ? calcHtml(o) : ""}
       <div class="oc-btns">
         ${hasImg ? `<button class="btn-primary" data-act="preview" data-no="${no}">첨부 사진 보기</button>` : ""}
+        ${hasVid ? `<button class="btn-primary" data-act="video" data-no="${no}">🎓 인증 영상 보기</button>` : ""}
         <button data-act="toggle" data-no="${no}">${done ? "새 주문으로 되돌리기" : "처리 완료로 표시"}</button>
         <button class="btn-danger" data-act="del" data-no="${no}">삭제</button>
       </div></div>`;
   }).join("");
+  list.filter(o => (o.type || "file") !== "file").forEach(o => calcCompute(o.no));
 }
 async function loadAttachment(no, a){
   const {db, D} = await fb();
@@ -1781,6 +2227,8 @@ async function loadAttachment(no, a){
   const blob = a.gz ? await new Response(raw.stream().pipeThrough(new DecompressionStream("gzip"))).blob() : raw;
   return a.mime ? new Blob([blob], {type: a.mime}) : blob;
 }
+$("adminList").addEventListener("input", e => { const g = e.target.closest(".calc-grid"); if (g) calcCompute(g.dataset.no); });
+$("adminList").addEventListener("change", e => { const g = e.target.closest(".calc-grid"); if (g) calcCompute(g.dataset.no); });
 $("adminList").addEventListener("click", async e => {
   const b = e.target.closest("button[data-act]"); if (!b) return;
   const no = b.dataset.no, o = ordersData[no]; if (!o) return;
@@ -1795,14 +2243,24 @@ $("adminList").addEventListener("click", async e => {
       link.href = URL.createObjectURL(blob); link.download = `${no}_${a.name}`;
       document.body.appendChild(link); link.click(); link.remove();
       setTimeout(() => URL.revokeObjectURL(link.href), 5000);
-    } else if (b.dataset.act === "preview"){
+    } else if (b.dataset.act === "preview" || b.dataset.act === "video"){
       b.disabled = true; b.textContent = "불러오는 중…";
-      const box = $("thumbs-" + no); box.innerHTML = "";
-      for (const a of attachmentsOf(o).filter(a => /^image\//.test(a.mime || ""))){
+      const box = $("thumbs-" + no);
+      const want = b.dataset.act === "video" ? /^video\// : /^image\//;
+      for (const a of attachmentsOf(o).filter(a => want.test(a.mime || ""))){
         const url = URL.createObjectURL(await loadAttachment(no, a));
-        box.insertAdjacentHTML("beforeend", `<a href="${url}" target="_blank" rel="noopener" title="${escapeHtml(a.name)}"><img src="${url}" alt="${escapeHtml(a.name)}"></a>`);
+        box.insertAdjacentHTML("beforeend", want.source.includes("video")
+          ? `<video src="${url}" controls playsinline title="${escapeHtml(a.name)}"></video>`
+          : `<a href="${url}" target="_blank" rel="noopener" title="${escapeHtml(a.name)}"><img src="${url}" alt="${escapeHtml(a.name)}"></a>`);
       }
       b.remove(); return;
+    } else if (b.dataset.act === "quote"){
+      const q = calcCompute(no); if (!q) return;
+      await D.set(D.ref(db, `orders/${no}/quote`), q);
+      toast("견적을 저장했어요");
+    } else if (b.dataset.act === "quoteCopy"){
+      const q = calcCompute(no); if (!q) return;
+      copyText(`[FROMDOT. 견적 안내] 요청번호 ${no}\n${o.name}\n${q.text}\n최종 금액: ${q.total}\n스마트스토어 주문 시 옵션에 요청번호 ${no}를 입력해 주세요.`, b);
     } else if (b.dataset.act === "toggle"){
       await D.set(D.ref(db, `orders/${no}/status`), o.status === "done" ? "new" : "done");
     } else if (b.dataset.act === "del"){
@@ -1812,15 +2270,130 @@ $("adminList").addEventListener("click", async e => {
   }catch(err){
     console.error(err); alert("작업에 실패했어요: " + (err.code || err.message));
   }finally{
-    if (b.isConnected){ b.disabled = false; b.textContent = label; }
+    if (b.isConnected && !["quoteCopy"].includes(b.dataset.act)){ b.disabled = false; b.textContent = label; }
   }
 });
-$("adminOut").addEventListener("click", async () => {
-  if (ordersUnsub){ ordersUnsub(); ordersUnsub = null; }
-  ordersData = {}; $("adminList").innerHTML = "";
-  try{ const {auth, U} = await fb(); await U.signOut(auth); }catch(e){}
-  showView("quoteView");
+
+/* ---- 포트폴리오 관리 ---- */
+async function imageToDataURL(file, max = 1000){
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas");
+  c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
+  g.drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.82);
+}
+async function reloadPf(){
+  const {db, D} = await fb();
+  SITE.portfolio = (await D.get(D.ref(db, "site/portfolio"))).val() || {};
+  renderPfAdmin();
+}
+function renderPfAdmin(){
+  const items = pfItems();
+  $("pfList").innerHTML = items.length ? items.map((p, i) => `<div class="pf-admin" data-id="${escapeHtml(p.id)}">
+      <img src="${escapeHtml(p.img)}" alt="">
+      <div><input type="text" data-f="title" value="${escapeHtml(p.title || "")}" placeholder="제목">
+        <textarea data-f="desc" placeholder="설명">${escapeHtml(p.desc || "")}</textarea>
+        <input type="file" accept="image/*" data-f="img" hidden>
+        <div class="oc-btns"><button class="btn-primary" data-pf="save">저장</button><button data-pf="img">사진 바꾸기</button>
+          <button data-pf="up"${i === 0 ? " disabled" : ""}>▲</button><button data-pf="down"${i === items.length - 1 ? " disabled" : ""}>▼</button>
+          <button class="btn-danger" data-pf="del">삭제</button></div></div></div>`).join("")
+    : '<div class="card" style="text-align:center;color:var(--muted);margin-bottom:12px">아직 등록한 포트폴리오가 없어요. 지금은 시작 화면에 예시 사진이 보여요.</div>';
+}
+$("pfList").addEventListener("click", async e => {
+  const b = e.target.closest("button[data-pf]"); if (!b) return;
+  const row = b.closest(".pf-admin"), id = row.dataset.id;
+  const {db, D} = await fb();
+  try{
+    if (b.dataset.pf === "save"){
+      await D.update(D.ref(db, `site/portfolio/${id}`), {title: row.querySelector('[data-f="title"]').value.trim(), desc: row.querySelector('[data-f="desc"]').value.trim()});
+      toast("저장했어요");
+    } else if (b.dataset.pf === "img"){
+      const inp = row.querySelector('[data-f="img"]');
+      inp.onchange = async () => { const f = inp.files[0]; if (!f) return; await D.update(D.ref(db, `site/portfolio/${id}`), {img: await imageToDataURL(f)}); await reloadPf(); };
+      inp.click(); return;
+    } else if (b.dataset.pf === "up" || b.dataset.pf === "down"){
+      const items = pfItems(), i = items.findIndex(p => p.id === id), j = b.dataset.pf === "up" ? i - 1 : i + 1;
+      if (j < 0 || j >= items.length) return;
+      [items[i], items[j]] = [items[j], items[i]];
+      await D.update(D.ref(db, "site/portfolio"), Object.fromEntries(items.map((p, k) => [`${p.id}/order`, (k + 1) * 10])));
+    } else if (b.dataset.pf === "del"){
+      if (!confirm("이 포트폴리오를 삭제할까요?")) return;
+      await D.set(D.ref(db, `site/portfolio/${id}`), null);
+    }
+    await reloadPf();
+  }catch(err){ console.error(err); alert("작업에 실패했어요: " + (err.code || err.message)); }
 });
+$("pfAdd").addEventListener("click", async () => {
+  const title = $("pfNewTitle").value.trim(), f = $("pfNewImg").files[0];
+  if (!title || !f){ $("pfMsg").textContent = "제목과 사진을 넣어 주세요."; return; }
+  $("pfMsg").textContent = "올리는 중…";
+  try{
+    const {db, D} = await fb();
+    const id = "p" + Date.now().toString(36);
+    const last = pfItems().slice(-1)[0];
+    await D.set(D.ref(db, `site/portfolio/${id}`), {title, desc: $("pfNewDesc").value.trim(), img: await imageToDataURL(f), order: ((last && last.order) || 0) + 10});
+    $("pfNewTitle").value = ""; $("pfNewDesc").value = ""; $("pfNewImg").value = "";
+    $("pfMsg").textContent = "추가했어요.";
+    await reloadPf();
+  }catch(err){ console.error(err); $("pfMsg").textContent = "실패했어요: " + (err.code || err.message); }
+});
+
+/* ---- 사이트 문구 편집 ---- */
+const TX_GROUPS = [["brand","브랜드 이름"],["home","시작 화면"],["nav","이동 버튼"],["way","진행 방식 화면"],["stu","학생 할인"],
+  ["pick","의뢰 선택 화면"],["mode","의뢰 종류 이름"],["top","주문 화면 위쪽"],["file","3D 파일 화면"],["quick","빠른 모드 옵션"],
+  ["price","견적 카드"],["opt","출력 옵션 (상세 모드)"],["req","스케치·아이디어 화면"],["confirm","확인창"],["done","완료 화면"],
+  ["copy","복사 창"],["msg","안내 · 오류 메시지"]];
+function renderTexts(){
+  const groups = {};
+  for (const k of Object.keys(TDEF)) (groups[k.split(".")[0]] ||= []).push(k);
+  const order = TX_GROUPS.map(x => x[0]).concat(Object.keys(groups).filter(g => !TX_GROUPS.some(x => x[0] === g)));
+  $("txList").innerHTML = order.filter(g => groups[g]).map(g => `<details class="tx-group" data-g="${g}">
+    <summary>${(TX_GROUPS.find(x => x[0] === g) || [g, g])[1]} <small style="color:var(--muted);font-weight:400">(${groups[g].length}개)</small></summary>
+    ${groups[g].map(k => { const cur = t(k), def = TDEF[k]; return `<div class="tx-row${cur !== def ? " changed" : ""}" data-k="${escapeHtml(k)}">
+      <div class="tx-def">기본: ${escapeHtml(plain(def)).slice(0, 140)} <code>${escapeHtml(k)}</code></div>
+      <textarea rows="${Math.min(6, Math.max(1, Math.ceil(String(cur).length / 55)))}">${escapeHtml(cur)}</textarea>
+      <button class="link-btn" data-tx="reset">기본값으로</button></div>`; }).join("")}</details>`).join("");
+  $("txMsg").textContent = "";
+}
+$("txList").addEventListener("input", e => {
+  const row = e.target.closest(".tx-row"); if (row) row.classList.toggle("changed", e.target.value !== TDEF[row.dataset.k]);
+});
+$("txList").addEventListener("click", e => {
+  const b = e.target.closest('[data-tx="reset"]'); if (!b) return;
+  const row = b.closest(".tx-row"); row.querySelector("textarea").value = TDEF[row.dataset.k]; row.classList.remove("changed");
+});
+$("txSearch").addEventListener("input", () => {
+  const q = $("txSearch").value.trim().toLowerCase();
+  document.querySelectorAll(".tx-group").forEach(gr => {
+    let any = false;
+    const gname = gr.querySelector("summary").textContent.toLowerCase();
+    gr.querySelectorAll(".tx-row").forEach(r => {
+      const hit = !q || gname.includes(q) || (r.dataset.k + " " + TDEF[r.dataset.k] + " " + r.querySelector("textarea").value).toLowerCase().includes(q);
+      r.hidden = !hit; any ||= hit;
+    });
+    gr.hidden = !any; gr.open = !!q && any;
+  });
+});
+$("txSave").addEventListener("click", async () => {
+  const out = {};
+  document.querySelectorAll(".tx-row").forEach(r => { const v = r.querySelector("textarea").value; if (v !== TDEF[r.dataset.k]) out[encKey(r.dataset.k)] = v; });
+  $("txMsg").textContent = "저장 중…";
+  try{
+    const {db, D} = await fb();
+    await D.set(D.ref(db, "site/text"), out);
+    SITE.text = out; TOV = Object.fromEntries(Object.entries(out).map(([k, v]) => [decKey(k), v]));
+    $("txMsg").innerHTML = `저장했어요 (바꾼 문구 ${Object.keys(out).length}개). <button class="link-btn" onclick="location.reload()">새로고침해서 확인하기</button>`;
+  }catch(err){ console.error(err); $("txMsg").textContent = "저장 실패: " + (err.code || err.message); }
+});
+
+/* ================= 시작 ================= */
+(async function boot(){
+  $("wizard").innerHTML = `<p class="sub" style="text-align:center;margin-top:60px">${plain(t("msg.loading"))}</p>`;
+  await loadSite();
+  initUI();
+})();
 </script>
 </body>
 </html>

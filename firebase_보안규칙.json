@@ -23,6 +23,10 @@
         ".write": "(!data.exists() && root.child('orderNos').child($no).exists()) || (auth != null && auth.token.email == 'admin@my3dprint.com')",
         ".validate": "newData.hasChildren(['no', 'name', 'total', 'status'])"
       }
+    },
+    "site": {
+      ".read": true,
+      ".write": "auth != null && auth.token.email == 'admin@my3dprint.com'"
     }
   }
 }
