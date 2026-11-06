@@ -116,7 +116,7 @@ table.info tr.sum td{color:var(--accent)}
 .opt:first-of-type{border-top:none}
 .opt-row{display:flex;align-items:center;gap:6px;font-size:14px}
 .opt-row label{flex:1;min-width:0;word-break:keep-all}
-.opt-row select,.opt-row input{width:140px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;
+.opt-row select,.opt-row input{width:132px;flex:none;padding:6px 8px;border:1px solid var(--line);border-radius:8px;
   background:var(--card);color:var(--text);font-size:14px}
 .opt-row input{text-align:right}
 .help-btn{width:22px;height:22px;padding:0;border-radius:50%;font-size:12px;font-weight:700;flex:none;
@@ -173,75 +173,152 @@ table.info tr.sum td{color:var(--accent)}
 .oc-files{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .oc-files button{font-size:13px;padding:5px 10px}
 table.info td.pre{white-space:pre-wrap}
+/* ---- 시작 화면(마법사) ---- */
+.wz{max-width:720px;margin:0 auto}
+.wz-top{display:flex;align-items:center;gap:10px;min-height:32px}
+.wz-prog{font-size:13px;color:var(--muted);margin-left:auto}
+.wz-prog i{display:inline-block;width:22px;height:5px;border-radius:3px;background:var(--line);margin-left:4px;vertical-align:middle}
+.wz-prog i.on{background:var(--accent)}
+.wz h1{font-size:25px;margin:10px 0 4px}
+.wz-cards{display:grid;gap:12px;margin-top:18px}
+.wz-card{display:flex;gap:14px;align-items:flex-start;text-align:left;padding:18px;border-radius:16px;
+  border:2px solid var(--line);background:var(--card);width:100%}
+.wz-card:hover{border-color:var(--accent)}
+.wz-card.sel{border-color:var(--accent);background:var(--accent-soft)}
+.wz-card .ic{font-size:34px;line-height:1}
+.wz-card b{display:block;font-size:17px;margin-bottom:3px;color:var(--text)}
+.wz-card .d{display:block;color:var(--muted);font-size:14px;word-break:keep-all}
+.wz-card .ex{display:block;color:var(--muted);font-size:12.5px;margin-top:6px;opacity:.85;word-break:keep-all}
+.pro-row{margin-top:18px}
+.pro-row .lbl{font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+.seg button{border:none;border-radius:0;padding:8px 12px;background:transparent;font-size:14px;color:var(--text)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--accent);color:#fff;font-weight:700}
+.seg button:disabled{color:var(--muted);cursor:not-allowed}
+.seg.full{display:flex}
+.seg.full button{flex:1;padding:11px 8px}
+.seg.sm button{padding:5px 10px;font-size:13px}
+/* ---- 상단 바 ---- */
+.topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tb-title{font-size:20px;font-weight:800}
+.tb-chip{font-size:13.5px;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:700}
+.tb-right{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.link-btn{border:none;background:none;color:var(--muted);text-decoration:underline;padding:4px 6px;font-size:13px}
+/* ---- 초급/숙련, 빠른/상세 ---- */
+body.lv-beg .pro-only, body.lv-pro .beg-only, body.st-quick .detail-only, body.st-detail .quick-only{display:none !important}
+body.lv-pro .card{padding:14px}
+body.lv-pro .opt-sections{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:8px}
+body.lv-pro .fld{padding:7px 0}
+body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
+.hint{font-size:12.5px;color:var(--muted);margin-top:3px;word-break:keep-all;font-weight:400}
+.en{display:block;color:var(--muted);font-weight:400;font-size:11.5px;line-height:1.3}
+.guide{padding:10px 12px;border-radius:10px;background:var(--accent-soft);font-size:13.5px;margin-bottom:12px;word-break:keep-all}
+.flow{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:13px;margin-bottom:12px;color:var(--muted)}
+.flow b{color:var(--text)}
+.qopt{margin-top:12px}
+.qlabel{font-size:14px;font-weight:600;margin-bottom:6px}
+.qopt select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);font-size:14.5px}
+.btn-sub{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.btn-store.sm{padding:9px 12px;font-size:14px;flex:1}
+.btn-wide{width:100%;margin-top:12px}
+.lp{position:relative;overflow:hidden}
+.lp::after{content:"";position:absolute;left:0;bottom:0;height:4px;width:0;background:rgba(255,255,255,.85)}
+.lp.pressing::after{width:100%;transition:width 2.5s linear .5s}
+.is-disabled{background:var(--line)!important;border-color:var(--line)!important;color:var(--muted)!important;cursor:not-allowed}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;
+  border-radius:99px;font-size:14px;z-index:30;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.st.test{background:#dbeafe;color:#1e40af}
 .sec-title{font-size:14px;font-weight:700;margin:16px 0 4px;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
  <div id="quoteView">
-  <h1>3D 프린팅 주문 · 견적</h1>
-  <p class="sub">지금 가지고 있는 것을 골라 주세요. (최대 출력 크기 300 × 300 × 300 mm)</p>
+  <!-- 시작 화면: 수준 → 모드 → 주문 방식 -->
+  <div id="wizard"></div>
 
-  <div class="modes" role="tablist">
-    <button class="mode-btn" role="tab" data-mode="file" aria-selected="true">
-      <span class="ic">📦</span><span><b>3D 파일 있음</b><small>STL·3MF 파일을 올리면 바로 자동 견적이 나와요</small></span></button>
-    <button class="mode-btn" role="tab" data-mode="sketch" aria-selected="false">
-      <span class="ic">✏️</span><span><b>스케치만 있음</b><small>손그림, 2D 도면, 그림, 사진을 보고 3D로 만들어 드려요</small></span></button>
-    <button class="mode-btn" role="tab" data-mode="idea" aria-selected="false">
-      <span class="ic">💡</span><span><b>아이디어만 있음</b><small>원하는 것만 설명해 주시면 설계부터 해 드려요</small></span></button>
-  </div>
+  <!-- 주문 화면 -->
+  <div id="formArea" hidden>
+   <div class="topbar">
+     <span class="tb-title">3D 프린팅 주문</span>
+     <span class="tb-chip" id="tbMode"></span>
+     <div class="tb-right">
+       <div class="seg sm" id="tbLevel"><button data-v="beg">🙂 초급자</button><button data-v="pro">⚡ 숙련자</button></div>
+       <div class="seg sm" id="tbStyle"><button data-v="quick">🚀 빠른 주문</button><button data-v="detail">🛠 상세 주문</button></div>
+       <button class="link-btn" id="tbRestart">처음부터 다시 선택</button>
+     </div>
+   </div>
 
- <div id="mode-file" class="mode-panel">
-  <div class="grid">
-    <div class="card">
-      <h2>① 3D 파일 올리기</h2>
-      <div id="drop">
-        <b>여기로 파일을 끌어다 놓거나 클릭하세요</b>
-        <small>STL · 3MF · G-code 파일 지원</small>
-        <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
+   <div id="mode-file" class="mode-panel">
+    <div class="flow beg-only"><b>① 파일 올리기</b> → <b>② 옵션 고르기</b> → <b>③ 주문 신청하기</b></div>
+    <div class="grid">
+      <div class="card">
+        <h2>3D 파일 올리기</h2>
+        <div class="guide beg-only">💡 STL·3MF는 3D 모델 파일이에요. MakerWorld·Thingiverse에서 받은 파일이나 직접 만든 파일을 올려 주세요. 뱀부 스튜디오에서 슬라이싱한 파일(.gcode.3mf)이면 가장 정확해요.</div>
+        <div id="drop">
+          <b>여기로 파일을 끌어다 놓거나 클릭하세요</b>
+          <small>STL · 3MF · G-code · 최대 300 × 300 × 300 mm</small>
+          <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
+        </div>
+        <div id="fileInfo"></div>
+        <canvas id="view" style="display:none"></canvas>
+        <div id="stats" class="stats"></div>
+
+        <div id="quickOpts" class="quick-only">
+          <h2 style="margin-top:18px">옵션</h2>
+          <div class="qopt"><div class="qlabel">재료</div><select id="q_mat"></select>
+            <div class="hint beg-only">모르면 <b>PLA Basic</b>을 고르세요. 재료에 따라 가격이 달라져요.</div></div>
+          <div class="qopt"><div class="qlabel">색상</div><select id="q_color"></select></div>
+          <div class="qopt q-geo"><div class="qlabel">튼튼함</div>
+            <div class="seg full" data-q="strength"><button data-v="light">가볍게</button><button data-v="normal">표준</button><button data-v="strong">튼튼하게</button></div>
+            <div class="hint beg-only">장식품은 가볍게, 힘을 받는 부품은 튼튼하게. 튼튼할수록 무겁고 비싸져요.</div></div>
+          <div class="qopt q-geo"><div class="qlabel">품질</div>
+            <div class="seg full" data-q="quality"><button data-v="fast">빠르게</button><button data-v="normal">표준</button><button data-v="fine">곱게</button></div>
+            <div class="hint beg-only">곱게 하면 표면이 매끈하지만 시간이 오래 걸려요.</div></div>
+          <div class="qopt q-geo"><div class="qlabel">서포트</div>
+            <div class="seg full" data-q="support"><button data-v="none">필요 없음</button><button data-v="auto">자동으로 넣기</button></div>
+            <div class="hint beg-only">공중에 뜬 부분이 있으면 자동으로 넣기를 고르세요.</div></div>
+          <p class="note q-sliced" style="display:none">슬라이싱된 파일은 파일에 저장된 설정으로 계산돼요. 재료와 색상만 골라 주세요.</p>
+        </div>
       </div>
-      <div id="fileInfo"></div>
-      <canvas id="view" style="display:none"></canvas>
-      <div id="stats" class="stats"></div>
+
+      <div class="card" id="priceCard">
+        <h2>견적</h2>
+        <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
+        <div class="tiles">
+          <div class="tile"><small>예상 무게</small><b id="wOut">-</b></div>
+          <div class="tile"><small>예상 출력 시간</small><b id="tOut">-</b></div>
+        </div>
+        <div class="price">
+          <div style="font-size:14px;font-weight:600">예상 견적</div>
+          <div class="total" id="total">-</div>
+          <div class="formula" id="summary">파일을 올리면 견적이 표시돼요.</div>
+        </div>
+        <button id="orderBtn" class="btn-primary btn-wide lp is-disabled" aria-disabled="true">주문 신청하기</button>
+        <div class="btn-sub">
+          <a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
+          <button id="copyBtn" class="link-btn">견적 복사</button>
+        </div>
+        <p class="note beg-only">표시된 금액은 예상 견적이에요. 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
+      </div>
     </div>
 
-    <div class="card" id="priceCard">
-      <h2>② 견적</h2>
-      <label class="f">수량 (개)<input id="qty" type="number" min="1" step="1" value="1"></label>
-      <div class="tiles">
-        <div class="tile"><small>예상 무게</small><b id="wOut">-</b></div>
-        <div class="tile"><small>예상 출력 소요시간</small><b id="tOut">-</b></div>
+    <div class="card detail-only" style="margin-top:16px">
+      <div class="opt-head">
+        <h2>출력 옵션</h2>
+        <button id="resetOpts">기본값으로</button>
       </div>
-      <div class="price">
-        <div style="font-size:14px;font-weight:600">예상 견적</div>
-        <div class="total" id="total">-</div>
-        <div class="formula" id="summary">파일을 올리면 견적이 표시돼요.</div>
-      </div>
-      <div class="btn-row">
-        <button id="orderBtn" class="btn-primary" disabled>주문 신청하기</button>
-        <a class="btn-store storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
-      </div>
-      <div class="btn-row" style="margin-top:8px">
-        <button id="copyBtn">견적 내용 복사</button>
-      </div>
-      <p class="note">표시된 금액은 예상 견적이며, 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
+      <p class="note beg-only" style="margin-top:0">잘 모르겠으면 기본값 그대로 두셔도 돼요. 옵션 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.</p>
+      <p class="note" id="slicedNote" style="display:none">⚠️ 슬라이싱된 파일은 파일에 저장된 출력 설정으로 무게·시간이 계산돼요. 재료와 색상만 골라 주세요.</p>
+      <div class="opt-sections" id="optSections"></div>
     </div>
-  </div>
+   </div>
 
-  <div class="card" style="margin-top:16px">
-    <div class="opt-head">
-      <h2>③ 출력 옵션</h2>
-      <button id="resetOpts">기본값으로 되돌리기</button>
-    </div>
-    <p class="note" style="margin-top:0">잘 모르겠으면 기본값 그대로 두셔도 돼요. 각 옵션 옆 <b>?</b> 를 누르면 설명이 나와요.</p>
-    <p class="note" id="slicedNote" style="display:none">⚠️ 슬라이싱된 파일은 파일에 저장된 출력 설정으로 무게·시간이 계산돼요. 재료와 색상만 골라 주세요.</p>
-    <div class="opt-sections" id="optSections"></div>
+   <!-- 스케치 / 아이디어 요청 화면 (스크립트에서 채움) -->
+   <div id="mode-sketch" class="mode-panel" hidden></div>
+   <div id="mode-idea" class="mode-panel" hidden></div>
   </div>
- </div>
-
- <!-- 스케치 / 아이디어 요청 화면 (스크립트에서 채움) -->
- <div id="mode-sketch" class="mode-panel" hidden></div>
- <div id="mode-idea" class="mode-panel" hidden></div>
  </div>
 
  <!-- 복사 실패 시 직접 복사 -->
@@ -326,6 +403,21 @@ const SMARTSTORE_URL = "https://smartstore.naver.com/";
 const MAX_SIZE = 300;   // 최대 출력 크기 (mm, 가로·세로·높이 각각)
 const MAX_FILE_MB = 50; // 주문 시 올릴 수 있는 최대 파일 크기 (MB)
 
+/* ======== 필라멘트 가격 (뱀부랩 1kg 리필 기준, 원) ========
+   1g 재료비 = 아래 가격 ÷ 1000  (PLA Basic 18,000원 → 18원/g)
+   ※ "추정" 표시는 국내 판매가를 확인하지 못해 해외 가격 비율로 잡은 값이에요. 실제 구매가로 바꿔 주세요. */
+const FILAMENT_PRICE = {
+  "PLA":       18000,   // PLA Basic
+  "PLA-Matte": 18000,   // PLA Matte
+  "PLA-Silk":  22000,   // PLA Silk+ (추정)
+  "PETG":      18000,   // PETG HF
+  "ABS":       18000,   // ABS
+  "ASA":       22000,   // ASA (추정)
+  "TPU":       38000,   // TPU 95A HF (추정)
+  "PLA-CF":    32000,   // PLA-CF (추정)
+  "PETG-CF":   32000    // PETG-CF (추정)
+};
+
 /* ======== Firebase 설정: 새 Firebase 프로젝트 값으로 바꾸세요 ======== */
 const FIREBASE_CONFIG = {
   apiKey: "YOUR_API_KEY",
@@ -350,10 +442,11 @@ document.querySelectorAll(".storeLink").forEach(a => a.href = SMARTSTORE_URL);
 const OPTS = [
  {sec:"재료 · 색상", icon:"🎨", always:true, items:[
   {id:"mat", label:"재료", type:"select", def:"PLA", list:[
-    ["PLA","PLA (기본)",{d:1.24,s:1}], ["PLA-Silk","PLA 실크",{d:1.24,s:0.8}], ["PLA-Matte","PLA 매트",{d:1.31,s:1}],
-    ["PETG","PETG",{d:1.27,s:0.8}], ["ABS","ABS",{d:1.04,s:0.95}], ["ASA","ASA",{d:1.07,s:0.95}],
-    ["TPU","TPU 95A (말랑)",{d:1.21,s:0.35}], ["PLA-CF","PLA-CF (카본)",{d:1.30,s:0.9}], ["PETG-CF","PETG-CF (카본)",{d:1.25,s:0.85}]],
-   help:"<b>PLA</b>: 가장 많이 쓰는 기본 재료. 출력이 깔끔하고 저렴하지만 열(약 55℃ 이상)에 약해요.<br><b>PLA 실크</b>: 비단처럼 반짝이는 광택. 장식용에 좋고 조금 느리게 출력해요.<br><b>PLA 매트</b>: 무광. 적층 줄무늬가 덜 보여요.<br><b>PETG</b>: PLA보다 질기고 열·물에 강해요. 실용 부품용.<br><b>ABS / ASA</b>: 열(약 90℃)에 강하고 단단해요. ASA는 햇빛(자외선)에도 강해 야외용에 좋아요.<br><b>TPU</b>: 고무처럼 말랑하고 휘어져요. 출력이 매우 느려요.<br><b>카본(CF)</b>: 탄소섬유가 섞여 단단하고 무광 질감이에요."},
+    ["PLA","PLA Basic (기본)",{d:1.26,s:1}], ["PLA-Matte","PLA Matte (무광)",{d:1.32,s:1}], ["PLA-Silk","PLA Silk+ (광택)",{d:1.32,s:0.8}],
+    ["PETG","PETG HF",{d:1.25,s:0.9}], ["ABS","ABS",{d:1.05,s:0.95}], ["ASA","ASA",{d:1.05,s:0.95}],
+    ["TPU","TPU 95A HF (말랑)",{d:1.22,s:0.4}], ["PLA-CF","PLA-CF (카본)",{d:1.22,s:0.9}], ["PETG-CF","PETG-CF (카본)",{d:1.25,s:0.85}]],
+   hint:"모르면 PLA Basic을 고르세요. 재료에 따라 가격이 달라져요.",
+   help:"뱀부랩 정품 필라멘트를 사용해요. 재료마다 가격이 달라서 견적도 바뀌어요.<br><b>PLA Basic</b>: 가장 많이 쓰는 기본 재료. 출력이 깔끔하고 저렴하지만 열(약 55℃ 이상)에 약해요.<br><b>PLA Matte</b>: 무광. 적층 줄무늬가 덜 보여요.<br><b>PLA Silk+</b>: 비단처럼 반짝이는 광택. 장식용에 좋고 조금 느리게 출력해요.<br><b>PETG HF</b>: PLA보다 질기고 열·물에 강해요. 실용 부품용.<br><b>ABS / ASA</b>: 열(약 90℃)에 강하고 단단해요. ASA는 햇빛(자외선)에도 강해 야외용에 좋아요.<br><b>TPU</b>: 고무처럼 말랑하고 휘어져요. 출력이 매우 느려요.<br><b>카본(CF)</b>: 탄소섬유가 섞여 단단하고 무광 질감이에요."},
   {id:"color", label:"색상", type:"select", def:"흰색", list:[
     ["흰색","흰색"],["검정","검정"],["회색","회색"],["빨강","빨강"],["주황","주황"],["노랑","노랑"],["초록","초록"],
     ["파랑","파랑"],["보라","보라"],["분홍","분홍"],["갈색","갈색"],["투명","투명/반투명"],["기타","기타 (주문 시 상담)"]],
@@ -392,11 +485,12 @@ const OPTS = [
   {id:"infill", label:"내부 채움 밀도", type:"number", def:15, min:0, max:100, step:1, unit:"%",
    help:"물체 속을 얼마나 채울지예요. <b>0%</b>는 속이 빈 껍데기, <b>100%</b>는 꽉 찬 덩어리예요.<br>장식품 <b>10~15%</b>, 일반 부품 <b>15~25%</b>, 힘 받는 부품 <b>30~50%</b>를 추천해요. 높을수록 무겁고 오래 걸려요."},
   {id:"pattern", label:"내부 채움 패턴", type:"select", def:"grid", list:[
-    ["grid","그리드",{m:1,t:0.95}],["rectilinear","직선",{m:1,t:1}],["line","선",{m:1,t:0.95}],["crosshatch","크로스 해치",{m:1,t:1.05}],
+    ["grid","그리드 (기본)",{m:1,t:0.95}],["rectilinear","직선",{m:1,t:1}],["line","선",{m:1,t:0.95}],["crosshatch","크로스 해치",{m:1,t:1.05}],
     ["cubic","큐빅",{m:1,t:1}],["adaptivecubic","적응형 큐빅",{m:0.8,t:0.9}],["supportcubic","서포트 큐빅",{m:0.6,t:0.8}],
     ["triangles","삼각형",{m:1,t:1}],["trihexagon","트라이헥사곤",{m:1,t:1}],["gyroid","자이로이드",{m:1,t:1.25}],
     ["honeycomb","허니콤 (벌집)",{m:1.1,t:1.35}],["3dhoneycomb","3D 허니콤",{m:1,t:1.3}],["lightning","라이트닝",{m:0.35,t:0.7}],
     ["concentric","동심원",{m:1,t:1.1}],["hilbert","힐베르트 곡선",{m:1,t:1.45}],["archimedean","아르키메데스 화음",{m:1,t:1.2}],["octagram","옥타그램 나선",{m:1,t:1.2}]],
+   hint:"모르면 그리드(기본) 그대로 두세요.",
    help:"물체 속을 채우는 무늬예요.<br><b>그리드</b>: 격자 모양. 빠르고 무난한 기본값.<br><b>직선 / 선</b>: 층마다 한 방향 선. 가장 단순하고 빨라요.<br><b>크로스 해치</b>: 방향을 바꿔 가며 쌓아 고르게 튼튼해요.<br><b>큐빅 / 삼각형 / 트라이헥사곤</b>: 여러 방향 힘에 강해요.<br><b>적응형 큐빅 / 서포트 큐빅</b>: 안쪽 깊은 곳은 성글게 채워 재료와 시간을 아껴요.<br><b>자이로이드</b>: 물결 모양. 모든 방향으로 고르게 튼튼하지만 조금 느려요.<br><b>허니콤 / 3D 허니콤</b>: 벌집 모양. 튼튼하지만 느려요.<br><b>라이트닝</b>: 윗면을 받칠 만큼만 나뭇가지처럼 채워요. 가장 가볍고 빠르지만 강도는 약해요(장식용).<br><b>동심원 / 힐베르트 / 아르키메데스 / 옥타그램</b>: 투명·반투명 재료로 무늬를 보여줄 때 써요."}
  ]},
  {sec:"서포트", icon:"🪜", items:[
@@ -422,6 +516,18 @@ const OPTS = [
  ]}
 ];
 
+// 숙련자용 영문 이름 (뱀부 스튜디오 표기)
+const EN = {mat:"Filament", color:"Color", layerH:"Layer height", firstLayerH:"Initial layer height", lineW:"Line width",
+  ironing:"Ironing", walls:"Wall loops", topL:"Top shell layers", botL:"Bottom shell layers", topPattern:"Top surface pattern",
+  bottomPattern:"Bottom surface pattern", infill:"Sparse infill density", pattern:"Sparse infill pattern", supType:"Support type",
+  supAngle:"Threshold angle", supDensity:"Support density", brim:"Brim", raft:"Raft layers", speed:"Speed mode"};
+// 초급자용 한 줄 설명: hint가 있으면 그것, 없으면 도움말 첫 문장
+function hintOf(o){
+  if (o.hint) return o.hint;
+  const t = o.help.split(/<br\s*\/?>/i)[0].replace(/<[^>]+>/g, "");
+  const m = t.match(/^.*?[.!?](?=\s|$)/);
+  return (m ? m[0] : t).trim();
+}
 // 옵션 화면 만들기
 (function renderOpts(){
   const box = $("optSections");
@@ -432,7 +538,8 @@ const OPTS = [
         ? `<select id="${o.id}">${o.list.map(([v, t]) => `<option value="${v}"${v === o.def ? " selected" : ""}>${t}</option>`).join("")}</select>`
         : `<input id="${o.id}" type="number" min="${o.min}" max="${o.max}" step="${o.step}" value="${o.def}">`;
       return `<div class="opt">
-        <div class="opt-row"><label for="${o.id}">${o.label}${o.unit ? ` <small style="color:var(--muted)">(${o.unit})</small>` : ""}</label>
+        <div class="opt-row"><label for="${o.id}">${o.label}${o.unit ? ` <small style="color:var(--muted)">(${o.unit})</small>` : ""}<span class="en pro-only">${EN[o.id] || ""}</span>
+          <div class="hint beg-only">${hintOf(o)}</div></label>
           <button type="button" class="help-btn" aria-expanded="false" aria-controls="h-${o.id}" title="설명 보기">?</button>${ctl}</div>
         <div class="help-text" id="h-${o.id}" hidden>${o.help}</div></div>`;
     }).join("")}</div>`).join("");
@@ -470,6 +577,34 @@ $("resetOpts").addEventListener("click", () => {
   showResult();
 });
 
+/* ---- 빠른 주문용 간단 옵션 → 상세 옵션 값으로 변환 ---- */
+const QUICK = {
+  strength: {light: {walls:2, infill:10}, normal: {walls:2, infill:15}, strong: {walls:4, infill:30, pattern:"cubic", topL:6, botL:4}},
+  quality:  {fast: {layerH:"0.28"}, normal: {layerH:"0.20"}, fine: {layerH:"0.12"}},
+  support:  {none: {supType:"none"}, auto: {supType:"tree"}}
+};
+const QUICK_TEXT = {strength:{light:"가볍게", normal:"표준", strong:"튼튼하게"}, quality:{fast:"빠르게", normal:"표준", fine:"곱게"}, support:{none:"필요 없음", auto:"자동"}};
+const qState = {strength: "normal", quality: "normal", support: "none"};
+$("q_mat").innerHTML = $("mat").innerHTML;
+$("q_color").innerHTML = $("color").innerHTML;
+function renderQuickSegs(){
+  document.querySelectorAll("#quickOpts .seg").forEach(sg =>
+    sg.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === qState[sg.dataset.q])));
+}
+function applyQuick(){
+  for (const o of Object.values(OPT_BY_ID)) if (o.id !== "mat" && o.id !== "color") $(o.id).value = o.def;
+  $("mat").value = $("q_mat").value; $("color").value = $("q_color").value;
+  for (const k in qState) for (const [id, v] of Object.entries(QUICK[k][qState[k]])) $(id).value = v;
+  renderQuickSegs(); showResult();
+}
+$("quickOpts").addEventListener("click", e => {
+  const b = e.target.closest(".seg button"); if (!b) return;
+  qState[b.parentElement.dataset.q] = b.dataset.v; applyQuick();
+});
+$("q_mat").addEventListener("change", applyQuick);
+$("q_color").addEventListener("change", applyQuick);
+renderQuickSegs();
+
 /* ================= 스케치 / 아이디어 요청 폼 ================= */
 const MAX_ATTACH = 6;
 const USE_LIST = [["indoor","실내 (일반)"],["outdoor","실외 (햇빛·비)"],["wet","욕실·주방 (물 닿는 곳)"],["hot","뜨거운 곳 (차 안·가전 근처)"],["unknown","잘 모르겠어요"]];
@@ -493,7 +628,7 @@ const F = {
 };
 const REQ_MODES = {
   sketch: {
-    type:"sketch", typeLabel:"스케치·도면", heading:"✏️ 스케치 · 도면 정보",
+    type:"sketch", typeLabel:"스케치·도면", heading:"✏️ 스케치 · 도면 정보", quick:["files","title","desc","contact"],
     priceNote:"보내 주신 스케치로 3D 모델을 만든 뒤 정확한 금액을 알려 드려요.",
     steps:["스케치·도면을 올리고 <b>견적 요청하기</b>","판매자가 3D 모델을 만들고 연락처로 <b>견적 안내</b>","안내받은 금액으로 <b>스마트스토어에서 주문</b> (옵션에 요청번호 입력)"],
     fields:[
@@ -507,7 +642,7 @@ const REQ_MODES = {
     ]
   },
   idea: {
-    type:"idea", typeLabel:"아이디어", heading:"💡 아이디어 설명",
+    type:"idea", typeLabel:"아이디어", heading:"💡 아이디어 설명", quick:["title","desc","files","contact"],
     priceNote:"아이디어를 바탕으로 설계한 뒤 정확한 금액을 알려 드려요.",
     steps:["원하는 것을 적고 <b>견적 요청하기</b>","판매자가 설계 방향을 정리해서 연락처로 <b>안내·견적</b>","안내받은 금액으로 <b>스마트스토어에서 주문</b> (옵션에 요청번호 입력)"],
     fields:[
@@ -544,25 +679,26 @@ function renderReqMode(mode){
         `<input type="number" id="${id}_${i}" min="1" max="300" placeholder="${t}" aria-label="${t} (mm)">`).join("<span>×</span>")}<span>mm</span></div>`;
     else if (f.type === "files") ctl = `<div class="att-drop" id="${id}_drop" tabindex="0">📎 여기를 눌러 파일을 고르거나 끌어다 놓으세요<br><small>사진(JPG·PNG 등) · PDF</small></div>
         <input type="file" id="${id}" accept="image/*,.pdf" multiple hidden><div class="att-list" id="${id}_list"></div>`;
-    return `<div class="fld" data-fid="${f.id}">
+    return `<div class="fld${M.quick.includes(f.id) ? "" : " detail-only"}" data-fid="${f.id}">
       <div class="fld-head"><label for="${f.type === "dims" ? id + "_0" : id}">${f.label}${f.unit ? ` (${f.unit})` : ""}</label>
         ${f.req ? '<span class="req">*</span>' : '<span class="opt-tag">(선택)</span>'}
         <button type="button" class="help-btn" aria-expanded="false" aria-controls="h-${id}" title="설명 보기">?</button></div>
+      <div class="hint beg-only" style="margin:-2px 0 6px">${hintOf(f)}</div>
       <div class="help-text" id="h-${id}" hidden>${f.help}</div>
       ${ctl}<div class="fld-err" hidden></div></div>`;
   };
   $(`mode-${mode}`).innerHTML = `<div class="grid">
-    <div class="card"><h2>${M.heading}</h2>${M.fields.map(field).join("")}</div>
+    <div class="card"><h2>${M.heading}</h2>
+      <div class="guide beg-only quick-only">🚀 빠른 주문이에요. <b>*</b> 표시만 적으면 바로 요청할 수 있어요. 더 자세히 적고 싶으면 위에서 <b>상세 주문</b>을 누르세요.</div>
+      ${M.fields.map(field).join("")}</div>
     <div class="card" style="position:sticky;top:12px;align-self:start">
-      <h2>진행 방법</h2>
-      <ol class="steps">${M.steps.map(x => `<li>${x}</li>`).join("")}</ol>
-      <div class="price"><div style="font-size:14px;font-weight:600">예상 견적</div>
+      <div class="beg-only"><h2>진행 방법</h2>
+        <ol class="steps">${M.steps.map(x => `<li>${x}</li>`).join("")}</ol></div>
+      <div class="price" style="margin-top:0"><div style="font-size:14px;font-weight:600">예상 견적</div>
         <div class="total req-total">검토 후 안내</div><div class="formula">${M.priceNote}</div></div>
-      <div class="btn-row">
-        <button class="btn-primary" id="${P("submit")}">견적 요청하기</button>
-        <a class="btn-store storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a>
-      </div>
-      <p class="note"><span class="req" style="color:#dc2626">*</span> 표시는 꼭 적어 주세요. 각 항목 옆 <b>?</b> 를 누르면 설명이 나와요.</p>
+      <button class="btn-primary btn-wide lp" id="${P("submit")}">견적 요청하기</button>
+      <div class="btn-sub"><a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false">스마트스토어 바로가기</a></div>
+      <p class="note beg-only"><span class="req" style="color:#dc2626">*</span> 표시는 꼭 적어 주세요. 각 항목 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.</p>
     </div></div>`;
 
   const panel = $(`mode-${mode}`);
@@ -585,6 +721,7 @@ function renderReqMode(mode){
     renderReqFiles(mode);
   });
   $(P("submit")).addEventListener("click", () => startRequest(mode));
+  onLongPress($(P("submit")), 3000, () => masterRequest(mode));
 }
 function setFieldErr(fld, msg){
   fld.classList.toggle("bad", !!msg);
@@ -620,10 +757,11 @@ function reqVal(mode, f){
   return $(id).value.trim();
 }
 // 요청 내용 검사 → 확인창
-function startRequest(mode){
+function startRequest(mode, test){
   const M = REQ_MODES[mode], panel = $(`mode-${mode}`);
+  const shown = f => prefs.style === "detail" || M.quick.includes(f.id);
   let firstBad = null;
-  for (const f of M.fields){
+  for (const f of M.fields.filter(shown)){
     const fld = panel.querySelector(`.fld[data-fid="${f.id}"]`);
     let msg = "";
     const v = reqVal(mode, f);
@@ -636,32 +774,175 @@ function startRequest(mode){
   }
   if (firstBad){ firstBad.scrollIntoView({behavior:"smooth", block:"center"}); return; }
 
-  const pick = ids => ids.map(id => M.fields.find(f => f.id === id)).filter(Boolean).map(f => [f.label, reqVal(mode, f)]).filter(([, v]) => v);
+  const pick = ids => ids.map(id => M.fields.find(f => f.id === id)).filter(f => f && shown(f)).map(f => [f.label, reqVal(mode, f)]).filter(([, v]) => v);
   const info = pick(["title","desc","category","place","mount","dims","use","strength","files"]);
   const want = pick(["mat","color","qty","due"]);
   const who  = pick(["cname","contact"]);
   const title = reqVal(mode, M.fields.find(f => f.id === "title"));
   const d = {
-    type: M.type, typeLabel: M.typeLabel, name: title, total: "검토 후 안내",
+    type: M.type, typeLabel: M.typeLabel, name: (test ? "[테스트] " : "") + title, total: "검토 후 안내", test: !!test,
     contact: reqVal(mode, F.contact),
-    sections: [["요청 정보", [["요청 종류", M.typeLabel], ...info]], ["희망 사항", want], ["연락처", who]]
+    sections: [["요청 정보", [["요청 종류", M.typeLabel], ["주문 방식", styleText()], ...info]], ["희망 사항", want], ["연락처", who]]
   };
   openConfirm(d, reqFiles[mode].map(it => ({file: it.file, kind: "attach"})));
 }
+/* ---- 길게 누르기 ---- */
+function onLongPress(el, ms, fn){
+  let t = null, fired = false;
+  el.addEventListener("click", e => { if (fired){ e.preventDefault(); e.stopImmediatePropagation(); fired = false; } }, true);
+  el.addEventListener("pointerdown", () => {
+    fired = false; clearTimeout(t); el.classList.add("pressing");
+    t = setTimeout(() => { fired = true; el.classList.remove("pressing"); fn(); }, ms);
+  });
+  ["pointerup","pointerleave","pointercancel"].forEach(ev => el.addEventListener(ev, () => { clearTimeout(t); el.classList.remove("pressing"); }));
+  el.addEventListener("contextmenu", e => e.preventDefault());
+}
+function toast(msg){
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  document.body.appendChild(t); setTimeout(() => t.remove(), 2200);
+}
+
 renderReqMode("sketch");
 renderReqMode("idea");
 document.querySelectorAll(".storeLink").forEach(a => a.href = SMARTSTORE_URL);
 
-function setMode(mode){
-  if (!["file","sketch","idea"].includes(mode)) mode = "file";
-  document.querySelectorAll(".mode-btn").forEach(b => b.setAttribute("aria-selected", b.dataset.mode === mode));
-  document.querySelectorAll(".mode-panel").forEach(p => p.hidden = p.id !== "mode-" + mode);
-  try{ history.replaceState(null, "", "#" + mode); }catch(e){}
-  if (mode === "file") requestAnimationFrame(() => typeof draw === "function" && draw());
+/* ================= 시작 화면: 수준 → 모드 → 주문 방식 ================= */
+const MODE_INFO = {
+  file:   {ic:"📦", t:"3D 파일 있음",     d:"STL·3MF·G-code 파일을 올리면 바로 가격이 나와요", ex:"예) MakerWorld에서 받은 파일, 직접 모델링한 파일"},
+  sketch: {ic:"✏️", t:"스케치만 있음",     d:"손그림, 2D 도면, 그림, 사진을 보고 3D로 만들어 드려요", ex:"예) 치수를 적은 손그림, 캐드 PDF, 부러진 부품 사진"},
+  idea:   {ic:"💡", t:"아이디어만 있음",   d:"원하는 것만 설명하면 설계부터 해 드려요", ex:"예) 욕실 벽에 붙이는 수건걸이 겸 수세미 거치대, 핑거보드 트랙"}
+};
+const STYLE_INFO = {
+  quick:  {ic:"🚀", t:"빠른 주문", d:{file:"재료·색상·튼튼함만 고르면 끝", sketch:"그림·설명·연락처만 보내면 끝", idea:"원하는 것·연락처만 적으면 끝"}},
+  detail: {ic:"🛠", t:"상세 주문", d:{file:"레이어 높이, 벽, 내부 채움 패턴, 서포트 등 슬라이서 설정을 직접 맞춰요",
+                                     sketch:"크기, 사용 환경, 튼튼함, 재료, 희망일까지 자세히 맞춰요",
+                                     idea:"설치 장소, 고정 방법, 크기, 사용 환경, 재료, 희망일까지 자세히 맞춰요"}}
+};
+const PREF_KEY = "p3d_prefs";
+const prefs = {level: null, mode: null, style: null};
+try{ Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); }catch(e){}
+if (["file","sketch","idea"].includes(location.hash.slice(1))) prefs.mode = location.hash.slice(1);
+function savePrefs(){ try{ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }catch(e){} }
+const styleText = () => STYLE_INFO[prefs.style || "quick"].t;
+function setBodyClass(){
+  document.body.classList.remove("lv-beg","lv-pro","st-quick","st-detail");
+  document.body.classList.add("lv-" + (prefs.level || "beg"), "st-" + (prefs.style || "quick"));
 }
-document.querySelectorAll(".mode-btn").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
-setMode(location.hash.slice(1));
+function nav(screen){ history.pushState({screen}, ""); route(screen); }
+window.addEventListener("popstate", e => route((e.state && e.state.screen) || "level"));
 
+function route(screen){
+  showView("quoteView");
+  setBodyClass();
+  const inForm = screen === "form" && prefs.mode && prefs.style;
+  $("wizard").hidden = inForm; $("formArea").hidden = !inForm;
+  if (inForm) renderForm(); else renderWizard(screen === "form" ? "level" : screen);
+  window.scrollTo(0, 0);
+}
+function wzCard(sel, ic, t, d, ex, data){
+  return `<button class="wz-card${sel ? " sel" : ""}" ${data}><span class="ic">${ic}</span><span>
+    <b>${t}</b><span class="d">${d}</span>${ex ? `<span class="ex">${ex}</span>` : ""}</span></button>`;
+}
+function renderWizard(step){
+  const W = $("wizard");
+  const top = (n, total) => `<div class="wz-top">${step !== "level" ? '<button class="link-btn" id="wzBack">← 뒤로</button>' : ""}
+    ${total ? `<span class="wz-prog">${n} / ${total} ${Array.from({length: total}, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>` : ""}</div>`;
+  if (step === "level"){
+    W.innerHTML = `<div class="wz">${top(1, prefs.level === "pro" ? 2 : 3)}
+      <h1>3D 프린팅 주문 · 견적</h1>
+      <p class="sub">어떤 방식으로 진행할까요? 언제든 위에서 바꿀 수 있어요.</p>
+      <div class="wz-cards">
+        ${wzCard(prefs.level === "beg", "🙂", "처음이에요 (초급자)", "하나씩 차근차근, 설명과 함께 친절하게 안내해 드려요", "3D 프린팅이 처음이거나 용어가 낯설다면 추천해요", 'data-level="beg"')}
+        ${wzCard(prefs.level === "pro", "⚡", "익숙해요 (숙련자)", "설명은 줄이고 한 화면에서 빠르게 설정해요", "슬라이서 설정(레이어 높이, 인필 등)을 아는 분께 추천해요", 'data-level="pro"')}
+      </div></div>`;
+    W.querySelectorAll("[data-level]").forEach(b => b.onclick = () => {
+      prefs.level = b.dataset.level; savePrefs(); nav(prefs.level === "pro" ? "pro" : "mode");
+    });
+  } else if (step === "mode"){
+    W.innerHTML = `<div class="wz">${top(2, 3)}
+      <h1>지금 무엇을 가지고 계신가요?</h1>
+      <p class="sub">가지고 있는 것에 맞춰 주문 화면을 준비해 드려요. (최대 출력 크기 300 × 300 × 300 mm)</p>
+      <div class="wz-cards">${Object.entries(MODE_INFO).map(([k, m]) => wzCard(prefs.mode === k, m.ic, m.t, m.d, m.ex, `data-mode="${k}"`)).join("")}</div></div>`;
+    W.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { prefs.mode = b.dataset.mode; savePrefs(); nav("style"); });
+  } else if (step === "style"){
+    const m = prefs.mode || "file";
+    W.innerHTML = `<div class="wz">${top(3, 3)}
+      <h1>어떻게 주문할까요?</h1>
+      <p class="sub">${MODE_INFO[m].ic} ${MODE_INFO[m].t} · 주문 화면에서도 언제든 바꿀 수 있어요.</p>
+      <div class="wz-cards">${Object.entries(STYLE_INFO).map(([k, st]) =>
+        wzCard(prefs.style === k, st.ic, st.t, st.d[m], k === "quick" ? "처음이라면 빠른 주문을 추천해요" : "", `data-style="${k}"`)).join("")}</div></div>`;
+    W.querySelectorAll("[data-style]").forEach(b => b.onclick = () => { prefs.style = b.dataset.style; savePrefs(); nav("form"); });
+  } else {   // 숙련자: 한 화면
+    W.innerHTML = `<div class="wz">${top(2, 2)}
+      <h1>주문 설정</h1>
+      <p class="sub">⚡ 숙련자 모드 · 고르고 바로 시작하세요.</p>
+      <div class="pro-row"><div class="lbl">1. 무엇이 있나요?</div>
+        <div class="seg full" id="proMode">${Object.entries(MODE_INFO).map(([k, m]) => `<button data-v="${k}">${m.ic} ${m.t.replace(" 있음", "").replace("만", "")}</button>`).join("")}</div></div>
+      <div class="pro-row"><div class="lbl">2. 주문 방식</div>
+        <div class="seg full" id="proStyle">${Object.entries(STYLE_INFO).map(([k, st]) => `<button data-v="${k}">${st.ic} ${st.t}</button>`).join("")}</div>
+        <div class="hint" id="proHint" style="margin-top:6px"></div></div>
+      <button class="btn-primary btn-wide" id="proGo" style="margin-top:20px">시작하기 →</button></div>`;
+    const sync = () => {
+      $("proMode").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.mode));
+      $("proStyle").querySelectorAll("button").forEach(b => { b.disabled = !prefs.mode; b.classList.toggle("on", !!prefs.mode && b.dataset.v === prefs.style); });
+      $("proHint").textContent = !prefs.mode ? "먼저 1번을 골라 주세요." : prefs.style ? STYLE_INFO[prefs.style].d[prefs.mode] : "";
+      $("proGo").classList.toggle("is-disabled", !(prefs.mode && prefs.style));
+    };
+    $("proMode").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.mode = b.dataset.v; savePrefs(); sync(); } };
+    $("proStyle").onclick = e => { const b = e.target.closest("button"); if (b && !b.disabled){ prefs.style = b.dataset.v; savePrefs(); sync(); } };
+    $("proGo").onclick = () => { if (prefs.mode && prefs.style) nav("form"); };
+    sync();
+  }
+  const back = $("wzBack"); if (back) back.onclick = () => history.back();
+}
+function renderForm(){
+  const m = prefs.mode;
+  document.querySelectorAll(".mode-panel").forEach(p => p.hidden = p.id !== "mode-" + m);
+  $("tbMode").textContent = `${MODE_INFO[m].ic} ${MODE_INFO[m].t}`;
+  $("tbLevel").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === (prefs.level || "beg")));
+  $("tbStyle").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.style));
+  if (m === "file" && prefs.style === "quick"){ $("q_mat").value = $("mat").value; $("q_color").value = $("color").value; applyQuick(); }
+  requestAnimationFrame(() => draw());
+}
+$("tbLevel").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.level = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
+$("tbStyle").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.style = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
+$("tbRestart").onclick = () => nav("level");
+
+/* ---- 마스터 모드: 버튼 3초 이상 누르기 → 필수 항목을 예시로 채우고 다음 단계로 ---- */
+function sampleSTL(){
+  const v = [[0,0,0],[30,0,0],[30,20,0],[0,20,0],[0,0,10],[30,0,10],[30,20,10],[0,20,10]];
+  const f = [[0,2,1],[0,3,2],[4,5,6],[4,6,7],[0,1,5],[0,5,4],[1,2,6],[1,6,5],[2,3,7],[2,7,6],[3,0,4],[3,4,7]];
+  const buf = new ArrayBuffer(84 + f.length*50), dv = new DataView(buf);
+  dv.setUint32(80, f.length, true);
+  f.forEach((t, i) => t.forEach((vi, k) => v[vi].forEach((c, j) => dv.setFloat32(84 + i*50 + 12 + k*12 + j*4, c, true))));
+  return new File([buf], "마스터_샘플.stl", {type: "model/stl"});
+}
+async function sampleSketch(){
+  const c = document.createElement("canvas"); c.width = 600; c.height = 400;
+  const g = c.getContext("2d");
+  g.fillStyle = "#fff"; g.fillRect(0, 0, 600, 400); g.strokeStyle = "#222"; g.lineWidth = 4;
+  g.strokeRect(120, 120, 300, 40); g.strokeRect(120, 160, 40, 160);
+  g.font = "24px sans-serif"; g.fillStyle = "#222"; g.fillText("120mm", 230, 105); g.fillText("80mm", 20, 250); g.fillText("샘플 스케치", 380, 330);
+  const blob = await new Promise(r => c.toBlob(r, "image/png"));
+  return new File([blob], "마스터_샘플_스케치.png", {type: "image/png"});
+}
+async function masterFile(){
+  toast("🛠 마스터 모드: 예시로 채워서 진행해요");
+  if (!current || current.tooBig) await handleFile(sampleSTL());
+  if (!current || current.tooBig) return;
+  const d = orderData(); d.test = true; d.name = "[테스트] " + d.name;
+  openConfirm(d, [{file: current.file, kind: "model"}]);
+}
+async function masterRequest(mode){
+  toast("🛠 마스터 모드: 예시로 채워서 진행해요");
+  const fill = (id, v) => { const el = $(`${mode}_${id}`); if (el && !el.value.trim()) el.value = v; };
+  fill("title", mode === "sketch" ? "테스트 선반 받침 브래킷" : "테스트 수건걸이 겸 수세미 거치대");
+  fill("desc", "마스터 모드로 자동 입력된 테스트 요청이에요.");
+  fill("contact", "010-0000-0000");
+  if (mode === "sketch" && !reqFiles.sketch.length) addReqFiles("sketch", [await sampleSketch()]);
+  startRequest(mode, true);
+}
+onLongPress($("orderBtn"), 3000, masterFile);
 
 /* ---- 복사 (자동 복사가 막히면 직접 복사 창) ---- */
 async function copyText(txt, btn, label){
@@ -693,10 +974,12 @@ function fmtMin(min){
 function updatePrice(){
   const g = Math.max(0, parseFloat($("g").value) || 0);
   const m = Math.max(0, parseFloat($("m").value) || 0);
-  const base = 18*g + 8.33*m + 2000;
+  const perG = (FILAMENT_PRICE[$("mat").value] || 18000) / 1000;   // 재료별 1g 가격
+  const base = perG*g + 8.33*m + 2000;
   const total = base * 1.35;
   const ok = current && !current.tooBig;
-  $("orderBtn").disabled = !ok;
+  $("orderBtn").classList.toggle("is-disabled", !ok);
+  $("orderBtn").setAttribute("aria-disabled", !ok);
   if (!ok){
     $("total").textContent = "-"; $("wOut").textContent = "-"; $("tOut").textContent = "-";
     $("summary").textContent = current ? "최대 크기를 넘어 견적을 낼 수 없어요." : "파일을 올리면 견적이 표시돼요.";
@@ -714,7 +997,7 @@ $("copyBtn").addEventListener("click", () => {
   const d = orderData();
   const txt = ["[3D 프린팅 예상 견적]", `파일명: ${d.name}`, `크기: ${d.size}`, `예상 무게: ${d.weight}`, `예상 소요시간: ${d.time}`,
     ...d.settings.map(([k, v]) => `${k}: ${v}`), `예상 견적: ${d.total}`].join("\n");
-  copyText(txt, $("copyBtn"), "견적 내용 복사");
+  copyText(txt, $("copyBtn"), "견적 복사");
 });
 
 /* ---------------- 파일 입력 ---------------- */
@@ -762,6 +1045,8 @@ function showResult(){
     html += `<div class="limit-err">모델 크기가 최대 출력 크기(${MAX_SIZE} × ${MAX_SIZE} × ${MAX_SIZE} mm)를 넘어서 주문할 수 없어요. 크기를 줄이거나 나눠서 올려 주세요.</div>`;
   document.querySelectorAll(".opt-sec").forEach(el => el.style.display = (sliced && el.dataset.always !== "1") ? "none" : "");
   $("slicedNote").style.display = sliced ? "" : "none";
+  document.querySelectorAll(".q-geo").forEach(el => el.style.display = sliced ? "none" : "");
+  document.querySelector(".q-sliced").style.display = sliced ? "" : "none";
   if (sliced){
     if (sliced.g > 0) $("g").value = (sliced.g*qty).toFixed(2);
     if (sliced.sec > 0) $("m").value = Math.ceil(sliced.sec*qty/60);
@@ -1192,7 +1477,11 @@ function orderData(){
   const {g, m, total} = updatePrice();
   const qty = Math.max(1, parseInt($("qty").value) || 1);
   const size = current.dims ? current.dims.map(v=>v.toFixed(1)).join(" × ") + " mm" : "-";
-  const settings = [...settingsList(!!current.sliced), ["수량", qty + "개"]];
+  const quickRows = prefs.style === "quick" && !current.sliced
+    ? [["재료", optText("mat")], ["색상", optText("color")], ["튼튼함", QUICK_TEXT.strength[qState.strength]],
+       ["품질", QUICK_TEXT.quality[qState.quality]], ["서포트", QUICK_TEXT.support[qState.support]]]
+    : settingsList(!!current.sliced);
+  const settings = [["주문 방식", styleText()], ...quickRows, ["수량", qty + "개"]];
   return {type: "file", typeLabel: "3D 파일", name: current.name, weight: g.toFixed(1) + "g", size, time: fmtMin(m), settings, total: won(total),
           sections: [["파일 정보", [["파일명", current.name], ["무게", g.toFixed(1) + "g"], ["크기", size], ["소요시간", fmtMin(m)]]], ["출력 설정", settings]]};
 }
@@ -1200,7 +1489,7 @@ const rows = arr => arr.map(([k,v]) => `<tr><th>${escapeHtml(k)}</th><td class="
 let lastOrder = null;
 
 $("orderBtn").addEventListener("click", () => {
-  if (!current || current.tooBig) return;
+  if (!current || current.tooBig){ if (!current) toast("먼저 3D 파일을 올려 주세요."); return; }
   openConfirm(orderData(), [{file: current.file, kind: "model"}]);
 });
 let pending = null;   // {d, files}
@@ -1223,6 +1512,12 @@ $("cfOk").addEventListener("click", async () => {
   if (!pending) return;
   const {d, files} = pending;
   const ok = $("cfOk"), cancel = $("cfCancel"), st = $("cfStatus");
+  if (!fbReady() && d.test){   // 마스터 테스트: 서버 없이 완료 화면까지 확인
+    d.no = String(crypto.getRandomValues(new Uint16Array(1))[0] % 10000).padStart(4, "0");
+    lastOrder = d; showDone(d);
+    $("doneSub").textContent = "🛠 마스터 테스트예요. 서버가 설정되지 않아 저장되지 않았어요.";
+    $("confirmModal").hidden = true; showView("orderView"); return;
+  }
   if (!fbReady()){ st.innerHTML = '<span class="err">주문 서버가 아직 설정되지 않았어요. 판매자에게 문의해 주세요.</span>'; return; }
   const big = files.find(x => x.kind === "model" && x.file.size > MAX_FILE_MB*1024*1024);
   if (big){ st.innerHTML = `<span class="err">파일이 너무 커요. (최대 ${MAX_FILE_MB}MB)</span>`; return; }
@@ -1273,12 +1568,15 @@ $("orderCopyBtn").addEventListener("click", () => {
     ...d.sections.flatMap(([, r]) => r.map(([k, v]) => `${k}: ${v}`)), `총 가격: ${d.total}`].join("\n");
   copyText(txt, $("orderCopyBtn"), d.type === "file" ? "주문 내용 복사" : "요청 내용 복사");
 });
-$("backBtn").addEventListener("click", () => { showView("quoteView"); setMode(lastOrder ? lastOrder.type : "file"); });
+$("backBtn").addEventListener("click", () => { if (lastOrder) prefs.mode = lastOrder.type; route("form"); });
 function showView(id){
   for (const v of ["quoteView","orderView","adminView"]) $(v).hidden = v !== id;
   window.scrollTo(0, 0);
   if (id === "quoteView") requestAnimationFrame(draw);
 }
+
+history.replaceState({screen: "level"}, "");
+route("level");
 
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 updatePrice();
@@ -1357,7 +1655,7 @@ async function submitOrder(d, files, progress){
   }
   progress("정보 저장 중…");
   await D.set(D.ref(db, "orders/" + no), {
-    no, type: d.type, name: d.name, total: d.total, contact: d.contact || "",
+    no, type: d.type, name: d.name, total: d.total, contact: d.contact || "", test: !!d.test,
     sections: d.sections.map(([t, r]) => ({t, rows: r.map(([k, v]) => ({k, v}))})),
     attachments, status: "new", createdAt: D.serverTimestamp()
   });
@@ -1458,7 +1756,7 @@ function renderOrders(){
     const hasImg = atts.some(a => /^image\//.test(a.mime || ""));
     return `<div class="order-card ${done ? "done" : ""}">
       <div class="oc-top"><span class="oc-no">${no}</span>
-        <span class="oc-type">${TYPE_LABEL[type] || type}</span>
+        <span class="oc-type">${TYPE_LABEL[type] || type}</span>${o.test ? '<span class="st test">🛠 테스트</span>' : ""}
         <span class="st ${done ? "done" : "new"}">${done ? "처리 완료" : "새 주문"}</span>
         <span class="oc-date">${fmtDate(o.createdAt)}</span></div>
       ${type !== "file" ? `<div style="font-size:17px;font-weight:700;margin-bottom:4px">${escapeHtml(o.name)}</div>` : ""}
