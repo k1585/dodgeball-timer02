@@ -27,6 +27,13 @@
     "site": {
       ".read": true,
       ".write": "auth != null && auth.token.email == 'admin@my3dprint.com'"
+    },
+    "lookup": {
+      "$h": {
+        ".read": true,
+        ".write": "(!data.exists() && newData.exists()) || (auth != null && auth.token.email == 'admin@my3dprint.com')",
+        ".validate": "$h.matches(/^[0-9a-f]{64}$/) && newData.hasChildren(['status'])"
+      }
     }
   }
 }
