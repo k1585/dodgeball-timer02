@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FROMDOT. · 3D 모델링 · 프린팅</title>
+<title>FORMDOT. · 3D 모델링 · 프린팅</title>
 <style>
 :root{
   --bg:#f4f5f7; --card:#fff; --text:#1d2129; --muted:#6b7280; --line:#e3e6ea;
@@ -230,7 +230,7 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
   border-radius:99px;font-size:14px;z-index:30;box-shadow:0 4px 20px rgba(0,0,0,.3)}
 .st.test{background:#dbeafe;color:#1e40af}
 .sec-title{font-size:14px;font-weight:700;margin:16px 0 4px;color:var(--muted)}
-/* ---- FROMDOT 시작 화면 ---- */
+/* ---- FORMDOT 시작 화면 ---- */
 .home{max-width:960px;margin:0 auto;text-align:center;padding-top:28px}
 .brand{font-size:46px;font-weight:900;letter-spacing:-1px;line-height:1.1;display:inline-block}
 .brand .dot,.brand-sm .dot{color:var(--accent-text)}
@@ -293,7 +293,7 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
 .sticky-save{position:sticky;bottom:0;background:var(--bg);padding:10px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .oc-thumbs video{width:260px;max-width:100%;border-radius:8px;background:#000}
 #drop.lp::after,.att-drop.lp::after{background:var(--accent)}
-/* ================= FROMDOT. 브랜드 테마 =================
+/* ================= FORMDOT. 브랜드 테마 =================
    차콜 블랙 #202124 (메인 배경) · 일렉트릭 블루 #2962FF (포인트)
    화이트 #FFFFFF (기본 텍스트) · 라이트 그레이 #F2F4F7 (보조 배경)            */
 :root{
@@ -385,7 +385,7 @@ button:hover{border-color:var(--accent)}
   <!-- 주문 화면 -->
   <div id="formArea" hidden>
    <div class="topbar">
-     <span class="brand-sm adminTrigger" data-t="brand.short">FROMDOT<span class="dot">.</span></span>
+     <span class="brand-sm adminTrigger" data-t="brand.short">FORMDOT<span class="dot">.</span></span>
      <button class="tb-chip" id="tbMode"></button>
      <button class="tb-chip stu" id="tbStu" hidden></button>
      <div class="tb-right">
@@ -582,13 +582,13 @@ const FILAMENT_PRICE = {
 
 /* ======== Firebase 설정: 새 Firebase 프로젝트 값으로 바꾸세요 ======== */
 const FIREBASE_CONFIG = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.firebasestorage.app",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "AIzaSyDF88SkvjUr3h4n8L04Lzw6cQMIV_haWBE",
+  authDomain: "formdot-93d26.firebaseapp.com",
+  databaseURL: "https://formdot-93d26-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "formdot-93d26",
+  storageBucket: "formdot-93d26.firebasestorage.app",
+  messagingSenderId: "968199905568",
+  appId: "1:968199905568:web:2bcbd07ca3a6d7ab74b745"
 };
 // 관리자 계정 (Firebase Authentication 에 만든 계정)
 // 비밀번호는 "네자리숫자 + ADMIN_PW_SUFFIX" 로 만들어 주세요. 예) 1234-3dprint
@@ -609,7 +609,7 @@ const PRINT_PRICE = {perMin: 9.5, base: 2300, margin: 1.4};
 
 /* ================= 문구 (관리자 > 사이트 문구에서 모두 바꿀 수 있어요) ================= */
 const TDEF = {
- "brand.name": "FROMDOT<span class=\"dot\">.</span>",
+ "brand.name": "FORMDOT<span class=\"dot\">.</span>",
  "home.slogan": "아이디어를 형태로.",
  "home.promo": "3D 모델링부터 프린팅까지, 당신의 아이디어를 현실로 구현합니다.",
  "home.start": "시작하기",
@@ -625,7 +625,7 @@ const TDEF = {
  "way.next": "다음", "way.needLevel": "먼저 초보자 / 숙련자 모드를 골라 주세요.",
  "stu.title": "🎓 학생 할인 15%",
  "stu.desc": "학생이면 모든 금액(디자인비·출력비)에서 15% 할인돼요.",
- "stu.how": "<b>학생증</b>과 <b>‘FROMDOT’이라고 적은 종이</b>가 함께 보이게 <b>5초 이상</b> 영상으로 찍어 올려 주세요. 판매자가 영상을 확인한 뒤 최종 적용돼요.",
+ "stu.how": "<b>학생증</b>과 <b>‘FORMDOT’이라고 적은 종이</b>가 함께 보이게 <b>5초 이상</b> 영상으로 찍어 올려 주세요. 판매자가 영상을 확인한 뒤 최종 적용돼요.",
  "stu.upload": "🎥 인증 영상 올리기 · 촬영하기",
  "stu.reupload": "🎥 다른 영상으로 바꾸기",
  "stu.ok": "✅ 인증 영상 등록 완료 ({sec}초) · 학생가로 표시돼요",
@@ -704,7 +704,7 @@ const TDEF = {
  "msg.sending": "전송 중…", "msg.fail": "전송에 실패했어요. 인터넷 연결을 확인하고 다시 시도해 주세요.", "msg.retry": "다시 시도",
  "msg.test": "🛠 테스트 모드: 예시 파일로 채웠어요",
  "msg.testDone": "🛠 테스트예요. 서버가 설정되지 않아 저장되지 않았어요.",
- "msg.copyHead": "[FROMDOT. 예상 견적]",
+ "msg.copyHead": "[FORMDOT. 예상 견적]",
  "msg.loading": "불러오는 중…",
  "opt.default": "기본값",
  "opt.resetAll": "모든 옵션 기본값으로",
@@ -1249,7 +1249,7 @@ async function makeTestVideo(){
   rec.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
   let f = 0;
   const draw1 = () => { g.fillStyle = "#fff"; g.fillRect(0, 0, 320, 240); g.fillStyle = "#222"; g.font = "22px sans-serif";
-    g.fillText("학생증 (테스트)", 20, 80); g.fillText("FROMDOT", 20, 130); g.fillText(`${(f++/15).toFixed(1)}초`, 20, 190); };
+    g.fillText("학생증 (테스트)", 20, 80); g.fillText("FORMDOT", 20, 130); g.fillText(`${(f++/15).toFixed(1)}초`, 20, 190); };
   draw1(); const tm = setInterval(draw1, 1000/15);
   const stopped = new Promise(r => rec.onstop = r);
   rec.start(500); await new Promise(r => setTimeout(r, 6000)); rec.stop(); await stopped; clearInterval(tm);
@@ -1257,7 +1257,7 @@ async function makeTestVideo(){
 }
 
 /* ================= 진행 상태 ================= */
-const PREF_KEY = "fromdot_prefs";
+const PREF_KEY = "formdot_prefs";
 const prefs = {level: null, mode: null, style: null, student: false};
 try{ Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); }catch(e){}
 if (["file","sketch","idea"].includes(location.hash.slice(1))) prefs.mode = location.hash.slice(1);
@@ -1368,7 +1368,7 @@ const EXAMPLE_PF = [
   {title: "케이블 정리 클립", desc: "책상 모서리 끼움형 · PETG HF", img: pfSvg("#dcfce7", "#bbf7d0",
     "<path d='M110 100h180v40h-30v-12H140v80h120v-12h30v40H110z' fill='#16a34a'/><circle cx='175' cy='168' r='16' fill='#22c55e'/><circle cx='225' cy='168' r='16' fill='#22c55e'/>")},
   {title: "가게 명판 · 로고", desc: "다색 출력 · PLA Matte", img: pfSvg("#fee2e2", "#fecaca",
-    "<rect x='70' y='95' width='260' height='120' rx='14' fill='#ff6b6b'/><rect x='84' y='109' width='232' height='92' rx='8' fill='#fff1f2'/><text x='200' y='170' font-family='sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='#ff6b6b'>FROMDOT.</text>")},
+    "<rect x='70' y='95' width='260' height='120' rx='14' fill='#ff6b6b'/><rect x='84' y='109' width='232' height='92' rx='8' fill='#fff1f2'/><text x='200' y='170' font-family='sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='#ff6b6b'>FORMDOT.</text>")},
   {title: "피규어 받침대", desc: "이름 각인 · PLA Silk+", img: pfSvg("#f1f5f9", "#e2e8f0",
     "<ellipse cx='200' cy='205' rx='110' ry='26' fill='#475569'/><rect x='90' y='180' width='220' height='25' fill='#64748b'/><ellipse cx='200' cy='180' rx='110' ry='26' fill='#94a3b8'/><circle cx='200' cy='120' r='34' fill='#f59e0b'/><rect x='186' y='150' width='28' height='32' fill='#f59e0b'/>")}
 ];
@@ -2374,7 +2374,7 @@ $("adminList").addEventListener("click", async e => {
       toast("견적을 저장했어요");
     } else if (b.dataset.act === "quoteCopy"){
       const q = calcCompute(no); if (!q) return;
-      copyText(`[FROMDOT. 견적 안내] 요청번호 ${no}\n${o.name}\n${q.text}\n최종 금액: ${q.total}\n스마트스토어 주문 시 옵션에 요청번호 ${no}를 입력해 주세요.`, b);
+      copyText(`[FORMDOT. 견적 안내] 요청번호 ${no}\n${o.name}\n${q.text}\n최종 금액: ${q.total}\n스마트스토어 주문 시 옵션에 요청번호 ${no}를 입력해 주세요.`, b);
     } else if (b.dataset.act === "toggle"){
       await D.set(D.ref(db, `orders/${no}/status`), o.status === "done" ? "new" : "done");
     } else if (b.dataset.act === "del"){
