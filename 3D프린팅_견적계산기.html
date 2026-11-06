@@ -44,12 +44,12 @@ label.f input,label.f select{width:130px;padding:7px 9px;border:1px solid var(--
 label.f select{text-align:left}
 .big input{font-size:18px !important;font-weight:700;width:150px !important}
 .price{margin-top:14px;padding:16px;border-radius:12px;background:var(--accent-soft)}
-.price .total{font-size:32px;font-weight:800;color:var(--accent)}
+.price .total{font-size:32px;font-weight:800;color:var(--accent-text)}
 .formula{font-size:13px;color:var(--muted);margin-top:6px;word-break:keep-all}
 details{margin-top:6px}
 summary{cursor:pointer;font-weight:600;font-size:14px;margin:6px 0}
 .note{font-size:12.5px;color:var(--muted);margin-top:10px}
-.err{color:#dc2626;font-size:14px}
+.err{color:#ff6b6b;font-size:14px}
 button{padding:8px 14px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;font-size:14px}
 button:hover{border-color:var(--accent)}
 .btn-row{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
@@ -74,21 +74,21 @@ button:hover{border-color:var(--accent)}
   word-break:break-all;font-weight:600;margin:10px 0}
 .order-no{text-align:center;padding:24px 12px;border-radius:14px;background:var(--accent-soft);margin-bottom:16px}
 .order-no small{display:block;color:var(--muted);font-size:14px}
-.order-no .num{font-size:56px;font-weight:800;letter-spacing:10px;color:var(--accent);line-height:1.2}
+.order-no .num{font-size:56px;font-weight:800;letter-spacing:10px;color:var(--accent-text);line-height:1.2}
 table.info{width:100%;border-collapse:collapse;font-size:15px}
 table.info th{text-align:left;color:var(--muted);font-weight:500;width:110px;padding:9px 0;border-bottom:1px solid var(--line);vertical-align:top}
 table.info td{padding:9px 0;border-bottom:1px solid var(--line);word-break:break-all}
 table.info tr.sum td,table.info tr.sum th{border-bottom:none;font-size:18px;font-weight:800;color:var(--text)}
-table.info tr.sum td{color:var(--accent)}
+table.info tr.sum td{color:var(--accent-text)}
 .storeLink{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .order-guide{margin:-6px 0 16px;padding:12px 14px;border-radius:10px;border:1px dashed var(--accent);
   font-size:14.5px;text-align:center;word-break:keep-all}
-.order-guide b{color:var(--accent)}
+.order-guide b{color:var(--accent-text)}
 .pin-box{max-width:320px;text-align:center}
 .pin-dots{display:flex;justify-content:center;gap:14px;margin:14px 0 6px}
 .pin-dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--muted)}
 .pin-dots i.on{background:var(--accent);border-color:var(--accent)}
-.pin-msg{min-height:20px;font-size:13px;color:#dc2626}
+.pin-msg{min-height:20px;font-size:13px;color:#ff6b6b}
 .shake{animation:shake .35s}
 @keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
 .keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
@@ -99,7 +99,7 @@ table.info tr.sum td{color:var(--accent)}
 .order-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
 .order-card.done{opacity:.6}
 .oc-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
-.oc-no{font-size:26px;font-weight:800;letter-spacing:3px;color:var(--accent)}
+.oc-no{font-size:26px;font-weight:800;letter-spacing:3px;color:var(--accent-text)}
 .oc-date{color:var(--muted);font-size:13px;margin-left:auto}
 .st{font-size:12px;padding:2px 9px;border-radius:99px;font-weight:700}
 .st.new{background:#fde68a;color:#92400e}
@@ -108,7 +108,7 @@ table.info tr.sum td{color:var(--accent)}
 .oc-grid span{color:var(--muted)}
 .oc-grid b{color:var(--text);font-weight:600;word-break:break-all}
 .oc-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn-danger{color:#dc2626}
+.btn-danger{color:#ff6b6b}
 .opt-sections{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;align-items:start}
 .opt-sec{border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 .opt-sec h3{font-size:14.5px;margin:0 0 4px;display:flex;align-items:center;gap:6px}
@@ -141,14 +141,14 @@ table.info tr.sum td{color:var(--accent)}
 .fld{padding:10px 0;border-top:1px solid var(--line)}
 .fld:first-child{border-top:none;padding-top:0}
 .fld-head{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;margin-bottom:6px}
-.fld-head .req{color:#dc2626;font-weight:700}
+.fld-head .req{color:#ff6b6b;font-weight:700}
 .fld-head .opt-tag{color:var(--muted);font-weight:400;font-size:12.5px}
 .fld input[type=text],.fld input[type=date],.fld input[type=number],.fld select,.fld textarea{
   width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);
   color:var(--text);font-size:14.5px;font-family:inherit}
 .fld textarea{min-height:120px;resize:vertical;line-height:1.5}
-.fld.bad input,.fld.bad textarea,.fld.bad .att-drop{border-color:#dc2626}
-.fld .fld-err{color:#dc2626;font-size:13px;margin-top:4px}
+.fld.bad input,.fld.bad textarea,.fld.bad .att-drop{border-color:#ff6b6b}
+.fld .fld-err{color:#ff6b6b;font-size:13px;margin-top:4px}
 .dims{display:flex;align-items:center;gap:6px}
 .dims input{text-align:right}
 .dims span{color:var(--muted)}
@@ -164,7 +164,7 @@ table.info tr.sum td{color:var(--accent)}
 .steps{margin:0 0 4px;padding-left:20px;font-size:14px}
 .steps li{margin:6px 0}
 .req-total{font-size:24px !important}
-.oc-type{font-size:12px;padding:2px 9px;border-radius:99px;font-weight:700;background:var(--accent-soft);color:var(--accent)}
+.oc-type{font-size:12px;padding:2px 9px;border-radius:99px;font-weight:700;background:var(--accent-soft);color:var(--accent-text)}
 .oc-contact{margin:6px 0 8px;padding:8px 10px;border-radius:8px;background:var(--drop);font-size:14px}
 .oc-desc{white-space:pre-wrap}
 .oc-thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
@@ -202,7 +202,7 @@ table.info td.pre{white-space:pre-wrap}
 /* ---- 상단 바 ---- */
 .topbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px}
 .tb-title{font-size:20px;font-weight:800}
-.tb-chip{font-size:13.5px;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:700}
+.tb-chip{font-size:13.5px;padding:4px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent-text);font-weight:700}
 .tb-right{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .link-btn{border:none;background:none;color:var(--muted);text-decoration:underline;padding:4px 6px;font-size:13px}
 /* ---- 초급/숙련, 빠른/상세 ---- */
@@ -233,7 +233,7 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
 /* ---- FROMDOT 시작 화면 ---- */
 .home{max-width:960px;margin:0 auto;text-align:center;padding-top:28px}
 .brand{font-size:46px;font-weight:900;letter-spacing:-1px;line-height:1.1;display:inline-block}
-.brand .dot,.brand-sm .dot{color:var(--accent)}
+.brand .dot,.brand-sm .dot{color:var(--accent-text)}
 .adminTrigger{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:default}
 .slogan{font-size:20px;font-weight:700;margin-top:6px}
 .promo{color:var(--muted);font-size:15.5px;margin:14px auto 0;max-width:520px;word-break:keep-all}
@@ -257,10 +257,10 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
 .switch[aria-checked="true"]::after{left:25px}
 .stu-body{margin-top:12px}
 .stu-state{margin-top:8px;font-size:14px;word-break:keep-all}
-.stu-state.ok{color:var(--accent);font-weight:700}
-.stu-state.bad{color:#dc2626}
+.stu-state.ok{color:var(--accent-text);font-weight:700}
+.stu-state.bad{color:#ff6b6b}
 .price-old{text-decoration:line-through;color:var(--muted);font-size:.55em;font-weight:600;margin-right:6px}
-.mode-price{display:block;margin-top:8px;font-size:14px;font-weight:800;color:var(--accent)}
+.mode-price{display:block;margin-top:8px;font-size:14px;font-weight:800;color:var(--accent-text)}
 .mode-price .price-old{font-size:13px}
 .tb-chip.stu{background:#dbeafe;color:#1e40af;cursor:pointer;border:none}
 .tb-chip.stu.need{background:#fde68a;color:#92400e}
@@ -274,7 +274,7 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
 .calc label.chk{flex-direction:row;align-items:center;gap:6px;color:var(--text);font-size:14px}
 .calc input,.calc select{padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--text);font-size:14px}
 .calc-out{margin-top:8px;font-size:14px}
-.quote-line{margin-top:6px;font-size:14px;font-weight:700;color:var(--accent)}
+.quote-line{margin-top:6px;font-size:14px;font-weight:700;color:var(--accent-text)}
 .tx-tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
 .tx-tools input{flex:1;min-width:200px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);font-size:14px}
 .tx-group{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--card)}
@@ -293,6 +293,87 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
 .sticky-save{position:sticky;bottom:0;background:var(--bg);padding:10px 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .oc-thumbs video{width:260px;max-width:100%;border-radius:8px;background:#000}
 #drop.lp::after,.att-drop.lp::after{background:var(--accent)}
+/* ================= FROMDOT. 브랜드 테마 =================
+   차콜 블랙 #202124 (메인 배경) · 일렉트릭 블루 #2962FF (포인트)
+   화이트 #FFFFFF (기본 텍스트) · 라이트 그레이 #F2F4F7 (보조 배경)            */
+:root{
+  --bg:#202124; --card:#2a2b30; --field:#1f2023; --text:#ffffff; --muted:#a3a7b0; --line:#3b3d44;
+  --accent:#2962ff; --accent-text:#8aaaff; --accent-soft:rgba(41,98,255,.16);
+  --drop:#25262a; --gray:#f2f4f7; --warn:#fcd34d; --warn-soft:rgba(252,211,77,.14);
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--text)}
+.wrap{max-width:1040px}
+.card{background:var(--card);border-color:var(--line);border-radius:16px}
+input,select,textarea{color-scheme:dark}
+.card input[type=text],.card input[type=number],.card input[type=date],.card select,.card textarea,
+.fld input,.fld select,.fld textarea,.qopt select,.opt-row select,.opt-row input,label.f input{background:var(--field)!important;border-color:var(--line)!important;color:var(--text)!important}
+button{background:var(--card);border-color:var(--line);color:var(--text)}
+button:hover{border-color:var(--accent)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn-store{background:var(--gray);color:#202124}
+.btn-store:hover{filter:brightness(.95)}
+.price{background:var(--accent-soft);border:1px solid rgba(41,98,255,.35)}
+.limit-err{background:rgba(255,107,107,.12)!important;color:#ff9b9b!important}
+.err{color:#ff8a8a}
+.st.new{background:var(--warn-soft);color:var(--warn)}
+.st.done{background:var(--line);color:var(--muted)}
+.tb-chip{background:var(--accent-soft);border:none;cursor:pointer;font-family:inherit}
+.tb-chip.stu{background:var(--accent-soft);color:var(--accent-text)}
+.tb-chip.stu.need{background:var(--warn-soft);color:var(--warn)}
+.order-guide{border-color:rgba(41,98,255,.6)}
+.guide{background:rgba(242,244,247,.06);border:1px solid var(--line);color:#d9dce1}
+.help-text{background:var(--field)}
+.modal{background:rgba(0,0,0,.6)}
+.toast{background:var(--gray);color:#202124}
+.pf{background:var(--card)}
+.oc-contact{background:var(--field)}
+.slogan{color:var(--gray)}
+.brand .dot,.brand-sm .dot{color:var(--accent-text)}
+.home{padding-top:48px}
+.brand{font-size:52px}
+#drop{border-color:var(--line);background:var(--drop)}
+#drop.over,.att-drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.switch{background:var(--line)}
+.switch[aria-checked="true"]{background:var(--accent)}
+
+/* ---- 한 줄 흐름 레이아웃 ---- */
+.narrow{max-width:680px;margin:0 auto}
+.sec{margin-bottom:14px}
+.sec h2{display:flex;align-items:center;gap:8px;font-size:17px}
+.num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;
+  background:var(--accent);color:#fff;font-size:13px;font-weight:800;flex:none}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.sec-head h2{margin:0}
+#priceCard{position:static}
+/* 카테고리(펼치기) */
+.acc{border:1px solid var(--line);border-radius:12px;margin-top:8px;overflow:hidden;background:var(--field)}
+.acc-head{width:100%;display:flex;align-items:center;gap:10px;border:none;border-radius:0;background:transparent;
+  padding:13px 14px;text-align:left;font-size:15px}
+.acc-head:hover{background:rgba(255,255,255,.03)}
+.acc-t{font-weight:700;flex:none}
+.acc-v{flex:1;min-width:0;color:var(--muted);font-size:13px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-arrow{color:var(--muted);font-size:20px;line-height:1;transition:transform .15s;flex:none}
+.acc-head[aria-expanded="true"] .acc-arrow{transform:rotate(90deg);color:var(--accent-text)}
+.acc-body{padding:6px 14px 14px;border-top:1px solid var(--line)}
+.acc-body .opt:first-child{border-top:none}
+.qopt{margin-top:10px}
+/* 견적 */
+.qty-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 0 12px;font-size:15px}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--field)}
+.stepper button{border:none;border-radius:0;width:40px;height:40px;font-size:18px;background:transparent;padding:0}
+.stepper input{width:56px;text-align:center;border:none!important;background:transparent!important;font-size:16px;font-weight:700;-moz-appearance:textfield}
+.stepper input::-webkit-inner-spin-button{-webkit-appearance:none}
+.price-main{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+.plabel{font-size:14px;font-weight:600}
+.w-chip{font-size:13.5px;color:var(--muted)}
+.w-chip b{color:var(--text);font-size:17px;margin-left:4px}
+.price .total{color:#fff}
+.btn-wide{margin-top:12px}
+/* 상단 바 */
+.topbar{padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.brand .dot,.brand-sm .dot{color:#2962ff!important}
 </style>
 </head>
 <body>
@@ -305,78 +386,70 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
   <div id="formArea" hidden>
    <div class="topbar">
      <span class="brand-sm adminTrigger" data-t="brand.short">FROMDOT<span class="dot">.</span></span>
-     <span class="tb-chip" id="tbMode"></span>
+     <button class="tb-chip" id="tbMode"></button>
      <button class="tb-chip stu" id="tbStu" hidden></button>
      <div class="tb-right">
        <div class="seg sm" id="tbLevel"><button data-v="beg" data-t="top.beg">🙂 초보자</button><button data-v="pro" data-t="top.pro">⚡ 숙련자</button></div>
-       <div class="seg sm" id="tbStyle"><button data-v="quick" data-t="top.quick">🚀 빠른 모드</button><button data-v="detail" data-t="top.detail">🛠 상세 모드</button></div>
        <button class="link-btn" id="tbRestart" data-t="top.restart">처음으로</button>
      </div>
    </div>
 
-   <div id="mode-file" class="mode-panel">
-    <div class="flow beg-only" data-t="file.flow"><b>① 파일 올리기</b> → <b>② 옵션 고르기</b> → <b>③ 주문 신청하기</b></div>
-    <div class="grid">
-      <div class="card">
-        <h2 data-t="file.title">3D 파일 올리기</h2>
-        <div class="guide beg-only" data-t="file.guide">💡 STL·3MF는 3D 모델 파일이에요. MakerWorld·Thingiverse에서 받은 파일이나 직접 만든 파일을 올려 주세요. 뱀부 스튜디오에서 슬라이싱한 파일(.gcode.3mf)이면 가장 정확해요.</div>
-        <div id="drop" class="lp" tabindex="0">
-          <b data-t="file.drop">여기로 파일을 끌어다 놓거나 클릭하세요</b>
-          <small data-t="file.dropSub">STL · 3MF · G-code · 최대 300 × 300 × 300 mm</small>
-          <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
-        </div>
-        <div id="fileInfo"></div>
-        <canvas id="view" style="display:none"></canvas>
-        <div id="stats" class="stats"></div>
+   <div id="mode-file" class="mode-panel narrow">
+     <section class="card sec">
+       <h2><span class="num">1</span><span data-t="file.title">3D 파일 올리기</span></h2>
+       <div class="guide beg-only" data-t="file.guide">💡 STL·3MF는 3D 모델 파일이에요. MakerWorld·Thingiverse에서 받은 파일이나 직접 만든 파일을 올려 주세요. 뱀부 스튜디오에서 슬라이싱한 파일(.gcode.3mf)이면 가장 정확해요.</div>
+       <div id="drop" class="lp" tabindex="0">
+         <b data-t="file.drop">여기로 파일을 끌어다 놓거나 클릭하세요</b>
+         <small data-t="file.dropSub">STL · 3MF · G-code · 최대 300 × 300 × 300 mm</small>
+         <input id="file" type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden>
+       </div>
+       <div id="fileInfo"></div>
+       <canvas id="view" style="display:none"></canvas>
+       <div id="stats" class="stats"></div>
+     </section>
 
-        <div id="quickOpts" class="quick-only">
-          <h2 style="margin-top:18px" data-t="quick.title">옵션</h2>
-          <div class="qopt"><div class="qlabel" data-t="quick.mat">재료</div><select id="q_mat"></select>
-            <div class="hint beg-only" data-t="quick.matHint">모르면 <b>PLA Basic</b>을 고르세요. 재료에 따라 가격이 달라져요.</div></div>
-          <div class="qopt"><div class="qlabel" data-t="quick.color">색상</div><select id="q_color"></select></div>
-          <div class="qopt q-geo"><div class="qlabel" data-t="quick.strength">튼튼함</div>
-            <div class="seg full" data-q="strength"><button data-v="light" data-t="quick.s.light">가볍게</button><button data-v="normal" data-t="quick.s.normal">표준</button><button data-v="strong" data-t="quick.s.strong">튼튼하게</button></div>
-            <div class="hint beg-only" data-t="quick.strengthHint">장식품은 가볍게, 힘을 받는 부품은 튼튼하게. 튼튼할수록 무겁고 비싸져요.</div></div>
-          <div class="qopt q-geo"><div class="qlabel" data-t="quick.quality">품질</div>
-            <div class="seg full" data-q="quality"><button data-v="fast" data-t="quick.q.fast">빠르게</button><button data-v="normal" data-t="quick.q.normal">표준</button><button data-v="fine" data-t="quick.q.fine">곱게</button></div>
-            <div class="hint beg-only" data-t="quick.qualityHint">곱게 하면 표면이 매끈하지만 시간이 오래 걸려요.</div></div>
-          <div class="qopt q-geo"><div class="qlabel" data-t="quick.support">서포트</div>
-            <div class="seg full" data-q="support"><button data-v="none" data-t="quick.p.none">필요 없음</button><button data-v="auto" data-t="quick.p.auto">자동으로 넣기</button></div>
-            <div class="hint beg-only" data-t="quick.supportHint">공중에 뜬 부분이 있으면 자동으로 넣기를 고르세요.</div></div>
-          <p class="note q-sliced" style="display:none" data-t="quick.sliced">슬라이싱된 파일은 파일에 저장된 설정으로 계산돼요. 재료와 색상만 골라 주세요.</p>
-        </div>
-      </div>
+     <section class="card sec">
+       <div class="sec-head">
+         <h2><span class="num">2</span><span data-t="quick.title">옵션</span></h2>
+         <div class="seg sm styleSeg"><button data-v="quick" data-t="top.quick">🚀 빠른</button><button data-v="detail" data-t="top.detail">🛠 상세</button></div>
+       </div>
+       <div class="qopt"><div class="qlabel" data-t="quick.mat">재료</div><select id="q_mat"></select>
+         <div class="hint beg-only" data-t="quick.matHint">모르면 <b>PLA Basic</b>을 고르세요. 재료에 따라 가격·무게가 달라져요.</div></div>
+       <div class="qopt"><div class="qlabel" data-t="quick.color">색상</div><select id="q_color"></select></div>
 
-      <div class="card" id="priceCard">
-        <h2 data-t="price.title">견적</h2>
-        <label class="f"><span data-t="price.qty">수량 (개)</span><input id="qty" type="number" min="1" step="1" value="1"></label>
-        <div class="tiles">
-          <div class="tile"><small data-t="price.weight">예상 무게</small><b id="wOut">-</b></div>
-          <div class="tile"><small data-t="price.time">예상 출력 시간</small><b id="tOut">-</b></div>
-        </div>
-        <div class="price">
-          <div style="font-size:14px;font-weight:600" data-t="price.label">예상 견적</div>
-          <div class="total" id="total">-</div>
-          <div class="formula" id="summary"></div>
-        </div>
-        <button id="orderBtn" class="btn-primary btn-wide is-disabled" aria-disabled="true" data-t="price.order">주문 신청하기</button>
-        <div class="btn-sub">
-          <a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false" data-t="price.store">스마트스토어 바로가기</a>
-          <button id="copyBtn" class="link-btn" data-t="price.copy">견적 복사</button>
-        </div>
-        <p class="note beg-only" data-t="price.note">표시된 금액은 예상 견적이에요. 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
-      </div>
-    </div>
+       <div id="quickOpts" class="quick-only">
+         <div class="acc q-geo"><button type="button" class="acc-head" aria-expanded="false"><span>💪</span><span class="acc-t" data-t="quick.strength">튼튼함</span><span class="acc-v" id="qv-strength"></span><span class="acc-arrow">›</span></button>
+           <div class="acc-body" hidden><div class="seg full" data-q="strength"><button data-v="light" data-t="quick.s.light">가볍게</button><button data-v="normal" data-t="quick.s.normal">표준</button><button data-v="strong" data-t="quick.s.strong">튼튼하게</button></div>
+             <div class="hint beg-only" data-t="quick.strengthHint">장식품은 가볍게, 힘을 받는 부품은 튼튼하게. 튼튼할수록 무겁고 비싸져요.</div></div></div>
+         <div class="acc q-geo"><button type="button" class="acc-head" aria-expanded="false"><span>✨</span><span class="acc-t" data-t="quick.quality">품질</span><span class="acc-v" id="qv-quality"></span><span class="acc-arrow">›</span></button>
+           <div class="acc-body" hidden><div class="seg full" data-q="quality"><button data-v="fast" data-t="quick.q.fast">빠르게</button><button data-v="normal" data-t="quick.q.normal">표준</button><button data-v="fine" data-t="quick.q.fine">곱게</button></div>
+             <div class="hint beg-only" data-t="quick.qualityHint">곱게 하면 표면이 매끈하지만 출력이 오래 걸려 가격이 올라가요.</div></div></div>
+         <div class="acc q-geo"><button type="button" class="acc-head" aria-expanded="false"><span>🪜</span><span class="acc-t" data-t="quick.support">서포트</span><span class="acc-v" id="qv-support"></span><span class="acc-arrow">›</span></button>
+           <div class="acc-body" hidden><div class="seg full" data-q="support"><button data-v="none" data-t="quick.p.none">필요 없음</button><button data-v="auto" data-t="quick.p.auto">자동으로 넣기</button></div>
+             <div class="hint beg-only" data-t="quick.supportHint">공중에 뜬 부분이 있으면 자동으로 넣기를 고르세요.</div></div></div>
+       </div>
+       <div id="detailCats" class="detail-only"></div>
+       <p class="note" id="slicedNote" style="display:none" data-t="opt.sliced">슬라이싱된 파일은 파일에 저장된 출력 설정으로 계산돼요. 재료와 색상만 골라 주세요.</p>
+     </section>
 
-    <div class="card detail-only" style="margin-top:16px">
-      <div class="opt-head">
-        <h2 data-t="opt.title">출력 옵션</h2>
-        <button id="resetOpts" data-t="opt.reset">기본값으로</button>
-      </div>
-      <p class="note beg-only" style="margin-top:0" data-t="opt.guide">잘 모르겠으면 기본값 그대로 두셔도 돼요. 옵션 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.</p>
-      <p class="note" id="slicedNote" style="display:none" data-t="opt.sliced">⚠️ 슬라이싱된 파일은 파일에 저장된 출력 설정으로 무게·시간이 계산돼요. 재료와 색상만 골라 주세요.</p>
-      <div class="opt-sections" id="optSections"></div>
-    </div>
+     <section class="card sec" id="priceCard">
+       <h2><span class="num">3</span><span data-t="price.title">견적</span></h2>
+       <div class="qty-row"><span data-t="price.qty">수량</span>
+         <div class="stepper"><button type="button" id="qtyMinus" aria-label="수량 빼기">−</button><input id="qty" type="number" min="1" step="1" value="1" aria-label="수량"><button type="button" id="qtyPlus" aria-label="수량 더하기">+</button></div></div>
+       <div class="price">
+         <div class="price-main">
+           <div><div class="plabel" data-t="price.label">예상 견적</div><div class="total" id="total">-</div></div>
+           <div class="w-chip"><span data-t="price.weight">예상 무게</span> <b id="wOut">-</b></div>
+         </div>
+         <div class="formula" id="summary"></div>
+       </div>
+       <button id="orderBtn" class="btn-primary btn-wide is-disabled" aria-disabled="true" data-t="price.order">주문 신청하기</button>
+       <div class="btn-sub">
+         <a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false" data-t="price.store">스마트스토어 바로가기</a>
+         <button id="copyBtn" class="link-btn" data-t="price.copy">견적 복사</button>
+       </div>
+       <p class="note beg-only" data-t="price.note">표시된 금액은 예상 견적이에요. 실제 금액은 출력 조건 확인 후 달라질 수 있어요.</p>
+     </section>
    </div>
 
    <!-- 스케치 / 아이디어 요청 화면 (스크립트에서 채움) -->
@@ -420,7 +493,7 @@ body.lv-beg .opt-row,body.lv-beg .fld-head{font-size:15px}
     <h3 id="cfTitle"></h3>
     <div style="font-size:14px;color:var(--muted)" id="cfLabel"></div>
     <div class="modal-file" id="cfFile"></div>
-    <div style="font-size:14px"><span data-t="confirm.total">총 가격</span> <b id="cfTotal" style="color:var(--accent);font-size:17px"></b></div>
+    <div style="font-size:14px"><span data-t="confirm.total">총 가격</span> <b id="cfTotal" style="color:var(--accent-text);font-size:17px"></b></div>
     <div class="note" id="cfStatus"></div>
     <div class="btn-row" style="margin-top:14px">
       <button id="cfCancel" data-t="confirm.cancel">취소</button>
@@ -531,6 +604,8 @@ const DESIGN_STEP_MIN = 30;     // 초과하면 이 시간(분)마다
 const DESIGN_STEP_FEE = 1000;   // 이 금액씩 추가 (원)
 const STUDENT_RATE = 0.15;      // 학생 할인 15%
 const STUDENT_MIN_SEC = 5;      // 학생 인증 영상 최소 길이 (초)
+/* ======== 출력비 기준: (재료 1g 가격 × g + perMin × 출력 분 + base) × margin ======== */
+const PRINT_PRICE = {perMin: 9.5, base: 2300, margin: 1.4};
 
 /* ================= 문구 (관리자 > 사이트 문구에서 모두 바꿀 수 있어요) ================= */
 const TDEF = {
@@ -595,7 +670,7 @@ const TDEF = {
  "req.submit": "견적 요청하기",
  "req.store": "스마트스토어 바로가기",
  "req.quickGuide": "🚀 빠른 모드예요. <b>*</b> 표시만 적으면 바로 요청할 수 있어요. 더 자세히 적고 싶으면 위에서 <b>상세 모드</b>를 누르세요.",
- "req.note": "<span style=\"color:#dc2626\">*</span> 표시는 꼭 적어 주세요. 각 항목 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.",
+ "req.note": "<span style=\"color:#ff6b6b\">*</span> 표시는 꼭 적어 주세요. 각 항목 옆 <b>?</b> 를 누르면 자세한 설명이 나와요.",
  "req.drop": "📎 여기를 눌러 파일을 고르거나 끌어다 놓으세요", "req.dropSub": "사진(JPG·PNG 등) · PDF",
  "req.optional": "(선택)",
  "req.stepsTitle": "진행 방법",
@@ -630,7 +705,10 @@ const TDEF = {
  "msg.test": "🛠 테스트 모드: 예시 파일로 채웠어요",
  "msg.testDone": "🛠 테스트예요. 서버가 설정되지 않아 저장되지 않았어요.",
  "msg.copyHead": "[FROMDOT. 예상 견적]",
- "msg.loading": "불러오는 중…"
+ "msg.loading": "불러오는 중…",
+ "opt.default": "기본값",
+ "opt.resetAll": "모든 옵션 기본값으로",
+ "mode.change": "▾"
 };
 let TOV = {};                                   // 관리자가 바꾼 문구
 function t(key, vars){
@@ -656,9 +734,11 @@ function applyStaticTexts(){
 const OPTS = [
  {sec:"재료 · 색상", icon:"🎨", always:true, items:[
   {id:"mat", label:"재료", type:"select", def:"PLA", list:[
-    ["PLA","PLA Basic (기본)",{d:1.26,s:1}], ["PLA-Matte","PLA Matte (무광)",{d:1.32,s:1}], ["PLA-Silk","PLA Silk+ (광택)",{d:1.32,s:0.8}],
-    ["PETG","PETG HF",{d:1.25,s:0.9}], ["ABS","ABS",{d:1.05,s:0.95}], ["ASA","ASA",{d:1.05,s:0.95}],
-    ["TPU","TPU 95A HF (말랑)",{d:1.22,s:0.4}], ["PLA-CF","PLA-CF (카본)",{d:1.22,s:0.9}], ["PETG-CF","PETG-CF (카본)",{d:1.25,s:0.85}]],
+    ["PLA","PLA Basic (기본)",{d:1.26,s:1,lt:2,prep:0,w:0}], ["PLA-Matte","PLA Matte (무광)",{d:1.32,s:0.95,lt:2,prep:0,w:0}],
+    ["PLA-Silk","PLA Silk+ (광택)",{d:1.32,s:0.7,lt:2,prep:0,w:0.2}],
+    ["PETG","PETG HF",{d:1.25,s:0.85,lt:2.5,prep:1,w:0.3}], ["ABS","ABS",{d:1.05,s:0.8,lt:2,prep:3,w:0.4}], ["ASA","ASA",{d:1.07,s:0.8,lt:2,prep:3,w:0.4}],
+    ["TPU","TPU 95A HF (말랑)",{d:1.22,s:0.3,lt:3,prep:1,w:0.5}], ["PLA-CF","PLA-CF (카본)",{d:1.22,s:0.85,lt:2,prep:0,w:0.3}],
+    ["PETG-CF","PETG-CF (카본)",{d:1.25,s:0.8,lt:2.5,prep:1,w:0.3}]],
    hint:"모르면 PLA Basic을 고르세요. 재료에 따라 가격이 달라져요.",
    help:"뱀부랩 정품 필라멘트를 사용해요. 재료마다 가격이 달라서 견적도 바뀌어요.<br><b>PLA Basic</b>: 가장 많이 쓰는 기본 재료. 출력이 깔끔하고 저렴하지만 열(약 55℃ 이상)에 약해요.<br><b>PLA Matte</b>: 무광. 적층 줄무늬가 덜 보여요.<br><b>PLA Silk+</b>: 비단처럼 반짝이는 광택. 장식용에 좋고 조금 느리게 출력해요.<br><b>PETG HF</b>: PLA보다 질기고 열·물에 강해요. 실용 부품용.<br><b>ABS / ASA</b>: 열(약 90℃)에 강하고 단단해요. ASA는 햇빛(자외선)에도 강해 야외용에 좋아요.<br><b>TPU</b>: 고무처럼 말랑하고 휘어져요. 출력이 매우 느려요.<br><b>카본(CF)</b>: 탄소섬유가 섞여 단단하고 무광 질감이에요."},
   {id:"color", label:"색상", type:"select", def:"흰색", list:[
@@ -869,10 +949,10 @@ function designFee(mode, minutes){
   const over = Math.max(0, (minutes || 0) - DESIGN_BASE_MIN);
   return base + Math.ceil(over / DESIGN_STEP_MIN) * DESIGN_STEP_FEE;
 }
-// 출력비: (재료 1g 가격 × g + 8.33 × 분 + 2,000) × 1.35
+// 출력비: (재료 1g 가격 × g + 분당 기계비 × 분 + 기본비) × 마진
 function printPrice(matKey, g, m){
   const perG = (FILAMENT_PRICE[matKey] || 18000) / 1000;
-  return (perG*g + 8.33*m + 2000) * 1.35;
+  return (perG*g + PRINT_PRICE.perMin*m + PRINT_PRICE.base) * PRINT_PRICE.margin;
 }
 const stuOn = () => student.on && student.ok;
 const stuPrice = v => v * (1 - STUDENT_RATE);
@@ -880,8 +960,9 @@ const priceHtml = v => stuOn() ? `<span class="price-old">${won(v)}</span>${won(
 
 /* ================= 상세 옵션 화면 ================= */
 function renderOpts(){
-  $("optSections").innerHTML = OPTS.map(sec => `<div class="opt-sec" data-always="${sec.always ? 1 : 0}">
-    <h3><span>${sec.icon}</span>${sec.sec}</h3>
+  $("detailCats").innerHTML = OPTS.map((sec, si) => `<div class="acc" data-sec="${si}" data-always="${sec.always ? 1 : 0}"${sec.always ? " hidden" : ""}>
+    <button type="button" class="acc-head" aria-expanded="false"><span>${sec.icon}</span><span class="acc-t">${sec.sec}</span><span class="acc-v" id="accv-${si}"></span><span class="acc-arrow">›</span></button>
+    <div class="acc-body" hidden>
     ${sec.items.map(o => {
       const ctl = o.type === "select"
         ? `<select id="${o.id}">${o.list.map(([v, tx]) => `<option value="${v}"${v === o.def ? " selected" : ""}>${tx}</option>`).join("")}</select>`
@@ -891,19 +972,37 @@ function renderOpts(){
           <div class="hint beg-only">${o.hint}</div></label>
           <button type="button" class="help-btn" aria-expanded="false" aria-controls="h-${o.id}" title="설명 보기">?</button>${ctl}</div>
         <div class="help-text" id="h-${o.id}" hidden>${o.help}</div></div>`;
-    }).join("")}</div>`).join("");
+    }).join("")}</div></div>`).join("")
+    + `<div style="text-align:right;margin-top:6px"><button type="button" class="link-btn" id="resetOpts">${t("opt.resetAll")}</button></div>`;
 }
-$("optSections").addEventListener("change", () => showResult());
-$("optSections").addEventListener("input", e => { if (e.target.type === "number") showResult(); });
+function optsChanged(){ updateAccSummaries(); showResult(); }
+$("detailCats").addEventListener("change", optsChanged);
+$("detailCats").addEventListener("input", e => { if (e.target.type === "number") optsChanged(); });
+$("detailCats").addEventListener("click", e => {
+  if (e.target.id !== "resetOpts") return;
+  for (const o of Object.values(OPT_BY_ID)) if (o.id !== "mat" && o.id !== "color") $(o.id).value = o.def;
+  optsChanged();
+});
+// 카테고리 펼치기 / 접기
+document.addEventListener("click", e => {
+  const h = e.target.closest(".acc-head"); if (!h) return;
+  const open = h.getAttribute("aria-expanded") !== "true";
+  h.setAttribute("aria-expanded", open); h.nextElementSibling.hidden = !open;
+});
+// 카테고리 옆에 현재 설정 요약
+function updateAccSummaries(){
+  OPTS.forEach((sec, si) => {
+    const el = $("accv-" + si); if (!el) return;
+    const ch = sec.items.filter(o => String($(o.id).value) !== String(o.def)).map(o => `${plain(o.label).replace(/ \(.*\)$/, "")} ${optText(o.id)}`);
+    el.textContent = ch.length ? ch.join(" · ") : plain(t("opt.default"));
+  });
+  ["strength","quality","support"].forEach(q => { const el = $("qv-" + q); if (el) el.textContent = quickText(q); });
+}
 // ? 도움말 버튼 (모든 화면 공통)
 document.addEventListener("click", e => {
   const b = e.target.closest(".help-btn"); if (!b) return;
   const tg = $(b.getAttribute("aria-controls")); if (!tg) return;
   const open = tg.hidden; tg.hidden = !open; b.setAttribute("aria-expanded", open);
-});
-$("resetOpts").addEventListener("click", () => {
-  for (const o of Object.values(OPT_BY_ID)) $(o.id).value = o.def;
-  showResult();
 });
 
 /* ---- 빠른 모드 간단 옵션 → 상세 옵션 값 ---- */
@@ -922,14 +1021,28 @@ function applyQuick(){
   for (const o of Object.values(OPT_BY_ID)) if (o.id !== "mat" && o.id !== "color") $(o.id).value = o.def;
   $("mat").value = $("q_mat").value; $("color").value = $("q_color").value;
   for (const k in qState) for (const [id, v] of Object.entries(QUICK[k][qState[k]])) $(id).value = v;
-  renderQuickSegs(); showResult();
+  renderQuickSegs(); updateAccSummaries(); showResult();
 }
 $("quickOpts").addEventListener("click", e => {
   const b = e.target.closest(".seg button"); if (!b) return;
   qState[b.parentElement.dataset.q] = b.dataset.v; applyQuick();
 });
-$("q_mat").addEventListener("change", applyQuick);
-$("q_color").addEventListener("change", applyQuick);
+// 재료·색상은 빠른/상세 모두 위쪽 칸에서 고름
+function matColorChanged(){
+  if (prefs.style === "quick") return applyQuick();
+  $("mat").value = $("q_mat").value; $("color").value = $("q_color").value; optsChanged();
+}
+$("q_mat").addEventListener("change", matColorChanged);
+$("q_color").addEventListener("change", matColorChanged);
+// 빠른 / 상세 전환 (각 화면의 스위치)
+const styleSegHtml = () => `<div class="seg sm styleSeg"><button data-v="quick">${t("top.quick")}</button><button data-v="detail">${t("top.detail")}</button></div>`;
+document.addEventListener("click", e => {
+  const b = e.target.closest(".styleSeg button"); if (!b) return;
+  prefs.style = b.dataset.v; savePrefs(); setBodyClass(); renderForm();
+});
+// 수량 + / −
+$("qtyMinus").onclick = () => { $("qty").value = Math.max(1, (parseInt($("qty").value) || 1) - 1); showResult(); };
+$("qtyPlus").onclick = () => { $("qty").value = Math.min(999, (parseInt($("qty").value) || 1) + 1); showResult(); };
 
 /* ================= 스케치 / 아이디어 요청 폼 ================= */
 const reqFiles = {sketch: [], idea: []};
@@ -957,20 +1070,21 @@ function renderReqMode(mode){
       ${ctl}<div class="fld-err" hidden></div></div>`;
   };
   const panel = $(`mode-${mode}`);
-  panel.innerHTML = `<div class="grid">
-    <div class="card"><h2>${M.heading}</h2>
-      <div class="guide beg-only quick-only">${t("req.quickGuide")}</div>
-      ${M.fields.map(field).join("")}</div>
-    <div class="card" style="position:sticky;top:12px;align-self:start">
-      <div class="beg-only"><h2>${t("req.stepsTitle")}</h2>
-        <ol class="steps">${M.steps.map(x => `<li>${x}</li>`).join("")}</ol></div>
-      <div class="price" style="margin-top:0"><div style="font-size:14px;font-weight:600">${t("req.priceTitle")}</div>
+  panel.innerHTML = `<div class="narrow">
+    <section class="card sec">
+      <div class="sec-head"><h2><span class="num">1</span>${M.heading}</h2>${styleSegHtml()}</div>
+      <div class="guide beg-only"><b>${t("req.stepsTitle")}</b><br>${M.steps.map((x, i) => `${i + 1}. ${x}`).join("<br>")}</div>
+      <p class="note quick-only" style="margin:0 0 8px">${t("req.quickGuide")}</p>
+      ${M.fields.map(field).join("")}</section>
+    <section class="card sec">
+      <h2><span class="num">2</span>${t("req.priceTitle")}</h2>
+      <div class="price" style="margin-top:0">
         <div class="total req-total" id="${P("fee")}"></div>
         <div class="formula">${t("req.feeRule")}<br>${t("req.printLine")}</div></div>
       <button class="btn-primary btn-wide" id="${P("submit")}">${t("req.submit")}</button>
       <div class="btn-sub"><a class="btn-store sm storeLink" href="#" target="_blank" rel="noopener" draggable="false">${t("req.store")}</a></div>
       <p class="note beg-only">${t("req.note")}</p>
-    </div></div>`;
+    </section></div>`;
 
   panel.addEventListener("input", e => { const f = e.target.closest(".fld"); if (f) setFieldErr(f, ""); });
   const fileIn = $(P("files")), dz = $(P("files_drop"));
@@ -1254,7 +1368,7 @@ const EXAMPLE_PF = [
   {title: "케이블 정리 클립", desc: "책상 모서리 끼움형 · PETG HF", img: pfSvg("#dcfce7", "#bbf7d0",
     "<path d='M110 100h180v40h-30v-12H140v80h120v-12h30v40H110z' fill='#16a34a'/><circle cx='175' cy='168' r='16' fill='#22c55e'/><circle cx='225' cy='168' r='16' fill='#22c55e'/>")},
   {title: "가게 명판 · 로고", desc: "다색 출력 · PLA Matte", img: pfSvg("#fee2e2", "#fecaca",
-    "<rect x='70' y='95' width='260' height='120' rx='14' fill='#dc2626'/><rect x='84' y='109' width='232' height='92' rx='8' fill='#fff1f2'/><text x='200' y='170' font-family='sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='#dc2626'>FROMDOT.</text>")},
+    "<rect x='70' y='95' width='260' height='120' rx='14' fill='#ff6b6b'/><rect x='84' y='109' width='232' height='92' rx='8' fill='#fff1f2'/><text x='200' y='170' font-family='sans-serif' font-size='34' font-weight='800' text-anchor='middle' fill='#ff6b6b'>FROMDOT.</text>")},
   {title: "피규어 받침대", desc: "이름 각인 · PLA Silk+", img: pfSvg("#f1f5f9", "#e2e8f0",
     "<ellipse cx='200' cy='205' rx='110' ry='26' fill='#475569'/><rect x='90' y='180' width='220' height='25' fill='#64748b'/><ellipse cx='200' cy='180' rx='110' ry='26' fill='#94a3b8'/><circle cx='200' cy='120' r='34' fill='#f59e0b'/><rect x='186' y='150' width='28' height='32' fill='#f59e0b'/>")}
 ];
@@ -1328,15 +1442,16 @@ function renderScreen(step){
 function renderForm(){
   const m = prefs.mode;
   document.querySelectorAll(".mode-panel").forEach(p => p.hidden = p.id !== "mode-" + m);
-  $("tbMode").textContent = plain(t("mode." + m));
+  $("tbMode").textContent = plain(t("mode." + m)) + " " + plain(t("mode.change"));
   $("tbLevel").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === (prefs.level || "beg")));
-  $("tbStyle").querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.style));
-  if (m === "file" && prefs.style === "quick"){ $("q_mat").value = $("mat").value; $("q_color").value = $("color").value; applyQuick(); }
+  document.querySelectorAll(".styleSeg button").forEach(b => b.classList.toggle("on", b.dataset.v === prefs.style));
+  $("q_mat").value = $("mat").value; $("q_color").value = $("color").value;
+  if (m === "file" && prefs.style === "quick") applyQuick(); else updateAccSummaries();
   refreshPrices();
   requestAnimationFrame(() => draw());
 }
 $("tbLevel").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.level = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
-$("tbStyle").onclick = e => { const b = e.target.closest("button"); if (b){ prefs.style = b.dataset.v; savePrefs(); setBodyClass(); renderForm(); } };
+$("tbMode").onclick = () => nav("pick");
 $("tbRestart").onclick = () => nav("home");
 $("tbStu").onclick = () => nav("way");
 
@@ -1350,13 +1465,12 @@ function updatePrice(){
   $("orderBtn").classList.toggle("is-disabled", !ok);
   $("orderBtn").setAttribute("aria-disabled", !ok);
   if (!ok){
-    $("total").textContent = "-"; $("wOut").textContent = "-"; $("tOut").textContent = "-";
+    $("total").textContent = "-"; $("wOut").textContent = "-";
     $("summary").innerHTML = current ? t("price.tooBig") : t("price.empty");
     return {g, m, total, final};
   }
   $("total").innerHTML = priceHtml(total);
   $("wOut").textContent = g.toFixed(1) + "g";
-  $("tOut").textContent = fmtMin(m);
   const qty = Math.max(1, parseInt($("qty").value) || 1);
   $("summary").innerHTML = [qty > 1 ? t("price.qtyNote", {n: qty}) : "", stuOn() ? t("price.stuNote") : ""].filter(Boolean).join(" · ");
   return {g, m, total, final};
@@ -1415,10 +1529,9 @@ function showResult(){
   current.dims = geo ? geo.max.map((v,i)=>v-geo.min[i]) : null;
   current.tooBig = !!current.dims && current.dims.some(v => v > MAX_SIZE + 0.01);
   if (current.tooBig) html += `<div class="limit-err">${t("msg.tooBig", {max: MAX_SIZE})}</div>`;
-  document.querySelectorAll(".opt-sec").forEach(el => el.style.display = (sliced && el.dataset.always !== "1") ? "none" : "");
+  document.querySelectorAll("#detailCats .acc").forEach(el => el.style.display = (sliced && el.dataset.always !== "1") ? "none" : "");
   $("slicedNote").style.display = sliced ? "" : "none";
   document.querySelectorAll(".q-geo").forEach(el => el.style.display = sliced ? "none" : "");
-  document.querySelector(".q-sliced").style.display = sliced ? "" : "none";
   if (sliced){
     if (sliced.g > 0) $("g").value = (sliced.g*qty).toFixed(2);
     if (sliced.sec > 0) $("m").value = Math.ceil(sliced.sec*qty/60);
@@ -1432,7 +1545,7 @@ function showResult(){
   let st = "";
   if (geo){
     const d = current.dims;
-    st += `<span>${plain(t("file.rowSize"))} <b style="${current.tooBig ? "color:#dc2626" : ""}">${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
+    st += `<span>${plain(t("file.rowSize"))} <b style="${current.tooBig ? "color:#ff6b6b" : ""}">${d.map(v=>v.toFixed(1)).join(" × ")} mm</b></span>`;
     st += `<span>부피 <b>${(geo.vol/1000).toFixed(2)} cm³</b></span>`;
     $("view").style.display = "block";
     preparePreview(geo);
@@ -1477,7 +1590,7 @@ function estimate(geo){
   const raftV = raftN ? (dx + 6) * (dy + 6) * layerH * raftN * 0.6 : 0;
 
   const ext = wallV + topV + botV + infillV + supV + brimV + raftV;          // mm³
-  const g = ext / 1000 * mat.d + 0.5;                                        // + 프라임/퍼지 손실
+  const g = ext / 1000 * mat.d + 0.5 + (mat.w || 0);                                        // + 프라임/퍼지 손실
 
   // 시간
   const layers = Math.max(1, Math.ceil((dz - firstH) / layerH) + 1) + raftN;
@@ -1486,7 +1599,7 @@ function estimate(geo){
              + infillV*pat.t + supV*1.1 + brimV + raftV;
   const ironK = optData("ironing").k;
   const ironArea = ironK === 2 ? geo.areaUp : ironK === 1 ? geo.areaTopmost : 0;
-  const sec = work / flow + layers * 2 + ironArea / 3 + 240;
+  const sec = work / flow + layers * (mat.lt || 2) + ironArea / 3 + 240 + (mat.prep || 0) * 60;
   return {g, min: sec / 60, ext, layers, supV};
 }
 // 표면 방향 통계 + 서포트 히스토그램 (파일당 1번)
@@ -1823,7 +1936,7 @@ function draw(){
   const dark = matchMedia("(prefers-color-scheme: dark)").matches;
   for (const [, a, b, d, L] of list){
     const k = 0.35 + 0.65*L;
-    const col = dark ? `rgb(${46*k+20|0},${204*k+20|0},${133*k+20|0})` : `rgb(${20+40*k|0},${120+70*k|0},${80+40*k|0})`;
+    const col = `rgb(${30+60*k|0},${80+90*k|0},${190+65*k|0})`;
     ctx.fillStyle = col; ctx.strokeStyle = col; ctx.lineWidth = 0.5;
     ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.lineTo(d[0],d[1]); ctx.closePath();
     ctx.fill(); ctx.stroke();
@@ -1855,11 +1968,11 @@ function orderData(){
       : settingsList(false);
   const settings = [[L("file.rowStyle"), styleText()], ...optRows, [L("file.rowQty"), qty + "개"],
     ...(stuOn() ? [[L("stu.rowLabel"), L("stu.rowValue")]] : [])];
-  return {type: "file", typeLabel: noEmoji(t("mode.file")), test: !!current.test, student: stuOn(),
+  return {type: "file", typeLabel: noEmoji(t("mode.file")), test: !!current.test, student: stuOn(), printMin: Math.round(m), weightG: +g.toFixed(1),
           name: (current.test ? "[테스트] " : "") + current.name,
           total: won(final) + (stuOn() ? ` (${L("pick.stuTag")})` : ""),
           sections: [[L("file.secInfo"), [[L("file.rowName"), current.name], [L("file.rowWeight"), g.toFixed(1) + "g"],
-                       [L("file.rowSize"), size], [L("file.rowTime"), fmtMin(m)]]], [L("file.secSet"), settings]]};
+                       [L("file.rowSize"), size]]], [L("file.secSet"), settings]]};
 }
 const rows = arr => arr.map(([k,v]) => `<tr><th>${escapeHtml(k)}</th><td class="pre">${escapeHtml(v)}</td></tr>`).join("");
 let lastOrder = null, pending = null;
@@ -2042,7 +2155,7 @@ async function submitOrder(d, files, progress){
   }
   progress("정보 저장 중…");
   await D.set(D.ref(db, "orders/" + no), {
-    no, type: d.type, name: d.name, total: d.total, contact: d.contact || "", test: !!d.test, student: !!d.student, designFee: d.designFee || 0,
+    no, type: d.type, name: d.name, total: d.total, contact: d.contact || "", test: !!d.test, student: !!d.student, designFee: d.designFee || 0, printMin: d.printMin || 0, weightG: d.weightG || 0,
     sections: d.sections.map(([t, r]) => ({t, rows: r.map(([k, v]) => ({k, v}))})),
     attachments, status: "new", createdAt: D.serverTimestamp()
   });
@@ -2171,7 +2284,7 @@ function calcCompute(no){
   const design = designFee(o.type, dmin), print = (g || m) ? printPrice(mat, g, m) : 0;
   const sub = design + print, final = stu ? stuPrice(sub) : sub;
   const text = `디자인비 ${won(design)} (${dmin}분) + 출력비 ${won(print)} (${optLabel("mat", mat)} ${g}g · ${m}분)` + (stu ? " − 학생 할인 15%" : "");
-  $("calc-" + no).innerHTML = `${escapeHtml(text)}<br><b style="font-size:17px;color:var(--accent)">합계 ${won(final)}</b>`;
+  $("calc-" + no).innerHTML = `${escapeHtml(text)}<br><b style="font-size:17px;color:var(--accent-text)">합계 ${won(final)}</b>`;
   return {dmin, g, m, mat, stu, design: Math.round(design), print: Math.round(print), total: won(final), text};
 }
 function renderOrders(){
@@ -2204,7 +2317,8 @@ function renderOrders(){
       ${type !== "file" ? `<div style="font-size:17px;font-weight:700;margin-bottom:4px">${escapeHtml(o.name)}</div>` : ""}
       ${who.length ? `<div class="oc-contact">📞 ${who.map(r => `${escapeHtml(r.k)}: <b>${escapeHtml(r.v)}</b>`).join(" · ")}</div>` : ""}
       <div class="oc-grid">${body}
-        <div><span>표시 금액</span> <b style="color:var(--accent)">${escapeHtml(o.total)}</b></div></div>
+        <div><span>표시 금액</span> <b style="color:var(--accent-text)">${escapeHtml(o.total)}</b></div></div>
+      ${o.printMin ? `<div class="oc-contact">⏱ 예상 출력 시간 <b>${fmtMin(o.printMin)}</b> · 예상 무게 <b>${o.weightG}g</b> <span class="note">(관리자만 보여요)</span></div>` : ""}
       ${o.quote ? `<div class="quote-line">✅ 확정 견적 ${escapeHtml(o.quote.total)} <span class="note">${escapeHtml(o.quote.text)}</span></div>` : ""}
       ${atts.length ? `<div class="oc-files">${atts.map((a, i) =>
           `<button data-act="dl" data-i="${i}" data-no="${no}">⬇ ${a.kind === "student" ? "🎓 " : ""}${escapeHtml(a.name)} (${kb(a.bytes || 0)})</button>`).join("")}</div>` : ""}
