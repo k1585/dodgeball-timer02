@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#0f1115">
+<title>농구 슬레이트</title>
+<style>
+:root{
+  --bg:#0f1115; --panel:#181b22; --panel2:#20242d; --line:#2c313c;
+  --text:#f2f3f5; --muted:#8b93a3; --accent:#ff7a1a; --accent2:#ffb27a;
+  --red:#ff4d4f; --redbg:rgba(255,77,79,.12); --green:#35c66b; --blue:#4c9dff;
+  --radius:14px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;
+  font-size:17px;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit;text-decoration:none}
+input,select,textarea{font:inherit;color:var(--text)}
+.hidden{display:none!important}
+
+/* ---------- layout ---------- */
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;
+  padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;background:rgba(15,17,21,.92);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.topbar h1{flex:1;margin:0;font-size:20px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar .sub{font-size:13px;color:var(--muted);font-weight:500}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 140px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:12px 18px;border-radius:12px;
+  background:var(--panel2);border:1px solid var(--line);font-weight:700;min-height:48px}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#1a0c00}
+.btn.blue{background:var(--blue);border-color:var(--blue);color:#001226}
+.btn.danger{background:transparent;border-color:var(--red);color:var(--red)}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:38px;padding:8px 12px;font-size:15px;border-radius:10px}
+.btn[disabled]{opacity:.45}
+.iconbtn{min-width:44px;min-height:44px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--panel2);border:1px solid var(--line);font-size:20px}
+.status{font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.on{background:var(--green)} .dot.off{background:var(--red)}
+
+/* ---------- home ---------- */
+.search{position:relative;margin-bottom:14px}
+.search input{width:100%;padding:14px 16px 14px 44px;border-radius:14px;background:var(--panel);border:1px solid var(--line);font-size:17px}
+.search input:focus{outline:2px solid var(--accent);border-color:transparent}
+.search .ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.actions{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.actions .btn{flex:1}
+.sectiontitle{font-size:14px;color:var(--muted);font-weight:700;margin:22px 4px 10px;letter-spacing:.02em}
+.list{display:flex;flex-direction:column;gap:10px}
+.card{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.card:active{background:var(--panel2)}
+.card .row1{display:flex;align-items:center;gap:10px}
+.card .title{flex:1;font-size:18px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .meta{margin-top:6px;color:var(--muted);font-size:14px;display:flex;flex-wrap:wrap;gap:6px 14px}
+.code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:800;letter-spacing:.04em;color:var(--accent2)}
+.tag{display:inline-block;padding:2px 8px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--text)}
+.tag.red{background:var(--redbg);border-color:var(--red);color:var(--red)}
+.tag.green{background:rgba(53,198,107,.12);border-color:var(--green);color:var(--green)}
+.card.missing{border-color:var(--red);background:var(--redbg)}
+.card.missing .title{color:var(--red)}
+.score{font-size:16px;font-weight:800;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:40px 10px;border:1px dashed var(--line);border-radius:var(--radius)}
+.tinfo{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.tinfo .big{font-size:22px;font-weight:800;margin-bottom:8px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:15px}
+.kv .k{color:var(--muted)}
+
+/* ---------- form ---------- */
+.fsec{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.fsec h2{margin:0 0 14px;font-size:15px;color:var(--accent);letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.fsec h2 .note{color:var(--muted);font-weight:500;font-size:13px;letter-spacing:0}
+.field{margin-bottom:14px}
+.field:last-child{margin-bottom:0}
+.field label.lbl{display:block;font-size:14px;color:var(--muted);font-weight:700;margin-bottom:6px}
+.field .req{color:var(--accent)}
+.inp{width:100%;padding:13px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:17px;min-height:50px}
+.inp:focus{outline:2px solid var(--accent);border-color:transparent}
+.inp[readonly],.inp:disabled{opacity:.85}
+.inp.invalid,.seg.invalid{border-color:var(--red);outline:2px solid var(--red)}
+textarea.inp{min-height:110px;resize:vertical}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.grid2{grid-template-columns:1fr}}
+.seg{display:flex;gap:8px;border-radius:12px;padding:4px;background:var(--panel2);border:1px solid var(--line)}
+.seg button{flex:1;padding:11px 8px;border-radius:9px;font-weight:800;color:var(--muted)}
+.seg button.on{background:var(--accent);color:#1a0c00}
+.seg.lock button{pointer-events:none}
+.check{display:flex;align-items:center;gap:10px;margin:2px 0 12px;font-size:15px;color:var(--text)}
+.check input{width:22px;height:22px;accent-color:var(--accent)}
+.codebox{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);min-height:50px}
+.codebox .code{font-size:22px;flex:1}
+.codebox .hint{font-size:12px;color:var(--muted)}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.winner{padding:14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:18px;font-weight:800;text-align:center}
+.winner.win{border-color:var(--accent);color:var(--accent)}
+.winner.draw{border-color:var(--blue);color:var(--blue)}
+.winner.none{color:var(--muted);font-weight:600;font-size:15px}
+.scorein{display:flex;align-items:center;gap:8px}
+.scorein .inp{text-align:center;font-size:24px;font-weight:800}
+.scorein .unit{color:var(--muted);font-weight:700}
+.readonlybox{font-size:15px}
+.lockbar{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:12px;background:rgba(76,157,255,.1);border:1px solid var(--blue);color:var(--blue);margin-bottom:16px;font-size:15px}
+.lockbar span{flex:1}
+.bottombar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;gap:10px;
+  padding:12px 16px calc(env(safe-area-inset-bottom) + 12px);background:rgba(15,17,21,.95);border-top:1px solid var(--line);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.bottombar .inner{max-width:900px;margin:0 auto;display:flex;gap:10px;width:100%}
+.bottombar .btn{flex:1;min-height:58px;font-size:18px}
+.danger-zone{margin-top:8px;text-align:center}
+
+/* ---------- modal / toast ---------- */
+.modal-bg{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}
+.modal h3{margin:0 0 8px;font-size:19px}
+.modal p{margin:0 0 16px;color:var(--muted);line-height:1.5;white-space:pre-line}
+.modal .field{margin-bottom:12px}
+.modal .btns{display:flex;gap:10px;margin-top:16px}
+.modal .btns .btn{flex:1}
+.modal .err{color:var(--red);font-size:14px;min-height:20px;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 100px);transform:translateX(-50%);z-index:200;
+  background:#2a2f3a;border:1px solid var(--line);color:var(--text);padding:12px 18px;border-radius:12px;font-weight:700;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center;transition:opacity .25s}
+.toast.err{border-color:var(--red);color:#ffd7d7}
+.banner{background:var(--redbg);border:1px solid var(--red);color:#ffd7d7;border-radius:12px;padding:10px 14px;font-size:14px;margin-bottom:14px;line-height:1.5}
+
+/* ---------- slate ---------- */
+#slate{position:fixed;inset:0;z-index:1000;background:#000;color:#fff;overflow:hidden;
+  touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#slate .inner{position:absolute;left:0;top:0;width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;gap:4vh;padding:4vh 6vw}
+#slate .srow{display:flex;align-items:baseline;justify-content:space-between;gap:3vw;border-bottom:.5vh solid #222;padding-bottom:2vh}
+#slate .srow:last-of-type{border-bottom:0}
+#slate .slbl{font-size:6vh;font-weight:800;color:#ff8a2a;white-space:nowrap}
+#slate .scode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-weight:900;font-size:min(24vh,15vw);line-height:1;letter-spacing:.02em;white-space:nowrap}
+#slate .shint{position:absolute;left:0;right:0;bottom:2vh;text-align:center;color:#666;font-size:2.4vh;transition:opacity 1s}
+@media (orientation:portrait){
+  #slate .inner{width:100vh;height:100vw;transform-origin:top left;transform:translateX(100vw) rotate(90deg);padding:4vw 6vh;gap:4vw}
+  #slate .slbl{font-size:6vw}
+  #slate .scode{font-size:min(24vw,15vh)}
+  #slate .shint{display:none}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<!-- 슬레이트 모드 (가로 풀화면 / 더블탭하면 입력모드로) -->
+<div id="slate" class="hidden">
+  <div class="inner">
+    <div class="srow"><span class="slbl">대회코드</span><span class="scode" id="slateT">#00000</span></div>
+    <div class="srow"><span class="slbl">경기코드</span><span class="scode" id="slateG">#00000</span></div>
+    <div class="shint" id="slateHint">두 번 탭하면 입력모드로 돌아갑니다</div>
+  </div>
+</div>
+
+<script type="module">
+/* =====================================================================
+   Firebase 설정
+   - 아래 값은 이 저장소의 피구 타이머와 같은 Firebase 프로젝트입니다.
+   - 다른 프로젝트를 쓰려면 이 값만 바꾸면 됩니다.
+   - apiKey 를 "" 로 비워두면 Firebase 없이 이 기기(localStorage)에만 저장됩니다.
+   - Firebase 접근이 거부되면(규칙 문제 등) 자동으로 이 기기 저장으로 전환되고,
+     나중에 Firebase 가 다시 되면 기기에 저장된 내용이 자동으로 올라갑니다.
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "AIzaSyBsUAj6nR2eihsyZn6BREseo_iH-3I56i0",
+  authDomain: "stopwatch-6bb55.firebaseapp.com",
+  databaseURL: "https://stopwatch-6bb55-default-rtdb.firebaseio.com",
+  projectId: "stopwatch-6bb55",
+  storageBucket: "stopwatch-6bb55.firebasestorage.app",
+  messagingSenderId: "113223681035",
+  appId: "1:113223681035:web:218ded3ff96c995d39b30e"
+};
+const DB_ROOT = "basketballSlate";      // Realtime Database 안의 저장 위치
+const DEFAULT_PASSWORD = "4242";
+const DEFAULT_HOME = "양주 코리아";
+const LOCAL_KEY = "basketballSlate.v1";
+
+/* ---------------- utils ---------------- */
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pad = n => String(n).padStart(2, "0");
+const isoOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const todayIso = () => isoOf(new Date());
+const fmtDate = s => { if (!s) return ""; const [, m, d] = s.split("-").map(Number); return `${m}월 ${d}일`; };
+const fmtDateDow = s => { if (!s) return ""; const d = new Date(s + "T00:00:00"); return `${fmtDate(s)} (${"일월화수목금토"[d.getDay()]})`; };
+const isMulti = t => !!(t && t.multi && t.endDate && t.endDate !== t.startDate);
+const fmtRange = t => isMulti(t) ? `${fmtDate(t.startDate)} ~ ${fmtDate(t.endDate)}` : fmtDate(t?.startDate);
+const daysOf = t => {
+  if (!t?.startDate) return [];
+  const out = [], d = new Date(t.startDate + "T00:00:00"), end = new Date((isMulti(t) ? t.endDate : t.startDate) + "T00:00:00");
+  while (d <= end && out.length < 62) { out.push(isoOf(d)); d.setDate(d.getDate() + 1); }
+  return out;
+};
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const hasScore = v => v !== "" && v !== null && v !== undefined && !Number.isNaN(Number(v));
+const scored = g => hasScore(g.homeScore) && hasScore(g.awayScore);
+const homeName = g => (g.home || "").trim() || DEFAULT_HOME;
+const normCode = s => String(s || "").replace(/[^0-9]/g, "");
+
+function winnerInfo(g) {
+  if (!scored(g)) return { cls: "none", text: "점수를 입력하면 자동으로 계산됩니다" };
+  const h = Number(g.homeScore), a = Number(g.awayScore);
+  const line = `${homeName(g)} ${h} : ${a} ${g.away || "어웨이"}`;
+  if (h === a) return { cls: "draw", text: `무승부 · ${line}`, short: "무승부" };
+  const w = h > a ? homeName(g) : (g.away || "어웨이");
+  return { cls: "win", text: `🏆 ${w} 승리 · ${line}`, short: `${w} 승` };
+}
+
+/* ---------------- store (Firebase RTDB + 로컬 대체) ---------------- */
+const Store = {
+  data: { tournaments: {}, games: {}, settings: {} },
+  mode: "loading",          // loading | firebase | local
+  error: "",
+  db: null, fb: null,
+  listeners: new Set(),
+  emit() { this.listeners.forEach(f => f()); },
+  loadLocal() {
+    try { const raw = localStorage.getItem(LOCAL_KEY); if (raw) { const d = JSON.parse(raw); return { tournaments: d.tournaments || {}, games: d.games || {}, settings: d.settings || {} }; } } catch (e) {}
+    return { tournaments: {}, games: {}, settings: {} };
+  },
+  saveLocal() { try { localStorage.setItem(LOCAL_KEY, JSON.stringify(this.data)); } catch (e) {} },
+  useLocal(reason) {
+    this.mode = "local"; this.error = reason || "";
+    this.data = this.loadLocal(); this.emit();
+  },
+  async init() {
+    if (!firebaseConfig.apiKey) return this.useLocal("");
+    try {
+      const appMod = await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js");
+      const dbMod = await import("https://www.gstatic.com/firebasejs/12.0.0/firebase-database.js");
+      this.fb = dbMod;
+      const app = appMod.initializeApp(firebaseConfig, "basketballSlate");
+      this.db = dbMod.getDatabase(app);
+      let first = true;
+      const timer = setTimeout(() => { if (first) this.useLocal("Firebase 응답이 없어 이 기기에 임시 저장 중입니다."); }, 8000);
+      dbMod.onValue(dbMod.ref(this.db, DB_ROOT), async snap => {
+        clearTimeout(timer);
+        const v = snap.val() || {};
+        const wasLocal = this.mode !== "firebase";
+        this.mode = "firebase"; this.error = "";
+        this.data = { tournaments: v.tournaments || {}, games: v.games || {}, settings: v.settings || {} };
+        if (first) { first = false; if (wasLocal) await this.migrateLocal(); }
+        this.emit();
+      }, err => {
+        clearTimeout(timer); first = false;
+        console.warn(err);
+        this.useLocal("Firebase 접근이 거부되어 이 기기에만 저장 중입니다. (Firebase 데이터베이스 규칙 확인 필요)");
+      });
+    } catch (e) {
+      console.warn(e);
+      this.useLocal("Firebase에 연결할 수 없어 이 기기에만 저장 중입니다.");
+    }
+  },
+  async migrateLocal() {
+    const local = this.loadLocal(), upd = {};
+    for (const [k, v] of Object.entries(local.tournaments)) if (!this.data.tournaments[k]) upd[`tournaments/${k}`] = v;
+    for (const [k, v] of Object.entries(local.games)) if (!this.data.games[k]) upd[`games/${k}`] = v;
+    if (!Object.keys(upd).length) return;
+    try { await this.fb.update(this.fb.ref(this.db, DB_ROOT), upd); localStorage.removeItem(LOCAL_KEY); toast("이 기기에 저장돼 있던 기록을 Firebase로 올렸습니다"); }
+    catch (e) { console.warn(e); }
+  },
+  /* updates: { "tournaments/id": obj|null, ... } */
+  async write(updates) {
+    if (this.mode === "firebase") {
+      await this.fb.update(this.fb.ref(this.db, DB_ROOT), updates);
+    } else {
+      for (const [path, val] of Object.entries(updates)) {
+        const [col, id, key] = path.split("/");
+        this.data[col] = this.data[col] || {};
+        if (key) { if (val === null) { if (this.data[col]) delete this.data[col][key]; } else this.data[col][key] = val; }
+        else if (val === null) delete this.data[col][id];
+        else this.data[col][id] = val;
+      }
+      this.saveLocal(); this.emit();
+    }
+  },
+  get password() { return String(this.data.settings?.password || DEFAULT_PASSWORD); },
+  allCodes(exceptId) {
+    const s = new Set();
+    for (const [id, t] of Object.entries(this.data.tournaments)) if (id !== exceptId && t.code) s.add(normCode(t.code));
+    for (const [id, g] of Object.entries(this.data.games)) if (id !== exceptId && g.code) s.add(normCode(g.code));
+    return s;
+  },
+  newCode(extraTaken = []) {
+    const taken = this.allCodes(); extraTaken.forEach(c => taken.add(normCode(c)));
+    for (let i = 0; i < 1000; i++) {
+      const c = String(Math.floor(Math.random() * 100000)).padStart(5, "0");
+      if (!taken.has(c)) return "#" + c;
+    }
+    throw new Error("사용 가능한 코드가 없습니다");
+  },
+  gamesOf(tId) {
+    return Object.entries(this.data.games).filter(([, g]) => g.tournamentId === tId)
+      .map(([id, g]) => ({ id, ...g }))
+      .sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.createdAt || 0) - (b.createdAt || 0));
+  }
+};
+
+/* ---------------- 잠금(비밀번호) ---------------- */
+const Lock = {
+  get unlocked() { try { return sessionStorage.getItem("slateUnlocked") === "1"; } catch (e) { return this._u; } },
+  set unlocked(v) { this._u = v; try { sessionStorage.setItem("slateUnlocked", v ? "1" : "0"); } catch (e) {} },
+  async require() {
+    if (this.unlocked) return true;
+    const ok = await passwordPrompt();
+    if (ok) { this.unlocked = true; render(); }
+    return ok;
+  }
+};
+
+/* ---------------- modal / toast ---------------- */
+function modal(html, setup) {
+  return new Promise(resolve => {
+    const bg = document.createElement("div");
+    bg.className = "modal-bg";
+    bg.innerHTML = `<div class="modal">${html}</div>`;
+    document.body.appendChild(bg);
+    const close = v => { bg.remove(); resolve(v); };
+    setup(bg, close);
+  });
+}
+function ask(title, msg, okLabel = "확인", cancelLabel = "취소", danger = false) {
+  return modal(`<h3>${esc(title)}</h3><p>${esc(msg)}</p>
+    <div class="btns"><button class="btn" data-x>${esc(cancelLabel)}</button><button class="btn ${danger ? "danger" : "primary"}" data-ok>${esc(okLabel)}</button></div>`,
+    (bg, close) => { $("[data-x]", bg).onclick = () => close(false); $("[data-ok]", bg).onclick = () => close(true); });
+}
+function passwordPrompt() {
+  return modal(`<h3>🔒 비밀번호 입력</h3><p>추가·수정·삭제는 비밀번호가 필요합니다.</p>
+    <div class="field"><input class="inp" type="password" inputmode="numeric" autocomplete="off" placeholder="비밀번호" data-pw></div>
+    <div class="err" data-err></div>
+    <div class="btns"><button class="btn" data-x>취소</button><button class="btn primary" data-ok>확인</button></div>`,
+    (bg, close) => {
+      const inp = $("[data-pw]", bg);
+      const go = () => {
+        if (inp.value === Store.password) close(true);
+        else { $("[data-err]", bg).textContent = "비밀번호가 틀렸습니다"; inp.value = ""; inp.focus(); }
+      };
+      $("[data-x]", bg).onclick = () => close(false);
+      $("[data-ok]", bg).onclick = go;
+      inp.onkeydown = e => { if (e.key === "Enter") go(); };
+      setTimeout(() => inp.focus(), 50);
+    });
+}
+function changePasswordDialog() {
+  return modal(`<h3>⚙️ 비밀번호 변경</h3>
+    <div class="field"><label class="lbl">현재 비밀번호</label><input class="inp" type="password" inputmode="numeric" data-cur></div>
+    <div class="field"><label class="lbl">새 비밀번호</label><input class="inp" type="password" inputmode="numeric" data-new></div>
+    <div class="field"><label class="lbl">새 비밀번호 확인</label><input class="inp" type="password" inputmode="numeric" data-new2></div>
+    <div class="err" data-err></div>
+    <div class="btns"><button class="btn" data-x>취소</button><button class="btn primary" data-ok>변경</button></div>`,
+    (bg, close) => {
+      const err = m => $("[data-err]", bg).textContent = m;
+      $("[data-x]", bg).onclick = () => close(false);
+      $("[data-ok]", bg).onclick = async () => {
+        const cur = $("[data-cur]", bg).value, n1 = $("[data-new]", bg).value, n2 = $("[data-new2]", bg).value;
+        if (cur !== Store.password) return err("현재 비밀번호가 틀렸습니다");
+        if (n1.length < 4) return err("새 비밀번호는 4자리 이상으로 해주세요");
+        if (n1 !== n2) return err("새 비밀번호가 서로 다릅니다");
+        try { await Store.write({ "settings/password": n1 }); toast("비밀번호가 변경되었습니다"); close(true); }
+        catch (e) { err("저장 실패: " + e.message); }
+      };
+    });
+}
+let toastTimer;
+function toast(msg, isErr = false) {
+  let t = $(".toast");
+  if (!t) { t = document.createElement("div"); t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.toggle("err", isErr); t.style.opacity = "1";
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.style.opacity = "0"; }, 2600);
+}
+
+/* ---------------- router ---------------- */
+// #/                 홈 (대회 목록)
+// #/t/<tid>          대회 (경기 목록)
+// #/new              새 대회 추가 (대회정보 + 첫 경기)
+// #/t/<tid>/new      새 경기 추가 (경기정보부터)
+// #/t/<tid>/edit     대회정보 수정
+// #/g/<gid>          경기 보기/수정
+let ed = null;            // 편집 중인 폼 상태
+let skipHash = false;
+let lastHash = location.hash;
+let homeQuery = "";
+
+window.addEventListener("hashchange", async () => {
+  if (skipHash) { skipHash = false; lastHash = location.hash; return; }
+  if (ed && ed.dirty) {
+    const ok = await ask("나가기", "저장하지 않고 나가시겠습니까?\n입력한 내용은 사라집니다.", "저장 안하고 나가기", "계속 작성", true);
+    if (!ok) { skipHash = true; location.hash = lastHash; return; }
+  }
+  lastHash = location.hash;
+  ed = null;
+  render();
+});
+const go = h => { if (location.hash === h) render(); else location.hash = h; };
+const goNoAsk = h => { if (ed) ed.dirty = false; go(h); };
+
+function route() {
+  const h = location.hash.replace(/^#/, "") || "/";
+  let m;
+  if (h === "/new") return { name: "newTournament" };
+  if ((m = h.match(/^\/t\/([^/]+)\/new$/))) return { name: "newGame", tId: m[1] };
+  if ((m = h.match(/^\/t\/([^/]+)\/edit$/))) return { name: "editTournament", tId: m[1] };
+  if ((m = h.match(/^\/t\/([^/]+)$/))) return { name: "tournament", tId: m[1] };
+  if ((m = h.match(/^\/g\/([^/]+)$/))) return { name: "game", gId: m[1] };
+  return { name: "home" };
+}
+
+function render() {
+  const r = route();
+  const app = $("#app");
+  if (Store.mode === "loading") { app.innerHTML = `<div class="wrap"><div class="empty">불러오는 중…</div></div>`; return; }
+  if (r.name === "home") return renderHome(app);
+  if (r.name === "tournament") return renderTournament(app, r.tId);
+  // 편집 화면: 새로 들어올 때만 상태 생성
+  if (!ed || ed.key !== location.hash) {
+    ed = makeEditor(r);
+    if (!ed) { app.innerHTML = `<div class="wrap"><div class="empty">찾을 수 없는 항목입니다.<br><br><button class="btn" onclick="location.hash='#/'">홈으로</button></div></div>`; return; }
+  }
+  renderEditor(app);
+}
+Store.listeners.add(() => {
+  // 편집 중인 화면은 입력이 날아가지 않도록 다시 그리지 않음
+  if (ed && (ed.dirty || ed.mode !== "game")) { updateStatus(); return; }
+  if (ed && ed.mode === "game") ed = null;
+  render();
+});
+
+function statusHtml() {
+  if (Store.mode === "firebase") return `<span class="status"><span class="dot on"></span>동기화</span>`;
+  if (Store.mode === "local") return `<span class="status"><span class="dot off"></span>기기 저장</span>`;
+  return `<span class="status"><span class="dot"></span>연결 중</span>`;
+}
+function updateStatus() { const s = $("#statusSlot"); if (s) s.innerHTML = statusHtml(); }
+function bannerHtml() { return Store.mode === "local" && Store.error ? `<div class="banner">⚠️ ${esc(Store.error)}</div>` : ""; }
+
+/* ---------------- 홈 ---------------- */
+function renderHome(app) {
+  const ts = Object.entries(Store.data.tournaments).map(([id, t]) => ({ id, ...t }))
+    .sort((a, b) => (b.startDate || "").localeCompare(a.startDate || "") || (b.createdAt || 0) - (a.createdAt || 0));
+  app.innerHTML = `
+  <header class="topbar">
+    <h1>🏀 농구 슬레이트</h1>
+    <span id="statusSlot">${statusHtml()}</span>
+    <button class="iconbtn" id="lockBtn" title="잠금">${Lock.unlocked ? "🔓" : "🔒"}</button>
+    <button class="iconbtn" id="setBtn" title="비밀번호 변경">⚙️</button>
+  </header>
+  <div class="wrap">
+    ${bannerHtml()}
+    <div class="search"><span class="ico">🔍</span>
+      <input id="q" type="search" placeholder="대회코드 · 경기코드 · 어웨이팀명 · 대회명 검색" value="${esc(homeQuery)}" autocomplete="off"></div>
+    <div class="actions"><button class="btn primary" id="addT">＋ 새 대회 추가</button></div>
+    <div id="results"></div>
+  </div>`;
+  const draw = () => {
+    const q = homeQuery.trim().toLowerCase(), qn = normCode(q);
+    const out = $("#results");
+    if (!ts.length) { out.innerHTML = `<div class="empty">아직 대회가 없습니다.<br>「＋ 새 대회 추가」로 시작하세요.</div>`; return; }
+    if (!q) { out.innerHTML = `<div class="sectiontitle">대회 목록 (${ts.length})</div><div class="list">${ts.map(tCard).join("")}</div>`; return; }
+    const codeHit = c => qn && normCode(c).includes(qn);
+    const tHits = ts.filter(t => codeHit(t.code) || (t.name || "").toLowerCase().includes(q));
+    const gHits = Object.entries(Store.data.games).map(([id, g]) => ({ id, ...g }))
+      .filter(g => codeHit(g.code) || (g.away || "").toLowerCase().includes(q))
+      .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    out.innerHTML = `
+      <div class="sectiontitle">대회 (${tHits.length})</div>
+      ${tHits.length ? `<div class="list">${tHits.map(tCard).join("")}</div>` : `<div class="empty">일치하는 대회가 없습니다</div>`}
+      <div class="sectiontitle">경기 (${gHits.length})</div>
+      ${gHits.length ? `<div class="list">${gHits.map(g => gCard(g, true)).join("")}</div>` : `<div class="empty">일치하는 경기가 없습니다</div>`}`;
+  };
+  draw();
+  const qi = $("#q");
+  qi.oninput = () => { homeQuery = qi.value; draw(); };
+  $("#addT").onclick = async () => { if (await Lock.require()) go("#/new"); };
+  $("#setBtn").onclick = () => changePasswordDialog();
+  $("#lockBtn").onclick = async () => {
+    if (Lock.unlocked) { Lock.unlocked = false; toast("잠갔습니다"); render(); }
+    else await Lock.require();
+  };
+}
+function tCard(t) {
+  const games = Store.gamesOf(t.id), miss = games.filter(g => !scored(g)).length;
+  return `<a class="card" href="#/t/${t.id}">
+    <div class="row1"><span class="title">${esc(t.name)}</span><span class="code">${esc(t.code)}</span></div>
+    <div class="meta"><span>📅 ${esc(fmtRange(t))}${t.startDate ? ` · ${t.startDate.slice(0, 4)}` : ""}</span><span class="tag">${esc(t.format)}</span>
+      <span>경기 ${games.length}</span>${miss ? `<span class="tag red">점수 미입력 ${miss}</span>` : (games.length ? `<span class="tag green">완료</span>` : "")}</div>
+  </a>`;
+}
+function gCard(g, showT = false) {
+  const t = Store.data.tournaments[g.tournamentId];
+  const ok = scored(g), w = winnerInfo(g);
+  return `<a class="card ${ok ? "" : "missing"}" href="#/g/${g.id}">
+    <div class="row1"><span class="title">${esc(g.name)}</span><span class="code">${esc(g.code)}</span></div>
+    <div class="meta">
+      ${showT && t ? `<span>🏆 ${esc(t.name)}</span>` : ""}
+      <span>📅 ${esc(fmtDate(g.date))}</span>
+      <span>${esc(homeName(g))} vs ${esc(g.away)}</span>
+      ${ok ? `<span class="score">${esc(g.homeScore)} : ${esc(g.awayScore)}</span><span class="tag">${esc(w.short)}</span>` : `<span class="tag red">점수 미입력</span>`}
+    </div>
+  </a>`;
+}
+
+/* ---------------- 대회 (경기 목록) ---------------- */
+function renderTournament(app, tId) {
+  const t = Store.data.tournaments[tId];
+  if (!t) { app.innerHTML = `<div class="wrap"><div class="empty">대회를 찾을 수 없습니다.<br><br><a class="btn" href="#/">홈으로</a></div></div>`; return; }
+  const games = Store.gamesOf(tId), miss = games.filter(g => !scored(g)).length;
+  app.innerHTML = `
+  <header class="topbar">
+    <a class="iconbtn" href="#/" title="홈">←</a>
+    <h1>${esc(t.name)}<div class="sub">대회코드 ${esc(t.code)}</div></h1>
+    <span id="statusSlot">${statusHtml()}</span>
+  </header>
+  <div class="wrap">
+    ${bannerHtml()}
+    <div class="tinfo">
+      <div class="big">${esc(t.name)}</div>
+      <div class="kv">
+        <span class="k">대회날짜</span><span>${esc(fmtRange(t))} <span class="sub" style="color:var(--muted)">(${esc(t.startDate?.slice(0, 4) || "")})</span></span>
+        <span class="k">대회형식</span><span>${esc(t.format)}</span>
+        <span class="k">대회코드</span><span class="code">${esc(t.code)}</span>
+      </div>
+      <div class="actions" style="margin:14px 0 0"><button class="btn sm" id="editT">✏️ 대회정보 수정</button><button class="btn sm danger" id="delT">🗑 대회 삭제</button></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="addG">＋ 새 경기 추가</button></div>
+    <div class="sectiontitle">경기 목록 (${games.length})${miss ? ` · <span style="color:var(--red)">점수 미입력 ${miss}</span>` : ""}</div>
+    ${games.length ? `<div class="list">${games.map(g => gCard(g)).join("")}</div>` : `<div class="empty">경기가 없습니다</div>`}
+  </div>`;
+  $("#addG").onclick = async () => { if (await Lock.require()) go(`#/t/${tId}/new`); };
+  $("#editT").onclick = async () => { if (await Lock.require()) go(`#/t/${tId}/edit`); };
+  $("#delT").onclick = async () => {
+    if (!(await Lock.require())) return;
+    if (!(await ask("대회 삭제", `「${t.name}」 대회와 경기 ${games.length}개가 모두 삭제됩니다.\n되돌릴 수 없습니다.`, "삭제", "취소", true))) return;
+    const upd = { [`tournaments/${tId}`]: null };
+    games.forEach(g => upd[`games/${g.id}`] = null);
+    try { await Store.write(upd); toast("삭제했습니다"); go("#/"); } catch (e) { toast("삭제 실패: " + e.message, true); }
+  };
+}
+
+/* ---------------- 편집 폼 ---------------- */
+function makeEditor(r) {
+  const key = location.hash;
+  if (r.name === "newTournament") {
+    const tCode = Store.newCode();
+    return { key, mode: "newTournament", dirty: false,
+      t: { name: "", startDate: todayIso(), endDate: "", multi: false, format: "", code: tCode },
+      g: { name: "", date: todayIso(), home: "", away: "", code: Store.newCode([tCode]), homeScore: "", awayScore: "", memo: "" } };
+  }
+  if (r.name === "newGame") {
+    const t = Store.data.tournaments[r.tId]; if (!t) return null;
+    const days = daysOf(t);
+    const last = Store.gamesOf(r.tId).slice(-1)[0];
+    return { key, mode: "newGame", dirty: false, tId: r.tId, t: { ...t },
+      g: { name: "", date: days.length === 1 ? days[0] : (days.includes(todayIso()) ? todayIso() : (last?.date && days.includes(last.date) ? last.date : "")),
+        home: last?.home || "", away: "", code: Store.newCode(), homeScore: "", awayScore: "", memo: "" } };
+  }
+  if (r.name === "editTournament") {
+    const t = Store.data.tournaments[r.tId]; if (!t) return null;
+    return { key, mode: "editTournament", dirty: false, tId: r.tId, t: { ...t } };
+  }
+  if (r.name === "game") {
+    const g = Store.data.games[r.gId]; if (!g) return null;
+    const t = Store.data.tournaments[g.tournamentId] || {};
+    return { key, mode: "game", dirty: false, tId: g.tournamentId, gId: r.gId, t: { ...t },
+      g: { homeScore: "", awayScore: "", memo: "", home: "", ...g } };
+  }
+  return null;
+}
+
+function renderEditor(app) {
+  const m = ed.mode, t = ed.t, g = ed.g;
+  const locked = !Lock.unlocked;                // 잠겨 있으면 보기 전용
+  const dis = locked ? "disabled" : "";
+  const tEditable = (m === "newTournament" || m === "editTournament") && !locked;
+  const titles = { newTournament: "새 대회 추가", newGame: "새 경기 추가", editTournament: "대회정보 수정", game: g?.name || "경기" };
+
+  const tSection = tEditable ? `
+    <section class="fsec"><h2>대회정보</h2>
+      <div class="field"><label class="lbl">대회명 <span class="req">*</span></label>
+        <input class="inp" data-b="t.name" value="${esc(t.name)}" placeholder="예) 은평구청장배 농구대회"></div>
+      <div class="field"><label class="lbl">대회날짜 <span class="req">*</span></label>
+        <label class="check"><input type="checkbox" data-b="t.multi" ${t.multi ? "checked" : ""}> 2일 이상 진행되는 대회</label>
+        <div class="${t.multi ? "grid2" : ""}">
+          <div><input class="inp" type="date" data-b="t.startDate" value="${esc(t.startDate)}">${t.multi ? `<div class="hint">시작일</div>` : ""}</div>
+          ${t.multi ? `<div><input class="inp" type="date" data-b="t.endDate" value="${esc(t.endDate)}"><div class="hint">종료일</div></div>` : ""}
+        </div>
+        <div class="hint" id="tRange">${esc(fmtRange(t))}</div></div>
+      <div class="field"><label class="lbl">대회형식 <span class="req">*</span></label>
+        <div class="seg" data-seg="t.format">${["5대5", "3x3"].map(f => `<button type="button" data-v="${f}" class="${t.format === f ? "on" : ""}">${f}</button>`).join("")}</div></div>
+      <div class="field"><label class="lbl">대회코드</label>
+        <div class="codebox"><span class="code">${esc(t.code)}</span><span class="hint">자동 생성 · 중복 없음</span></div></div>
+    </section>` : `
+    <section class="fsec"><h2>대회정보 <span class="note">${m === "game" || m === "newGame" ? "· 선택한 대회 정보 유지" : ""}</span></h2>
+      <div class="kv readonlybox">
+        <span class="k">대회명</span><span>${esc(t.name)}</span>
+        <span class="k">대회날짜</span><span>${esc(fmtRange(t))}</span>
+        <span class="k">대회형식</span><span>${esc(t.format)}</span>
+        <span class="k">대회코드</span><span class="code">${esc(t.code)}</span>
+      </div></section>`;
+
+  const gSections = m === "editTournament" ? "" : `
+    <section class="fsec"><h2>경기정보</h2>
+      <div class="field"><label class="lbl">경기명 <span class="req">*</span></label>
+        <input class="inp" data-b="g.name" value="${esc(g.name)}" placeholder="예) 본선 2경기" ${dis}></div>
+      <div class="field"><label class="lbl">경기날짜 <span class="req">*</span></label><div id="gDate">${gDateHtml(dis)}</div></div>
+      <div class="grid2">
+        <div class="field"><label class="lbl">홈팀명</label>
+          <input class="inp" data-b="g.home" value="${esc(g.home)}" placeholder="${DEFAULT_HOME} (비우면 자동)" ${dis}></div>
+        <div class="field"><label class="lbl">어웨이팀명 <span class="req">*</span></label>
+          <input class="inp" data-b="g.away" value="${esc(g.away)}" placeholder="예) 인천소노" ${dis}></div>
+      </div>
+      <div class="field"><label class="lbl">경기코드</label>
+        <div class="codebox"><span class="code">${esc(g.code)}</span><span class="hint">자동 생성 · 중복 없음</span></div></div>
+    </section>
+    <section class="fsec"><h2>종료후 정보 <span class="note">· 비워둬도 저장 가능 (목록에 빨간색 표시)</span></h2>
+      <div class="grid2">
+        <div class="field"><label class="lbl" id="hLbl">${esc(homeName(g))} 점수</label>
+          <div class="scorein"><input class="inp" type="number" inputmode="numeric" min="0" data-b="g.homeScore" value="${esc(g.homeScore)}" placeholder="-" ${dis}><span class="unit">점</span></div></div>
+        <div class="field"><label class="lbl" id="aLbl">${esc(g.away || "어웨이팀")} 점수</label>
+          <div class="scorein"><input class="inp" type="number" inputmode="numeric" min="0" data-b="g.awayScore" value="${esc(g.awayScore)}" placeholder="-" ${dis}><span class="unit">점</span></div></div>
+      </div>
+      <div class="field"><label class="lbl">승리팀</label><div id="winBox"></div></div>
+    </section>
+    <section class="fsec"><h2>기타</h2>
+      <div class="field"><label class="lbl">메모</label>
+        <textarea class="inp" data-b="g.memo" placeholder="경기 메모" ${dis}>${esc(g.memo)}</textarea></div>
+    </section>
+    ${m === "game" && !locked ? `<div class="danger-zone"><button class="btn sm danger" id="delG">🗑 이 경기 삭제</button></div>` : ""}`;
+
+  app.innerHTML = `
+  <header class="topbar">
+    <button class="btn sm" id="exitBtn">← 나가기</button>
+    <h1>${esc(titles[m])}</h1>
+    <span id="statusSlot">${statusHtml()}</span>
+  </header>
+  <div class="wrap">
+    ${bannerHtml()}
+    ${locked ? `<div class="lockbar"><span>🔒 보기 전용입니다. 수정하려면 잠금을 해제하세요.</span><button class="btn sm blue" id="unlockBtn">잠금 해제</button></div>` : ""}
+    ${tSection}${gSections}
+  </div>
+  <div class="bottombar"><div class="inner">
+    ${locked ? "" : `<button class="btn primary" id="saveBtn">💾 저장하기</button>`}
+    ${m === "editTournament" ? "" : `<button class="btn blue" id="slateBtn">🎬 슬레이트 모드</button>`}
+  </div></div>`;
+
+  bindEditor(app);
+  updateDerived();
+}
+
+function gDateHtml(dis) {
+  const days = daysOf(ed.t), g = ed.g;
+  if (!days.length) return `<div class="hint">먼저 대회날짜를 입력하세요</div>`;
+  if (days.length === 1) { g.date = days[0]; return `<input class="inp" value="${esc(fmtDateDow(days[0]))}" readonly><div class="hint">하루 대회라 자동 적용</div>`; }
+  if (g.date && !days.includes(g.date)) g.date = "";
+  return `<select class="inp" data-b="g.date" ${dis}><option value="">날짜 선택</option>${days.map(d => `<option value="${d}" ${g.date === d ? "selected" : ""}>${esc(fmtDateDow(d))}</option>`).join("")}</select>`;
+}
+
+function setPath(path, val) { const [o, k] = path.split("."); ed[o][k] = val; }
+
+function bindEditor(app) {
+  app.querySelectorAll("[data-b]").forEach(el => {
+    const ev = (el.tagName === "SELECT" || el.type === "checkbox" || el.type === "date") ? "change" : "input";
+    const p = el.dataset.b;
+    el.addEventListener(ev, () => {
+      setPath(p, el.type === "checkbox" ? el.checked : el.value);
+      ed.dirty = true;
+      el.classList.remove("invalid");
+      if (p === "t.multi") {
+        if (ed.t.multi && !ed.t.endDate) { const d = new Date(ed.t.startDate + "T00:00:00"); d.setDate(d.getDate() + 1); ed.t.endDate = isoOf(d); }
+        return renderEditor($("#app"));
+      }
+      if (p === "t.startDate" || p === "t.endDate") {
+        if (isMulti(ed.t) && ed.t.endDate < ed.t.startDate) { toast("종료일이 시작일보다 빠릅니다", true); }
+        const box = $("#gDate"); if (box) { box.innerHTML = gDateHtml(""); bindEditor(box); }
+        const r = $("#tRange"); if (r) r.textContent = fmtRange(ed.t);
+      }
+      updateDerived();
+    });
+    el.removeAttribute("data-b");   // 같은 요소에 중복 바인딩 방지
+  });
+  app.querySelectorAll("[data-seg]").forEach(seg => {
+    seg.querySelectorAll("button").forEach(b => b.onclick = () => {
+      setPath(seg.dataset.seg, b.dataset.v); ed.dirty = true; seg.classList.remove("invalid");
+      seg.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+    });
+  });
+  const exit = $("#exitBtn", app); if (exit) exit.onclick = exitEditor;
+  const save = $("#saveBtn", app); if (save) save.onclick = saveEditor;
+  const sl = $("#slateBtn", app); if (sl) sl.onclick = () => openSlate(ed.t.code, ed.g.code);
+  const un = $("#unlockBtn", app); if (un) un.onclick = async () => { if (await Lock.require()) renderEditor($("#app")); };
+  const del = $("#delG", app); if (del) del.onclick = deleteGame;
+}
+
+function updateDerived() {
+  if (!ed.g) return;
+  const w = winnerInfo(ed.g), box = $("#winBox");
+  if (box) box.innerHTML = `<div class="winner ${w.cls}">${esc(w.text)}</div>`;
+  const h = $("#hLbl"), a = $("#aLbl");
+  if (h) h.textContent = `${homeName(ed.g)} 점수`;
+  if (a) a.textContent = `${ed.g.away || "어웨이팀"} 점수`;
+}
+
+async function exitEditor() {
+  const back = ed.mode === "newTournament" ? "#/" : (ed.tId ? `#/t/${ed.tId}` : "#/");
+  if (ed.mode === "game" && !ed.dirty) return goNoAsk(back);
+  const ok = await ask("나가기", "저장하지 않고 나가시겠습니까?\n입력한 내용은 사라집니다.", "저장 안하고 나가기", "계속 작성", true);
+  if (ok) goNoAsk(back);
+}
+
+function validate() {
+  const miss = [];
+  $("#app").querySelectorAll(".invalid").forEach(e => e.classList.remove("invalid"));
+  const t = ed.t, g = ed.g;
+  if (ed.mode === "newTournament" || ed.mode === "editTournament") {
+    if (!t.name?.trim()) { miss.push("대회명"); markField("대회명"); }
+    if (!t.startDate) { miss.push("대회날짜"); markField("대회날짜"); }
+    if (t.multi && (!t.endDate || t.endDate < t.startDate)) { miss.push("대회 종료일"); markField("대회날짜"); }
+    if (!t.format) { miss.push("대회형식"); const s = $('[data-seg="t.format"]'); if (s) s.classList.add("invalid"); }
+  }
+  if (ed.mode !== "editTournament") {
+    if (!g.name?.trim()) { miss.push("경기명"); markField("경기명"); }
+    if (!g.date || !daysOf(t).includes(g.date)) { miss.push("경기날짜"); markField("경기날짜"); }
+    if (!g.away?.trim()) { miss.push("어웨이팀명"); markField("어웨이팀명"); }
+    for (const [k, n] of [["homeScore", "홈팀 점수"], ["awayScore", "어웨이팀 점수"]])
+      if (g[k] !== "" && g[k] != null && (!/^\d+$/.test(String(g[k])))) { miss.push(n + "(숫자)"); }
+  }
+  return miss;
+}
+function markField(label) {
+  document.querySelectorAll(".field").forEach(f => {
+    const l = f.querySelector("label.lbl");
+    if (l && l.textContent.replace("*", "").trim() === label) f.querySelectorAll(".inp").forEach(i => { if (!i.readOnly) i.classList.add("invalid"); });
+  });
+}
+
+async function saveEditor() {
+  if (!Lock.unlocked && !(await Lock.require())) return;
+  const miss = validate();
+  if (miss.length) { toast("입력해주세요: " + miss.join(", "), true); const f = $(".invalid"); if (f) f.scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  const now = Date.now(), t = ed.t, g = ed.g;
+  const cleanT = () => ({ name: t.name.trim(), startDate: t.startDate, endDate: isMulti(t) ? t.endDate : "", multi: isMulti(t), format: t.format, code: t.code });
+  const cleanG = tId => ({ tournamentId: tId, name: g.name.trim(), date: g.date, home: (g.home || "").trim() || DEFAULT_HOME, away: g.away.trim(),
+    code: g.code, homeScore: hasScore(g.homeScore) && g.homeScore !== "" ? Number(g.homeScore) : "", awayScore: hasScore(g.awayScore) && g.awayScore !== "" ? Number(g.awayScore) : "",
+    memo: g.memo || "" });
+  // 코드 중복 최종 확인 (동시에 다른 기기에서 같은 코드를 만든 경우 대비)
+  const taken = Store.allCodes(ed.mode === "game" ? ed.gId : (ed.mode === "editTournament" ? ed.tId : undefined));
+  let changed = false;
+  if (ed.mode === "newTournament" && taken.has(normCode(t.code))) { t.code = Store.newCode([g.code]); changed = true; }
+  if ((ed.mode === "newTournament" || ed.mode === "newGame") && (taken.has(normCode(g.code)) || normCode(g.code) === normCode(t.code))) { g.code = Store.newCode([t.code]); changed = true; }
+  if (changed) { toast("다른 기기와 코드가 겹쳐 새 코드로 바꿨습니다. 확인 후 다시 저장하세요.", true); renderEditor($("#app")); return; }
+
+  const upd = {};
+  let target;
+  try {
+    if (ed.mode === "newTournament") {
+      const tId = uid(), gId = uid();
+      upd[`tournaments/${tId}`] = { ...cleanT(), createdAt: now };
+      upd[`games/${gId}`] = { ...cleanG(tId), createdAt: now, updatedAt: now };
+      target = `#/g/${gId}`;
+    } else if (ed.mode === "newGame") {
+      const gId = uid();
+      upd[`games/${gId}`] = { ...cleanG(ed.tId), createdAt: now, updatedAt: now };
+      target = `#/g/${gId}`;
+    } else if (ed.mode === "editTournament") {
+      const prev = Store.data.tournaments[ed.tId] || {};
+      upd[`tournaments/${ed.tId}`] = { ...prev, ...cleanT(), updatedAt: now };
+      target = `#/t/${ed.tId}`;
+      const outOf = Store.gamesOf(ed.tId).filter(x => !daysOf(t).includes(x.date)).length;
+      if (outOf) setTimeout(() => toast(`대회날짜 밖에 있는 경기가 ${outOf}개 있습니다. 경기날짜를 확인하세요.`, true), 300);
+    } else {
+      const prev = Store.data.games[ed.gId] || {};
+      upd[`games/${ed.gId}`] = { ...prev, ...cleanG(ed.tId), updatedAt: now };
+      target = `#/g/${ed.gId}`;
+    }
+    await Store.write(upd);
+    toast("저장했습니다 ✅");
+    ed.dirty = false;
+    if (location.hash === target) { ed = null; render(); } else { ed = null; go(target); }
+  } catch (e) {
+    console.error(e); toast("저장 실패: " + e.message, true);
+  }
+}
+
+async function deleteGame() {
+  if (!(await Lock.require())) return;
+  if (!(await ask("경기 삭제", `「${ed.g.name}」 경기를 삭제합니다.\n되돌릴 수 없습니다.`, "삭제", "취소", true))) return;
+  const back = `#/t/${ed.tId}`;
+  try { await Store.write({ [`games/${ed.gId}`]: null }); ed.dirty = false; toast("삭제했습니다"); goNoAsk(back); }
+  catch (e) { toast("삭제 실패: " + e.message, true); }
+}
+
+/* ---------------- 슬레이트 모드 ---------------- */
+const slate = $("#slate");
+let wakeLock = null, enteredFs = false, lastTap = 0;
+async function openSlate(tCode, gCode) {
+  $("#slateT").textContent = tCode || "#-----";
+  $("#slateG").textContent = gCode || "#-----";
+  const hint = $("#slateHint"); hint.style.opacity = "1"; setTimeout(() => hint.style.opacity = "0", 2500);
+  slate.classList.remove("hidden");
+  enteredFs = false;
+  try {
+    const el = document.documentElement;
+    if (el.requestFullscreen) { await el.requestFullscreen({ navigationUI: "hide" }); enteredFs = true; }
+    else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); enteredFs = true; }
+  } catch (e) {}
+  try { await screen.orientation?.lock?.("landscape"); } catch (e) {}
+  try { wakeLock = await navigator.wakeLock?.request("screen"); } catch (e) {}
+}
+function closeSlate() {
+  if (slate.classList.contains("hidden")) return;
+  slate.classList.add("hidden");
+  try { screen.orientation?.unlock?.(); } catch (e) {}
+  try { if (document.fullscreenElement) document.exitFullscreen(); else if (document.webkitFullscreenElement) document.webkitExitFullscreen(); } catch (e) {}
+  try { wakeLock?.release(); } catch (e) {} wakeLock = null;
+}
+slate.addEventListener("dblclick", e => { e.preventDefault(); closeSlate(); });
+slate.addEventListener("touchend", e => {
+  const now = Date.now();
+  if (now - lastTap < 350) { e.preventDefault(); lastTap = 0; closeSlate(); } else lastTap = now;
+}, { passive: false });
+const onFsChange = () => { if (enteredFs && !document.fullscreenElement && !document.webkitFullscreenElement) { enteredFs = false; closeSlate(); } };
+document.addEventListener("fullscreenchange", onFsChange);
+document.addEventListener("webkitfullscreenchange", onFsChange);
+document.addEventListener("visibilitychange", async () => {
+  if (!document.hidden && !slate.classList.contains("hidden")) { try { wakeLock = await navigator.wakeLock?.request("screen"); } catch (e) {} }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSlate(); });
+
+/* ---------------- 시작 ---------------- */
+render();
+Store.init();
+</script>
+</body>
+</html>
