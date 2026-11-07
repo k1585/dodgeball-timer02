@@ -82,7 +82,6 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .sync i{width:7px;height:7px;border-radius:50%;background:var(--faint)}
 .sync.fb i{background:var(--green);box-shadow:0 0 0 3px rgba(47,209,122,.18);animation:pulse 2.4s infinite}
 .sync.local i{background:var(--red)}
-@media (max-width:480px){.sync{padding:0 9px;font-size:0;gap:0}.appbar .ttl b{font-size:17px}}
 .dirty{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;
   background:var(--accent-soft);color:var(--accent-2);flex:none;animation:pop .3s var(--spring)}
 
@@ -184,7 +183,7 @@ mark{background:rgba(255,122,26,.3);color:inherit;border-radius:4px;padding:0 2p
 .cell b{font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cell b.code{color:var(--accent-2);font-variant-numeric:tabular-nums}
 .cell b.red{color:var(--red)}
-@media (max-width:640px){.cells{grid-template-columns:repeat(2,1fr)}}
+
 
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:var(--muted);
   padding:44px 20px;border:1.5px dashed var(--line-2);border-radius:var(--r-card);font-size:15px;line-height:1.5}
@@ -204,7 +203,7 @@ mark{background:rgba(255,122,26,.3);color:inherit;border-radius:4px;padding:0 2p
 .frow{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);margin-bottom:16px}
 .frow:last-child{margin-bottom:0}
 .frow.one{grid-template-columns:1fr}
-@media (max-width:600px){.frow{grid-template-columns:1fr}}
+
 .field{min-width:0}
 .lbl{display:flex;align-items:center;justify-content:space-between;gap:8px;height:20px;margin-bottom:8px;font-size:13.5px;font-weight:700;color:var(--muted)}
 .lbl .req{color:var(--accent);margin-left:2px}
@@ -240,7 +239,7 @@ textarea.ctl{height:auto;min-height:132px;padding:14px 16px;resize:vertical;line
 
 /* 대회정보 요약 (새 경기/경기 보기) */
 .infostrip{display:grid;grid-template-columns:2fr 1.4fr 1fr 1fr;gap:var(--gap)}
-@media (max-width:700px){.infostrip{grid-template-columns:1fr 1fr}}
+
 
 /* 점수판 */
 .scoreboard{display:grid;grid-template-columns:1fr 56px 1fr;gap:var(--gap);align-items:stretch}
@@ -263,7 +262,7 @@ textarea.ctl{height:auto;min-height:132px;padding:14px 16px;resize:vertical;line
 .stepper.ro button{display:none}
 .bump{animation:bump .25s var(--ease)}
 .sb-vs{display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:850;color:var(--faint)}
-@media (max-width:600px){.scoreboard{grid-template-columns:1fr}.sb-vs{height:20px}}
+
 .winner{margin-top:var(--gap);height:var(--h);border-radius:var(--r);display:flex;align-items:center;justify-content:center;gap:10px;
   font-size:16px;font-weight:800;padding:0 16px;text-align:center;background:var(--surface-2);color:var(--muted);border:1.5px solid transparent;overflow:hidden}
 .winner span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -322,11 +321,7 @@ textarea.ctl{height:auto;min-height:132px;padding:14px 16px;resize:vertical;line
 .mrow .tx small{display:block;font-size:12.5px;color:var(--muted);font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mrow.red{color:var(--red)}
 .mgroup{font-size:12px;font-weight:800;color:var(--faint);letter-spacing:.06em;margin:14px 4px 2px}
-@media (max-width:600px){
-  .mbg{align-items:flex-end;padding:0}
-  .modal{max-width:none;border-radius:24px 24px 0 0;padding-bottom:calc(env(safe-area-inset-bottom) + 24px);animation:sheetIn .35s var(--ease)}
-  .mbg.out .modal{animation:sheetOut .2s var(--ease) forwards}
-}
+
 
 .toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 96px);z-index:300;display:flex;align-items:center;gap:10px;
   max-width:calc(100% - 32px);padding:0 18px;height:50px;border-radius:16px;background:#272c3a;border:1px solid var(--line-2);color:var(--text);
@@ -380,6 +375,76 @@ textarea.ctl{height:auto;min-height:132px;padding:14px 16px;resize:vertical;line
   #slate .scode{font-size:min(25vw,15.5vh)}
   #slate .shint{bottom:3vw;font-size:2.3vw}
 }
+
+
+/* =====================================================================
+   폰 모드 — <html class="phone"> 일 때 적용 (자동 감지 또는 설정에서 선택)
+   ===================================================================== */
+html.phone{--h:50px;--pad:16px;--gap:10px;--r-card:18px}
+.phone .appbar{padding:calc(env(safe-area-inset-top) + 8px) 12px 8px}
+.phone .appbar .in{max-width:616px;gap:8px}
+.phone .appbar .ttl b{font-size:17px}
+.phone .appbar .ttl small{font-size:12px}
+.phone .ib{width:40px;height:40px;border-radius:11px}
+.phone .backbtn{height:40px;padding:0 12px 0 8px;font-size:14.5px;border-radius:11px}
+.phone .sync{padding:0;width:28px;justify-content:center;font-size:0;gap:0}
+.phone .dirty{padding:0 8px;font-size:11px}
+.phone .page{max-width:640px;padding:14px 12px calc(env(safe-area-inset-bottom) + 104px)}
+.phone .banner{padding:12px 14px;font-size:13.5px;border-radius:14px}
+.phone .stats{gap:8px;margin:4px 0 14px}
+.phone .stat{height:64px;padding:11px 13px;border-radius:14px}
+.phone .stat b{font-size:22px}
+.phone .stat span{font-size:12px}
+.phone .section-h{margin:20px 2px 10px}
+.phone .grid{grid-template-columns:1fr}
+.phone .tcard{grid-template-columns:56px 1fr 16px;gap:12px;padding:14px;min-height:100px}
+.phone .datebox{width:56px;height:66px;border-radius:12px}
+.phone .datebox .d{font-size:22px}
+.phone .tcard .tt{font-size:16.5px}
+.phone .gcard{padding:14px;min-height:0;gap:10px}
+.phone .gcard .gn{font-size:16px}
+.phone .board{grid-template-columns:1fr 40px 1fr;height:42px}
+.phone .board .tm{gap:8px}
+.phone .board .sc{font-size:24px;min-width:30px}
+.phone .board .tn{font-size:13.5px}
+.phone .thero{padding:18px;border-radius:20px}
+.phone .thero h1{font-size:22px;margin:4px 0 14px}
+.phone .cells{grid-template-columns:repeat(2,1fr)}
+.phone .cell{height:62px;padding:10px 12px}
+.phone .cell b{font-size:15px}
+.phone .fcard{margin-bottom:12px}
+.phone .fcard-h{margin-bottom:14px}
+.phone .fcard-h .note{display:none}
+.phone .frow{grid-template-columns:1fr;margin-bottom:14px}
+.phone .frow.two{grid-template-columns:1fr 1fr}
+.phone .datehint{display:none}
+.phone .infostrip{grid-template-columns:1fr 1fr}
+.phone .ctl{font-size:16px}
+.phone .ctl.static .code{font-size:18px}
+/* 점수판: 두 팀 나란히, 점수 아래에 −/+ */
+.phone .scoreboard{grid-template-columns:1fr 1fr;gap:10px}
+.phone .sb-vs{display:none}
+.phone .sb{padding:12px;gap:10px;border-radius:16px}
+.phone .sb-top .side{display:none}
+.phone .sb-top .nm{font-size:14px}
+.phone .stepper{grid-template-columns:1fr 1fr;grid-template-rows:68px 44px;height:auto;gap:8px}
+.phone .stepper input{grid-column:1 / 3;grid-row:1;font-size:34px}
+.phone .stepper button:first-child{grid-column:1;grid-row:2}
+.phone .stepper button:last-child{grid-column:2;grid-row:2}
+.phone .stepper.ro{grid-template-rows:68px}
+.phone .winner{font-size:14.5px}
+.phone .bottombar{padding:10px 12px calc(env(safe-area-inset-bottom) + 10px)}
+.phone .bottombar .in{max-width:616px;gap:10px}
+.phone .bottombar .btn{height:54px;font-size:16px;border-radius:15px;gap:6px}
+/* 키보드가 올라오면 아래 버튼 숨김 (입력칸 가림 방지) */
+.bottombar{transition:transform .25s var(--ease),opacity .2s}
+.phone.kb .bottombar{transform:translateY(130%);opacity:0;pointer-events:none}
+/* 모달은 아래에서 올라오는 시트로 */
+.phone .mbg{align-items:flex-end;padding:0}
+.phone .modal{max-width:none;border-radius:24px 24px 0 0;padding:22px 18px calc(env(safe-area-inset-bottom) + 20px);animation:sheetIn .35s var(--ease)}
+.phone .mbg.out .modal{animation:sheetOut .2s var(--ease) forwards}
+.phone .mrow{height:56px}
+.phone .toast{bottom:calc(env(safe-area-inset-bottom) + 84px);height:46px;font-size:14px}
 
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important}
@@ -452,9 +517,27 @@ const P = {
   file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/>',
   save: '<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
   inbox: '<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+  phone: '<rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18h2"/>',
+  pad: '<rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M11 18h2"/>',
   exit: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'
 };
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${P[n] || ""}</svg>`;
+
+/* ---------------- 화면 모드 (자동 / 패드 / 폰) ---------------- */
+const LAYOUT_KEY = "basketballSlate.layout";
+const phoneMq = matchMedia("(max-width: 700px), (max-height: 500px)");
+const getLayoutPref = () => { try { return localStorage.getItem(LAYOUT_KEY) || "auto"; } catch (e) { return "auto"; } };
+const isPhone = () => document.documentElement.classList.contains("phone");
+function applyLayout() {
+  const pref = getLayoutPref();
+  document.documentElement.classList.toggle("phone", pref === "phone" || (pref === "auto" && phoneMq.matches));
+}
+phoneMq.addEventListener ? phoneMq.addEventListener("change", applyLayout) : phoneMq.addListener(applyLayout);
+applyLayout();
+// 폰에서 키보드가 올라오면 아래 버튼 숨기기
+const isTyping = el => el && (el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && !["button", "checkbox", "radio", "file"].includes(el.type)));
+document.addEventListener("focusin", e => { if (isTyping(e.target)) document.documentElement.classList.add("kb"); });
+document.addEventListener("focusout", () => setTimeout(() => { if (!isTyping(document.activeElement)) document.documentElement.classList.remove("kb"); }, 60));
 
 /* ---------------- 유틸 ---------------- */
 const $ = (s, el = document) => el.querySelector(s);
@@ -925,7 +1008,7 @@ function renderEditor(wrap) {
         ${fld("t.multi", "대회기간", seg("t.multi", [["0", "하루"], ["1", "2일 이상"]], t.multi ? "1" : "0", locked), { req: true })}
         ${fld("t.format", "대회형식", seg("t.format", FORMATS.map(f => [f, f]), t.format, locked), { req: true })}
       </div>
-      <div class="frow" id="tDates">${tDatesHtml(dis)}</div>
+      <div class="frow ${t.multi ? "two" : ""}" id="tDates">${tDatesHtml(dis)}</div>
       <div class="frow one">${fld("t.code", "대회코드", `<div class="ctl static"><span class="code">${esc(t.code)}</span><span class="chip">자동 생성</span></div>`, { help: "모든 코드와 중복 없음" })}</div>
     </section>` : `
     <section class="fcard" style="--i:${n}"><div class="fcard-h"><span class="no">${++n}</span><h2>대회정보</h2><span class="note">선택한 대회 정보 유지</span></div>
@@ -977,7 +1060,7 @@ function renderEditor(wrap) {
 function tDatesHtml(dis) {
   const t = ed.t;
   if (!t.multi) return fld("t.startDate", "대회날짜", `<input class="ctl" type="date" data-b="t.startDate" value="${esc(t.startDate)}" ${dis}>`, { req: true, help: fmtDateDow(t.startDate) })
-    + `<div class="field"><div class="lbl"><span>&nbsp;</span></div><div class="ctl static" style="color:var(--muted);font-size:14.5px">하루 대회 · 경기날짜 자동 적용</div></div>`;
+    + `<div class="field datehint"><div class="lbl"><span>&nbsp;</span></div><div class="ctl static" style="color:var(--muted);font-size:14.5px">하루 대회 · 경기날짜 자동 적용</div></div>`;
   return fld("t.startDate", "시작일", `<input class="ctl" type="date" data-b="t.startDate" value="${esc(t.startDate)}" ${dis}>`, { req: true, help: fmtDateDow(t.startDate) })
     + fld("t.endDate", "종료일", `<input class="ctl" type="date" data-b="t.endDate" min="${esc(t.startDate)}" value="${esc(t.endDate)}" ${dis}>`, { req: true, help: fmtDateDow(t.endDate) });
 }
@@ -1044,7 +1127,7 @@ function setVal(p, v) {
 }
 function refreshDates() {
   const dis = Lock.unlocked ? "" : "disabled";
-  const td = $("#tDates"); if (td) td.innerHTML = tDatesHtml(dis);
+  const td = $("#tDates"); if (td) { td.innerHTML = tDatesHtml(dis); td.classList.toggle("two", !!ed.t.multi); }
   const gd = $("#gDate"); if (gd) gd.innerHTML = gDateHtml(dis);
 }
 
@@ -1071,6 +1154,7 @@ document.addEventListener("click", async e => {
   if (st && ed) {
     const k = st.dataset.step, cur = hasScore(ed.g[k]) ? +ed.g[k] : 0, nv = Math.max(0, Math.min(999, cur + +st.dataset.d));
     const inp = $(`[data-b="g.${k}"]`); if (inp) { inp.value = nv; bump(inp); }
+    try { navigator.vibrate?.(8); } catch (e) {}
     setVal("g." + k, String(nv));
     return;
   }
@@ -1228,6 +1312,8 @@ async function settingsSheet() {
     `<div class="mgroup">보안</div>` +
     mrow("lock", Lock.unlocked ? "lock" : "unlock", Lock.unlocked ? "지금 잠그기" : "잠금 해제", Lock.unlocked ? "현재 수정 가능 상태" : "추가·수정하려면 해제") +
     mrow("pw", "key", "비밀번호 변경", "기본 비밀번호 4242") +
+    `<div class="mgroup">화면</div>` +
+    mrow("layout", "phone", "화면 모드", `${{ auto: "자동", pad: "패드", phone: "폰" }[getLayoutPref()]}${getLayoutPref() === "auto" ? ` · 지금 ${isPhone() ? "폰" : "패드"} 화면` : " 고정"}`) +
     `<div class="mgroup">서버</div>` +
     mrow("fb", "cloud", "Firebase 연결", fbSub) +
     `<div class="mgroup">백업</div>` +
@@ -1236,10 +1322,22 @@ async function settingsSheet() {
     mrow("import", "up", "백업 파일 불러오기", "백업 파일의 기록을 합치기"));
   if (a === "lock") { if (Lock.unlocked) { Lock.unlocked = false; toast("잠갔습니다", "ok"); } else await Lock.require(); render(); }
   if (a === "pw") changePasswordDialog();
+  if (a === "layout") layoutDialog();
   if (a === "fb") firebaseDialog();
   if (a === "csv") exportCsv();
   if (a === "json") exportJson();
   if (a === "import") importJson();
+}
+async function layoutDialog() {
+  const cur = getLayoutPref(), mark = v => v === cur ? " ✓" : "";
+  const a = await menu("화면 모드",
+    mrow("auto", "gear", "자동" + mark("auto"), "화면 크기에 맞춰 자동으로 바뀜") +
+    mrow("pad", "pad", "패드" + mark("pad"), "넓은 화면 · 2열 배치") +
+    mrow("phone", "phone", "폰" + mark("phone"), "좁은 화면 · 한 손 조작에 맞춘 배치"));
+  if (!a) return;
+  try { if (a === "auto") localStorage.removeItem(LAYOUT_KEY); else localStorage.setItem(LAYOUT_KEY, a); } catch (e) {}
+  applyLayout(); anim = "fade"; render();
+  toast(`화면 모드: ${{ auto: "자동", pad: "패드", phone: "폰" }[a]}`, "ok");
 }
 function changePasswordDialog() {
   return modal(`<div class="mi">${ic("key")}</div><h3>비밀번호 변경</h3><p>모든 기기에 같이 적용됩니다.</p>
@@ -1340,7 +1438,9 @@ let wakeLock = null, enteredFs = false, lastTap = 0, hintTimer;
 async function openSlate(tCode, gCode) {
   $("#slateT").textContent = tCode || "#-----";
   $("#slateG").textContent = gCode || "#-----";
-  const hint = $("#slateHint"); hint.style.opacity = "1"; clearTimeout(hintTimer); hintTimer = setTimeout(() => hint.style.opacity = "0", 2500);
+  const hint = $("#slateHint");
+  hint.textContent = "두 번 탭하면 입력모드로 돌아갑니다";
+  hint.style.opacity = "1"; clearTimeout(hintTimer); hintTimer = setTimeout(() => hint.style.opacity = "0", 2500);
   slate.classList.add("show"); slate.setAttribute("aria-hidden", "false");
   enteredFs = false;
   try {
@@ -1349,6 +1449,11 @@ async function openSlate(tCode, gCode) {
     else if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); enteredFs = true; }
   } catch (e) {}
   try { await screen.orientation?.lock?.("landscape"); } catch (e) {}
+  const standalone = navigator.standalone || matchMedia("(display-mode: standalone)").matches;
+  if (!enteredFs && !standalone) {   // 아이폰 Safari 는 웹페이지 풀화면을 지원하지 않음
+    hint.textContent = "두 번 탭하면 돌아갑니다 · 홈 화면에 추가하면 주소창 없이 풀화면으로 볼 수 있어요";
+    clearTimeout(hintTimer); hintTimer = setTimeout(() => hint.style.opacity = "0", 4500);
+  }
   try { wakeLock = await navigator.wakeLock?.request("screen"); } catch (e) {}
 }
 function closeSlate() {
