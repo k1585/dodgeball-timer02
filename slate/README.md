@@ -18,6 +18,8 @@
 - **백업**: ⚙️ → CSV(엑셀) 내보내기, 백업 파일 저장/불러오기
 
 ## 저장 방식
+> 현재 **Firebase 연동 꺼짐** (`USE_FIREBASE = false`) — 이 기기(localStorage)에만 저장합니다.
+
 Firebase Realtime Database의 `basketballSlate` 위치에 저장합니다.
 Firebase에 접근할 수 없으면 자동으로 **이 기기(localStorage)** 에 저장하고(오른쪽 위 빨간 점),
 나중에 연결되면 기기에 있던 기록을 자동으로 올립니다.

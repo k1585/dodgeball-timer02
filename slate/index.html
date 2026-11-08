@@ -82,6 +82,7 @@ svg.i{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-widt
 .sync i{width:7px;height:7px;border-radius:50%;background:var(--faint)}
 .sync.fb i{background:var(--green);box-shadow:0 0 0 3px rgba(47,209,122,.18);animation:pulse 2.4s infinite}
 .sync.local i{background:var(--red)}
+.sync.off i{background:var(--muted)}
 .dirty{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 10px;border-radius:999px;font-size:12px;font-weight:700;
   background:var(--accent-soft);color:var(--accent-2);flex:none;animation:pop .3s var(--spring)}
 
@@ -473,6 +474,9 @@ html.phone{--h:50px;--pad:16px;--gap:10px;--r-card:18px}
    - Firebase 접근이 안 되면 자동으로 이 기기(localStorage)에 저장하고,
      나중에 연결되면 기기에 있던 기록을 자동으로 올립니다.
    ===================================================================== */
+// ▶ Firebase 연동 켜기/끄기: true 로 바꾸면 아래 기본 프로젝트에 연결합니다.
+//   (지금은 꺼져 있어서 이 기기에만 저장됩니다. ⚙️ 설정 → Firebase 연결 에서 기기별로 켤 수도 있음)
+const USE_FIREBASE = false;
 const DEFAULT_FIREBASE = {
   apiKey: "AIzaSyBsUAj6nR2eihsyZn6BREseo_iH-3I56i0",
   authDomain: "stopwatch-6bb55.firebaseapp.com",
@@ -596,7 +600,7 @@ function result(g) {
 /* ---------------- 저장소 (Firebase RTDB / 기기 저장) ---------------- */
 function getFbConfig() {
   try { const s = localStorage.getItem(FBCFG_KEY); if (s) return JSON.parse(s); } catch (e) {}
-  return DEFAULT_FIREBASE;
+  return USE_FIREBASE ? DEFAULT_FIREBASE : { apiKey: "" };
 }
 const Store = {
   data: { tournaments: {}, games: {}, settings: {} },
@@ -822,7 +826,7 @@ Store.listeners.add(() => {
 
 function syncChip() {
   if (Store.mode === "firebase") return `<span class="sync fb" title="Firebase 실시간 동기화"><i></i>동기화</span>`;
-  if (Store.mode === "local") return `<span class="sync local" title="${esc(Store.error || "이 기기에만 저장")}"><i></i>기기 저장</span>`;
+  if (Store.mode === "local") return `<span class="sync ${Store.error ? "local" : "off"}" title="${esc(Store.error || "이 기기에만 저장")}"><i></i>기기 저장</span>`;
   return `<span class="sync"><i></i>연결 중</span>`;
 }
 function updateSync() { $$(".syncslot").forEach(s => s.innerHTML = syncChip()); }
@@ -1376,7 +1380,7 @@ async function firebaseDialog() {
     <textarea class="ctl" data-cfg placeholder='const firebaseConfig = {\n  apiKey: "...",\n  databaseURL: "...",\n  projectId: "...",\n  ...\n};'></textarea>
     <div class="err" data-err></div>
     <div class="btns"><button class="btn" data-x>취소</button><button class="btn primary" data-ok>저장 후 연결</button></div>
-    <div class="btns" style="margin-top:10px"><button class="btn sm" data-reset>기본값으로</button><button class="btn sm" data-off>기기 저장만 사용</button></div>`,
+    <div class="btns" style="margin-top:10px"><button class="btn sm" data-reset>${USE_FIREBASE ? "기본값으로" : "연동 끄기 (기본값)"}</button><button class="btn sm" data-off>기기 저장만 사용</button></div>`,
     (bg, close) => {
       $("[data-x]", bg).onclick = () => close(null);
       $("[data-reset]", bg).onclick = () => close("reset");

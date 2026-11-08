@@ -1,5 +1,7 @@
 # ✅ 할 일 체크리스트
 
+> 지금은 **Firebase 연동이 꺼져 있어요** (기기 저장만). 켜려면 `index.html` 의 `USE_FIREBASE = false` 를 `true` 로 바꾸고 아래 1~3번을 하세요.
+
 ## 1. Firebase (여러 기기 동기화용)
 - [ ] Firebase 콘솔 접속 → https://console.firebase.google.com
 - [ ] 프로젝트 고르기
