@@ -927,7 +927,7 @@ FD.fieldHTML = (f, p, val) => {
     ${f.help && f.type !== "files" ? `<div class="fd-help">${esc(f.help)}</div>` : ""}${c}<div class="fd-err" role="alert" hidden></div></div>`;
 };
 FD.formHTML = (fields, p, vals = {}) => fields.map(f => FD.fieldHTML(f, p, vals[f.id])).join("");
-const FILES = {};      // 화면에서 고른 파일 (데모: 이름·크기만 저장)
+const FILES = FD.FILES = {};      // 화면에서 고른 파일 (데모: 이름·크기만 저장 · 실제 모드: 함께 전송)
 FD.bindForm = (root, onChange) => {
   root.addEventListener("click", e => {
     const b = e.target.closest(".fd-opt"); if (!b || !root.contains(b)) return;
@@ -1110,6 +1110,7 @@ FD.store = {
   update(no, patch, who = "관리자", act = ""){ const list = this.all(), o = list.find(x => x.no === no); if (!o) return;
     Object.assign(o, patch); o.updatedAt = Date.now(); if (act) o.log.push({at: o.updatedAt, who, act}); this.save(list); return o; },
   remove(no){ this.save(this.all().filter(o => o.no !== no)); },
+  put(o){ const list = this.all().filter(x => x.no !== o.no); list.unshift(o); this.save(list); const my = LS.get("fdr_my", []); LS.set("fdr_my", [o.no, ...my.filter(n => n !== o.no)].slice(0, 20)); },
   reset(){ localStorage.removeItem("fdr_orders"); },
   mine(){ const mine = LS.get("fdr_my", []); return mine.map(no => this.get(no)).filter(Boolean); }
 };
@@ -1332,10 +1333,10 @@ FD.studentHTML = p => `<div class="fd-stu"><label class="fd-switch"><input type=
   <label class="fd-drop sm" for="${p}-stuv">${FD.icon("upload")}<span><b>영상 올리기</b></span></label><input type="file" id="${p}-stuv" accept="video/*" hidden><div class="fd-stu-st" role="status"></div></div></div>`;
 FD.bindStudent = (p, onChange) => {
   const cb = document.getElementById(p + "-stu"), body = cb.closest(".fd-stu").querySelector(".fd-stu-body"), st = body.querySelector(".fd-stu-st"), inp = document.getElementById(p + "-stuv");
-  const S = {on: false, ok: false};
+  const S = FD.lastStudent = {on: false, ok: false, file: null};
   cb.onchange = () => { S.on = cb.checked; body.hidden = !S.on; onChange(S.on && S.ok); };
   inp.onchange = async () => { const f = inp.files[0]; inp.value = ""; if (!f) return; st.textContent = "영상 길이 확인 중…";
-    const sec = await FD.videoSeconds(f); S.ok = sec == null || sec >= FD.settings.studentMinSec;
+    const sec = await FD.videoSeconds(f); S.ok = sec == null || sec >= FD.settings.studentMinSec; S.file = S.ok ? f : null;
     st.textContent = S.ok ? `확인됐어요${sec ? ` (${sec.toFixed(1)}초)` : ""} · 할인 적용` : `${sec.toFixed(1)}초예요. ${FD.settings.studentMinSec}초 이상 영상을 올려 주세요.`; st.className = "fd-stu-st " + (S.ok ? "ok" : "bad"); onChange(S.on && S.ok); };
   return S;
 };
