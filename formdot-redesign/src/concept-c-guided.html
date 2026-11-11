@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FORMDOT · C 안내형 여정</title>
+<meta name="theme-color" content="#f5f6f8">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<!--@@CORE_CSS@@-->
+<style>
+/* ===== C · Guided Journey — 밝은 배경, 한 화면에 질문 하나. 답을 따라 서비스가 정해짐 ===== */
+:root{--fd-bg:#f5f6f8;--fd-surface:#fff;--fd-surface2:#fff;--fd-line:#e3e6eb;--fd-text:#1d1f23;--fd-muted:#6b7280;
+  --fd-accent:#2962ff;--fd-accent-text:#1f4fd8;--fd-accent-soft:#eaf0ff;--fd-warn:#b7791f;--fd-warn-soft:#fff7e6;--fd-ok:#18834a;--fd-bad:#d93636;--fd-r:20px;--fd-r-sm:14px}
+body{margin:0;background:var(--fd-bg);color:var(--fd-text);font-family:var(--fd-font);-webkit-font-smoothing:antialiased}
+.fd-logo-sym{color:#202124}.fd-logo{color:#202124}
+.fd-toast{background:#202124;color:#fff}
+.top{display:flex;align-items:center;gap:10px;max-width:760px;margin:0 auto;padding:14px 20px}
+.top .fd-logo{font-size:15px;text-decoration:none}.top .r{margin-left:auto;display:flex;gap:6px}
+.top .r a{font-size:14px;font-weight:600;color:var(--fd-muted);text-decoration:none;padding:8px 12px;border-radius:99px}.top .r a:hover{background:#fff;color:var(--fd-text)}
+.box{max-width:640px;margin:0 auto;padding:10px 20px 140px}
+.hello{text-align:center;padding:40px 0 10px}
+.hello .bubble{display:inline-block;background:#fff;border:1px solid var(--fd-line);border-radius:22px 22px 22px 6px;padding:12px 18px;font-size:15px;margin-bottom:18px;box-shadow:0 6px 20px rgba(20,30,60,.06)}
+.hello h1{font-size:clamp(30px,6vw,44px);letter-spacing:-.035em;line-height:1.18;margin:0 0 14px}
+.hello p{color:var(--fd-muted);font-size:17px;margin:0 0 28px}
+.big{width:100%;min-height:60px;border-radius:18px;font-size:17px}
+.ghost-row{display:flex;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+.hint-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:44px 0}
+.hint-cards div{background:#fff;border:1px solid var(--fd-line);border-radius:18px;padding:16px}.hint-cards b{display:block;font-size:22px;color:var(--fd-accent)}.hint-cards small{color:var(--fd-muted)}
+.sec-t{font-size:20px;letter-spacing:-.02em;margin:40px 0 14px}
+.pf-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(220px,46%);gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}
+.pf{background:#fff;border:1px solid var(--fd-line);border-radius:18px;overflow:hidden;scroll-snap-align:start;cursor:pointer;padding:0;text-align:left;font:inherit;color:inherit}
+.pf img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}.pf div{padding:12px 14px}.pf b{display:block;font-size:15px}.pf small{color:var(--fd-muted);font-size:12.5px}
+.faq details{background:#fff;border:1px solid var(--fd-line);border-radius:16px;padding:0 16px;margin-bottom:8px}
+.faq summary{cursor:pointer;padding:15px 0;font-weight:600}.faq p{color:var(--fd-muted);margin:0 0 14px;line-height:1.6}
+/* 질문 화면 */
+.q-top{position:sticky;top:0;z-index:10;background:rgba(245,246,248,.94);backdrop-filter:blur(10px)}
+.q-top .in{max-width:640px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:10px}
+.q-top .bar{flex:1;height:6px;border-radius:9px;background:#e3e6eb;overflow:hidden}.q-top .bar i{display:block;height:100%;background:var(--fd-accent);border-radius:9px;transition:width .35s}
+.q-top .cnt{font-size:13px;color:var(--fd-muted);font-variant-numeric:tabular-nums;min-width:44px;text-align:right}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--fd-line);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--fd-text)}.icon-btn .fd-ic{width:20px;height:20px}
+.q{animation:qin .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes qin{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.q .who{font-size:13px;color:var(--fd-accent-text);font-weight:700;margin:26px 0 8px}
+.q h2{font-size:clamp(25px,5vw,32px);letter-spacing:-.03em;line-height:1.25;margin:0 0 10px}
+.q .why{color:var(--fd-muted);font-size:15px;margin:0 0 24px;line-height:1.6}
+.choices{display:grid;gap:10px}
+.choice{display:flex;align-items:center;gap:14px;min-height:72px;padding:16px 18px;border-radius:18px;border:1.5px solid var(--fd-line);background:#fff;font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .2s,transform .12s}
+.choice:hover{border-color:#b9c6e8}.choice:active{transform:scale(.985)}.choice.on{border-color:var(--fd-accent);background:var(--fd-accent-soft)}
+.choice .em{width:46px;height:46px;border-radius:14px;background:var(--fd-accent-soft);color:var(--fd-accent);display:flex;align-items:center;justify-content:center;flex:none}.choice .em .fd-ic{width:24px;height:24px}
+.choice b{display:block;font-size:17px}.choice small{color:var(--fd-muted);font-size:13.5px}
+.q .fd-field{margin-bottom:22px}.q .fd-label{font-size:15px}
+.q .fd-in{min-height:56px;border-radius:16px;font-size:17px;padding:14px 16px}
+.q .fd-opt{min-height:52px;border-radius:16px;padding:12px 16px;font-size:15px;background:#fff}.q .fd-chips .fd-opt{min-height:44px;border-radius:99px}
+.q .fd-drop{padding:26px;border-radius:20px;background:#fff}
+.view{height:260px;border-radius:20px;background:linear-gradient(#fff,#eef1f6);border:1px solid var(--fd-line);position:relative;margin-top:14px}.view canvas{position:absolute;inset:0;width:100%;height:100%}
+.foot{position:fixed;left:0;right:0;bottom:0;z-index:10;background:linear-gradient(transparent,var(--fd-bg) 30%)}
+.foot .in{max-width:640px;margin:0 auto;padding:22px 20px calc(16px + env(safe-area-inset-bottom));display:flex;gap:8px}
+.foot .fd-btn{min-height:58px;border-radius:18px;font-size:17px}.foot .fd-btn.primary{flex:1}
+.recap{background:#fff;border:1px solid var(--fd-line);border-radius:20px;padding:6px 18px;margin-bottom:16px}
+.recap div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--fd-line);font-size:15px}.recap div:last-child{border:0}
+.recap span{color:var(--fd-muted)}.recap b{text-align:right}.recap button{border:0;background:none;color:var(--fd-accent);font:600 13px var(--fd-font);cursor:pointer;margin-left:8px}
+.fd-quote{background:#fff;border-color:var(--fd-line)}.fd-quote.auto{border-color:#c8d6ff;background:#f4f7ff}.fd-quote.review{background:#fffaf0;border-color:#f3d9a4}
+.page{max-width:560px;margin:0 auto;padding:20px 20px 80px}.page h1{font-size:28px;letter-spacing:-.03em}
+.fd-status,.fd-odetail,.fd-kpi,.fd-orow,.fd-set,.fd-chan-i{background:#fff}
+.wide{max-width:1100px}
+@media (max-width:560px){.hint-cards{grid-template-columns:1fr 1fr 1fr;gap:6px}.hint-cards div{padding:12px 10px}.hint-cards b{font-size:17px}.hint-cards small{font-size:11.5px}.hello{padding-top:24px}}
+</style>
+</head>
+<body>
+<div id="demo"></div>
+<div id="app"></div>
+<!--@@CORE_JS@@-->
+<script>
+const {$, $$, esc, won} = FD;
+$("#demo").innerHTML = FD.demoBanner();
+const topBar = () => `<header class="top"><a href="#/" class="fd-logo" aria-label="FORMDOT 처음으로">${FD.LOGO}${FD.WORD}</a><nav class="r"><a href="#/lookup">주문 조회</a><a href="#/portfolio">사례</a><a href="#/admin">관리자</a></nav></header>`;
+
+/* 질문 순서: 답에 따라 서비스가 정해지고, 서비스별 질문만 이어짐 */
+let J = null;   // {answers, svc, st, i}
+const pick = (id, choices) => ({type: "pick", id, choices});
+const ROUTE_Q = [
+  {id: "hasFile", who: "시작", title: "3D 파일을 가지고 계신가요?", why: "STL·3MF·G-code 같은 파일이에요. 잘 모르겠으면 '없어요'를 고르세요.",
+    ...pick("hasFile", [["yes","네, 있어요","cube","MakerWorld·Thingiverse에서 받았거나 직접 만든 파일"],["no","없어요","bulb","그림이나 생각만 있어도 괜찮아요"]])},
+  {id: "fileUse", when: a => a.hasFile === "yes", who: "파일", title: "그 파일 그대로 출력하면 되나요?", why: "크기를 바꾸거나 구멍을 더하는 등 고칠 곳이 있으면 수정부터 해 드려요.",
+    ...pick("fileUse", [["print","그대로 출력할래요","cube","바로 자동 견적이 나와요"],["modify","조금 고쳐야 해요","wrench","크기 조정·구멍 추가·형태 변경"]])},
+  {id: "material", when: a => a.hasFile === "no", who: "자료", title: "어떤 자료가 있나요?", why: "가진 것에 맞춰 질문을 이어갈게요.",
+    ...pick("material", [["sketch","손그림·도면·사진","pen","치수 적은 종이, 부러진 부품 사진도 좋아요"],["idea","머릿속 생각뿐이에요","bulb","말로 설명해 주시면 설계해요"]])},
+  {id: "precise", when: a => a.hasFile === "no", who: "자료", title: "치수가 딱 맞아야 하는 부품인가요?", why: "다른 부품과 끼우거나 조립해야 하면 정밀 설계로 진행해요.",
+    ...pick("precise", [["no","아니요, 대략 맞으면 돼요","check","소품·거치대·장식 등"],["yes","네, 정확해야 해요","ruler","끼움·조립·공차가 중요한 부품"]])}
+];
+const svcFrom = a => a.hasFile === "yes" ? (a.fileUse || null) : a.precise === "yes" ? "pro" : a.material || null;
+function questions(){
+  const a = J.answers, qs = ROUTE_Q.filter(q => !q.when || q.when(a));
+  const svc = svcFrom(a);
+  if (!svc || qs.some(q => !a[q.id])) return qs;
+  if (svc === "print") qs.push({kind: "upload", who: "파일", title: "파일을 올려 주세요", why: "올리자마자 크기와 무게를 계산해요."},
+    {kind: "purpose", who: "출력", title: "어디에 쓰실 건가요?", why: "용도에 맞게 튼튼함을 추천해 드려요."},
+    {kind: "mat", who: "출력", title: "재료를 골라 주세요", why: ""}, {kind: "color", who: "출력", title: "색상은요?", why: "색상은 가격에 영향이 없어요."},
+    {kind: "qty", who: "출력", title: "몇 개 만들까요?", why: ""});
+  else for (const step of FD.FLOWS[svc]) for (const f of step.fields) qs.push({kind: "field", f, who: step.title, title: f.label + (f.req ? "" : " (선택)"), why: f.help || ""});
+  qs.push({kind: "quote", who: "견적", title: "견적이 나왔어요"}, {kind: "contact", who: "주문자 정보", title: "연락받을 정보를 알려 주세요", why: "회원가입은 필요 없어요. 휴대폰 번호는 주문 조회 인증과 진행 안내에만 써요."});
+  return qs;
+}
+function startJourney(pre){ J = {answers: {...(pre || {})}, i: 0}; J.i = Math.max(0, questions().findIndex(q => q.type === "pick" ? !J.answers[q.id] : true)); if (location.hash === "#/q") drawQ(); else location.hash = "#/q"; }
+function ensureSt(){ const svc = svcFrom(J.answers); if (!J.st || J.st.svc !== svc) J.st = FD.session(svc); return J.st; }
+let viewer = null;
+function drawQ(){
+  if (!J) return startJourney();
+  const qs = questions(); J.i = Math.min(J.i, qs.length - 1); const q = qs[J.i];
+  const known = !!svcFrom(J.answers) && !ROUTE_Q.some(r => (!r.when || r.when(J.answers)) && !J.answers[r.id]);
+  const st = known ? ensureSt() : null;
+  const total = known ? qs.length : qs.length + 6;
+  let body = "";
+  if (q.type === "pick") body = `<div class="choices" role="radiogroup">${q.choices.map(([v, t, ic, d]) => `<button class="choice${J.answers[q.id] === v ? " on" : ""}" role="radio" aria-checked="${J.answers[q.id] === v}" data-pick="${v}"><span class="em">${FD.icon(ic)}</span><span><b>${t}</b><small>${d}</small></span></button>`).join("")}</div>`;
+  else if (q.kind === "upload") body = `<label class="fd-drop" tabindex="0" id="up">${FD.icon("upload")}<span><b>${st.model && !st.model.error ? "다른 파일로 바꾸기" : "여기를 눌러 파일 고르기"}</b><small>STL · 3MF · G-code · 최대 ${FD.settings.maxSize}mm</small></span><input type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden><button type="button" class="fd-link" data-sample style="margin-left:auto">샘플로 해 보기</button></label><div id="mi">${FD.modelInfo(st.model)}</div><div class="view"${st.model?.geo ? "" : " hidden"}><canvas aria-label="3D 미리보기"></canvas></div>`;
+  else if (q.kind === "purpose") body = `<div class="fd-chips">${FD.PURPOSES.map(([k, t]) => `<button class="fd-opt${st.opts.purpose === k ? " on" : ""}" data-pp="${k}"><b>${t}</b></button>`).join("")}</div><p class="why" id="adv" style="margin-top:16px">${esc(st.advice || "")}</p>`;
+  else if (q.kind === "mat"){ const rec = ["func","mount","repair"].includes(st.opts.purpose) ? "PETG" : "PLA";
+    body = `<div class="choices">${FD.MATS.map(m => `<button class="choice${st.opts.mat === m.v ? " on" : ""}" data-mat="${m.v}" style="min-height:60px"><span><b>${m.name}${m.v === rec ? ' <span class="fd-badge ok">추천</span>' : ""}</b><small>${FD.MAT_SHORT[m.v]}</small></span></button>`).join("")}</div>`; }
+  else if (q.kind === "color") body = `<div class="fd-dots" style="gap:12px">${FD.COLORS.map(c => `<button class="fd-dot${st.opts.color === c.v ? " on" : ""}${c.v === "투명" ? " clear" : c.v === "기타" ? " other" : ""}" style="--c:${FD.COLOR_HEX[c.v]};width:48px;height:48px" data-col="${c.v}" aria-label="${c.name}" title="${c.name}"></button>`).join("")}</div><p class="why" style="margin-top:14px">고른 색: <b>${esc(FD.COLORS.find(c => c.v === st.opts.color).name)}</b></p>
+      <details class="fd-adv" style="background:#fff"><summary>숙련자용 상세 설정 <small>레이어·벽·인필·서포트</small></summary><div id="advbox"></div></details>`;
+  else if (q.kind === "qty") body = `<div class="fd-qty" style="transform:scale(1.2);transform-origin:left"><button data-q="-1" aria-label="빼기">−</button><input class="fd-in" type="number" min="1" max="999" value="${st.opts.qty}" id="qn" aria-label="수량"><button data-q="1" aria-label="더하기">+</button></div>`;
+  else if (q.kind === "field") body = `<form id="ff" novalidate>${FD.fieldHTML({...q.f, label: q.f.label}, "c", st.values[q.f.id])}</form>`;
+  else if (q.kind === "quote"){ st.quote = FD.calc(st);
+    const rows = st.svc === "print" ? [["파일", st.model?.name, "upload"], ["용도", (FD.PURPOSES.find(p => p[0] === st.opts.purpose) || [])[1], "purpose"], ["재료", FD.MATS.find(m => m.v === st.opts.mat).name, "mat"], ["색상", st.opts.color, "color"], ["수량", st.opts.qty + "개", "qty"]]
+      : [["의뢰", FD.svc(st.svc).name, 0], ["무엇을", st.values.title || "—", null], ["난이도", (FD.COMPLEXITY.find(c => c[0] === st.values.complexity) || FD.MOD_SCOPE.find(c => c[0] === st.values.scope) || [, "—"])[1], null]];
+    body = `<div class="recap">${rows.map(([k, v, go]) => `<div><span>${k}</span><b>${esc(v || "—")}${go != null ? `<button data-jump="${go}">바꾸기</button>` : ""}</b></div>`).join("")}</div>${FD.quoteHTML(st.quote)}
+      <div class="ghost-row" style="justify-content:flex-start"><button class="fd-btn ghost sm" id="cp">견적 복사</button>${FD.kakao("궁금한 점 문의")}</div>`; }
+  else if (q.kind === "contact") body = `<form id="cf" novalidate>${FD.formHTML(FD.CONTACT.slice(0, 2), "cc", J.contact || {})}</form>${FD.studentHTML("cc")}${FD.consentHTML("cc")}`;
+  $("#app").innerHTML = `<div class="q-top"><div class="in"><button class="icon-btn" id="back" aria-label="이전">${FD.icon("back")}</button><div class="bar" aria-hidden="true"><i style="width:${Math.round((J.i + 1) / total * 100)}%"></i></div><span class="cnt">${J.i + 1} / ${known ? total : "…"}</span><a class="icon-btn" href="#/" aria-label="처음으로">${FD.icon("home")}</a></div></div>
+    <main class="box"><section class="q" aria-live="polite"><div class="who">${esc(q.who || "")}</div><h2>${esc(q.title)}</h2>${q.why ? `<p class="why">${esc(q.why)}</p>` : ""}${body}</section></main>
+    <div class="foot"><div class="in">${q.type === "pick" ? "" : `<button class="fd-btn primary" id="next">${q.kind === "contact" ? "주문 접수하기" : q.kind === "quote" ? (st.quote.kind === "review" ? "확인 요청하고 계속" : "이 금액으로 계속") : q.kind === "field" && !q.f.req ? "다음 (건너뛰어도 돼요)" : "다음"}</button>`}</div></div>`;
+  bindQ(q, st);
+}
+function bindQ(q, st){
+  $("#back").onclick = () => { if (J.i > 0){ J.i--; drawQ(); } else location.hash = "#/"; };
+  const nx = $("#next");
+  if (q.type === "pick") $$("[data-pick]").forEach(b => b.onclick = () => { J.answers[q.id] = b.dataset.pick;
+    // 앞 답을 바꾸면 그 뒤 경로 답은 다시 물어봄
+    const idx = ROUTE_Q.findIndex(r => r.id === q.id); ROUTE_Q.slice(idx + 1).forEach(r => { if (!r.when || !r.when(J.answers)) delete J.answers[r.id]; });
+    $$("[data-pick]").forEach(x => x.classList.toggle("on", x === b)); setTimeout(() => { J.i++; drawQ(); }, 160); });
+  if (q.kind === "upload"){
+    viewer = new FD.Viewer($(".view canvas"), {grid: "rgba(40,60,100,.12)"}); if (st.model?.geo){ viewer.setModel(st.model.geo); viewer.setColor(st.opts.color); }
+    FD.bindModelDrop($("#up"), $("#up input"), st, r => { if (r === "busy") return; $("#mi").innerHTML = FD.modelInfo(st.model); $(".view").hidden = !st.model.geo; viewer.draw(); $("#up b").textContent = "다른 파일로 바꾸기"; }, viewer);
+    $("#up").addEventListener("click", e => { if (e.target.closest("[data-sample]")) e.preventDefault(); });
+  }
+  if (q.kind === "purpose") $$("[data-pp]").forEach(b => b.onclick = () => { st.opts.purpose = b.dataset.pp; const a = FD.purposeAdvice(st.opts.purpose); st.advice = a ? a.msg : ""; if (a?.strength) st.opts.strength = a.strength; drawQ(); });
+  if (q.kind === "mat") $$("[data-mat]").forEach(b => b.onclick = () => { st.opts.mat = b.dataset.mat; drawQ(); });
+  if (q.kind === "color"){ $$("[data-col]").forEach(b => b.onclick = () => { st.opts.color = b.dataset.col; drawQ(); }); FD.mountPrintOptions($("#advbox"), st, () => {}, {expert: true}); }
+  if (q.kind === "qty"){ $$("[data-q]").forEach(b => b.onclick = () => { st.opts.qty = Math.max(1, Math.min(999, st.opts.qty + +b.dataset.q)); $("#qn").value = st.opts.qty; }); $("#qn").onchange = e => st.opts.qty = Math.max(1, Math.min(999, parseInt(e.target.value) || 1)); }
+  if (q.kind === "field") FD.bindForm($("#ff"));
+  if (q.kind === "quote"){ $("#cp").onclick = () => FD.copy(FD.quoteText(st.svc, FD.titleOf(st), st.quote)); $$("[data-jump]").forEach(b => b.onclick = () => { J.i = questions().findIndex(x => x.kind === b.dataset.jump); drawQ(); }); }
+  if (q.kind === "contact"){ FD.bindForm($("#cf")); FD.bindStudent("cc", on => { st.student = on; }); }
+  if (!nx) return;
+  nx.onclick = () => {
+    if (q.kind === "upload"){ if (!st.model) return FD.toast("파일을 올려 주세요"); const r = FD.quotePrint(st.model, st.opts); if (r.kind === "reject") return FD.toast(r.reasons[0]); }
+    if (q.kind === "field"){ const v = FD.validate($("#ff"), [q.f], "c"); if (!v) return; Object.assign(st.values, v); }
+    if (q.kind === "contact"){ const c = FD.validate($("#cf"), FD.CONTACT.slice(0, 2), "cc"); if (!c || !FD.checkConsent("cc")) return; st.quote = FD.calc(st);
+      const o = FD.finish(st, c); J = null; location.hash = "#/done/" + o.no; return; }
+    J.i++; drawQ(); window.scrollTo(0, 0);
+  };
+  const first = $(".q input:not([type=file]),.q textarea"); if (first && q.kind === "field") first.focus({preventScroll: true});
+}
+
+function home(){
+  $("#app").innerHTML = topBar() + `<main class="box"><section class="hello">
+      <div class="bubble">안녕하세요! 무엇을 만들어 드릴까요? 🙂</div>
+      <h1>몇 가지만 답하면<br>견적이 바로 나와요</h1>
+      <p>3D 파일이 없어도 괜찮아요. 그림이나 말로 설명해도 만들어 드려요.</p>
+      <button class="fd-btn primary big" id="start">시작하기 · 약 1분</button>
+      <div class="ghost-row"><a class="fd-btn ghost sm" href="#/lookup">내 주문 조회</a><button class="fd-btn ghost sm" id="expert">숙련자: 파일 바로 올리기</button></div></section>
+    <div class="hint-cards"><div><b>1분</b><small>질문 몇 개면 끝</small></div><div><b>자동</b><small>대부분 바로 금액</small></div><div><b>비회원</b><small>가입 없이 주문</small></div></div>
+    <h2 class="sec-t">이런 것도 만들 수 있어요</h2><div class="pf-row">${FD.PORTFOLIO.map(p => `<button class="pf" data-pf="${p.svc}"><img src="${p.img}" alt=""><div><b>${esc(p.t)}</b><small>${esc(p.d)} · ${FD.SAMPLE_TAG}</small></div></button>`).join("")}</div>
+    <h2 class="sec-t">자주 묻는 질문</h2><div class="faq">
+      <details><summary>금액은 언제 확정되나요?</summary><p>대부분은 답을 마치는 순간 자동으로 계산돼요. 자료가 부족하거나 아주 큰 물건처럼 확인이 필요할 때만 담당자가 보고, 이유를 함께 알려 드려요.</p></details>
+      <details><summary>결제는 어떻게 하나요?</summary><p>네이버 스마트스토어에서 해요. 주문번호를 옵션에 적어 주시면 돼요.</p></details>
+      <details><summary>주문은 어떻게 확인하나요?</summary><p>주문번호와 휴대폰 번호를 넣으면 인증번호가 와요. 인증하면 진행 상황을 볼 수 있어요.</p></details></div>
+    <div style="margin-top:24px">${FD.kakao("카카오톡 오픈채팅 문의")}</div></main>`;
+  $("#start").onclick = () => startJourney();
+  $("#expert").onclick = () => startJourney({hasFile: "yes", fileUse: "print"}) ;
+  $$("[data-pf]").forEach(b => b.onclick = () => { const s = b.dataset.pf; startJourney(s === "print" ? {hasFile: "yes", fileUse: "print"} : s === "modify" ? {hasFile: "yes", fileUse: "modify"} : s === "pro" ? {hasFile: "no", material: "idea", precise: "yes"} : {hasFile: "no", material: s, precise: "no"}); });
+}
+function route(){
+  const [, name = "", arg] = location.hash.split("/");
+  window.scrollTo(0, 0);
+  if (name === "q") return drawQ();
+  if (name === "lookup"){ $("#app").innerHTML = topBar() + `<main class="page"><h1>주문 조회</h1><p class="why" style="color:var(--fd-muted)">주문번호와 휴대폰 번호를 넣으면 인증번호를 보내 드려요.</p><div id="lk"></div></main>`; return FD.mountLookup($("#lk")); }
+  if (name === "portfolio"){ $("#app").innerHTML = topBar() + `<main class="page"><h1>작업 사례</h1><div style="display:grid;gap:12px">${FD.PORTFOLIO.map(p => `<button class="pf" data-pf="${p.svc}"><img src="${p.img}" alt=""><div><b>${esc(p.t)}</b><small>${esc(p.d)} · ${FD.SAMPLE_TAG}</small></div></button>`).join("")}</div></main>`;
+    return $$("[data-pf]").forEach(b => b.onclick = () => { home(); $(`[data-pf="${b.dataset.pf}"]`).click(); }); }
+  if (name === "admin"){ $("#app").innerHTML = topBar() + `<main class="page wide"><div id="adm"></div></main>`; return FD.mountAdmin($("#adm")); }
+  if (name === "done"){ const o = FD.store.get(arg); $("#app").innerHTML = topBar() + `<main class="page">${o ? FD.doneHTML(o) : "주문을 찾을 수 없어요."}<div class="ghost-row"><a class="fd-btn" href="#/lookup">주문 조회</a><a class="fd-btn ghost" href="#/">처음으로</a></div></main>`; return; }
+  home();
+}
+addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>

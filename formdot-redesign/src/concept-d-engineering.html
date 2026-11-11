@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FORMDOT · D 엔지니어링 랩</title>
+<meta name="theme-color" content="#0d1117">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap">
+<!--@@CORE_CSS@@-->
+<style>
+/* ===== D · Engineering Lab — 도면 격자, 고정폭 숫자, 사양서(RFQ) 한 장에 모든 입력 ===== */
+:root{--fd-bg:#0d1117;--fd-surface:#131a23;--fd-surface2:#0f151d;--fd-line:#223042;--fd-muted:#8b9bb0;--fd-accent:#2f7bff;--fd-accent-text:#7fb0ff;
+  --fd-r:6px;--fd-r-sm:4px;--mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Consolas,monospace}
+body{margin:0;background:var(--fd-bg);color:var(--fd-text);font-family:var(--fd-font);font-size:14px;-webkit-font-smoothing:antialiased;
+  background-image:linear-gradient(rgba(47,123,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(47,123,255,.05) 1px,transparent 1px);background-size:24px 24px}
+.mono,.fd-q-total,.fd-done-no b,.fd-st-no,.kv dd{font-family:var(--mono)}
+.hdr{display:flex;align-items:center;gap:16px;height:52px;padding:0 20px;border-bottom:1px solid var(--fd-line);background:rgba(13,17,23,.92);position:sticky;top:0;z-index:20}
+.hdr .fd-logo{font-size:13px;text-decoration:none}.hdr .lab{font:700 11px var(--mono);color:var(--fd-accent-text);border:1px solid var(--fd-line);padding:3px 6px;border-radius:3px}
+.hdr nav{display:flex;gap:2px;margin-left:auto}.hdr nav a{font:600 12.5px var(--mono);color:var(--fd-muted);text-decoration:none;padding:7px 10px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.hdr nav a.on,.hdr nav a:hover{color:var(--fd-text);background:var(--fd-surface)}
+.status{display:flex;gap:18px;padding:6px 20px;border-bottom:1px solid var(--fd-line);font:11.5px var(--mono);color:var(--fd-muted);overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.status b{color:var(--fd-text);font-weight:600}.status i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#34c778;margin-right:6px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:28px;padding:56px 0 40px;align-items:center}
+.tag{font:700 11.5px var(--mono);color:var(--fd-accent-text);letter-spacing:.12em}
+.hero h1{font-size:clamp(32px,4.4vw,54px);letter-spacing:-.03em;line-height:1.12;margin:12px 0 16px}
+.hero p{color:var(--fd-muted);font-size:16px;line-height:1.7;max-width:520px}
+.hero .cta{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap}.hero .fd-btn{border-radius:4px;font-family:var(--mono);font-size:13.5px;letter-spacing:.02em}
+.vol{position:relative;aspect-ratio:4/3;border:1px solid var(--fd-line);background:rgba(15,21,29,.8);border-radius:6px}
+.vol canvas{position:absolute;inset:0;width:100%;height:100%}
+.vol .cap{position:absolute;left:12px;top:10px;font:11.5px var(--mono);color:var(--fd-muted)}.vol .cap b{color:var(--fd-accent-text)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--fd-line);border:1px solid var(--fd-line);border-radius:6px;overflow:hidden;margin:16px 0 56px}
+.grid3>div{background:var(--fd-surface2);padding:18px}.grid3 b{display:block;font:700 13px var(--mono);color:var(--fd-accent-text);margin-bottom:6px}.grid3 p{margin:0;color:var(--fd-muted);line-height:1.6}
+h2.t{font:700 13px var(--mono);letter-spacing:.14em;color:var(--fd-muted);margin:0 0 10px;text-transform:uppercase}
+table.spec{width:100%;border-collapse:collapse;font-size:13.5px;border:1px solid var(--fd-line);background:var(--fd-surface2);margin-bottom:48px}
+table.spec th,table.spec td{padding:10px 12px;border-bottom:1px solid var(--fd-line);text-align:left}
+table.spec th{font:600 11.5px var(--mono);color:var(--fd-muted);text-transform:uppercase;letter-spacing:.06em;background:var(--fd-surface)}
+table.spec td.n{font-family:var(--mono);text-align:right}
+table.spec tr:hover td{background:rgba(47,123,255,.05)}
+.svc-codes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:48px}
+.svc-codes button{text-align:left;padding:14px;border:1px solid var(--fd-line);background:var(--fd-surface2);border-radius:6px;color:inherit;font:inherit;cursor:pointer}
+.svc-codes button:hover{border-color:var(--fd-accent)}.svc-codes code{font:700 11.5px var(--mono);color:var(--fd-accent-text)}.svc-codes b{display:block;margin:6px 0 4px;font-size:15px}.svc-codes small{color:var(--fd-muted);font-size:12.5px}
+/* RFQ 사양서 */
+.rfq{display:grid;grid-template-columns:200px minmax(0,1fr) 320px;gap:20px;padding:28px 0 80px;align-items:start}
+.toc{position:sticky;top:110px;font:12.5px var(--mono)}.toc a{display:flex;gap:8px;padding:7px 8px;color:var(--fd-muted);text-decoration:none;border-left:2px solid var(--fd-line)}
+.toc a.on{color:var(--fd-text);border-color:var(--fd-accent)}.toc a .ok{margin-left:auto;color:#34c778}
+.toc .keys{margin-top:18px;color:var(--fd-muted);font-size:11.5px;line-height:1.9}.toc kbd{font:11px var(--mono);border:1px solid var(--fd-line);border-bottom-width:2px;border-radius:3px;padding:0 4px;color:var(--fd-text)}
+.sec{border:1px solid var(--fd-line);background:var(--fd-surface2);border-radius:6px;margin-bottom:14px;scroll-margin-top:110px}
+.sec>header{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--fd-line);background:var(--fd-surface)}
+.sec>header code{font:700 12px var(--mono);color:var(--fd-accent-text)}.sec>header b{font-size:14.5px}.sec>header small{margin-left:auto;color:var(--fd-muted);font:11.5px var(--mono)}
+.sec .bd{padding:16px}
+.svc-radio{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.svc-radio button{padding:10px;border:1px solid var(--fd-line);border-radius:4px;background:var(--fd-bg);color:inherit;font:inherit;cursor:pointer;text-align:left}
+.svc-radio button.on{border-color:var(--fd-accent);background:var(--fd-accent-soft)}.svc-radio code{display:block;font:700 11px var(--mono);color:var(--fd-accent-text)}.svc-radio span{font-size:13px;font-weight:600}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:0 18px}
+.cols2 .fd-field.full,.cols2 .fd-field[data-type="textarea"],.cols2 .fd-field[data-type="files"],.cols2 .fd-field[data-type="radio"],.cols2 .fd-field[data-type="checks"],.cols2 .fd-field[data-type="chips"]{grid-column:1/-1}
+.fd-label{font:600 12px var(--mono);text-transform:uppercase;letter-spacing:.05em;color:var(--fd-muted)}
+.fd-in{border-radius:4px;font-size:14.5px}.fd-opt,.fd-mat,.fd-chips .fd-opt{border-radius:4px}.fd-radios{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.fd-adv{border-radius:4px}.fd-adv-row{grid-template-columns:1fr 170px;border-bottom:1px dashed var(--fd-line);padding:5px 0}
+.fit{display:grid;gap:6px;margin-top:12px;font:12px var(--mono)}
+.fit div{display:grid;grid-template-columns:22px 1fr 120px;align-items:center;gap:8px}.fit .b{height:8px;background:var(--fd-bg);border:1px solid var(--fd-line);border-radius:2px;position:relative;overflow:hidden}
+.fit .b i{position:absolute;inset:0 auto 0 0;background:var(--fd-accent)}.fit .b i.over{background:#f5b941}.fit span:last-child{text-align:right;color:var(--fd-muted)}
+.vbox{height:280px;position:relative;border:1px solid var(--fd-line);border-radius:4px;background:var(--fd-bg);margin-top:12px}.vbox canvas{position:absolute;inset:0;width:100%;height:100%}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;margin:10px 0 0;font-size:13px}.kv dt{color:var(--fd-muted);font:12px var(--mono)}.kv dd{margin:0;text-align:right}
+.side{position:sticky;top:110px}
+.side .fd-quote{border-radius:6px}.side .fd-btn{width:100%;border-radius:4px;margin-top:8px;font-family:var(--mono)}
+.side .chk{list-style:none;padding:0;margin:12px 0 0;font:12px var(--mono);color:var(--fd-muted)}.side .chk li{padding:3px 0}.side .chk li.ok{color:#34c778}
+.page{padding:36px 0 80px}.page .n{max-width:520px}.page h1{font-size:26px;margin:8px 0 6px}.page .s{color:var(--fd-muted);margin:0 0 22px}
+.pf-tbl img{width:72px;height:54px;object-fit:cover;border-radius:3px;display:block}
+.mbar{display:none}
+@media (max-width:1100px){.rfq{grid-template-columns:minmax(0,1fr) 300px}.toc{display:none}}
+@media (max-width:820px){
+  .hdr nav a{padding:6px 7px;font-size:11.5px}.hdr .lab{display:none}
+  .hero{grid-template-columns:1fr;padding:28px 0}.vol{order:-1}
+  .grid3,.svc-codes{grid-template-columns:1fr}.svc-codes{gap:6px}
+  table.spec .hm{display:none}
+  .rfq{grid-template-columns:minmax(0,1fr);padding-top:16px}.side{position:static;display:none}
+  .svc-radio{grid-template-columns:repeat(2,1fr)}.cols2{grid-template-columns:1fr}.fd-adv-row{grid-template-columns:1fr 140px}
+  .mbar{display:flex;position:sticky;bottom:0;z-index:15;gap:10px;align-items:center;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(13,17,23,.96);border-top:1px solid var(--fd-line)}
+  .mbar div{flex:1;font:12px var(--mono);color:var(--fd-muted)}.mbar b{display:block;font:700 19px var(--mono);color:var(--fd-text)}
+  .mbar .fd-btn{border-radius:4px}
+}
+</style>
+</head>
+<body>
+<div id="demo"></div>
+<header class="hdr"><a href="#/" class="fd-logo" id="logo" aria-label="FORMDOT"></a><span class="lab">LAB</span>
+  <nav><a href="#/rfq">견적 요청</a><a href="#/portfolio">사례</a><a href="#/lookup">조회</a><a href="#/admin">관리</a></nav></header>
+<div class="status" aria-label="장비 정보"><span><i></i>PRINTER <b>Bambu Lab A1</b></span><span>BUILD <b id="bv"></b></span><span>NOZZLE <b>0.4 mm</b></span><span>LAYER <b>0.08–0.28 mm</b></span><span>FORMATS <b>STL · 3MF · G-code</b></span><span>QUOTE <b>자동</b></span></div>
+<main id="app"></main>
+<!--@@CORE_JS@@-->
+<script>
+const {$, $$, esc, won} = FD;
+$("#demo").innerHTML = FD.demoBanner(); $("#logo").innerHTML = FD.LOGO + FD.WORD;
+$("#bv").textContent = `${FD.settings.printerMax} × ${FD.settings.printerMax} × ${FD.settings.printerMax} mm`;
+const CODE = {print: "SVC-01 PRINT", sketch: "SVC-02 SKETCH", idea: "SVC-03 IDEA", modify: "SVC-04 MODIFY", pro: "SVC-05 CAD"};
+
+function home(){
+  $("#app").innerHTML = `<div class="wrap"><section class="hero"><div><div class="tag">// RAPID PROTOTYPING SERVICE</div>
+      <h1>치수부터 재료까지,<br>사양서 한 장으로 견적.</h1>
+      <p>파일을 올리면 형상을 분석해 무게와 금액을 바로 계산해요. 도면·스케치·요구사항만 있어도 작업 범위를 입력하면 디자인비가 자동 산정돼요.</p>
+      <div class="cta"><a class="fd-btn primary" href="#/rfq">견적 요청 (RFQ) ${FD.icon("arrow")}</a><a class="fd-btn ghost" href="#/lookup">주문 조회</a></div></div>
+    <div class="vol"><canvas id="vc"></canvas><div class="cap">BUILD VOLUME <b>${FD.settings.printerMax}³ mm</b> · SAMPLE PART 30×30×25</div></div></section>
+    <h2 class="t">Services</h2><div class="svc-codes">${FD.SERVICES.map(s => `<button data-rfq="${s.id}"><code>${CODE[s.id]}</code><b>${s.name}</b><small>${s.d}</small></button>`).join("")}</div>
+    <h2 class="t">Materials</h2><table class="spec"><thead><tr><th>재료</th><th>특징</th><th class="hm">밀도 g/cm³</th></tr></thead><tbody>
+      ${FD.MATS.map(m => `<tr><td><b>${m.name}</b></td><td>${FD.MAT_SHORT[m.v]}</td><td class="n hm">${m.d.d.toFixed(2)}</td></tr>`).join("")}</tbody></table>
+    <h2 class="t">Quote policy</h2><div class="grid3"><div><b>AUTO</b><p>형상(부피·표면적·돌출부)과 출력 설정으로 무게를 계산하고, 관리자 가격표로 금액을 산정해요.</p></div>
+      <div><b>REVIEW</b><p>출력 범위 초과, 대량·대형, 해석 불가 파일, 범위가 불명확한 설계만 담당자가 검토해요. 이유를 함께 표시해요.</p></div>
+      <div><b>PAYMENT</b><p>결제는 네이버 스마트스토어. 사이트는 주문번호·상태·견적을 관리해요.</p></div></div></div>`;
+  const v = new FD.Viewer($("#vc"), {grid: "rgba(47,123,255,.18)"});
+  FD.analyzeFile(FD.sampleModel()).then(m => { v.setModel(m.geo); v.setColor("파랑"); v.spin = true; });
+}
+
+/* ---------- RFQ: 한 장짜리 사양서 ---------- */
+let S = FD.session("print"), viewer = null;
+function rfq(svc){
+  if (svc && FD.svc(svc) && S.svc !== svc) S = FD.session(svc);
+  const isP = S.svc === "print", flow = FD.FLOWS[S.svc];
+  const secs = isP ? [["01","서비스"],["02","입력 파일"],["03","출력 파라미터"],["04","주문자"]] : [["01","서비스"],["02", flow[0].title],["03", flow[1].title],["04","주문자"]];
+  $("#app").innerHTML = `<div class="wrap"><div class="rfq">
+    <nav class="toc" aria-label="사양서 목차">${secs.map(([n, t], i) => `<a href="#s${i}" data-toc="${i}"><span>${n}</span>${t}<span class="ok" id="ok${i}"></span></a>`).join("")}
+      <div class="keys"><kbd>Ctrl</kbd>+<kbd>Enter</kbd> 접수<br><kbd>Alt</kbd>+<kbd>1~5</kbd> 서비스 전환</div></nav>
+    <div>
+      <section class="sec" id="s0"><header><code>01</code><b>서비스</b><small>${CODE[S.svc]}</small></header><div class="bd"><div class="svc-radio" role="radiogroup">${FD.SERVICES.map(s => `<button role="radio" aria-checked="${s.id === S.svc}" class="${s.id === S.svc ? "on" : ""}" data-svc="${s.id}"><code>${CODE[s.id].split(" ")[0]}</code><span>${s.name}</span></button>`).join("")}</div></div></section>
+      ${isP ? `<section class="sec" id="s1"><header><code>02</code><b>입력 파일</b><small>STL · 3MF · GCODE</small></header><div class="bd">
+          <label class="fd-drop" id="drop" tabindex="0">${FD.icon("upload")}<span><b>파일 선택 또는 드래그</b><small>≤ 150MB · 최대 ${FD.settings.maxSize}mm · 슬라이싱된 .gcode.3mf 권장</small></span><button type="button" class="fd-link" data-sample style="margin-left:auto">sample.stl</button><input type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden></label>
+          <div id="geo"></div></div></section>
+        <section class="sec" id="s2"><header><code>03</code><b>출력 파라미터</b><small>QUICK / ADVANCED</small></header><div class="bd" id="popt"></div></section>`
+      : flow.map((st, i) => `<section class="sec" id="s${i + 1}"><header><code>0${i + 2}</code><b>${esc(st.title)}</b><small>${i ? "SCOPE" : "INPUT"}</small></header><div class="bd"><form class="cols2" id="f${i}" novalidate>${FD.formHTML(st.fields, "d" + i, S.values)}</form>${i === 1 ? `<div class="vbox" id="dbox" hidden><canvas></canvas></div>` : ""}</div></section>`).join("")}
+      <section class="sec" id="s3"><header><code>04</code><b>주문자 · 동의</b><small>NO SIGN-UP</small></header><div class="bd"><form class="cols2" id="cf" novalidate>${FD.formHTML(FD.CONTACT, "dc", S.contact || {})}</form>${FD.studentHTML("dc")}${FD.consentHTML("dc")}</div></section>
+    </div>
+    <aside class="side"><div id="q"></div><ul class="chk" id="chk"></ul><button class="fd-btn primary" id="go">RFQ 접수 <span class="mono" style="opacity:.6;font-size:11px">Ctrl+Enter</span></button><button class="fd-btn ghost" id="cp">견적 텍스트 복사</button></aside>
+  </div></div>
+  <div class="mbar"><div>${isP ? "EST." : "DESIGN FEE"}<b id="mt">—</b></div><button class="fd-btn primary" id="mgo">접수</button></div>`;
+  $$("[data-svc]").forEach(b => b.onclick = () => { location.hash = "#/rfq/" + b.dataset.svc; });
+  if (isP){
+    FD.bindModelDrop($("#drop"), $("#drop input"), S, r => { if (r !== "busy"){ geoPanel(); upd(); } });
+    $("#drop").addEventListener("click", e => { if (e.target.closest("[data-sample]")) e.preventDefault(); });
+    FD.mountPrintOptions($("#popt"), S, () => { viewer && viewer.setColor(S.opts.color); upd(); }, {variant: "table", expert: true, beginner: false});
+    geoPanel();
+  } else {
+    flow.forEach((st, i) => FD.bindForm($("#f" + i), () => { flow.forEach((s2, j) => Object.assign(S.values, FD.readForm($("#f" + j), s2.fields, "d" + j))); dimsBox(); upd(); }));
+    viewer = new FD.Viewer($("#dbox canvas"), {grid: "rgba(47,123,255,.18)"}); dimsBox();
+  }
+  FD.bindForm($("#cf"), upd);
+  FD.bindStudent("dc", on => { S.student = on; upd(); });
+  $("#go").onclick = $("#mgo").onclick = submit;
+  $("#cp").onclick = () => FD.copy(FD.quoteText(S.svc, FD.titleOf(S), FD.calc(S)));
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) $$("[data-toc]").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id)); }), {rootMargin: "-40% 0px -55% 0px"});
+  $$(".sec").forEach(s => io.observe(s));
+  $$("[data-toc]").forEach(a => a.onclick = e => { e.preventDefault(); document.getElementById(a.getAttribute("href").slice(1)).scrollIntoView({behavior: "smooth"}); });
+  upd();
+}
+function geoPanel(){
+  const m = S.model, P = FD.settings.printerMax;
+  if (!m){ $("#geo").innerHTML = ""; viewer = null; return; }
+  $("#geo").innerHTML = FD.modelInfo(m) + (m.dims ? `<div class="fit" aria-label="출력 범위 대비 크기">${["X","Y","Z"].map((a, i) => `<div><span>${a}</span><span class="b"><i class="${m.dims[i] > P ? "over" : ""}" style="width:${Math.min(100, m.dims[i] / P * 100)}%"></i></span><span>${m.dims[i].toFixed(2)} / ${P}</span></div>`).join("")}</div>
+    <dl class="kv"><dt>VOLUME</dt><dd>${m.vol.toFixed(3)} cm³</dd><dt>TRIANGLES</dt><dd>${m.geo.tris.toLocaleString()}</dd><dt>SURFACE</dt><dd>${(m.geo.area / 100).toFixed(2)} cm²</dd></dl><div class="vbox"><canvas aria-label="3D 미리보기"></canvas></div>` : "");
+  if (m.geo){ viewer = new FD.Viewer($("#geo canvas"), {grid: "rgba(47,123,255,.18)"}); viewer.setModel(m.geo); viewer.setColor(S.opts.color); }
+}
+function dimsBox(){
+  const d = (S.values.dims || []).map(Number), ok = d.length === 3 && d.every(x => x > 0);
+  $("#dbox").hidden = !ok; if (ok){ viewer.setModel(FD.boxGeo(...d)); viewer.setColor("파랑"); }
+}
+function upd(){
+  S.quote = FD.calc(S); const q = S.quote;
+  $("#q").innerHTML = FD.quoteHTML(q, {emptyText: S.svc === "print" ? "파일을 넣으면 계산돼요." : "난이도/범위를 고르면 계산돼요."});
+  $("#mt").textContent = q.kind === "auto" ? won(q.total) : q.kind === "review" ? "REVIEW" : "—";
+  const c = FD.readForm($("#cf"), FD.CONTACT, "dc");
+  const checks = S.svc === "print" ? [["파일", !!S.model && !S.model.error], ["파라미터", true], ["연락처", !!(c.name && c.phone)]]
+    : [["자료", !!(S.values.title || S.values.desc || (S.values.model || []).length)], ["범위", !!(S.values.complexity || S.values.scope)], ["연락처", !!(c.name && c.phone)]];
+  $("#chk").innerHTML = checks.map(([t, ok]) => `<li class="${ok ? "ok" : ""}">${ok ? "[✓]" : "[ ]"} ${t}</li>`).join("");
+  checks.forEach(([, ok], i) => { const el = $("#ok" + (i + 1)); if (el) el.textContent = ok ? "✓" : ""; });
+}
+function submit(){
+  if (S.svc === "print"){ if (!S.model){ FD.toast("입력 파일이 없어요"); $("#s1").scrollIntoView({behavior: "smooth"}); return; } if (S.quote.kind === "reject"){ FD.toast("접수 불가: " + S.quote.reasons[0]); return; } }
+  else { for (let i = 0; i < 2; i++){ const v = FD.validate($("#f" + i), FD.FLOWS[S.svc][i].fields, "d" + i); if (!v) return; Object.assign(S.values, v); } }
+  const c = FD.validate($("#cf"), FD.CONTACT, "dc"); if (!c || !FD.checkConsent("dc")) return;
+  S.quote = FD.calc(S); const o = FD.finish(S, c); S = FD.session(S.svc); location.hash = "#/done/" + o.no;
+}
+addEventListener("keydown", e => {
+  if (!location.hash.startsWith("#/rfq")) return;
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter"){ e.preventDefault(); submit(); }
+  if (e.altKey && /^[1-5]$/.test(e.key)){ e.preventDefault(); location.hash = "#/rfq/" + FD.SERVICES[+e.key - 1].id; }
+});
+const page = (h, n) => $("#app").innerHTML = `<div class="wrap page"><div class="${n ? "n" : ""}">${h}</div></div>`;
+function route(){
+  const [, name = "", arg] = location.hash.split("/");
+  $$(".hdr nav a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#/" + name));
+  window.scrollTo(0, 0);
+  if (name === "rfq") return rfq(arg);
+  if (name === "portfolio") return page(`<div class="tag">// CASES</div><h1>작업 사례</h1><p class="s">샘플 일러스트 · 실제 사진은 관리자에서 등록</p><table class="spec pf-tbl"><thead><tr><th></th><th>항목</th><th class="hm">사양</th><th>서비스</th><th></th></tr></thead><tbody>
+    ${FD.PORTFOLIO.map(p => `<tr><td><img src="${p.img}" alt=""></td><td><b>${esc(p.t)}</b></td><td class="hm">${esc(p.d)}</td><td><code class="mono">${CODE[p.svc].split(" ")[0]}</code></td><td><a class="fd-btn sm" href="#/rfq/${p.svc}">RFQ</a></td></tr>`).join("")}</tbody></table>`);
+  if (name === "lookup"){ page(`<div class="tag">// ORDER STATUS</div><h1>주문 조회</h1><p class="s">주문번호 + 휴대폰 OTP 인증</p><div id="lk"></div>`, 1); return FD.mountLookup($("#lk")); }
+  if (name === "admin"){ page(`<div id="adm"></div>`); return FD.mountAdmin($("#adm")); }
+  if (name === "done"){ const o = FD.store.get(arg); return page((o ? FD.doneHTML(o) : "NOT FOUND") + `<div style="display:flex;gap:8px;justify-content:center;margin-top:16px"><a class="fd-btn" href="#/lookup">조회</a><a class="fd-btn ghost" href="#/rfq">새 RFQ</a></div>`, 1); }
+  home();
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-rfq]"); if (b) location.hash = "#/rfq/" + b.dataset.rfq; });
+addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>

@@ -1445,7 +1445,7 @@ FD.bindModelDrop = (drop, input, st, onDone, viewer) => {
     st.model = await FD.analyzeFile(f); drop.classList.remove("busy");
     if (viewer){ viewer.setModel(st.model.geo || null); viewer.setColor(st.opts.color); }
     onDone && onDone(st.model.error ? "error" : "ok"); };
-  drop.addEventListener("click", e => { if (e.target.closest("[data-sample]")) return; input.click(); });
+  drop.addEventListener("click", e => { if (e.target.closest("[data-sample]")) return; if (e.target.closest("canvas") && st.model?.geo) return; input.click(); });   // 미리보기 위 드래그(회전)는 파일 창을 열지 않음
   drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); input.click(); } });
   input.addEventListener("change", () => { const f = input.files[0]; input.value = ""; go(f); });
   ["dragenter","dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));

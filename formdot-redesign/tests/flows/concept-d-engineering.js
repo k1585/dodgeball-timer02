@@ -1,0 +1,20 @@
+module.exports = async (p, ck, label, shot) => {
+  const mob = label === 'mobile';
+  await p.screenshot({path: shot + '-1-home.png'});
+  await p.click('[data-rfq="print"]'); await p.waitForTimeout(200);
+  await p.click('#drop [data-sample]'); await p.waitForTimeout(800);
+  ck('fit bars', await p.locator('.fit div').count());
+  ck('price', await p.textContent(mob ? '#mt' : '#q .fd-q-total'));
+  await p.screenshot({path: shot + '-2-rfq.png'});
+  await p.fill('#dc-name', '엔지'); await p.fill('#dc-phone', '010-2222-3333'); await p.check('#dc-consent');
+  await p.keyboard.press('Control+Enter'); await p.waitForTimeout(300);
+  ck('done', await p.textContent('.fd-done-no b'));
+  await p.goto(p.url().split('#')[0] + '#/rfq/modify'); await p.waitForTimeout(200);
+  await p.setInputFiles('#d0-model', {name: 'case.step', mimeType: 'application/octet-stream', buffer: Buffer.from('solid')});
+  await p.fill('#d0-desc', '구멍 지름 5→6mm'); await p.click('#d1-scope [data-v="hole"]');
+  ck('modify price', await p.textContent(mob ? '#mt' : '#q .fd-q-total'));
+  await p.click('#d1-scope [data-v="major"]'); ck('major -> review', await p.textContent(mob ? '#mt' : '#q .fd-badge'));
+  await p.screenshot({path: shot + '-3-modify.png'});
+  await p.fill('#dc-name', '엔지2'); await p.fill('#dc-phone', '01022223333'); await p.check('#dc-consent'); await p.click(mob ? '#mgo' : '#go'); await p.waitForTimeout(300);
+  ck('review done', await p.textContent('.fd-done h2'));
+};
