@@ -1,7 +1,36 @@
-/* 운영용 추가 스타일 — 시안 C 화면 그대로, 완료 화면의 주문번호·조회 코드 칸만 더함 */
+/* 운영용: 시안 C 구조 그대로, 색만 검정 + 코발트 블루(브랜드 #2962FF) */
+:root{--fd-bg:#0d0e10;--fd-surface:#17181c;--fd-surface2:#131417;--fd-line:#2a2c33;--fd-text:#f4f5f7;--fd-muted:#9aa0ab;
+  --fd-accent:#2962ff;--fd-accent-text:#7fa0ff;--fd-accent-soft:rgba(41,98,255,.16);--fd-warn:#f5b941;--fd-warn-soft:rgba(245,185,65,.13);--fd-ok:#3fcf86;--fd-bad:#ff7b7b;color-scheme:dark}
+body{background:var(--fd-bg)!important;color:var(--fd-text)!important}
+.fd-logo,.fd-logo-sym,.fd-logo-word{color:#f7f8fa!important}
+.top .r a{color:var(--fd-muted)!important}.top .r a:hover{background:var(--fd-surface)!important;color:var(--fd-text)!important}
+.top .r a.kk{display:inline-flex;align-items:center;gap:5px;background:#fee500!important;color:#191919!important}.top .r a.kk .fd-ic{width:16px;height:16px}
+.hello .bubble,.choice,.hint-cards div,.pf,.faq details,.recap,.icon-btn,.q .fd-opt,.q .fd-drop,.fd-adv,.fd-status,.mine{background:var(--fd-surface)!important;border-color:var(--fd-line)!important;color:var(--fd-text)!important}
+.hello .bubble{box-shadow:none!important}
+.choice:hover{border-color:#3d4a6b!important}.choice.on,.q .fd-opt.on,.fd-mat.on{background:var(--fd-accent-soft)!important;border-color:var(--fd-accent)!important}
+.choice .em{background:var(--fd-accent-soft)!important;color:var(--fd-accent-text)!important}
+.hint-cards b{color:var(--fd-accent-text)!important}
+.q-top{background:rgba(13,14,16,.94)!important}.q-top .bar{background:var(--fd-line)!important}
+.foot{background:linear-gradient(transparent,var(--fd-bg) 30%)!important}
+.view{background:radial-gradient(circle at 50% 40%,#22242a,#101113 75%)!important;border-color:var(--fd-line)!important}
+.fd-quote{background:var(--fd-surface)!important;border-color:var(--fd-line)!important}
+.fd-quote.auto{background:var(--fd-accent-soft)!important;border-color:rgba(41,98,255,.5)!important}
+.fd-quote.review{background:var(--fd-warn-soft)!important;border-color:rgba(245,185,65,.45)!important}
+.fd-toast{background:#f2f4f7!important;color:#111!important}
+.fd-dot.on{box-shadow:0 0 0 2px var(--fd-bg),0 0 0 4px var(--fd-accent)!important}
+.stu-pill{background:linear-gradient(90deg,rgba(255,196,0,.2),rgba(255,196,0,.06))!important;border-color:rgba(255,214,102,.6)!important;color:#ffd666!important;animation:stuGlow 2.6s ease-in-out infinite}
+.stu-pill b{color:#ffe08a!important}
+@keyframes stuGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,196,0,0)}50%{box-shadow:0 0 0 6px rgba(255,196,0,.12)}}
+.stu-tip{background:rgba(255,196,0,.11)!important;border-color:rgba(255,214,102,.45)!important;color:#ffe08a!important}.stu-tip b{color:#ffd666!important}
+.fd-stu{background:rgba(255,196,0,.07)!important;border-color:rgba(255,214,102,.45)!important}
 .lv-codes{display:flex;gap:10px;justify-content:center;margin:4px 0 12px}
-.lv-codes div{padding:12px 20px;border-radius:16px;background:#fff;border:1px solid var(--fd-line)}
+.lv-codes div{padding:12px 20px;border-radius:16px;background:var(--fd-surface);border:1px solid var(--fd-line)}
 .lv-codes small{display:block;color:var(--fd-muted);font-size:12.5px}.lv-codes b{font-size:30px;letter-spacing:.14em;font-variant-numeric:tabular-nums}
-.lv-codes div+div{border-color:#b9c9ff;background:var(--fd-accent-soft)}
+.lv-codes div+div{border-color:rgba(41,98,255,.6);background:var(--fd-accent-soft)}
 .lv-note{color:var(--fd-muted);font-size:13.5px;max-width:420px;margin:12px auto 0;line-height:1.6}
+.mine{border:1px solid;border-radius:20px;padding:14px 16px;margin:6px 0 0;display:grid;gap:10px}
+.mine-h b{display:block;font-size:15px}.mine-h small{color:var(--fd-muted);font-size:12.5px}
+.mine-i{display:flex;align-items:center;gap:10px;justify-content:space-between;padding-top:10px;border-top:1px solid var(--fd-line)}
+.mine-i div{min-width:0}.mine-i span{color:var(--fd-muted);font-size:13.5px}.mine-i small{display:block;color:var(--fd-muted);font-size:12.5px;margin-top:2px}
+.mine-i code{color:var(--fd-accent-text);font-weight:700;letter-spacing:.1em}.mine-i .fd-btn{flex:none}
 @media (max-width:420px){.lv-codes b{font-size:24px}.lv-codes div{padding:10px 14px}}

@@ -50,7 +50,33 @@ FD.ready = (async () => {
 })();
 
 // 설정·포트폴리오를 불러오면 첫 화면을 다시 그림 (학생 할인율·사례 반영)
-FD.ready.then(() => setTimeout(() => { if ((!location.hash || location.hash === "#/") && typeof window.route === "function") window.route(); }));
+FD.ready.then(() => setTimeout(() => { if ((!location.hash || location.hash === "#/") && typeof window.rerender === "function") window.rerender(); }));
+
+/* ---------- 운영용 화면 보강 ---------- */
+const KAKAO = "https://open.kakao.com/o/s85siVVi";
+const PREFILL = "fd_lk_prefill";
+const ss = {get(){ try{ return JSON.parse(sessionStorage.getItem(PREFILL) || "null"); }catch(e){ return null; } }, set(v){ try{ sessionStorage.setItem(PREFILL, JSON.stringify(v)); }catch(e){} }};
+FD.afterRoute = name => {
+  // 손님 화면에는 관리자 메뉴 대신 카카오 문의 (관리자는 주소 뒤 #admin)
+  const adm = document.querySelector('.top .r a[href="#/admin"]');
+  if (adm){ adm.href = KAKAO; adm.target = "_blank"; adm.rel = "noopener"; adm.className = "kk"; adm.innerHTML = FD.icon("chat") + "문의"; }
+  if (name === "" ){
+    const mine = FD.store.mine().slice(0, 3), hello = document.querySelector(".hello");
+    if (mine.length && hello) hello.insertAdjacentHTML("afterend", `<section class="mine" aria-label="이 기기에서 한 주문"><div class="mine-h"><b>이 기기에서 한 주문</b><small>번호와 조회 코드를 여기서 다시 볼 수 있어요</small></div>
+      ${mine.map(o => `<div class="mine-i"><div><b>#${esc(o.no)}</b> <span>${esc(o.title || "")}</span><small>조회 코드 <code>${esc(o.lkCode || "-")}</code> · ${new Date(o.createdAt).toLocaleDateString("ko-KR", {month: "long", day: "numeric"})}</small></div>
+        <button class="fd-btn sm" data-lk="${esc(o.no)}" data-cd="${esc(o.lkCode || "")}">진행 상황</button></div>`).join("")}</section>`);
+  }
+  if (name === "done"){ const no = location.hash.split("/")[2], o = FD.store.get(no); if (o) ss.set({no: o.no, code: o.lkCode}); }
+  if (name === "lookup"){ const v = ss.get(); if (v){ const n = document.getElementById("lkNo"), c = document.getElementById("lkCd"); if (n && !n.value) n.value = v.no || ""; if (c && !c.value) c.value = v.code || ""; (document.getElementById("lkPh") || {}).focus?.(); } }
+};
+document.addEventListener("click", e => { const b = e.target.closest("[data-lk]"); if (!b) return; ss.set({no: b.dataset.lk, code: b.dataset.cd}); location.hash = "#/lookup"; });
+// 휴대폰 번호 자동 하이픈 (010-1234-5678)
+document.addEventListener("input", e => {
+  const t = e.target; if (t.type !== "tel") return;
+  const d = t.value.replace(/\D/g, "").slice(0, 11);
+  const f = d.length < 4 ? d : d.length < 8 ? `${d.slice(0, 3)}-${d.slice(3)}` : d.length < 11 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}` : `${d.slice(0, 3)}-${d.slice(3, 7)}-${d.slice(7)}`;
+  if (f !== t.value) t.value = f;
+});
 
 /* ---------- 조회 코드 ---------- */
 const LK_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
