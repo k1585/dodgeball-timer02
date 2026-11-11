@@ -1,0 +1,11 @@
+rules_version = '2';
+// FORMDOT. Storage 보안 규칙 — 파일은 3MB 조각으로 올라와요. 읽기·삭제는 관리자만.
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isAdmin() { return request.auth != null && request.auth.token.email == 'admin@formdot.kr'; }
+    match /orders/{no}/{file}/{part} {
+      allow create: if no.matches('^[0-9]{4}$') && request.resource.size < 3200000;
+      allow read, delete: if isAdmin();
+    }
+  }
+}

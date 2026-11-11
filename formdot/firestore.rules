@@ -1,0 +1,34 @@
+rules_version = '2';
+// FORMDOT. Firestore 보안 규칙 — 관리자 이메일을 index.html의 CONFIG.adminEmail과 똑같이 맞추세요.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() { return request.auth != null && request.auth.token.email == 'admin@formdot.kr'; }
+
+    // 사이트 문구·가격, 포트폴리오: 누구나 읽기, 관리자만 쓰기
+    match /site/{doc}      { allow read: if true; allow write: if isAdmin(); }
+    match /portfolio/{id}  { allow read: if true; allow write: if isAdmin(); }
+
+    // 4자리 번호 예약: 있는지만 확인 가능, 새로 만들기만 허용 (덮어쓰기 불가)
+    match /numbers/{no} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if no.matches('^[0-9]{4}$');
+      allow delete: if isAdmin();
+    }
+
+    // 주문: 예약된 번호로 한 번만 만들 수 있고, 읽기·수정·삭제는 관리자만
+    match /orders/{no} {
+      allow create: if exists(/databases/$(database)/documents/numbers/$(no))
+                    && request.resource.data.status == 'approved';
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 주문 조회: 번호+연락처 암호화 값(문서 ID)을 알아야만 한 건씩 읽기 가능, 목록 보기 불가
+    match /lookup/{id} {
+      allow get: if true;
+      allow list: if isAdmin();
+      allow create: if request.resource.data.status == 'approved';
+      allow update, delete: if isAdmin();
+    }
+  }
+}
