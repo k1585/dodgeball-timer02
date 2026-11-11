@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FORMDOT · B 제작 구성기</title>
+<meta name="theme-color" content="#111214">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<!--@@CORE_CSS@@-->
+<style>
+/* ===== B · Product Configurator — 첫 화면이 곧 작업대. 왼쪽 입력 · 가운데 미리보기 · 오른쪽 옵션/견적 ===== */
+:root{--fd-bg:#111214;--fd-surface:#1b1c20;--fd-surface2:#16171a;--fd-line:#2a2c32;--fd-muted:#959aa5;--fd-r:12px;--fd-r-sm:9px}
+html,body{height:100%}
+body{margin:0;background:var(--fd-bg);color:var(--fd-text);font-family:var(--fd-font);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
+.tb{display:flex;align-items:center;gap:14px;height:56px;padding:0 16px;border-bottom:1px solid var(--fd-line);flex:none}
+.tb .fd-logo{font-size:14px;text-decoration:none}
+.svc-tabs{display:flex;gap:2px;background:var(--fd-surface2);border:1px solid var(--fd-line);border-radius:10px;padding:3px;margin-left:12px}
+.svc-tabs button{border:0;background:transparent;color:var(--fd-muted);font:600 13.5px var(--fd-font);padding:7px 12px;border-radius:7px;cursor:pointer;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.svc-tabs button .fd-ic{width:16px;height:16px}
+.svc-tabs button.on{background:var(--fd-accent);color:#fff}
+.tb .r{margin-left:auto;display:flex;gap:4px}
+.tb .r a{color:var(--fd-muted);text-decoration:none;font-size:13.5px;font-weight:600;padding:8px 10px;border-radius:8px}.tb .r a:hover,.tb .r a.on{color:var(--fd-text);background:var(--fd-surface)}
+.ws{flex:1;display:grid;grid-template-columns:320px minmax(0,1fr) 360px;min-height:0}
+.pane{overflow:auto;padding:18px;border-right:1px solid var(--fd-line);min-width:0}
+.pane.r{border-right:0;border-left:1px solid var(--fd-line);display:flex;flex-direction:column;padding:0}
+.pane.r .opts{flex:1;overflow:auto;padding:18px}
+.pane.r .buy{border-top:1px solid var(--fd-line);padding:14px 18px;background:var(--fd-surface2)}
+.pane h3{font-size:12px;letter-spacing:.12em;color:var(--fd-muted);margin:0 0 12px;font-weight:700}
+.stage{position:relative;background:radial-gradient(circle at 50% 42%,#1e2026,#0d0e10 72%);min-width:0}
+.stage canvas{position:absolute;inset:0;width:100%;height:100%}
+.stage .hud{position:absolute;left:16px;top:14px;right:16px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}
+.stage .hud>*{pointer-events:auto}
+.stage .dims{font:600 12.5px var(--fd-font);color:var(--fd-muted);background:rgba(0,0,0,.4);padding:6px 10px;border-radius:8px}
+.stage .tools{position:absolute;right:14px;bottom:14px;display:flex;gap:6px}
+.stage .tools .fd-btn{min-height:34px;font-size:12.5px;background:rgba(27,28,32,.85)}
+.stage .zone{position:absolute;inset:24px;border:1.5px dashed #3a3d45;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;cursor:pointer;color:var(--fd-muted)}
+.stage .zone.over{border-color:var(--fd-accent);background:var(--fd-accent-soft)}
+.stage .zone .fd-ic{width:46px;height:46px;color:var(--fd-accent-text)}.stage .zone b{color:var(--fd-text);font-size:20px}
+.stage .zone .fmts{display:flex;gap:6px}.stage .zone .fmts span{font-size:12px;border:1px solid var(--fd-line);border-radius:6px;padding:3px 8px}
+.file-card{padding:12px;border-radius:var(--fd-r);background:var(--fd-surface);border:1px solid var(--fd-line);margin-bottom:12px}
+.file-card .fd-minfo{margin-top:0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;margin:0}.kv dt{color:var(--fd-muted)}.kv dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.tip{font-size:12.5px;color:var(--fd-muted);line-height:1.6;padding:12px;border-radius:var(--fd-r);border:1px dashed var(--fd-line);margin-top:12px}
+.buy .price{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.buy .price small{color:var(--fd-muted);font-size:12.5px}.buy .price b{font-size:26px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.buy .row{display:flex;gap:6px;margin-top:10px}.buy .row .fd-btn{flex:1}
+.buy .k{font-size:12px;margin-top:6px}
+.drawer{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;justify-content:flex-end}
+.drawer .in{width:min(440px,100%);height:100%;background:var(--fd-bg);border-left:1px solid var(--fd-line);display:flex;flex-direction:column;animation:dr .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes dr{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+.drawer .hd{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--fd-line)}.drawer .hd b{font-size:16px}.drawer .hd button{margin-left:auto}
+.drawer .bd{flex:1;overflow:auto;padding:18px}.drawer .ft{padding:14px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--fd-line)}.drawer .ft .fd-btn{width:100%}
+.page{flex:1;overflow:auto;padding:30px 18px 60px}.page .in{max-width:1100px;margin:0 auto}.page .in.n{max-width:520px}
+.page h1{font-size:28px;letter-spacing:-.02em;margin:0 0 8px}.page p.s{color:var(--fd-muted);margin:0 0 22px}
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.pf{border-radius:var(--fd-r);overflow:hidden;border:1px solid var(--fd-line);background:var(--fd-surface);cursor:pointer;text-align:left;padding:0;color:inherit;font:inherit}
+.pf img{width:100%;aspect-ratio:16/10;object-fit:cover;display:block}.pf div{padding:12px}.pf b{display:block}.pf small{color:var(--fd-muted)}
+.req-sum{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,86%);text-align:center;color:var(--fd-muted);font-size:14px;pointer-events:none}
+.req-sum b{display:block;color:var(--fd-text);font-size:20px;margin-bottom:6px}
+.mbar{display:none}
+.intro{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--fd-line);font-size:13px;color:var(--fd-muted);flex:none}
+.intro b{color:var(--fd-text)}.intro .fd-btn{margin-left:auto}
+@media (max-width:1100px){.ws{grid-template-columns:280px minmax(0,1fr) 330px}}
+@media (max-width:860px){
+  body{height:auto;display:block}
+  .tb{height:auto;flex-wrap:wrap;padding:10px 14px;gap:8px;position:sticky;top:0;z-index:20;background:var(--fd-bg)}
+  .svc-tabs{order:3;width:100%;margin:0;overflow-x:auto;scrollbar-width:none}.svc-tabs::-webkit-scrollbar{display:none}
+  .tb .r a{padding:6px 8px;font-size:13px}.tb .r a.adm{display:none}
+  .intro{display:none}
+  .ws{display:flex;flex-direction:column}
+  .stage{height:46vh;min-height:280px;order:-1}
+  .pane{border:0;border-bottom:1px solid var(--fd-line);overflow:visible}
+  .pane.r{border:0}.pane.r .opts{overflow:visible}
+  .pane.r .buy{display:none}
+  .mbar{display:flex;position:sticky;bottom:0;z-index:15;align-items:center;gap:10px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:rgba(17,18,20,.95);backdrop-filter:blur(10px);border-top:1px solid var(--fd-line)}
+  .mbar div{flex:1}.mbar small{display:block;color:var(--fd-muted);font-size:12px}.mbar b{font-size:20px}
+  .mbar .fd-btn{min-width:130px}
+  .page{padding:20px 14px 40px}
+}
+</style>
+</head>
+<body>
+<div id="demo"></div>
+<header class="tb">
+  <a href="#/" class="fd-logo" id="logo" aria-label="FORMDOT 작업대"></a>
+  <div class="svc-tabs" role="tablist" aria-label="서비스" id="tabs"></div>
+  <nav class="r"><a href="#/portfolio">사례</a><a href="#/lookup">주문 조회</a><a href="#/admin" class="adm">관리자</a></nav>
+</header>
+<div class="intro"><b>파일을 끌어다 놓으면 바로 견적.</b> 그림·아이디어도 위 탭에서 같은 방식으로 의뢰할 수 있어요. <button class="fd-btn sm ghost" id="howBtn">이용 방법</button></div>
+<main id="app" style="display:contents"></main>
+<div id="drawer"></div>
+<!--@@CORE_JS@@-->
+<script>
+const {$, $$, esc, won} = FD;
+$("#demo").innerHTML = FD.demoBanner();
+$("#logo").innerHTML = FD.LOGO + FD.WORD;
+let svc = "print";
+const sessions = {}; const S = () => sessions[svc] || (sessions[svc] = FD.session(svc));
+let viewer = null;
+$("#tabs").innerHTML = FD.SERVICES.map(s => `<button role="tab" data-svc="${s.id}">${FD.icon(s.ic)}${s.name}</button>`).join("");
+$("#tabs").onclick = e => { const b = e.target.closest("[data-svc]"); if (b) location.hash = "#/" + b.dataset.svc; };
+$("#howBtn").onclick = () => FD.toast("① 서비스 탭 고르기 → ② 자료 넣기 → ③ 오른쪽에서 옵션·견적 확인 → ④ 주문하기");
+const priceText = q => q.kind === "auto" ? won(q.total) : q.kind === "review" ? "확인 후 안내" : q.kind === "reject" ? "접수 불가" : "—";
+
+function workspace(){
+  const st = S(), isPrint = svc === "print", flow = FD.FLOWS[svc];
+  $("#app").innerHTML = `<div class="ws">
+    <section class="pane l" aria-label="자료">${isPrint ? `<h3>FILE</h3><div id="fileBox"></div>
+        <div class="tip">STL·3MF·G-code를 지원해요. 뱀부 스튜디오에서 슬라이싱한 <b>.gcode.3mf</b>면 출력 시간·무게가 정확해요.<br>파일이 없나요? 위 탭에서 <b>손그림·아이디어</b>로 의뢰할 수 있어요.</div>`
+      : `<h3>STEP 1 · ${esc(flow[0].title)}</h3><form id="f1" novalidate>${FD.formHTML(flow[0].fields, "b1", st.values)}</form>`}</section>
+    <section class="stage" aria-label="미리보기"><canvas></canvas>
+      ${isPrint ? `<div class="zone" tabindex="0" role="button" aria-label="3D 파일 고르기"${st.model?.geo || st.model?.sliced ? " hidden" : ""}>${FD.icon("upload")}<b>3D 파일을 여기에 놓으세요</b><span>또는 눌러서 고르기 · 최대 ${FD.settings.maxSize}mm · 150MB</span>
+          <div class="fmts"><span>STL</span><span>3MF</span><span>G-code</span></div><button type="button" class="fd-link" data-sample>샘플 파일로 해 보기</button><input type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden></div>`
+        : `<div class="req-sum" id="reqSum"></div>`}
+      <div class="hud"><span class="dims" id="dims" hidden></span>${isPrint ? `<button class="fd-btn sm" id="swap"${st.model ? "" : " hidden"}>다른 파일</button>` : ""}</div>
+      <div class="tools"><button class="fd-btn sm" data-t="spin">자동 회전</button><button class="fd-btn sm" data-t="reset">처음 시점</button></div></section>
+    <section class="pane r" aria-label="옵션과 견적"><div class="opts"><h3>${isPrint ? "OPTIONS" : "STEP 2 · " + esc(flow[1].title)}</h3>${isPrint ? `<div id="popt"></div>` : `<form id="f2" novalidate>${FD.formHTML(flow[1].fields, "b2", st.values)}</form>`}<div id="qfull" style="margin-top:8px"></div></div>
+      <div class="buy"><div class="price"><small>${isPrint ? "예상 견적" : "예상 디자인비"}</small><b id="pTot">—</b></div><div class="k" id="pKind"></div>
+        <div class="row"><button class="fd-btn ghost sm" id="cp">견적 복사</button><button class="fd-btn primary" id="buy">주문하기</button></div></div></section></div>
+    <div class="mbar"><div><small>${isPrint ? "예상 견적" : "예상 디자인비"}</small><b id="mTot">—</b></div><button class="fd-btn primary" id="mBuy">주문하기</button></div>`;
+  $$("#tabs button").forEach(b => { b.classList.toggle("on", b.dataset.svc === svc); b.setAttribute("aria-selected", b.dataset.svc === svc); });
+  viewer = new FD.Viewer($(".stage canvas"), {grid: "rgba(140,150,170,.16)"});
+  $(".tools").onclick = e => { const t = e.target.closest("[data-t]")?.dataset.t; if (t === "spin") viewer.spin = !viewer.spin; if (t === "reset"){ viewer.reset(); viewer.draw(); } };
+  if (isPrint){
+    const zone = $(".zone");
+    const go = FD.bindModelDrop(zone, $("input", zone), st, r => { if (r !== "busy") update(); }, viewer);
+    $("#swap").onclick = () => $("input", zone).click();
+    FD.mountPrintOptions($("#popt"), st, () => { viewer.setColor(st.opts.color); update(); }, {variant: "compact"});
+    if (st.model?.geo){ viewer.setModel(st.model.geo); viewer.setColor(st.opts.color); }
+  } else {
+    const upd = () => { Object.assign(st.values, FD.readForm($("#f1"), flow[0].fields, "b1"), FD.readForm($("#f2"), flow[1].fields, "b2")); update(); };
+    FD.bindForm($("#f1"), upd); FD.bindForm($("#f2"), upd);
+  }
+  $("#buy").onclick = $("#mBuy").onclick = checkout;
+  $("#cp").onclick = () => { const q = FD.calc(st); if (q.kind === "empty") return FD.toast("먼저 자료를 넣어 주세요"); FD.copy(FD.quoteText(svc, FD.titleOf(st), q)); };
+  update();
+}
+function update(){
+  const st = S(); st.quote = FD.calc(st);
+  const q = st.quote, t = priceText(q);
+  $("#pTot").textContent = t; $("#mTot").textContent = t;
+  $("#pKind").innerHTML = q.kind === "auto" ? '<span class="fd-badge ok">자동 견적</span>' : q.kind === "review" ? '<span class="fd-badge warn">추가 확인 필요</span>' : "";
+  $("#qfull").innerHTML = q.kind === "empty" ? "" : FD.quoteHTML(q);
+  if (svc === "print"){
+    const m = st.model;
+    $("#fileBox").innerHTML = m ? `<div class="file-card">${FD.modelInfo(m)}${m.dims ? `<dl class="kv" style="margin-top:10px"><dt>가로</dt><dd>${m.dims[0].toFixed(1)} mm</dd><dt>세로</dt><dd>${m.dims[1].toFixed(1)} mm</dd><dt>높이</dt><dd>${m.dims[2].toFixed(1)} mm</dd><dt>부피</dt><dd>${m.vol.toFixed(2)} cm³</dd>${q.g ? `<dt>예상 무게</dt><dd>${q.g.toFixed(1)} g</dd>` : ""}</dl>` : ""}</div>` : `<div class="fd-empty">아직 파일이 없어요.<br>가운데에 놓아 주세요.</div>`;
+    $(".zone").hidden = !!(m && (m.geo || m.sliced)); $("#swap").hidden = !m;
+    const d = $("#dims"); d.hidden = !m?.dims; if (m?.dims) d.textContent = m.dims.map(x => x.toFixed(1)).join(" × ") + " mm";
+  } else {
+    const v = st.values, dims = (v.dims || []).map(Number);
+    const has = dims.length === 3 && dims.every(x => x > 0);
+    if (has){ viewer.setModel(FD.boxGeo(...dims)); viewer.setColor("파랑"); const d = $("#dims"); d.hidden = false; d.textContent = `원하는 크기 ${dims.join(" × ")} mm`; }
+    else { viewer.setModel(null); $("#dims").hidden = true; }
+    $("#reqSum").innerHTML = has ? "" : `<b>${esc(v.title || FD.svc(svc).q)}</b>${esc(FD.svc(svc).d)}<br><br>크기(가로·세로·높이)를 넣으면 여기에 실제 비율로 보여 드려요.`;
+  }
+}
+function checkout(){
+  const st = S(), isPrint = svc === "print";
+  if (isPrint && !st.model){ FD.toast("먼저 3D 파일을 올려 주세요"); $(".zone")?.focus(); return; }
+  if (st.quote.kind === "reject"){ FD.toast("이 파일은 접수할 수 없어요"); return; }
+  if (!isPrint){ const a = FD.validate($("#f1"), FD.FLOWS[svc][0].fields, "b1"); if (!a) return; const b = FD.validate($("#f2"), FD.FLOWS[svc][1].fields, "b2"); if (!b) return; Object.assign(st.values, a, b); st.quote = FD.calc(st); }
+  $("#drawer").innerHTML = `<div class="drawer" role="dialog" aria-modal="true" aria-label="주문하기"><div class="in">
+    <div class="hd"><b>주문하기</b><span class="fd-badge">${FD.svc(svc).name}</span><button class="fd-btn ghost sm" id="dx" aria-label="닫기">✕</button></div>
+    <div class="bd"><div id="dq">${FD.quoteHTML(st.quote)}</div><h3 style="font-size:15px;margin:20px 0 12px">주문자 정보 <small style="color:var(--fd-muted);font-weight:400">회원가입 없음</small></h3>
+      <form id="cf" novalidate>${FD.formHTML(FD.CONTACT, "bc")}</form>${FD.studentHTML("bc")}${FD.consentHTML("bc")}</div>
+    <div class="ft"><button class="fd-btn primary" id="go">${st.quote.kind === "review" ? "확인 요청하며 접수하기" : "주문 접수하기"}</button></div></div></div>`;
+  const close = () => $("#drawer").innerHTML = "";
+  $("#dx").onclick = close; $(".drawer").onclick = e => { if (e.target.classList.contains("drawer")) close(); };
+  FD.bindForm($("#cf"));
+  FD.bindStudent("bc", on => { st.student = on; st.quote = FD.calc(st); $("#dq").innerHTML = FD.quoteHTML(st.quote); update(); });
+  $("#go").onclick = () => { const c = FD.validate($("#cf"), FD.CONTACT, "bc"); if (!c || !FD.checkConsent("bc")) return;
+    const o = FD.finish(st, c); delete sessions[svc]; close(); location.hash = "#/done/" + o.no; };
+  setTimeout(() => $("#bc-name").focus(), 50);
+}
+const page = (html, n) => { $("#app").innerHTML = `<div class="page"><div class="in${n ? " n" : ""}">${html}</div></div>`; $$("#tabs button").forEach(b => b.classList.remove("on")); };
+function route(){
+  const [, name = "", arg] = location.hash.split("/");
+  $$(".tb .r a").forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#/" + name));
+  document.querySelector(".intro").style.display = FD.svc(name) || !name ? "" : "none";
+  if (FD.svc(name) || !name){ svc = name || "print"; return workspace(); }
+  if (name === "portfolio") return page(`<h1>작업 사례</h1><p class="s">눌러서 같은 종류로 바로 견적을 시작하세요. (샘플 일러스트)</p><div class="pf-grid">${FD.PORTFOLIO.map(p => `<button class="pf" data-go="${p.svc}"><img src="${p.img}" alt=""><div><b>${esc(p.t)}</b><small>${esc(p.d)} · ${FD.SAMPLE_TAG}</small></div></button>`).join("")}</div>`);
+  if (name === "lookup"){ page(`<h1>주문 조회</h1><p class="s">주문번호 + 휴대폰 인증으로 확인해요.</p><div id="lk"></div>`, 1); return FD.mountLookup($("#lk")); }
+  if (name === "admin"){ page(`<div id="adm"></div>`); return FD.mountAdmin($("#adm")); }
+  if (name === "done"){ const o = FD.store.get(arg); return page((o ? FD.doneHTML(o) : "주문을 찾을 수 없어요.") + `<div style="display:flex;gap:8px;justify-content:center;margin-top:18px"><a class="fd-btn" href="#/lookup">조회하기</a><a class="fd-btn primary" href="#/">새 견적</a></div>`, 1); }
+}
+document.addEventListener("click", e => { const g = e.target.closest("[data-go]"); if (g) location.hash = "#/" + g.dataset.go; });
+addEventListener("hashchange", route); route();
+</script>
+</body>
+</html>
