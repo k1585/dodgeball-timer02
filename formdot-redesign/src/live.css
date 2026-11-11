@@ -1,27 +1,7 @@
-/* 운영용: C 안내형 여정을 브랜드 색(차콜 #202124 + 일렉트릭 블루 #2962FF)으로 */
-:root{--fd-bg:#202124;--fd-surface:#2a2b30;--fd-surface2:#26272b;--fd-line:#3b3d44;--fd-text:#fff;--fd-muted:#a3a7b0;
-  --fd-accent:#2962ff;--fd-accent-text:#8aaaff;--fd-accent-soft:rgba(41,98,255,.16);--fd-warn:#f5b941;--fd-warn-soft:rgba(245,185,65,.14);--fd-ok:#34c778;--fd-bad:#ff7b7b;color-scheme:dark}
-body{background:var(--fd-bg)!important;color:var(--fd-text)!important}
-.fd-logo,.fd-logo-sym,.fd-logo-word{color:#f7f8fa!important}
-.top .r a:hover{background:var(--fd-surface)!important}
-.top .r a[href="#/admin"]{display:none}
-.hello .bubble,.choice,.hint-cards div,.pf,.faq details,.recap,.icon-btn,.q .fd-opt,.q .fd-drop,.fd-adv,
-.fd-quote,.fd-status,.fd-odetail,.fd-kpi,.fd-orow,.fd-set,.fd-chan-i{background:var(--fd-surface)!important;border-color:var(--fd-line)!important;color:var(--fd-text)}
-.choice:hover{border-color:#5a6a90!important}.choice.on,.q .fd-opt.on{background:var(--fd-accent-soft)!important;border-color:var(--fd-accent)!important}
-.choice .em{background:var(--fd-accent-soft)!important;color:var(--fd-accent-text)!important}
-.q-top{background:rgba(32,33,36,.94)!important}.q-top .bar{background:var(--fd-line)!important}
-.view{background:radial-gradient(circle at 50% 40%,#2c2e34,#1b1c1f 75%)!important;border-color:var(--fd-line)!important}
-.fd-quote.auto{background:var(--fd-accent-soft)!important;border-color:rgba(41,98,255,.45)!important}
-.fd-quote.review{background:var(--fd-warn-soft)!important;border-color:rgba(245,185,65,.45)!important}
-.fd-toast{background:#f2f4f7!important;color:#202124!important}
-.stu-pill{background:linear-gradient(90deg,rgba(255,196,0,.2),rgba(255,196,0,.06))!important;border-color:rgba(255,214,102,.6)!important;color:#ffd666!important;animation:stuGlow 2.6s ease-in-out infinite}
-.stu-pill b{color:#ffe08a!important}
-@keyframes stuGlow{0%,100%{box-shadow:0 0 0 0 rgba(255,196,0,0)}50%{box-shadow:0 0 0 6px rgba(255,196,0,.12)}}
-.stu-tip{background:rgba(255,196,0,.12)!important;border-color:rgba(255,214,102,.45)!important;color:#ffe08a!important}.stu-tip b{color:#ffd666!important}
-.fd-stu{background:rgba(255,196,0,.08)!important;border-color:rgba(255,214,102,.45)!important}
+/* 운영용 추가 스타일 — 시안 C 화면 그대로, 완료 화면의 주문번호·조회 코드 칸만 더함 */
 .lv-codes{display:flex;gap:10px;justify-content:center;margin:4px 0 12px}
-.lv-codes div{padding:12px 20px;border-radius:16px;background:var(--fd-surface);border:1px solid var(--fd-line)}
+.lv-codes div{padding:12px 20px;border-radius:16px;background:#fff;border:1px solid var(--fd-line)}
 .lv-codes small{display:block;color:var(--fd-muted);font-size:12.5px}.lv-codes b{font-size:30px;letter-spacing:.14em;font-variant-numeric:tabular-nums}
-.lv-codes div+div{border-color:rgba(41,98,255,.55);background:var(--fd-accent-soft)}
+.lv-codes div+div{border-color:#b9c9ff;background:var(--fd-accent-soft)}
 .lv-note{color:var(--fd-muted);font-size:13.5px;max-width:420px;margin:12px auto 0;line-height:1.6}
 @media (max-width:420px){.lv-codes b{font-size:24px}.lv-codes div{padding:10px 14px}}

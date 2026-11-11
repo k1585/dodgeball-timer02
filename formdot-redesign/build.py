@@ -44,7 +44,6 @@ if cfg_src and os.path.exists(cfg_src):
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="manifest" href="manifest.webmanifest">
 """
     s = s.replace("<title>FORMDOT · C 안내형 여정</title>", "<title>FORMDOT. · 3D 모델링 · 프린팅</title>\n" + head)
-    s = s.replace('<meta name="theme-color" content="#f5f6f8">', '<meta name="theme-color" content="#202124">')
     s = s.replace("</head>", "<style>\n" + open(f"{R}/src/live.css").read() + "</style>\n</head>", 1)
     marker = "</script>\n<script>\nconst {$, $$, esc, won} = FD;"
     assert s.count(marker) == 1
