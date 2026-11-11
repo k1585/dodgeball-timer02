@@ -1,0 +1,76 @@
+{
+ "name": "concept-c-guided",
+ "errors": [],
+ "checks": [
+  [
+   "desktop",
+   "advice",
+   "힘을 받는 물건이라 튼튼함을 '튼튼하게'로 맞췄어요."
+  ],
+  [
+   "desktop",
+   "recommend",
+   "PETG HF 추천질기고 물에 강함"
+  ],
+  [
+   "desktop",
+   "quote",
+   "4,227원"
+  ],
+  [
+   "desktop",
+   "quote qty1",
+   "3,730원"
+  ],
+  [
+   "desktop",
+   "done",
+   "1997"
+  ],
+  [
+   "desktop",
+   "pro first q",
+   "무엇을 만드나요?"
+  ],
+  [
+   "desktop",
+   "pro quote",
+   "9,000원"
+  ],
+  [
+   "mobile",
+   "advice",
+   "힘을 받는 물건이라 튼튼함을 '튼튼하게'로 맞췄어요."
+  ],
+  [
+   "mobile",
+   "recommend",
+   "PETG HF 추천질기고 물에 강함"
+  ],
+  [
+   "mobile",
+   "quote",
+   "4,227원"
+  ],
+  [
+   "mobile",
+   "quote qty1",
+   "3,730원"
+  ],
+  [
+   "mobile",
+   "done",
+   "6732"
+  ],
+  [
+   "mobile",
+   "pro first q",
+   "무엇을 만드나요?"
+  ],
+  [
+   "mobile",
+   "pro quote",
+   "9,000원"
+  ]
+ ]
+}

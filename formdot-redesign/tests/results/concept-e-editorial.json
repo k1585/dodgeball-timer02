@@ -1,0 +1,56 @@
+{
+ "name": "concept-e-editorial",
+ "errors": [],
+ "checks": [
+  [
+   "desktop",
+   "drawer svc",
+   "손그림 구현"
+  ],
+  [
+   "desktop",
+   "sketch quote",
+   "3,000원"
+  ],
+  [
+   "desktop",
+   "done",
+   "8174"
+  ],
+  [
+   "desktop",
+   "filter pro count",
+   2
+  ],
+  [
+   "desktop",
+   "print quote",
+   "3,565원"
+  ],
+  [
+   "mobile",
+   "drawer svc",
+   "손그림 구현"
+  ],
+  [
+   "mobile",
+   "sketch quote",
+   "3,000원"
+  ],
+  [
+   "mobile",
+   "done",
+   "9824"
+  ],
+  [
+   "mobile",
+   "filter pro count",
+   2
+  ],
+  [
+   "mobile",
+   "print quote",
+   "3,565원"
+  ]
+ ]
+}

@@ -1,0 +1,86 @@
+{
+ "name": "concept-a-studio",
+ "errors": [],
+ "checks": [
+  [
+   "desktop",
+   "print quote after sample",
+   "3,565원"
+  ],
+  [
+   "desktop",
+   "PETG strong",
+   "3,730원"
+  ],
+  [
+   "desktop",
+   "validation shown",
+   true
+  ],
+  [
+   "desktop",
+   "order no",
+   "2704"
+  ],
+  [
+   "desktop",
+   "idea quote kind",
+   "fd-quote review"
+  ],
+  [
+   "desktop",
+   "review done title",
+   "접수됐어요. 확인 후 확정 금액을 알려 드릴게요."
+  ],
+  [
+   "desktop",
+   "lookup status",
+   "결제 안내"
+  ],
+  [
+   "desktop",
+   "admin confirm -> pay_wait count",
+   "1"
+  ],
+  [
+   "mobile",
+   "print quote after sample",
+   "3,565원"
+  ],
+  [
+   "mobile",
+   "PETG strong",
+   "3,730원"
+  ],
+  [
+   "mobile",
+   "validation shown",
+   true
+  ],
+  [
+   "mobile",
+   "order no",
+   "7225"
+  ],
+  [
+   "mobile",
+   "idea quote kind",
+   "fd-quote review"
+  ],
+  [
+   "mobile",
+   "review done title",
+   "접수됐어요. 확인 후 확정 금액을 알려 드릴게요."
+  ],
+  [
+   "mobile",
+   "lookup status",
+   "결제 안내"
+  ],
+  [
+   "mobile",
+   "admin confirm -> pay_wait count",
+   "1"
+  ]
+ ]
+}

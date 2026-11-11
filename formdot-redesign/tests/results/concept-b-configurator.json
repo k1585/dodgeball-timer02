@@ -1,0 +1,66 @@
+{
+ "name": "concept-b-configurator",
+ "errors": [],
+ "checks": [
+  [
+   "desktop",
+   "print price",
+   "3,565원"
+  ],
+  [
+   "desktop",
+   "silk price",
+   "3,643원"
+  ],
+  [
+   "desktop",
+   "adv infill 40 price",
+   "3,721원"
+  ],
+  [
+   "desktop",
+   "done no",
+   "2600"
+  ],
+  [
+   "desktop",
+   "pro price",
+   "12,000원"
+  ],
+  [
+   "desktop",
+   "pro done",
+   "주문이 접수됐어요"
+  ],
+  [
+   "mobile",
+   "print price",
+   "3,565원"
+  ],
+  [
+   "mobile",
+   "silk price",
+   "3,643원"
+  ],
+  [
+   "mobile",
+   "adv infill 40 price",
+   "3,721원"
+  ],
+  [
+   "mobile",
+   "done no",
+   "6593"
+  ],
+  [
+   "mobile",
+   "pro price",
+   "12,000원"
+  ],
+  [
+   "mobile",
+   "pro done",
+   "주문이 접수됐어요"
+  ]
+ ]
+}

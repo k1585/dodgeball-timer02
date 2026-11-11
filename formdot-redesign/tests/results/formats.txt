@@ -1,0 +1,9 @@
+a.gcode                  {"kind":"auto","total":4340,"g":7.5,"dims":null,"sliced":true,"why":""}
+bambu_project.3mf        {"kind":"auto","total":3664,"g":7,"dims":"40×20×20","sliced":false,"why":""}
+big.stl                  {"kind":"reject","total":null,"g":null,"dims":"400×20×20","sliced":false,"why":"가장 긴 변이 400mm예요. 최대 300mm까지 받을 수 있어요."}
+cube.stl                 {"kind":"auto","total":3524,"g":4.1,"dims":"20×20×20","sliced":false,"why":""}
+cube_ascii.stl           {"kind":"auto","total":3524,"g":4.1,"dims":"20×20×20","sliced":false,"why":""}
+sliced.gcode.3mf         {"kind":"auto","total":4552,"g":14.3,"dims":"40×20×20","sliced":true,"why":""}
+tshape.stl               {"kind":"auto","total":3565,"g":4.7,"dims":"30×30×25","sliced":false,"why":""}
+broken.stl               {"kind":"review","total":null,"g":null,"dims":null,"sliced":false,"why":"파일을 해석하지 못했어요. 파일이 손상됐거나 내보내기 방식이 달라요."}
+note.txt                 {"kind":"review","total":null,"g":null,"dims":null,"sliced":false,"why":"지원하지 않는 형식이에요. STL·3MF·G-code만 자동 견적돼요."}

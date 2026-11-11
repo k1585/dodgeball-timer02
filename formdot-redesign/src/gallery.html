@@ -1,0 +1,105 @@
+<title>FORMDOT 리디자인 시안</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* 레이아웃: 위에서 아래로 — 추천 한 줄 → 시안 6장 → 비교표 → 작동 상태 → 문서. 브랜드와 같은 차콜·일렉트릭 블루 단일 다크 */
+:root{
+  --bg:#18191c; --panel:#202226; --line:#30333a; --fg:#f2f3f5; --muted:#a2a7b1; --blue:#2962ff; --blue-t:#8eadff; --ok:#3fcf86; --warn:#f2b84b;
+  --sans:"IBM Plex Sans KR","Pretendard",-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; --mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 var(--sans);margin:0}
+.w{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px;display:grid;grid-template-columns:minmax(0,1fr);gap:56px}
+a{color:var(--blue-t)}
+:focus-visible{outline:2px solid var(--blue-t);outline-offset:2px}
+header{display:grid;gap:14px}
+.eb{font:700 12px var(--mono);letter-spacing:.14em;color:var(--blue-t)}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.15;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h2{font-size:22px;letter-spacing:-.01em;margin:0 0 6px;text-wrap:balance}
+p{margin:0;max-width:68ch}.mut{color:var(--muted)}
+.note{display:flex;gap:10px;flex-wrap:wrap;font-size:13.5px;color:var(--muted)}
+.note span{border:1px solid var(--line);border-radius:99px;padding:4px 11px}
+.pick{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:22px 24px;border-radius:16px;background:linear-gradient(110deg,rgba(41,98,255,.2),rgba(41,98,255,.05));border:1px solid rgba(41,98,255,.45)}
+.pick b{font-size:19px}.pick p{color:#d6dbe6;margin-top:6px}
+.btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:10px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700;white-space:nowrap}
+.btn.g{background:transparent;border:1px solid var(--line);color:var(--fg)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.card.rec{border-color:var(--blue)}
+.shots{display:grid;grid-template-columns:minmax(0,1fr) 22%;gap:8px;padding:12px 12px 0;background:#121315}
+.shots img{display:block;width:100%;height:auto;border-radius:8px 8px 0 0;border:1px solid var(--line);border-bottom:0}
+.cb{padding:16px 18px 18px;display:grid;gap:10px;align-content:start}
+.ct{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}.ct code{font:700 12px var(--mono);color:var(--blue-t)}.ct b{font-size:18px}
+.tag{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(63,207,134,.15);color:var(--ok)}
+.cb ul{margin:0;padding-left:18px;color:#d3d7df;font-size:14px}.cb li{margin:2px 0}
+.cb .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:14px}
+th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+thead th{font:600 12px var(--sans);color:var(--muted);background:var(--panel);letter-spacing:.03em}
+td.n{font:600 14px var(--mono);text-align:center;font-variant-numeric:tabular-nums}
+tr.rec td{background:rgba(41,98,255,.08)}
+.dots{letter-spacing:2px;color:var(--blue-t)}
+.st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.st div{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--panel)}
+.st h3{margin:0 0 8px;font-size:15px;display:flex;gap:8px;align-items:center}
+.st h3 i{width:9px;height:9px;border-radius:50%;background:var(--ok)}.st .d i{background:var(--blue-t)}.st .x i{background:var(--warn)}
+.st ul{margin:0;padding-left:18px;font-size:13.5px;color:#d3d7df}
+.docs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.docs a{display:block;padding:14px 16px;border:1px solid var(--line);border-radius:12px;text-decoration:none;color:var(--fg);background:var(--panel)}
+.docs a small{display:block;color:var(--muted);font-size:12.5px}
+@media (max-width:820px){.cards,.st,.docs{grid-template-columns:minmax(0,1fr)}.pick{grid-template-columns:minmax(0,1fr)}.w{padding-block:24px 60px;gap:40px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<div class="w">
+<header>
+  <div class="eb">FORMDOT · REDESIGN CONCEPTS</div>
+  <h1>3D 프린팅·모델링 통합 주문 경험, 서로 다른 6가지 방향</h1>
+  <p class="mut">모든 시안은 운영 사이트의 견적 엔진을 그대로 써서 같은 파일이면 같은 금액이 나와요(샘플 T브래킷 PLA 3,565원). 서버에 연결하지 않는 데모 모드라 주문은 보는 사람의 브라우저에만 저장되고, 문자·결제·알림은 실제로 일어나지 않아요.</p>
+  <div class="note"><span>공통: 5가지 서비스 · 자동 견적 · 검토 전환 사유 표시</span><span>비회원 주문 + 휴대폰 인증 조회</span><span>스마트스토어 결제 유지</span><span>관리자 데모 (PIN 아무 4자리)</span></div>
+</header>
+
+<section class="pick" aria-label="추천안">
+  <div><b>추천: C 안내형 여정을 기본으로, 브랜드 다크 색으로 입히기</b>
+    <p>휴대폰에서 한 화면에 질문 하나라 초보자도 막히지 않고, 답에 따라 다섯 가지 서비스로 자연스럽게 나뉘어요. PC에서는 B의 작업대 화면을, 다시 온 고객에게는 F의 '내 주문'을 함께 붙이는 걸 권해요.</p></div>
+  <a class="btn" href="concepts/concept-c-guided.html">C 열어 보기 →</a>
+</section>
+
+<section aria-labelledby="h-cards"><h2 id="h-cards">시안</h2><p class="mut" style="margin-bottom:18px">왼쪽은 PC 첫 화면, 오른쪽은 휴대폰 첫 화면이에요. 눌러서 직접 주문해 보세요. 파일이 없으면 각 시안의 '샘플' 버튼을 쓰면 돼요.</p>
+<div class="cards" id="cards"></div></section>
+
+<section aria-labelledby="h-cmp"><h2 id="h-cmp">비교</h2><p class="mut" style="margin-bottom:14px">5점 만점. 구현 난이도는 낮을수록 쉬움. 직접 써 보며 매긴 주관 점수예요.</p>
+<div class="tw"><table><thead><tr><th>시안</th><th>내비게이션 · 주문 방식</th><th>브랜드</th><th>초보자</th><th>숙련자</th><th>휴대폰</th><th>난이도</th><th>약점</th></tr></thead><tbody id="cmp"></tbody></table></div></section>
+
+<section aria-labelledby="h-st"><h2 id="h-st">무엇이 진짜로 작동하나요</h2><p class="mut" style="margin-bottom:14px">헤드리스 브라우저로 6개 시안을 PC·휴대폰에서 끝까지 눌러 확인했어요. 콘솔 오류 0건.</p>
+<div class="st">
+  <div><h3><i></i>실제 작동 확인</h3><ul><li>STL·3MF·G-code 분석과 자동 견적 (운영과 같은 금액)</li><li>3D 미리보기 회전·확대·처음 시점</li><li>재료·색상·용도·빠른/상세 설정 → 금액 반영</li><li>모델링 4종 자동 산정과 검토 전환</li><li>필수 항목 검증, 동의, 학생 영상 길이 확인</li></ul></div>
+  <div class="d"><h3><i></i>시안 · 데모</h3><ul><li>주문 저장 (이 브라우저에만)</li><li>휴대폰 인증 조회 (코드를 화면에 표시)</li><li>관리자 로그인·주문 관리·견적 확정·가격 설정</li><li>포트폴리오 이미지는 샘플 일러스트</li></ul></div>
+  <div class="x"><h3><i></i>연동 필요</h3><ul><li>문자 발송 업체 · 발신번호 등록</li><li>카카오 알림톡 (사업자 등록 필요)</li><li>서버 인증번호 발급·검증 (Cloud Functions)</li><li>스마트스토어 상품 링크 등록</li></ul></div>
+</div></section>
+
+<section aria-labelledby="h-doc"><h2 id="h-doc">문서</h2><div class="docs" style="margin-top:14px">
+  <a href="docs/audit-and-feature-map.md">기능 감사<small>기존 기능 보존/변경/미확인 표</small></a>
+  <a href="docs/concept-comparison.md">시안 비교<small>장단점·난이도·가져올 요소</small></a>
+  <a href="docs/architecture-decision.md">구조 결정<small>호스팅·DB·인증·알림 선택</small></a>
+  <a href="docs/implementation-plan.md">적용 계획<small>단계·위험·롤백</small></a>
+  <a href="docs/test-report.md">테스트 보고<small>무엇을 어떻게 확인했나</small></a>
+  <a href="README.md">README<small>열어 보는 방법</small></a></div></section>
+</div>
+<script>
+const C = [
+  ["A", "concept-a-studio", "프리미엄 스튜디오", "대형 타이포·넓은 여백. 주문은 전체 화면 '스튜디오 시트'에서 5단계", ["첫 화면에서 샘플 모델이 천천히 회전", "서비스를 큰 목록으로 나열해 고르기 쉬움", "PC는 왼쪽 단계 레일, 휴대폰은 진행 막대"], [5,4,3,4,2], "스크롤이 길고 숙련자에겐 단계가 많음"],
+  ["B", "concept-b-configurator", "제작 구성기", "첫 화면이 작업대. 파일·미리보기·옵션·견적을 한 화면에", ["파일을 끌어다 놓는 순간 금액", "모델링도 치수를 넣으면 실제 비율 상자로 표시", "주문은 오른쪽 서랍에서 끝"], [4,3,5,3,3], "처음 온 사람에겐 설명이 적음"],
+  ["C", "concept-c-guided", "안내형 여정", "질문 하나씩. 답에 따라 서비스가 정해지고 그 서비스 질문만 이어짐", ["‘3D 파일이 있나요?’부터 시작", "용도에 맞춰 재료 추천 배지", "마지막에 요약표에서 바로 고치기"], [3,5,3,5,2], "밝은 테마라 브랜드 색 적용이 필요"],
+  ["D", "concept-d-engineering", "엔지니어링 랩", "도면 격자·고정폭 숫자. 사양서 한 장(RFQ)에 모든 입력", ["출력 범위 대비 X·Y·Z 막대", "Ctrl+Enter 접수, Alt+1~5 서비스 전환", "상세 파라미터를 처음부터 펼침"], [4,2,5,3,3], "초보자에게 용어가 어려움"],
+  ["E", "concept-e-editorial", "에디토리얼 포트폴리오", "잡지처럼 사례 이야기를 읽고, 그 방식으로 바로 의뢰", ["사례마다 의뢰→설계→출력→전달 이야기", "서비스별 사례 필터", "의뢰 서랍에 원래 사례가 따라옴"], [3,4,2,4,3], "실제 제작 사진이 있어야 힘이 남"],
+  ["F", "concept-f-dashboard", "대시보드", "앱 셸. 내 주문 상태·빠른 견적·다시 주문이 첫 화면", ["홈에서 파일 놓고 바로 금액", "이 기기에서 한 주문을 로그인 없이 표시", "휴대폰은 아래 탭 바"], [4,3,4,4,3], "처음 온 사람에겐 빈 화면이 많음"]
+];
+const dots = n => "●".repeat(n) + "○".repeat(5 - n);
+document.getElementById("cards").innerHTML = C.map(([k, f, n, d, pts, , ]) => `<article class="card${k === "C" ? " rec" : ""}">
+  <a class="shots" href="concepts/${f}.html" aria-label="${n} 시안 열기"><img src="assets/${f}-d.jpg" alt="${n} PC 첫 화면" loading="lazy"><img src="assets/${f}-m.jpg" alt="${n} 휴대폰 첫 화면" loading="lazy"></a>
+  <div class="cb"><div class="ct"><code>CONCEPT ${k}</code><b>${n}</b>${k === "C" ? '<span class="tag">추천</span>' : ""}</div><p class="mut" style="font-size:14px">${d}</p>
+    <ul>${pts.map(p => `<li>${p}</li>`).join("")}</ul>
+    <div class="row"><a class="btn" href="concepts/${f}.html">열기</a><a class="btn g" href="concepts/${f}.html#/admin">관리자 화면</a></div></div></article>`).join("");
+document.getElementById("cmp").innerHTML = C.map(([k, f, n, d, , s, w]) => `<tr class="${k === "C" ? "rec" : ""}"><td><b>${k}</b> ${n}</td><td>${d}</td>${s.map(x => `<td class="n">${x}</td>`).join("")}<td>${w}</td></tr>`).join("");
+</script>
