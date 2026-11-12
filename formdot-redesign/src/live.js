@@ -231,7 +231,8 @@ FD.doneHTML = o => { const code = o.code || fullCode(o.no, o.lkCode), req = o.se
   return `<div class="fd-done">
   <div class="fd-done-ic">${FD.icon("check")}</div>
   <h2>${review ? "접수됐어요. 확인 후 금액을 알려 드릴게요." : req ? "의뢰가 접수됐어요" : "주문이 접수됐어요"}</h2>
-  <div class="lv-codes"><div><small>주문 코드</small><b>${esc(code)}</b></div></div>
+  <div class="lv-codes"><div><small>주문 코드</small><b>${esc(code)}</b></div>
+    <div class="pay"><small>${review ? "결제 금액" : req ? "지금 결제 (디자인 기본비)" : "스마트스토어 결제 금액"}</small><b>${review ? "확인 후 안내" : esc(won(o.quote.total || 0))}</b></div></div>
   <button class="fd-btn" type="button" onclick="FD.copy('FORMDOT 주문 코드 ${esc(code)}')">코드 복사</button>
   <p class="lv-note">이 코드 하나로 결제(스마트스토어 옵션)와 주문 조회를 해요. 캡처하거나 복사해 두세요. 판매자가 문자로도 보내 드려요.</p>
   <ol class="fd-next">${req
@@ -250,7 +251,7 @@ const ST = [["new", "스마트스토어 결제 대기중", "스마트스토어�
 FD.mountLookup = el => {
   el.innerHTML = `<form class="fd-lk" novalidate>
     <div class="fd-field"><label class="fd-label" for="lkCd">주문 코드</label><input class="fd-in" id="lkCd" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예: 4821-KTP" style="text-transform:uppercase;letter-spacing:.1em"></div>
-    <div class="fd-field"><label class="fd-label" for="lkPh">휴대폰 번호</label><input class="fd-in" id="lkPh" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678"></div>
+    <div class="fd-field"><label class="fd-label" for="lkPh">휴대폰 번호</label><input class="fd-in" id="lkPh" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" value="010-"></div>
     <button class="fd-btn primary" type="submit">조회하기</button><div class="fd-err" role="alert" hidden></div></form><div class="fd-lk-result"></div>`;
   const f = el.querySelector("form"), er = el.querySelector(".fd-err"), res = el.querySelector(".fd-lk-result"), btn = f.querySelector("button");
   const err = m => { er.textContent = m; er.hidden = !m; };

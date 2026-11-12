@@ -750,6 +750,18 @@ FD.logo = (cls = "") => `<span class="fd-logo ${cls}">${FD.LOGO}${FD.WORD}</span
 FD.MATS = OPT_BY_ID.mat.list.map(([v, t, d]) => ({v, name: t.replace(/\s*\(.*\)$/, ""), d}));
 FD.MAT_SHORT = {"PLA":"무난한 기본","PLA-Matte":"무광 질감","PLA-Silk":"반짝이는 광택","PETG":"질기고 물에 강함","ABS":"열·충격에 강함",
   "ASA":"실외·햇빛용","TPU":"고무처럼 말랑","PLA-CF":"탄소섬유·단단","PETG-CF":"탄소섬유·강성"};
+// 재료 설명 (손님용 · 운영 사이트 상세 도움말 기준)
+FD.MAT_DESC = {
+  "PLA": "가장 많이 쓰는 기본 재료예요. 출력이 깔끔하고 저렴해요. 열에 약해 약 55℃ 이상(한여름 차 안 등)에서는 휘어질 수 있어요. 소품·장식·생활용품에 추천해요.",
+  "PLA-Matte": "PLA와 같은 성질에 빛 반사가 적은 무광이에요. 층 줄무늬가 덜 보여 고급스러워요. 피규어·인테리어 소품에 좋아요.",
+  "PLA-Silk": "비단처럼 반짝이는 광택이 나요. 장식품·선물용으로 예뻐요. 조금 덜 단단하고 천천히 출력해요.",
+  "PETG": "PLA보다 질기고 잘 안 부러져요. 물과 열(약 70℃)에도 강해서 욕실·주방용품, 실용 부품에 좋아요.",
+  "ABS": "열(약 90℃)과 충격에 강하고 단단해요. 자동차 실내 부품, 기계 부품처럼 튼튼해야 하는 곳에 써요.",
+  "ASA": "ABS처럼 튼튼하고 햇빛(자외선)에도 색이 잘 안 바래요. 베란다·실외에 두는 물건에 추천해요.",
+  "TPU": "고무처럼 말랑하고 휘어져요. 범퍼, 패킹, 미끄럼 방지, 휴대폰 케이스 등에 써요. 출력이 느려 가격이 올라가요.",
+  "PLA-CF": "탄소섬유가 섞여 가볍고 단단하며 무광 질감이에요. 브래킷·지그·드론 부품처럼 휘면 안 되는 부품에 좋아요.",
+  "PETG-CF": "PETG에 탄소섬유를 더해 질기면서도 단단해요. 열과 물에 강한 기능성 부품에 좋아요."
+};
 FD.COLORS = OPT_BY_ID.color.list.map(([v, t]) => ({v, name: t}));
 FD.COLOR_HEX = {"흰색":"#f2f2f0","검정":"#1c1c1f","회색":"#8e9196","빨강":"#e5383b","주황":"#f28c28","노랑":"#f5c518","초록":"#2ea44f",
   "파랑":"#2f6fe4","보라":"#8b55d6","분홍":"#f4a0c0","갈색":"#8b5a3c","투명":"#cfe9f5","기타":"#2962ff"};
@@ -909,7 +921,7 @@ FD.FLOWS = {
 };
 FD.CONTACT = [
   {id: "name", label: "이름", type: "text", req: true, ph: "홍길동", auto: "name"},
-  {id: "phone", label: "휴대폰 번호", type: "tel", req: true, ph: "010-1234-5678", help: "주문 조회 인증과 진행 안내에 써요."},
+  {id: "phone", label: "휴대폰 번호", type: "tel", req: true, ph: "010-1234-5678", def: "010-", help: "주문 조회와 진행 안내 문자에 써요."},
   {id: "memo", label: "요청 사항 (선택)", type: "textarea", ph: "받는 날짜 등"}
 ];
 
@@ -1371,7 +1383,8 @@ FD.mountPrintOptions = (el, st, onChange, cfg = {}) => {
     const adv = advOpen;
     el.innerHTML = `<div class="fd-popts ${v}">
       <div class="fd-field"><div class="fd-label">재료</div><div class="fd-mats" role="radiogroup">${FD.MATS.map(m => `<button type="button" role="radio" aria-checked="${o.mat === m.v}" class="fd-mat${o.mat === m.v ? " on" : ""}" data-mat="${m.v}"><b>${esc(m.name)}</b><small>${esc(FD.MAT_SHORT[m.v] || "")}</small></button>`).join("")}</div>
-        ${cfg.beginner !== false ? '<div class="fd-help" style="margin-top:6px">잘 모르겠으면 PLA Basic이 가장 무난해요.</div>' : ""}</div>
+        <div class="fd-help fd-matdesc" style="margin-top:8px">${esc(FD.MAT_DESC[o.mat] || "")}</div>
+        ${cfg.beginner !== false ? '<div class="fd-help" style="margin-top:2px">잘 모르겠으면 PLA Basic이 가장 무난해요.</div>' : ""}</div>
       <div class="fd-field"><div class="fd-label">색상 <span class="fd-cname">${esc((FD.COLORS.find(c => c.v === o.color) || {}).name || "")}</span></div><div class="fd-dots" role="radiogroup">${FD.COLORS.map(c => `<button type="button" role="radio" aria-checked="${o.color === c.v}" aria-label="${esc(c.name)}" title="${esc(c.name)}" class="fd-dot${o.color === c.v ? " on" : ""}${c.v === "투명" ? " clear" : c.v === "기타" ? " other" : ""}" data-color="${c.v}" style="--c:${FD.COLOR_HEX[c.v]}"></button>`).join("")}</div></div>
       <div class="fd-field"><div class="fd-label">사용 용도</div><div class="fd-chips">${FD.PURPOSES.map(([k, t]) => `<button type="button" class="fd-opt${o.purpose === k ? " on" : ""}" data-purpose="${k}"><b>${t}</b></button>`).join("")}</div>
         <div class="fd-help fd-padv" ${st.advice ? "" : "hidden"} style="margin-top:6px">${esc(st.advice || "")}</div></div>

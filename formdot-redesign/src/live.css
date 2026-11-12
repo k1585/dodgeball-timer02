@@ -26,7 +26,7 @@ body{background:var(--fd-bg)!important;color:var(--fd-text)!important}
 .lv-codes{display:flex;gap:10px;justify-content:center;margin:4px 0 12px}
 .lv-codes div{padding:12px 20px;border-radius:16px;background:var(--fd-surface);border:1px solid var(--fd-line)}
 .lv-codes small{display:block;color:var(--fd-muted);font-size:12.5px}.lv-codes b{font-size:30px;letter-spacing:.14em;font-variant-numeric:tabular-nums}
-.lv-codes div+div{border-color:rgba(41,98,255,.6);background:var(--fd-accent-soft)}
+.lv-codes div:first-child{border-color:rgba(41,98,255,.6);background:var(--fd-accent-soft)}
 .lv-note{color:var(--fd-muted);font-size:13.5px;max-width:420px;margin:12px auto 0;line-height:1.6}
 .mine{border:1px solid;border-radius:20px;padding:14px 16px;margin:6px 0 0;display:grid;gap:10px}
 .mine-h b{display:block;font-size:15px}.mine-h small{color:var(--fd-muted);font-size:12.5px}
@@ -34,3 +34,7 @@ body{background:var(--fd-bg)!important;color:var(--fd-text)!important}
 .mine-i div{min-width:0}.mine-i span{color:var(--fd-muted);font-size:13.5px}.mine-i small{display:block;color:var(--fd-muted);font-size:12.5px;margin-top:2px}
 .mine-i code{color:var(--fd-accent-text);font-weight:700;letter-spacing:.1em}.mine-i .fd-btn{flex:none}
 @media (max-width:420px){.lv-codes b{font-size:24px}.lv-codes div{padding:10px 14px}}
+
+.lv-codes{flex-wrap:wrap}
+.lv-codes .pay{border-color:rgba(255,214,102,.55)!important;background:rgba(255,196,0,.1)!important}
+.lv-codes .pay b{letter-spacing:0;color:#ffd666}
