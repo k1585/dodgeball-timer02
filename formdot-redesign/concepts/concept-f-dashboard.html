@@ -141,6 +141,10 @@ textarea.fd-in{resize:vertical}.fd-in::placeholder{color:var(--fd-muted);opacity
 .busy{position:relative;pointer-events:none;opacity:.7}.busy::after{content:"분석 중…";position:absolute;inset:auto 0 8px;text-align:center;font:600 13px var(--fd-font);color:var(--fd-accent-text)}
 @media (max-width:560px){.fd-mats{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}.fd-mat{flex:0 0 120px}.fd-adv-row{grid-template-columns:1fr 130px}}
 .fd-etc{margin-top:8px}
+/* 휴대폰에서 누를 때 파란 하이라이트·글자 선택 안 생기게 (입력칸은 그대로 선택 가능) */
+html{-webkit-tap-highlight-color:transparent}
+button,a,.fd-opt,.choice,.fd-drop,label,summary,[role="button"]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+input,textarea,select{-webkit-user-select:text;user-select:text}
 </style>
 <style>
 /* ===== F · Dashboard First — 앱 셸. 내 주문 상태·빠른 견적·다시 주문이 첫 화면 ===== */

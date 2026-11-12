@@ -75,6 +75,19 @@ FD.afterRoute = name => {
   if (name === "lookup"){ const v = ss.get(); const c = document.getElementById("lkCd"); if (v && c && !c.value){ c.value = v.code || ""; (document.getElementById("lkPh") || {}).focus?.(); } }
 };
 document.addEventListener("click", e => { const b = e.target.closest("[data-lk]"); if (!b) return; ss.set({code: b.dataset.lk}); location.hash = "#/lookup"; });
+// 관리자 들어가기: 첫 화면 '내 주문 조회' 버튼을 3초 꾹 누르기 (주소 #admin 도 그대로 됨)
+{
+  let timer = null, fired = false, target = null;
+  const isAdminKey = el => el && el.matches('a[href="#/lookup"]') && el.textContent.includes("내 주문 조회");
+  document.addEventListener("pointerdown", e => {
+    const el = e.target.closest("a"); if (!isAdminKey(el)) return;
+    fired = false; target = el; clearTimeout(timer);
+    timer = setTimeout(() => { fired = true; navigator.vibrate?.(30); location.href = ADMIN_URL; }, 3000);
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => document.addEventListener(ev, () => clearTimeout(timer), true));
+  document.addEventListener("click", e => { if (fired && e.target.closest("a") === target){ e.preventDefault(); fired = false; } }, true);
+  document.addEventListener("contextmenu", e => { if (isAdminKey(e.target.closest("a"))) e.preventDefault(); });
+}
 // 휴대폰 번호 자동 하이픈 (010-1234-5678)
 document.addEventListener("input", e => {
   const t = e.target; if (t.type !== "tel") return;
