@@ -15,6 +15,7 @@ const {esc, won} = FD;
 
 // 사장님 폰 알림에서 열리는 주소(#admin)는 관리자 화면으로
 if (location.hash === "#admin") location.replace(ADMIN_URL);
+addEventListener("hashchange", () => { if (location.hash === "#admin") location.replace(ADMIN_URL); });
 
 FD.demoBanner = () => "";
 FD.mountAdmin = el => { el.innerHTML = `<p style="text-align:center;padding:40px 0">관리자 화면으로 이동해요…</p>`; location.href = ADMIN_URL; };
@@ -243,8 +244,9 @@ FD.doneHTML = o => { const code = o.code || fullCode(o.no, o.lkCode), req = o.se
   <div class="fd-done-sum">${esc(o.title || "")} · ${esc(o.totalText || "")}</div></div>`; };
 
 /* ---------- 주문 조회 (번호 + 연락처 + 조회 코드) ---------- */
-const ST = [["new", "주문 승인", "주문이 승인됐어요. 곧 요구사항을 확인할게요."], ["checked", "요구사항 확인 중", "요청하신 내용을 꼼꼼히 확인하고 있어요."],
-  ["making", "제작 중", "지금 열심히 만들고 있어요."], ["done", "제작 완료", "제작이 완료됐어요! 네이버쇼핑에서 배송 현황을 확인해 주세요."]];
+const ST = [["new", "스마트스토어 결제 대기중", "스마트스토어에서 결제해 주세요. 옵션에 주문 코드를 적어 주시면 바로 확인해요."],
+  ["checked", "결제완료 · 요구사항 확인중", "결제가 확인됐어요. 요청하신 내용을 꼼꼼히 확인하고 있어요."],
+  ["making", "제작중", "지금 열심히 만들고 있어요."], ["done", "제작완료", "제작이 완료됐어요! 네이버쇼핑에서 배송 현황을 확인해 주세요."]];
 FD.mountLookup = el => {
   el.innerHTML = `<form class="fd-lk" novalidate>
     <div class="fd-field"><label class="fd-label" for="lkCd">주문 코드</label><input class="fd-in" id="lkCd" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예: 4821-KTP" style="text-transform:uppercase;letter-spacing:.1em"></div>
