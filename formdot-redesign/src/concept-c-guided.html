@@ -60,6 +60,9 @@ body{margin:0;background:var(--fd-bg);color:var(--fd-text);font-family:var(--fd-
 .recap div{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--fd-line);font-size:15px}.recap div:last-child{border:0}
 .recap span{color:var(--fd-muted)}.recap b{text-align:right}.recap button{border:0;background:none;color:var(--fd-accent);font:600 13px var(--fd-font);cursor:pointer;margin-left:8px}
 .fd-quote{background:#fff;border-color:var(--fd-line)}.fd-quote.auto{border-color:#c8d6ff;background:#f4f7ff}.fd-quote.review{background:#fffaf0;border-color:#f3d9a4}
+.fd-etc{margin-top:10px}
+.choices.tune{grid-template-columns:repeat(3,1fr)}@media(max-width:520px){.choices.tune{grid-template-columns:1fr}}
+.qk .fd-drop{padding:22px}
 .stu-pill{display:inline-flex;gap:6px;align-items:center;margin-top:14px;padding:11px 18px;border-radius:99px;border:1.5px solid #f2c94c;background:#fff8e1;color:#7a5600;font:700 15px var(--fd-font);cursor:pointer}
 .stu-pill b{color:#b07800}
 .stu-tip{margin-top:12px;padding:11px 14px;border-radius:14px;background:#fff8e1;border:1px solid #f2d27a;color:#6b4c00;font-size:14px}.stu-tip b{color:#9a6a00}.stu-tip small{display:block;margin-top:2px;opacity:.8}
@@ -100,8 +103,9 @@ function questions(){
   if (svc === "print") qs.push({kind: "upload", who: "파일", title: "파일을 올려 주세요", why: "올리자마자 크기와 무게를 계산해요."},
     {kind: "purpose", who: "출력", title: "어디에 쓰실 건가요?", why: "용도에 맞게 튼튼함을 추천해 드려요."},
     {kind: "mat", who: "출력", title: "재료를 골라 주세요", why: ""}, {kind: "color", who: "출력", title: "색상은요?", why: "색상은 가격에 영향이 없어요."},
+    {kind: "tune", who: "출력", title: "튼튼함과 품질을 골라 주세요", why: "모르면 '표준' 그대로 두면 돼요. 튼튼하고 고울수록 시간이 걸려 가격이 조금 올라가요."},
     {kind: "qty", who: "출력", title: "몇 개 만들까요?", why: ""});
-  else for (const step of FD.FLOWS[svc]) for (const f of step.fields) qs.push({kind: "field", f, who: step.title, title: f.label + (f.req ? "" : " (선택)"), why: f.help || ""});
+  else for (const step of FD.FLOWS[svc]) for (const f of step.fields) qs.push({kind: "field", f, who: step.title, title: f.label + (f.req || /\(선택\)/.test(f.label) ? "" : " (선택)"), why: f.help || ""});
   qs.push({kind: "quote", who: "견적", title: "견적이 나왔어요"}, {kind: "contact", who: "주문자 정보", title: "연락받을 정보를 알려 주세요", why: "회원가입은 필요 없어요. 휴대폰 번호는 주문 조회 인증과 진행 안내에만 써요."});
   return qs;
 }
@@ -117,15 +121,19 @@ function drawQ(){
   let body = "";
   if (q.type === "pick") body = `<div class="choices" role="radiogroup">${q.choices.map(([v, t, ic, d]) => `<button class="choice${J.answers[q.id] === v ? " on" : ""}" role="radio" aria-checked="${J.answers[q.id] === v}" data-pick="${v}"><span class="em">${FD.icon(ic)}</span><span><b>${t}</b><small>${d}</small></span></button>`).join("")}</div>`;
   else if (q.kind === "upload") body = `<label class="fd-drop" tabindex="0" id="up">${FD.icon("upload")}<span><b>${st.model && !st.model.error ? "다른 파일로 바꾸기" : "여기를 눌러 파일 고르기"}</b><small>STL · 3MF · G-code · 최대 ${FD.settings.maxSize}mm</small></span><input type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden><button type="button" class="fd-link" data-sample style="margin-left:auto">샘플로 해 보기</button></label><div id="mi">${FD.modelInfo(st.model)}</div><div class="view"${st.model?.geo ? "" : " hidden"}><canvas aria-label="3D 미리보기"></canvas></div>`;
-  else if (q.kind === "purpose") body = `<div class="fd-chips">${FD.PURPOSES.map(([k, t]) => `<button class="fd-opt${st.opts.purpose === k ? " on" : ""}" data-pp="${k}"><b>${t}</b></button>`).join("")}</div><p class="why" id="adv" style="margin-top:16px">${esc(st.advice || "")}</p>`;
+  else if (q.kind === "purpose") body = `<div class="fd-chips">${FD.PURPOSES.map(([k, t]) => `<button class="fd-opt${st.opts.purpose === k ? " on" : ""}" data-pp="${k}"><b>${t}</b></button>`).join("")}</div><input class="fd-in fd-etc" id="ppEtc" maxlength="100" placeholder="어디에 쓰실지 직접 적어 주세요" value="${esc(st.opts.purposeEtc || "")}"${st.opts.purpose === "etc" ? "" : " hidden"}><p class="why" id="adv" style="margin-top:16px">${esc(st.advice || "")}</p>`;
   else if (q.kind === "mat"){ const rec = ["func","mount","repair"].includes(st.opts.purpose) ? "PETG" : "PLA";
     body = `<div class="choices">${FD.MATS.map(m => `<button class="choice${st.opts.mat === m.v ? " on" : ""}" data-mat="${m.v}" style="min-height:60px"><span><b>${m.name}${m.v === rec ? ' <span class="fd-badge ok">추천</span>' : ""}</b><small>${FD.MAT_SHORT[m.v]}</small></span></button>`).join("")}</div>`; }
-  else if (q.kind === "color") body = `<div class="fd-dots" style="gap:12px">${FD.COLORS.map(c => `<button class="fd-dot${st.opts.color === c.v ? " on" : ""}${c.v === "투명" ? " clear" : c.v === "기타" ? " other" : ""}" style="--c:${FD.COLOR_HEX[c.v]};width:48px;height:48px" data-col="${c.v}" aria-label="${c.name}" title="${c.name}"></button>`).join("")}</div><p class="why" style="margin-top:14px">고른 색: <b>${esc(FD.COLORS.find(c => c.v === st.opts.color).name)}</b></p>
-      <details class="fd-adv" style="background:#fff"><summary>숙련자용 상세 설정 <small>레이어·벽·인필·서포트</small></summary><div id="advbox"></div></details>`;
+  else if (q.kind === "color") body = `<div class="fd-dots" style="gap:12px">${FD.COLORS.map(c => `<button class="fd-dot${st.opts.color === c.v ? " on" : ""}${c.v === "투명" ? " clear" : c.v === "기타" ? " other" : ""}" style="--c:${FD.COLOR_HEX[c.v]};width:48px;height:48px" data-col="${c.v}" aria-label="${c.name}" title="${c.name}"></button>`).join("")}</div><p class="why" style="margin-top:14px">고른 색: <b>${esc(FD.COLORS.find(c => c.v === st.opts.color).name)}</b></p>${st.opts.color === "기타" ? `<input class="fd-in fd-etc" id="colEtc" maxlength="60" placeholder="원하는 색을 적어 주세요 (예: 민트, 금색)" value="${esc(st.opts.colorEtc || "")}">` : ""}`;
+  else if (q.kind === "tune"){ const segs = [["strength","튼튼함",{light:"장식품·가벼운 소품",normal:"대부분의 물건",strong:"힘·무게를 받는 부품"}],["quality","표면 품질",{fast:"빠르고 저렴하게",normal:"깔끔한 기본",fine:"매끈하게 (오래 걸림)"}]];
+    st.quote = FD.calc(st);
+    body = segs.map(([k, t, d]) => `<div class="fd-field"><div class="fd-label">${t}</div><div class="choices tune">${Object.entries(FD.QUICK_LABEL[k]).map(([v, l]) => `<button class="choice${st.opts[k] === v ? " on" : ""}" data-tune="${k}" data-v="${v}" style="min-height:58px"><span><b>${l}</b><small>${d[v]}</small></span></button>`).join("")}</div></div>`).join("")
+      + `<p class="why">지금 설정 예상 금액: <b>${st.quote.kind === "auto" ? won(st.quote.total) : "확인 후 안내"}</b></p>
+      <details class="fd-adv"><summary>숙련자용 상세 설정 <small>레이어·벽·인필·서포트</small></summary><div id="advbox"></div></details>`; }
   else if (q.kind === "qty") body = `<div class="fd-qty" style="transform:scale(1.2);transform-origin:left"><button data-q="-1" aria-label="빼기">−</button><input class="fd-in" type="number" min="1" max="999" value="${st.opts.qty}" id="qn" aria-label="수량"><button data-q="1" aria-label="더하기">+</button></div>`;
-  else if (q.kind === "field") body = `<form id="ff" novalidate>${FD.fieldHTML({...q.f, label: q.f.label}, "c", st.values[q.f.id])}</form>`;
+  else if (q.kind === "field") body = `<form id="ff" novalidate>${FD.fieldHTML({...q.f, label: q.f.label}, "c", st.values[q.f.id], st.values[q.f.id + "_etc"])}</form>`;
   else if (q.kind === "quote"){ st.quote = FD.calc(st);
-    const rows = st.svc === "print" ? [["파일", st.model?.name, "upload"], ["용도", (FD.PURPOSES.find(p => p[0] === st.opts.purpose) || [])[1], "purpose"], ["재료", FD.MATS.find(m => m.v === st.opts.mat).name, "mat"], ["색상", st.opts.color, "color"], ["수량", st.opts.qty + "개", "qty"]]
+    const rows = st.svc === "print" ? [["파일", st.model?.name, "upload"], ["용도", (FD.PURPOSES.find(p => p[0] === st.opts.purpose) || [])[1], "purpose"], ["재료", FD.MATS.find(m => m.v === st.opts.mat).name, "mat"], ["색상", st.opts.color === "기타" ? `기타 (${st.opts.colorEtc || ""})` : st.opts.color, "color"], ["튼튼함·품질", st.opts.adv ? "상세 설정" : `${FD.QUICK_LABEL.strength[st.opts.strength]} · ${FD.QUICK_LABEL.quality[st.opts.quality]}`, "tune"], ["수량", st.opts.qty + "개", "qty"]]
       : [["의뢰", FD.svc(st.svc).name, 0], ["무엇을", st.values.title || "—", null], ["난이도", (FD.COMPLEXITY.find(c => c[0] === st.values.complexity) || FD.MOD_SCOPE.find(c => c[0] === st.values.scope) || [, "—"])[1], null]];
     body = `<div class="recap">${rows.map(([k, v, go]) => `<div><span>${k}</span><b>${esc(v || "—")}${go != null ? `<button data-jump="${go}">바꾸기</button>` : ""}</b></div>`).join("")}</div>${FD.quoteHTML(st.quote)}
       ${!st.student && st.quote.total ? `<div class="stu-tip">🎓 학생이면 <b>${won(st.quote.total * (1 - FD.settings.studentRate))}</b> · ${Math.round(FD.settings.studentRate * 100)}% 할인 <small>(다음 단계에서 학생 인증)</small></div>` : ""}
@@ -148,9 +156,11 @@ function bindQ(q, st){
     FD.bindModelDrop($("#up"), $("#up input"), st, r => { if (r === "busy") return; $("#mi").innerHTML = FD.modelInfo(st.model); $(".view").hidden = !st.model.geo; viewer.draw(); $("#up b").textContent = "다른 파일로 바꾸기"; }, viewer);
     $("#up").addEventListener("click", e => { if (e.target.closest("[data-sample]")) e.preventDefault(); });
   }
-  if (q.kind === "purpose") $$("[data-pp]").forEach(b => b.onclick = () => { st.opts.purpose = b.dataset.pp; const a = FD.purposeAdvice(st.opts.purpose); st.advice = a ? a.msg : ""; if (a?.strength) st.opts.strength = a.strength; drawQ(); });
+  if (q.kind === "purpose"){ $$("[data-pp]").forEach(b => b.onclick = () => { st.opts.purpose = b.dataset.pp; const a = FD.purposeAdvice(st.opts.purpose); st.advice = a ? a.msg : ""; if (a?.strength) st.opts.strength = a.strength; drawQ(); if (st.opts.purpose === "etc") $("#ppEtc").focus(); });
+    $("#ppEtc").oninput = e => st.opts.purposeEtc = e.target.value.trim(); }
   if (q.kind === "mat") $$("[data-mat]").forEach(b => b.onclick = () => { st.opts.mat = b.dataset.mat; drawQ(); });
-  if (q.kind === "color"){ $$("[data-col]").forEach(b => b.onclick = () => { st.opts.color = b.dataset.col; drawQ(); }); FD.mountPrintOptions($("#advbox"), st, () => {}, {expert: true}); }
+  if (q.kind === "color"){ $$("[data-col]").forEach(b => b.onclick = () => { st.opts.color = b.dataset.col; drawQ(); }); const e = $("#colEtc"); if (e) e.oninput = () => st.opts.colorEtc = e.value.trim(); }
+  if (q.kind === "tune"){ $$("[data-tune]").forEach(b => b.onclick = () => { st.opts[b.dataset.tune] = b.dataset.v; st.opts.adv = null; drawQ(); }); FD.mountPrintOptions($("#advbox"), st, () => {}, {expert: true}); }
   if (q.kind === "qty"){ $$("[data-q]").forEach(b => b.onclick = () => { st.opts.qty = Math.max(1, Math.min(999, st.opts.qty + +b.dataset.q)); $("#qn").value = st.opts.qty; }); $("#qn").onchange = e => st.opts.qty = Math.max(1, Math.min(999, parseInt(e.target.value) || 1)); }
   if (q.kind === "field") FD.bindForm($("#ff"));
   if (q.kind === "quote"){ $("#cp").onclick = () => FD.copy(FD.quoteText(st.svc, FD.titleOf(st), st.quote)); $$("[data-jump]").forEach(b => b.onclick = () => { J.i = questions().findIndex(x => x.kind === b.dataset.jump); drawQ(); }); }
@@ -158,6 +168,8 @@ function bindQ(q, st){
   if (!nx) return;
   nx.onclick = () => {
     if (q.kind === "upload"){ if (!st.model) return FD.toast("파일을 올려 주세요"); const r = FD.quotePrint(st.model, st.opts); if (r.kind === "reject") return FD.toast(r.reasons[0]); }
+    if (q.kind === "purpose" && st.opts.purpose === "etc" && !st.opts.purposeEtc){ FD.toast("어디에 쓰실지 적어 주세요"); return $("#ppEtc").focus(); }
+    if (q.kind === "color" && st.opts.color === "기타" && !st.opts.colorEtc){ FD.toast("원하는 색을 적어 주세요"); return $("#colEtc").focus(); }
     if (q.kind === "field"){ const v = FD.validate($("#ff"), [q.f], "c"); if (!v) return; Object.assign(st.values, v); }
     if (q.kind === "contact"){ const c = FD.validate($("#cf"), FD.CONTACT.slice(0, 2), "cc"); if (!c || !FD.checkConsent("cc")) return; st.quote = FD.calc(st);
       nx.disabled = true; nx.textContent = "접수하는 중…";
@@ -176,7 +188,7 @@ function home(){
       <p>3D 파일이 없어도 괜찮아요. 그림이나 말로 설명해도 만들어 드려요.</p>
       <button class="fd-btn primary big" id="start">시작하기 · 약 1분</button>
       <button class="stu-pill" id="stuPill" type="button">🎓 학생이면 모든 금액 <b>${Math.round(FD.settings.studentRate * 100)}% 할인</b></button>
-      <div class="ghost-row"><a class="fd-btn ghost sm" href="#/lookup">내 주문 조회</a><button class="fd-btn ghost sm" id="expert">숙련자: 파일 바로 올리기</button></div></section>
+      <div class="ghost-row"><a class="fd-btn ghost sm" href="#/lookup">내 주문 조회</a><a class="fd-btn ghost sm quick-btn" href="#/quick">⚡ 10초 주문 · 파일 올리고 바로</a></div></section>
     <div class="hint-cards"><div><b>1분</b><small>질문 몇 개면 끝</small></div><div><b>자동</b><small>대부분 바로 금액</small></div><div><b>비회원</b><small>가입 없이 주문</small></div></div>
     <h2 class="sec-t">이런 것도 만들 수 있어요</h2><div class="pf-row">${FD.PORTFOLIO.map(p => `<button class="pf" data-pf="${p.svc}"><img src="${p.img}" alt=""><div><b>${esc(p.t)}</b><small>${esc(p.d)} · ${FD.SAMPLE_TAG}</small></div></button>`).join("")}</div>
     <h2 class="sec-t">자주 묻는 질문</h2><div class="faq">
@@ -186,14 +198,41 @@ function home(){
     <div style="margin-top:24px">${FD.kakao("카카오톡 오픈채팅 문의")}</div></main>`;
   $("#start").onclick = () => startJourney();
   $("#stuPill").onclick = () => { FD.toast(`주문 마지막 단계에서 학생증이 보이는 ${FD.settings.studentMinSec}초 영상을 올리면 할인돼요`); setTimeout(() => startJourney(), 900); };
-  $("#expert").onclick = () => startJourney({hasFile: "yes", fileUse: "print"}) ;
   $$("[data-pf]").forEach(b => b.onclick = () => { const s = b.dataset.pf; startJourney(s === "print" ? {hasFile: "yes", fileUse: "print"} : s === "modify" ? {hasFile: "yes", fileUse: "modify"} : s === "pro" ? {hasFile: "no", material: "idea", precise: "yes"} : {hasFile: "no", material: s, precise: "no"}); });
+}
+/* ---------- 10초 주문: 파일 하나 올리고, 연락처만 넣고 바로 주문 ---------- */
+let QS = null;
+function quick(){
+  QS = QS || FD.session("print"); const st = QS;
+  $("#app").innerHTML = topBar() + `<main class="page qk"><h1>⚡ 10초 주문</h1><p class="why" style="color:var(--fd-muted)">파일만 올리면 기본 설정(PLA Basic · 흰색 · 표준)으로 바로 견적이 나와요. 바꾸고 싶으면 '옵션 바꾸기'를 눌러요.</p>
+    <label class="fd-drop" id="qup" tabindex="0">${FD.icon("upload")}<span><b>${st.model && !st.model.error ? "다른 파일로 바꾸기" : "3D 파일 올리기"}</b><small>STL · 3MF · G-code · 최대 ${FD.settings.maxSize}mm</small></span><input type="file" accept=".stl,.3mf,.gcode,.gco,.g" hidden></label>
+    <div id="qmi">${FD.modelInfo(st.model)}</div><div class="view" ${st.model?.geo ? "" : "hidden"} style="height:200px"><canvas></canvas></div>
+    <details class="fd-adv qk-opt"><summary>옵션 바꾸기 <small id="qsum"></small></summary><div id="qpo"></div></details>
+    <div id="qq" style="margin:14px 0"></div>
+    <form id="qcf" novalidate>${FD.formHTML(FD.CONTACT.slice(0, 2), "qc")}</form>${FD.studentHTML("qc")}${FD.consentHTML("qc")}
+    <button class="fd-btn primary big" id="qgo" style="margin-top:14px">주문 접수하기</button></main>`;
+  const v = new FD.Viewer($(".qk .view canvas")); if (st.model?.geo){ v.setModel(st.model.geo); v.setColor(st.opts.color); }
+  const upd = () => { st.quote = FD.calc(st); $("#qq").innerHTML = st.model ? FD.quoteHTML(st.quote) : "";
+    $("#qsum").textContent = `${FD.MATS.find(m => m.v === st.opts.mat).name} · ${st.opts.color} · ${st.opts.adv ? "상세 설정" : FD.QUICK_LABEL.strength[st.opts.strength] + "/" + FD.QUICK_LABEL.quality[st.opts.quality]} · ${st.opts.qty}개`; };
+  FD.bindModelDrop($("#qup"), $("#qup input"), st, r => { if (r === "busy") return; $("#qmi").innerHTML = FD.modelInfo(st.model); $(".qk .view").hidden = !st.model.geo; v.draw(); $("#qup b").textContent = "다른 파일로 바꾸기"; upd(); }, v);
+  FD.mountPrintOptions($("#qpo"), st, () => { v.setColor(st.opts.color); upd(); });
+  FD.bindForm($("#qcf")); FD.bindStudent("qc", on => { st.student = on; upd(); });
+  $("#qgo").onclick = () => {
+    if (!st.model) return FD.toast("3D 파일을 올려 주세요");
+    if (FD.calc(st).kind === "reject") return FD.toast(FD.calc(st).reasons[0]);
+    const c = FD.validate($("#qcf"), FD.CONTACT.slice(0, 2), "qc"); if (!c || !FD.checkConsent("qc")) return;
+    const b = $("#qgo"); b.disabled = true; b.textContent = "접수하는 중…"; st.quote = FD.calc(st);
+    Promise.resolve().then(() => FD.finish(st, c, m => b.textContent = m)).then(o => { QS = null; location.hash = "#/done/" + o.no; })
+      .catch(err => { console.error(err); b.disabled = false; b.textContent = "다시 시도하기"; FD.toast(err.userMsg || "접수하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요."); });
+  };
+  upd();
 }
 function route(){
   const [, name = "", arg] = location.hash.split("/");
   window.scrollTo(0, 0);
   if (name === "q") return drawQ();
-  if (name === "lookup"){ $("#app").innerHTML = topBar() + `<main class="page"><h1>주문 조회</h1><p class="why" style="color:var(--fd-muted)">${FD.LIVE ? "주문번호, 휴대폰 번호, 조회 코드 6자리를 넣어 주세요." : "주문번호와 휴대폰 번호를 넣으면 인증번호를 보내 드려요."}</p><div id="lk"></div></main>`; return FD.mountLookup($("#lk")); }
+  if (name === "quick") return quick();
+  if (name === "lookup"){ $("#app").innerHTML = topBar() + `<main class="page"><h1>주문 조회</h1><p class="why" style="color:var(--fd-muted)">${FD.LIVE ? "주문 코드(예: 4821-KTP)와 휴대폰 번호를 넣어 주세요." : "주문번호와 휴대폰 번호를 넣으면 인증번호를 보내 드려요."}</p><div id="lk"></div></main>`; return FD.mountLookup($("#lk")); }
   if (name === "portfolio"){ $("#app").innerHTML = topBar() + `<main class="page"><h1>작업 사례</h1><div style="display:grid;gap:12px">${FD.PORTFOLIO.map(p => `<button class="pf" data-pf="${p.svc}"><img src="${p.img}" alt=""><div><b>${esc(p.t)}</b><small>${esc(p.d)} · ${FD.SAMPLE_TAG}</small></div></button>`).join("")}</div></main>`;
     return $$("[data-pf]").forEach(b => b.onclick = () => { home(); $(`[data-pf="${b.dataset.pf}"]`).click(); }); }
   if (name === "admin"){ $("#app").innerHTML = topBar() + `<main class="page wide"><div id="adm"></div></main>`; return FD.mountAdmin($("#adm")); }

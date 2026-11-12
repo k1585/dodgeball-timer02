@@ -141,6 +141,7 @@ textarea.fd-in{resize:vertical}.fd-in::placeholder{color:var(--fd-muted);opacity
 .fd-merr{padding:12px;border-radius:var(--fd-r-sm);background:rgba(255,123,123,.1);color:var(--fd-bad);font-size:13.5px;margin-top:8px}.fd-merr b{display:block;color:var(--fd-text)}
 .busy{position:relative;pointer-events:none;opacity:.7}.busy::after{content:"분석 중…";position:absolute;inset:auto 0 8px;text-align:center;font:600 13px var(--fd-font);color:var(--fd-accent-text)}
 @media (max-width:560px){.fd-mats{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}.fd-mat{flex:0 0 120px}.fd-adv-row{grid-template-columns:1fr 130px}}
+.fd-etc{margin-top:8px}
 </style>
 <style>
 /* ===== D · Engineering Lab — 도면 격자, 고정폭 숫자, 사양서(RFQ) 한 장에 모든 입력 ===== */
@@ -833,7 +834,7 @@ FD.quotePrint = (model, o, student) => {
 // 모델링 의뢰 자동 견적: 예상 작업 시간 → 디자인비 (기본 1시간 포함, 초과 30분마다 추가 — 운영 규칙)
 FD.COMPLEXITY = [["simple","단순","직육면체·판·고리처럼 단순한 형태",60],["normal","보통","구멍·홈·곡면이 몇 개 있는 형태",120],
   ["complex","복잡","여러 부품·곡면·정밀한 맞춤이 필요한 형태",210],["unknown","잘 모르겠어요","담당자가 보고 정해요",null]];
-FD.FEATURES = [["screw","나사·볼트 구멍",15],["fit","끼움·맞물림",30],["hinge","힌지·움직이는 부분",45],["text","글자·로고 각인",20],["multi","여러 부품 조립",40],["exact","치수를 정확히 맞춰야 함",30]];
+FD.FEATURES = [["screw","나사·볼트 구멍",15],["fit","끼움·맞물림",30],["hinge","힌지·움직이는 부분",45],["text","글자·로고 각인",20],["multi","여러 부품 조립",40],["exact","치수를 정확히 맞춰야 함",30],["etc","기타",0]];
 FD.MOD_SCOPE = [["scale","크기 조정만",20],["hole","구멍·부분 추가/삭제",45],["shape","형태 일부 변경",90],["major","대부분 다시 설계",null]];
 FD.designFee = (svc, minutes) => {
   const S = FD.settings, base = S.design[svc] || 0;
@@ -857,13 +858,14 @@ FD.quoteDesign = (svc, v, student) => {
   if ((svc === "idea" || svc === "pro") && desc.length < S.review.minDescLen) reasons.push("설명이 짧아요. 만들 물건을 조금 더 알려 주시면 바로 견적이 나와요.");
   if (svc === "pro" && !(v.dims && v.dims.some(x => +x > 0))) reasons.push("전문 모델링은 치수가 필요해요. 치수가 없으면 담당자가 확인해요.");
   if (min > S.review.maxDesignMin) reasons.push(`예상 작업 시간이 ${Math.round(min / 60)}시간을 넘어 일정·범위를 확인해요.`);
-  const fee = FD.designFee(svc, min);
-  const final = student ? fee * (1 - S.studentRate) : fee;
-  const lines = [{label: `디자인비 (예상 작업 ${fmtMin(min)})`, amount: fee}];
-  if (student) lines.push({label: `학생 할인 ${Math.round(S.studentRate * 100)}%`, amount: final - fee});
-  if (v.output !== "file") notes.push("출력비는 모델이 완성되면 3D 프린팅과 같은 계산식으로 자동 계산해 따로 안내해요.");
-  notes.push(`디자인비는 기본 ${S.baseMin / 60}시간 포함, 넘으면 ${S.stepMin}분마다 ${won(S.stepFee)}이 더해져요.`);
-  return {kind: reasons.length ? "review" : "auto", total: final, before: fee, minutes: min, lines, reasons, notes};
+  // 의뢰 출력: 지금은 디자인 기본비(1시간 포함)만 결제 → 디자인 후 시간이 넘으면 추가 비용 → 완성 파일로 'STL 파일이 있어요' 출력 주문
+  const fee = FD.designFee(svc, min), base = S.design[svc] || 0, k = student ? 1 - S.studentRate : 1;
+  const lines = [{label: `디자인 기본비 (${fmtMin(S.baseMin)} 포함)`, amount: base * k}];
+  if (fee > base) lines.push({label: `예상 추가 비용 (예상 작업 ${fmtMin(min)}, 나중에 결제)`, amount: (fee - base) * k});
+  if (student) lines.push({label: `학생 할인 ${Math.round(S.studentRate * 100)}% 적용`, amount: 0});
+  notes.push(`디자인 시간이 ${fmtMin(S.baseMin)}을 넘으면 ${S.stepMin}분마다 ${won(S.stepFee * k)}의 추가 비용이 생길 수 있어요. 추가 비용은 디자인이 끝난 뒤 알려 드리고 따로 결제해요.`);
+  notes.push("출력비는 여기 포함되지 않아요. 완성 파일을 보내 드리면 그 파일로 'STL 파일이 있어요'에서 출력을 주문해요.");
+  return {kind: reasons.length ? "review" : "auto", payNow: true, total: base * k, est: fee * k, before: base, minutes: min, lines, reasons, notes};
 };
 function fmtMin(m){ const h = Math.floor(m / 60), r = m % 60; return h ? (r ? `${h}시간 ${r}분` : `${h}시간`) : `${r}분`; }
 FD.fmtMin = fmtMin;
@@ -883,22 +885,22 @@ const F = {
 FD.FLOWS = {
   sketch: [
     {key: "material", title: "자료 올리기", fields: [F.refs(true, "손그림·도면·사진"), F.title("예) 선반 받침 브래킷"), F.purpose]},
-    {key: "spec", title: "요구사항", fields: [F.dims(false), {id: "desc", label: "설명", type: "textarea", ph: "예) L자 모양, 나사 구멍 2개, 위에 2kg 화분을 올려요."}, F.complexity, F.features, F.output, F.qty, F.mat]}
+    {key: "spec", title: "요구사항", fields: [F.dims(false), {id: "desc", label: "설명", type: "textarea", ph: "예) L자 모양, 나사 구멍 2개, 위에 2kg 화분을 올려요."}, F.complexity, F.features, F.qty, F.mat]}
   ],
   idea: [
     {key: "material", title: "아이디어 설명", fields: [F.title("예) 책상 밑 멀티탭 거치대"), {id: "desc", label: "자세한 설명", type: "textarea", req: true, ph: "무엇을, 어디에, 어떻게 쓰고 싶은지 적어 주세요."}, F.purpose, F.refs(false, "참고 사진 (선택)")]},
-    {key: "spec", title: "요구사항", fields: [{id: "place", label: "설치·사용할 곳", type: "text", ph: "예) 책상 상판 아래, 폭 40cm"}, F.dims(false), F.complexity, F.features, F.output, F.qty, F.mat]}
+    {key: "spec", title: "요구사항", fields: [{id: "place", label: "설치·사용할 곳", type: "text", ph: "예) 책상 상판 아래, 폭 40cm"}, F.dims(false), F.complexity, F.features, F.qty, F.mat]}
   ],
   modify: [
     {key: "material", title: "수정할 파일", fields: [{id: "model", label: "기존 3D 파일", type: "files", req: true, accept: ".stl,.3mf,.step,.stp,.obj", help: "STL·3MF·STEP·OBJ"},
       {id: "desc", label: "어디를 어떻게 바꿀까요?", type: "textarea", req: true, ph: "예) 구멍 지름을 5mm → 6mm로, 전체 높이를 10mm 늘려 주세요."}, F.refs(false)]},
-    {key: "spec", title: "수정 범위", fields: [{id: "scope", label: "수정 범위", type: "radio", req: true, options: FD.MOD_SCOPE.map(x => [x[0], x[1]])}, F.features, F.dims(false), F.output, F.qty]}
+    {key: "spec", title: "수정 범위", fields: [{id: "scope", label: "수정 범위", type: "radio", req: true, options: FD.MOD_SCOPE.map(x => [x[0], x[1]])}, F.features, F.dims(false), F.qty]}
   ],
   pro: [
     {key: "material", title: "설계 사양", fields: [F.title("예) 센서 하우징 2파트"), {id: "desc", label: "기능·형상 요구사항", type: "textarea", req: true, ph: "맞물리는 부품, 들어갈 부품 치수, 조립 방식 등"},
       F.dims(true), {id: "tol", label: "공차", type: "radio", def: "normal", options: [["normal","일반 (±0.3mm)"],["tight","정밀 (±0.1mm)"]]}, F.refs(false, "도면·참고 자료")]},
     {key: "spec", title: "작업 범위", fields: [F.complexity, {id: "parts", label: "부품 개수", type: "number", def: 1, min: 1, max: 30}, F.features,
-      {id: "format", label: "파일 형식", type: "select", def: "stl", options: [["stl","STL"],["step","STEP (수정 가능한 CAD)"],["both","둘 다"]]}, F.output, F.qty, F.mat]}
+      {id: "format", label: "파일 형식", type: "select", def: "stl", options: [["stl","STL"],["step","STEP (수정 가능한 CAD)"],["both","둘 다"]]}, F.qty, F.mat]}
   ]
 };
 FD.CONTACT = [
@@ -909,7 +911,8 @@ FD.CONTACT = [
 
 /* ---------------- 폼 그리기·읽기 (모든 시안 공통 컴포넌트) ---------------- */
 const fieldId = (p, id) => `${p}-${id}`;
-FD.fieldHTML = (f, p, val) => {
+const hasEtc = f => (f.options || []).some(o => o[0] === "etc");
+FD.fieldHTML = (f, p, val, etcVal) => {
   const id = fieldId(p, f.id), v = val ?? f.def ?? "";
   let c = "";
   if (f.type === "text" || f.type === "tel") c = `<input class="fd-in" id="${id}" type="${f.type}" ${f.type === "tel" ? 'inputmode="tel" autocomplete="tel"' : ""} ${f.auto ? `autocomplete="${f.auto}"` : ""} maxlength="200" placeholder="${esc(f.ph || "")}" value="${esc(v)}">`;
@@ -922,11 +925,13 @@ FD.fieldHTML = (f, p, val) => {
   else if (f.type === "checks") c = `<div class="fd-chips" id="${id}">${f.options.map(([k, t]) => `<button type="button" class="fd-opt${(v || []).includes(k) ? " on" : ""}" aria-pressed="${(v || []).includes(k)}" data-v="${k}"><b>${esc(t)}</b></button>`).join("")}</div>`;
   else if (f.type === "files") c = `<label class="fd-drop" for="${id}">${FD.icon("upload")}<span><b>눌러서 고르거나 끌어다 놓기</b><small>${esc(f.help || "")}</small></span></label>
       <input id="${id}" type="file" accept="${f.accept || ""}" multiple hidden><div class="fd-flist" data-for="${id}"></div>`;
+  const on = Array.isArray(v) ? v.includes("etc") : v === "etc";
+  if (hasEtc(f)) c += `<input class="fd-in fd-etc" id="${id}-etc" maxlength="100" placeholder="직접 입력해 주세요" value="${esc(etcVal || "")}"${on ? "" : " hidden"} aria-label="${esc(f.label)} 직접 입력">`;
   return `<div class="fd-field" data-fid="${f.id}" data-type="${f.type}">
     <label class="fd-label" for="${f.type === "dims" ? "" : id}">${esc(f.label)}${f.req ? '<i class="fd-req" aria-label="필수">*</i>' : ""}</label>
     ${f.help && f.type !== "files" ? `<div class="fd-help">${esc(f.help)}</div>` : ""}${c}<div class="fd-err" role="alert" hidden></div></div>`;
 };
-FD.formHTML = (fields, p, vals = {}) => fields.map(f => FD.fieldHTML(f, p, vals[f.id])).join("");
+FD.formHTML = (fields, p, vals = {}) => fields.map(f => FD.fieldHTML(f, p, vals[f.id], vals[f.id + "_etc"])).join("");
 const FILES = FD.FILES = {};      // 화면에서 고른 파일 (데모: 이름·크기만 저장 · 실제 모드: 함께 전송)
 FD.bindForm = (root, onChange) => {
   root.addEventListener("click", e => {
@@ -934,6 +939,8 @@ FD.bindForm = (root, onChange) => {
     const box = b.parentElement, fld = b.closest(".fd-field");
     if (fld.dataset.type === "checks"){ b.classList.toggle("on"); b.setAttribute("aria-pressed", b.classList.contains("on")); }
     else box.querySelectorAll(".fd-opt").forEach(x => { x.classList.toggle("on", x === b); x.setAttribute("aria-checked", x === b); });
+    const etc = fld.querySelector(".fd-etc");
+    if (etc){ const show = !!fld.querySelector('.fd-opt.on[data-v="etc"]'); etc.hidden = !show; if (show && b.dataset.v === "etc") etc.focus(); }
     clearErr(fld); onChange && onChange();
   });
   root.addEventListener("input", e => { const fld = e.target.closest(".fd-field"); if (fld) clearErr(fld); onChange && onChange(); });
@@ -960,6 +967,7 @@ FD.readForm = (root, fields, p) => {
     else if (f.type === "checks") v[f.id] = [...el.querySelectorAll(".fd-opt.on")].map(b => b.dataset.v);
     else if (f.type === "files") v[f.id] = (FILES[id] || []).map(x => ({name: x.name, size: x.size}));
     else v[f.id] = el.value.trim();
+    if (hasEtc(f)){ const e = document.getElementById(id + "-etc"); v[f.id + "_etc"] = e ? e.value.trim() : ""; }   // '기타' 직접 입력
   }
   return v;
 };
@@ -972,6 +980,7 @@ FD.validate = (root, fields, p) => {
     if (f.req && (x == null || x === "" || (Array.isArray(x) && (f.type === "dims" ? !x.some(n => +n > 0) : !x.length)))) msg = f.type === "files" ? "파일을 하나 이상 올려 주세요." : f.type === "radio" ? "하나를 골라 주세요." : "꼭 적어 주세요.";
     else if (f.type === "tel" && x && !/^01[016789]-?\d{3,4}-?\d{4}$/.test(x.replace(/\s/g, ""))) msg = "휴대폰 번호 형식을 확인해 주세요. (예: 010-1234-5678)";
     else if (f.type === "dims" && x.some(n => n && (+n <= 0 || +n > FD.settings.maxSize))) msg = `한 변은 1~${FD.settings.maxSize}mm로 적어 주세요.`;
+    else if (hasEtc(f) && (Array.isArray(x) ? x.includes("etc") : x === "etc") && !v[f.id + "_etc"]) msg = "기타 내용을 직접 적어 주세요.";
     if (msg){ fld.classList.add("bad"); const e = fld.querySelector(".fd-err"); e.textContent = msg; e.hidden = false; first = first || fld; }
   }
   if (first){ first.scrollIntoView({behavior: "smooth", block: "center"}); const i = first.querySelector("input,textarea,button"); i && i.focus({preventScroll: true}); }
@@ -984,13 +993,13 @@ FD.quoteHTML = (q, opt = {}) => {
   if (q.kind === "reject") return `<div class="fd-quote reject" role="status"><div class="fd-q-head">접수할 수 없어요</div>${q.reasons.map(r => `<p class="fd-q-reason">${esc(r)}</p>`).join("")}${q.notes.map(n => `<p class="fd-q-note">${esc(n)}</p>`).join("")}</div>`;
   const review = q.kind === "review";
   return `<div class="fd-quote ${review ? "review" : "auto"}" role="status">
-    <div class="fd-q-head"><span class="fd-badge ${review ? "warn" : "ok"}">${review ? "추가 확인 필요" : "자동 견적"}</span>${review ? "" : '<span class="fd-q-kind">예상 금액</span>'}</div>
+    <div class="fd-q-head"><span class="fd-badge ${review ? "warn" : "ok"}">${review ? "추가 확인 필요" : "자동 견적"}</span>${review ? "" : `<span class="fd-q-kind">${q.payNow ? "지금 결제할 디자인 기본비" : "예상 금액"}</span>`}</div>
     ${q.total != null && !(review && !q.lines.length) ? `<div class="fd-q-total">${review ? '<small>참고 금액</small> ' : ""}${won(q.total)}</div>` : `<div class="fd-q-total">확인 후 안내</div>`}
     ${q.g ? `<div class="fd-q-meta">예상 무게 ${q.g.toFixed(1)}g</div>` : ""}
     ${q.lines.length > 1 ? `<dl class="fd-q-lines">${q.lines.map(l => `<div><dt>${esc(l.label)}</dt><dd>${l.amount < 0 ? "−" + won(-l.amount) : won(l.amount)}</dd></div>`).join("")}</dl>` : ""}
     ${review ? `<div class="fd-q-why"><b>담당자가 확인하는 이유</b>${q.reasons.map(r => `<p>${esc(r)}</p>`).join("")}<p class="fd-q-note">주문은 지금 접수돼요. 확인이 끝나면 확정 금액을 문자·사이트로 알려 드려요.</p></div>` : ""}
     ${q.notes.map(n => `<p class="fd-q-note">${esc(n)}</p>`).join("")}
-    <p class="fd-q-note">${review ? "" : "예상 금액이에요. 실제 출력 조건 확인 후 달라질 수 있어요. "}결제는 네이버 스마트스토어에서 해요.</p></div>`;
+    <p class="fd-q-note">${review ? "" : q.payNow ? "" : "예상 금액이에요. 실제 출력 조건 확인 후 달라질 수 있어요. "}결제는 네이버 스마트스토어에서 해요.</p></div>`;
 };
 
 /* ---------------- 3D 미리보기 (회전·확대·처음 시점) ---------------- */

@@ -131,3 +131,4 @@ textarea.fd-in{resize:vertical}.fd-in::placeholder{color:var(--fd-muted);opacity
 .fd-merr{padding:12px;border-radius:var(--fd-r-sm);background:rgba(255,123,123,.1);color:var(--fd-bad);font-size:13.5px;margin-top:8px}.fd-merr b{display:block;color:var(--fd-text)}
 .busy{position:relative;pointer-events:none;opacity:.7}.busy::after{content:"분석 중…";position:absolute;inset:auto 0 8px;text-align:center;font:600 13px var(--fd-font);color:var(--fd-accent-text)}
 @media (max-width:560px){.fd-mats{display:flex;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 4px}.fd-mat{flex:0 0 120px}.fd-adv-row{grid-template-columns:1fr 130px}}
+.fd-etc{margin-top:8px}

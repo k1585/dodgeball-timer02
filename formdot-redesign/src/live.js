@@ -62,14 +62,14 @@ FD.afterRoute = name => {
   if (adm){ adm.href = KAKAO; adm.target = "_blank"; adm.rel = "noopener"; adm.className = "kk"; adm.innerHTML = FD.icon("chat") + "문의"; }
   if (name === "" ){
     const mine = FD.store.mine().slice(0, 3), hello = document.querySelector(".hello");
-    if (mine.length && hello) hello.insertAdjacentHTML("afterend", `<section class="mine" aria-label="이 기기에서 한 주문"><div class="mine-h"><b>이 기기에서 한 주문</b><small>번호와 조회 코드를 여기서 다시 볼 수 있어요</small></div>
-      ${mine.map(o => `<div class="mine-i"><div><b>#${esc(o.no)}</b> <span>${esc(o.title || "")}</span><small>조회 코드 <code>${esc(o.lkCode || "-")}</code> · ${new Date(o.createdAt).toLocaleDateString("ko-KR", {month: "long", day: "numeric"})}</small></div>
-        <button class="fd-btn sm" data-lk="${esc(o.no)}" data-cd="${esc(o.lkCode || "")}">진행 상황</button></div>`).join("")}</section>`);
+    if (mine.length && hello) hello.insertAdjacentHTML("afterend", `<section class="mine" aria-label="이 기기에서 한 주문"><div class="mine-h"><b>이 기기에서 한 주문</b><small>주문 코드를 여기서 다시 볼 수 있어요</small></div>
+      ${mine.map(o => `<div class="mine-i"><div><b>${esc(o.code || fullCode(o.no, o.lkCode))}</b> <span>${esc(o.title || "")}</span><small>${new Date(o.createdAt).toLocaleDateString("ko-KR", {month: "long", day: "numeric"})} · ${esc(o.totalText || "")}</small></div>
+        <button class="fd-btn sm" data-lk="${esc(o.code || fullCode(o.no, o.lkCode))}">진행 상황</button></div>`).join("")}</section>`);
   }
-  if (name === "done"){ const no = location.hash.split("/")[2], o = FD.store.get(no); if (o) ss.set({no: o.no, code: o.lkCode}); }
-  if (name === "lookup"){ const v = ss.get(); if (v){ const n = document.getElementById("lkNo"), c = document.getElementById("lkCd"); if (n && !n.value) n.value = v.no || ""; if (c && !c.value) c.value = v.code || ""; (document.getElementById("lkPh") || {}).focus?.(); } }
+  if (name === "done"){ const no = location.hash.split("/")[2], o = FD.store.get(no); if (o) ss.set({code: o.code || fullCode(o.no, o.lkCode)}); }
+  if (name === "lookup"){ const v = ss.get(); const c = document.getElementById("lkCd"); if (v && c && !c.value){ c.value = v.code || ""; (document.getElementById("lkPh") || {}).focus?.(); } }
 };
-document.addEventListener("click", e => { const b = e.target.closest("[data-lk]"); if (!b) return; ss.set({no: b.dataset.lk, code: b.dataset.cd}); location.hash = "#/lookup"; });
+document.addEventListener("click", e => { const b = e.target.closest("[data-lk]"); if (!b) return; ss.set({code: b.dataset.lk}); location.hash = "#/lookup"; });
 // 휴대폰 번호 자동 하이픈 (010-1234-5678)
 document.addEventListener("input", e => {
   const t = e.target; if (t.type !== "tel") return;
@@ -79,8 +79,12 @@ document.addEventListener("input", e => {
 });
 
 /* ---------- 조회 코드 ---------- */
-const LK_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
-const makeCode = () => [...crypto.getRandomValues(new Uint8Array(6))].map(b => LK_CHARS[b % LK_CHARS.length]).join("");
+const LK_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ";     // 숫자 없이 영문만 → 앞 4자리 번호와 헷갈리지 않음
+const makeCode = () => [...crypto.getRandomValues(new Uint8Array(3))].map(b => LK_CHARS[b % LK_CHARS.length]).join("");
+const fullCode = (no, sfx) => sfx ? `${no}-${sfx}` : String(no);
+// 손님이 넣은 코드 → [번호 4자리, 영문 부분]
+const splitCode = s => { const t = String(s || "").toUpperCase().replace(/[^0-9A-Z]/g, ""); return [t.slice(0, 4), t.slice(4)]; };
+FD.fullCode = fullCode;
 const normContact = s => String(s || "").trim().toLowerCase().replace(/[\s\-().]/g, "");
 const normCode = s => String(s || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 async function lookupKey(no, contact, code){     // 기존 사이트와 같은 계산
@@ -144,33 +148,35 @@ const fieldText = (f, v) => {
   if (["radio","chips","select"].includes(f.type)) return optName(f, v);
   return String(v);
 };
+const withEtc = (f, v, etc) => { const t = fieldText(f, v); return etc && (Array.isArray(v) ? v.includes("etc") : v === "etc") ? `${t} (${etc})` : t; };
 function toOrder(st, c){
   const q = st.quote, S = FD.settings, isP = st.svc === "print", stu = st.student, svc = FD.svc(st.svc);
   const rows = [], sec = [];
   if (isP){
     const m = st.model, o = st.opts, mat = FD.OPT_BY_ID.mat.list.find(x => x[0] === o.mat);
     sec.push(["파일 정보", [["파일명", m.name], ["무게", q.g ? q.g.toFixed(1) + "g" : "-"], ["크기", m.dims ? m.dims.map(x => x.toFixed(1)).join(" × ") + " mm" : "-"]]]);
-    const set = [["사용 용도", (FD.PURPOSES.find(p => p[0] === o.purpose) || [, "-"])[1]], ["재료", mat ? mat[1] : o.mat], ["색상", (FD.COLORS.find(x => x.v === o.color) || {}).name || o.color]];
+    const set = [["사용 용도", (FD.PURPOSES.find(p => p[0] === o.purpose) || [, "-"])[1] + (o.purpose === "etc" && o.purposeEtc ? ` (${o.purposeEtc})` : "")], ["재료", mat ? mat[1] : o.mat],
+      ["색상", o.color === "기타" ? `기타 (${o.colorEtc || "상담"})` : (FD.COLORS.find(x => x.v === o.color) || {}).name || o.color]];
     if (m.sliced) set.push(["출력 설정", "파일에 저장된 설정"]);
     else if (o.adv) set.push(["출력 설정", "상세 설정 (" + Object.entries(o.adv).filter(([k]) => !["mat","color"].includes(k)).map(([k, v]) => `${FD.OPT_BY_ID[k]?.label || k} ${v}`).join(", ") + ")"]);
     else set.push(["튼튼함", FD.QUICK_LABEL.strength[o.strength]], ["품질", FD.QUICK_LABEL.quality[o.quality]], ["서포트", FD.QUICK_LABEL.support[o.support]]);
     set.push(["수량", o.qty + "개"]);
     sec.push(["출력 설정", set]);
   } else {
-    for (const step of FD.FLOWS[st.svc]) for (const f of step.fields){ const t = fieldText(f, st.values[f.id]); if (t) rows.push([f.label, t]); }
+    for (const step of FD.FLOWS[st.svc]) for (const f of step.fields){ const t = withEtc(f, st.values[f.id], st.values[f.id + "_etc"]); if (t) rows.push([f.label, t]); }
     sec.push(["의뢰 내용", rows]);
   }
   const qrows = [["견적 방식", q.kind === "review" ? "추가 확인 필요" : "자동 견적"]];
   if (q.kind === "review") qrows.push(["확인 사유", q.reasons.join(" / ")]);
-  if (!isP && q.minutes != null) qrows.push(["예상 작업 시간", FD.fmtMin(q.minutes)]);
+  if (!isP && q.minutes != null) qrows.push(["예상 작업 시간", FD.fmtMin(q.minutes)], ["예상 디자인비 (추가 포함)", won(q.est || 0)], ["진행 방식", "의뢰 출력: 기본비 결제 → 디자인 → 추가비 결제 → 파일 전달 → 손님이 파일로 출력 주문"]);
   if (stu) qrows.push(["학생 할인", `${Math.round(S.studentRate * 100)}% (인증 영상 첨부)`]);
   sec.push(["견적", qrows]);
   sec.push(["주문자", [["이름", c.name], ["연락처", c.phone], ...(c.memo ? [["요청 사항", c.memo]] : []), ["개인정보 수집·이용", "동의함"]]]);
   const fee = q.total != null ? won(q.total) : "";
   const total = q.kind === "review" ? `확인 후 안내${fee ? ` (참고 ${fee})` : ""}`
     : isP ? fee + (stu ? " (학생가)" : "")
-    : `디자인비 ${fee}${st.values.output === "file" ? "" : " + 출력비"}${stu ? " (학생가)" : ""}`;
-  return {type: TYPE[st.svc], typeLabel: svc.name, name: isP ? st.model.name : (st.values.title || (st.values.desc || "").slice(0, 30) || svc.name),
+    : `디자인 기본비 ${fee}${stu ? " (학생가)" : ""} · 추가비 별도`;
+  return {type: TYPE[st.svc], typeLabel: isP ? svc.name : "의뢰 출력 · " + svc.name, name: isP ? st.model.name : (st.values.title || (st.values.desc || "").slice(0, 30) || svc.name),
     total, contact: c.phone, lkCode: makeCode(), student: !!stu, designFee: isP ? 0 : Math.round(q.before || 0),
     printMin: isP ? Math.round(FD.lastPrintMin || 0) : 0, weightG: isP && q.g ? +q.g.toFixed(1) : 0, mat: isP ? st.opts.mat : "", qty: isP ? st.opts.qty : (+st.values.qty || 1), sections: sec};
 }
@@ -193,49 +199,52 @@ FD.finish = async (st, c, progress = () => {}) => {
   if (big){ const e = new Error("big"); e.userMsg = `파일이 너무 커요 (최대 ${MAX_FILE_MB}MB). 줄이거나 오픈채팅으로 보내 주세요.`; throw e; }
   d.no = await submit(d, files, progress);
   for (const k of Object.keys(FD.FILES)) delete FD.FILES[k];
-  fetch("https://ntfy.sh/", {method: "POST", body: JSON.stringify({topic: NTFY_TOPIC, title: `FORMDOT 새 ${d.type === "file" ? "주문" : "견적 요청"} ${d.no}`,
+  fetch("https://ntfy.sh/", {method: "POST", body: JSON.stringify({topic: NTFY_TOPIC, title: `FORMDOT 새 ${d.type === "file" ? "주문" : "의뢰"} ${fullCode(d.no, d.lkCode)}`,
     message: [d.typeLabel, d.total, d.student ? "🎓 학생 할인" : ""].filter(Boolean).join(" · "), tags: ["bell"], priority: 4, click: SITE_URL + "#admin"})}).catch(() => {});
-  const o = {no: d.no, service: st.svc, title: d.name, status: "new", lkCode: d.lkCode, quote: {kind: st.quote.kind, total: st.quote.total ?? null},
+  const o = {no: d.no, code: fullCode(d.no, d.lkCode), service: st.svc, title: d.name, status: "new", lkCode: d.lkCode, quote: {kind: st.quote.kind, total: st.quote.total ?? null},
     totalText: d.total, createdAt: Date.now(), updatedAt: Date.now(), customer: {name: c.name, phone: ""}, log: []};
   FD.store.put(o);       // 이 기기에만 남기는 사본 (완료 화면용, 연락처는 저장 안 함)
   return o;
 };
 
 /* ---------- 완료 화면 ---------- */
-FD.doneHTML = o => `<div class="fd-done">
+FD.doneHTML = o => { const code = o.code || fullCode(o.no, o.lkCode), req = o.service !== "print", review = o.quote.kind === "review";
+  return `<div class="fd-done">
   <div class="fd-done-ic">${FD.icon("check")}</div>
-  <h2>${o.quote.kind === "review" ? "접수됐어요. 확인 후 금액을 알려 드릴게요." : "주문이 접수됐어요"}</h2>
-  <div class="lv-codes"><div><small>주문번호</small><b>${esc(o.no)}</b></div><div><small>조회 코드</small><b>${esc(o.lkCode || "")}</b></div></div>
-  <button class="fd-btn" type="button" onclick="FD.copy('FORMDOT 주문번호 ${esc(o.no)} · 조회 코드 ${esc(o.lkCode || "")}')">번호·코드 복사</button>
-  <p class="lv-note">캡처하거나 복사해 두세요. 진행 상황은 <b>주문 조회</b>에서 번호 + 휴대폰 번호 + 조회 코드로 볼 수 있어요. 판매자가 문자로도 보내 드려요.</p>
-  <ol class="fd-next">${o.quote.kind === "review"
-    ? `<li>판매자가 내용을 확인해요</li><li>확정 금액을 문자로 알려 드려요</li><li>스마트스토어에서 결제하면 제작을 시작해요</li>`
-    : `<li>스마트스토어에서 결제할 때 <b>옵션</b>에 주문번호 <b>${esc(o.no)}</b>를 적어 주세요</li><li>결제가 확인되면 제작을 시작해요</li><li>완료되면 발송하고 문자로 알려 드려요</li>`}</ol>
-  <div class="fd-done-sum">${esc(o.title || "")} · ${esc(o.totalText || "")}</div></div>`;
+  <h2>${review ? "접수됐어요. 확인 후 금액을 알려 드릴게요." : req ? "의뢰가 접수됐어요" : "주문이 접수됐어요"}</h2>
+  <div class="lv-codes"><div><small>주문 코드</small><b>${esc(code)}</b></div></div>
+  <button class="fd-btn" type="button" onclick="FD.copy('FORMDOT 주문 코드 ${esc(code)}')">코드 복사</button>
+  <p class="lv-note">이 코드 하나로 결제(스마트스토어 옵션)와 주문 조회를 해요. 캡처하거나 복사해 두세요. 판매자가 문자로도 보내 드려요.</p>
+  <ol class="fd-next">${req
+    ? `<li>스마트스토어에서 <b>디자인 기본비 ${esc(o.totalText.replace(/ ·.*$/, "").replace(/^디자인 기본비 /, ""))}</b>을 결제해요 — 옵션에 코드 <b>${esc(code)}</b></li>
+       <li>디자인을 시작해요. 작업 시간이 기본 1시간을 넘으면 <b>추가 비용</b>을 문자로 알려 드리고, 결제하면 마무리해요</li>
+       <li>완성된 3D 파일을 보내 드려요</li>
+       <li>출력이 필요하면 받은 파일로 홈에서 <b>'3D 파일이 있어요'</b> 또는 <b>⚡ 10초 주문</b>으로 출력을 주문해요</li>`
+    : review ? `<li>판매자가 내용을 확인해요</li><li>확정 금액을 문자로 알려 드려요</li><li>스마트스토어에서 결제하면 제작을 시작해요 — 옵션에 코드 <b>${esc(code)}</b></li>`
+    : `<li>스마트스토어에서 결제할 때 <b>옵션</b>에 코드 <b>${esc(code)}</b>를 적어 주세요</li><li>결제가 확인되면 제작을 시작해요</li><li>완료되면 발송하고 문자로 알려 드려요</li>`}</ol>
+  <div class="fd-done-sum">${esc(o.title || "")} · ${esc(o.totalText || "")}</div></div>`; };
 
 /* ---------- 주문 조회 (번호 + 연락처 + 조회 코드) ---------- */
 const ST = [["new", "주문 승인", "주문이 승인됐어요. 곧 요구사항을 확인할게요."], ["checked", "요구사항 확인 중", "요청하신 내용을 꼼꼼히 확인하고 있어요."],
   ["making", "제작 중", "지금 열심히 만들고 있어요."], ["done", "제작 완료", "제작이 완료됐어요! 네이버쇼핑에서 배송 현황을 확인해 주세요."]];
 FD.mountLookup = el => {
   el.innerHTML = `<form class="fd-lk" novalidate>
-    <div class="fd-field"><label class="fd-label" for="lkNo">주문번호</label><input class="fd-in" id="lkNo" inputmode="numeric" maxlength="4" placeholder="4자리" autocomplete="off"></div>
+    <div class="fd-field"><label class="fd-label" for="lkCd">주문 코드</label><input class="fd-in" id="lkCd" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예: 4821-KTP" style="text-transform:uppercase;letter-spacing:.1em"></div>
     <div class="fd-field"><label class="fd-label" for="lkPh">휴대폰 번호</label><input class="fd-in" id="lkPh" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678"></div>
-    <div class="fd-field"><label class="fd-label" for="lkCd">조회 코드 (6자리)</label><input class="fd-in" id="lkCd" maxlength="7" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="예: K7P2QX" style="text-transform:uppercase;letter-spacing:.12em"></div>
     <button class="fd-btn primary" type="submit">조회하기</button><div class="fd-err" role="alert" hidden></div></form><div class="fd-lk-result"></div>`;
   const f = el.querySelector("form"), er = el.querySelector(".fd-err"), res = el.querySelector(".fd-lk-result"), btn = f.querySelector("button");
   const err = m => { er.textContent = m; er.hidden = !m; };
-  el.querySelector("#lkNo").addEventListener("input", e => e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4));
   f.onsubmit = async e => {
     e.preventDefault(); err(""); res.innerHTML = "";
-    const no = el.querySelector("#lkNo").value.trim(), ph = el.querySelector("#lkPh").value, cd = normCode(el.querySelector("#lkCd").value);
-    if (!/^\d{4}$/.test(no) || normContact(ph).length < 4 || cd.length !== 6) return err("주문번호 4자리, 휴대폰 번호, 조회 코드 6자리를 모두 넣어 주세요.");
+    const [no, cd] = splitCode(el.querySelector("#lkCd").value), ph = el.querySelector("#lkPh").value;
+    if (!/^\d{4}$/.test(no) || cd.length < 3 || normContact(ph).length < 4) return err("주문 코드(예: 4821-KTP)와 휴대폰 번호를 넣어 주세요.");
     btn.disabled = true; btn.textContent = "조회하는 중…";
     try{
       const {db, D} = await timeout(fb(), 8000);
       const v = (await timeout(D.get(D.ref(db, "lookup/" + await lookupKey(no, ph, cd))), 8000)).val();
-      if (!v) return err("주문을 찾을 수 없어요. 번호·휴대폰 번호·조회 코드를 다시 확인해 주세요. 코드를 잃어버렸다면 오픈채팅으로 알려 주세요.");
+      if (!v) return err("주문을 찾을 수 없어요. 주문 코드와 휴대폰 번호를 다시 확인해 주세요. 코드를 잃어버렸다면 오픈채팅으로 알려 주세요.");
       const idx = Math.max(0, ST.findIndex(s => s[0] === v.status)), when = v.updatedAt || v.createdAt;
-      res.innerHTML = `<div class="fd-status"><div class="fd-st-head"><span class="fd-st-no">#${esc(no)}</span><span class="fd-badge">${esc(v.type || "")}</span></div>
+      res.innerHTML = `<div class="fd-status"><div class="fd-st-head"><span class="fd-st-no">${esc(fullCode(no, cd))}</span><span class="fd-badge">${esc(v.type || "")}</span></div>
         <ol class="fd-steps" style="margin-top:14px">${ST.map((s, i) => `<li class="${i < idx ? "past" : i === idx ? "now" : ""}"><i></i><span>${s[1]}</span></li>`).join("")}</ol>
         <p class="fd-st-desc">${ST[idx][2]}</p><div class="fd-st-meta">${v.total ? esc(v.total) + " · " : ""}${when ? "최근 변경 " + new Date(when).toLocaleString("ko-KR", {month: "long", day: "numeric", hour: "2-digit", minute: "2-digit"}) : ""}</div>
         <div style="margin-top:12px">${FD.kakao("문의하기")}</div></div>`;
