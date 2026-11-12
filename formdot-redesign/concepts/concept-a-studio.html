@@ -892,7 +892,7 @@ FD.quoteDesign = (svc, v, student) => {
     const cx = FD.COMPLEXITY.find(x => x[0] === v.complexity);
     if (!cx) return {kind: "empty"};
     if (cx[3] == null) reasons.push("형태 난이도를 정하지 않으셨어요. 담당자가 자료를 보고 정해요."); else min = cx[3];
-    if (svc === "pro") min += Math.max(0, (parseInt(v.parts) || 1) - 1) * 30;
+    if (svc === "pro") min += Math.max(0, (parseInt(v.parts) || 1) - 1) * (FD.PART_MIN ?? 30);
   }
   for (const f of FD.FEATURES) if ((v.features || []).includes(f[0])) min += f[2];
   const desc = String(v.desc || "").trim();

@@ -43,6 +43,11 @@ FD.ready = (async () => {
       S.design.modify = num(ds.modify, S.design.modify); S.design.pro = num(ds.pro, S.design.pro);
       S.baseMin = num(ds.baseMin, S.baseMin); S.stepMin = Math.max(1, num(ds.stepMin, S.stepMin)); S.stepFee = num(ds.stepFee, S.stepFee);
       S.studentRate = Math.min(.9, Math.max(0, num(st.studentRate, S.studentRate)));
+      const est = st.est || {};
+      FD.COMPLEXITY.forEach(c => { if (c[3] != null) c[3] = num(est[c[0]], c[3]); });
+      FD.FEATURES.forEach(f => { if (f[0] !== "etc") f[2] = num(est[f[0]], f[2]); });
+      FD.MOD_SCOPE.forEach(m => { if (m[2] != null) m[2] = num(est[m[0]], m[2]); });
+      FD.PART_MIN = num(est.part, 30);
     }
     const pf = Object.values(v.portfolio || {}).sort((a, b) => (a.order || 0) - (b.order || 0));
     if (pf.length) FD.PORTFOLIO = pf.map(p => ({t: p.title || "", d: p.desc || "", img: p.img, svc: "idea", real: true}));
