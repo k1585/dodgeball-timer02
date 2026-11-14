@@ -145,6 +145,17 @@ textarea.fd-in{resize:vertical}.fd-in::placeholder{color:var(--fd-muted);opacity
 html{-webkit-tap-highlight-color:transparent}
 button,a,.fd-opt,.choice,.fd-drop,label,summary,[role="button"]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 input,textarea,select{-webkit-user-select:text;user-select:text}
+
+/* ? 설명 버튼 */
+.fd-q{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;margin-left:6px;border-radius:50%;border:1.5px solid currentColor;
+  font:800 12px/1 var(--fd-font);color:var(--fd-accent-text);vertical-align:2px;cursor:pointer;flex:none;opacity:.9}
+.fd-q:hover,.fd-q:focus-visible{background:var(--fd-accent);border-color:var(--fd-accent);color:#fff;opacity:1}
+.fd-qall{display:inline-flex;align-items:center;gap:2px;margin-top:8px;padding:6px 10px 6px 2px;border:0;background:none;color:var(--fd-accent-text);font:600 13px var(--fd-font);cursor:pointer}
+.fd-qall .fd-q{margin:0 6px 0 0}
+.fd-helpbox{margin-top:10px;padding:12px 14px;border-radius:var(--fd-r-sm);border:1px solid color-mix(in srgb,var(--fd-accent) 45%,transparent);background:var(--fd-accent-soft);display:grid;gap:10px;font-size:13.5px;line-height:1.6}
+.fd-hi b{display:block;font-size:14px}.fd-hi p{margin:2px 0 0;color:var(--fd-text);opacity:.9}.fd-hi .fd-ex{color:var(--fd-accent-text);opacity:1}
+.fd-hclose{justify-self:end;border:0;background:none;color:var(--fd-muted);font:600 12.5px var(--fd-font);cursor:pointer;padding:2px 4px}
+.fd-helpbox{scroll-margin-bottom:130px;scroll-margin-top:80px}
 </style>
 <style>
 /* ===== B · Product Configurator — 첫 화면이 곧 작업대. 왼쪽 입력 · 가운데 미리보기 · 오른쪽 옵션/견적 ===== */
@@ -924,6 +935,86 @@ FD.CONTACT = [
   {id: "memo", label: "요청 사항 (선택)", type: "textarea", ph: "받는 날짜 등"}
 ];
 
+
+/* ---------------- 옵션 설명 · 예시 (? 버튼) ---------------- */
+FD.HELP = {
+  mat: {
+    "PLA": ["가장 많이 쓰는 기본 재료", "출력이 깔끔하고 저렴해요. 열에 약해 약 55℃ 이상(한여름 차 안)에서는 휘어질 수 있어요.", "명판, 피규어, 화분 커버, 정리함, 소품"],
+    "PLA-Matte": ["무광 PLA", "빛 반사가 적어 층 줄무늬가 덜 보이고 고급스러워요. 성질은 PLA와 같아요.", "피규어, 인테리어 소품, 조명 갓, 모형"],
+    "PLA-Silk": ["반짝이는 광택 PLA", "비단 같은 광택이 나요. 보기엔 예쁘지만 조금 덜 단단해요.", "트로피, 장식품, 선물용 오브젝트, 꽃병"],
+    "PETG": ["질기고 물·열에 강한 재료", "PLA보다 잘 안 부러지고 물과 열(약 70℃)에 강해요.", "비누 받침, 주방 걸이, 욕실용품, 공구 홀더, 실용 부품"],
+    "ABS": ["열·충격에 강한 단단한 재료", "약 90℃까지 버티고 충격에 강해요. 냄새 때문에 출력이 까다로워 시간이 조금 더 걸려요.", "차량 실내 거치대, 기계 커버, 뜨거운 곳 근처 부품"],
+    "ASA": ["실외용 재료", "ABS처럼 튼튼하고 햇빛(자외선)에 색이 잘 안 바래요.", "베란다·야외 부품, 화분 부품, 자전거·캠핑 용품, 표지판"],
+    "TPU": ["고무처럼 말랑한 재료", "휘어지고 충격을 흡수해요. 출력이 아주 느려 가격이 올라가요.", "폰 케이스, 범퍼, 고무발, 패킹, 미끄럼 방지 패드"],
+    "PLA-CF": ["탄소섬유 PLA", "가볍고 단단하며 무광 질감이에요. 잘 휘지 않아요.", "드론 프레임, 카메라 브래킷, 지그, 공구 보조물"],
+    "PETG-CF": ["탄소섬유 PETG", "질기면서도 단단하고 열·물에 강해요.", "기능성 브래킷, 공구 부품, 열 받는 하우징"]
+  },
+  complexity: {
+    simple: ["단순", "직선과 평면 위주예요. 구멍이 거의 없어요. 예상 작업 약 {m}.", "명판, 받침대, 스페이서, 간단한 고리, 네모 상자"],
+    normal: ["보통", "구멍·홈·둥근 모서리가 몇 개 있어요. 예상 작업 약 {m}.", "멀티탭 거치대, 나사 구멍 있는 브래킷, 케이블 클립, 칸막이 정리함"],
+    complex: ["복잡", "여러 부품이 맞물리거나 곡면이 많아요. 예상 작업 약 {m}.", "뚜껑 있는 2파트 케이스, 경첩 상자, 기어, 캐릭터 모양"],
+    unknown: ["잘 모르겠어요", "자료를 보고 담당자가 정해요. 예상 추가 비용은 확인 후 알려 드려요.", "어떤 난이도인지 감이 안 올 때"]
+  },
+  features: {
+    screw: ["나사·볼트 구멍", "나사나 볼트가 들어갈 구멍을 크기에 맞게 만들어요.", "벽에 나사로 고정, M3 볼트로 조립"],
+    fit: ["끼움·맞물림", "다른 물건에 끼우거나 뚜껑이 딱 맞게 만들어요.", "책상 모서리 끼움 클립, 딸깍 닫히는 뚜껑"],
+    hinge: ["힌지·움직이는 부분", "접히거나 돌아가는 부분을 만들어요.", "경첩 뚜껑, 회전 거치대, 접이식 스탠드"],
+    text: ["글자·로고 각인", "글자나 로고를 새기거나 튀어나오게 만들어요.", "이름 각인, 가게 로고, 번호표"],
+    multi: ["여러 부품 조립", "여러 조각으로 나눠 만든 뒤 조립해요.", "서랍 + 본체, 큰 물건 나눠 출력"],
+    exact: ["치수를 정확히 맞춰야 함", "다른 부품이나 제품 치수에 정확히 맞춰요. 측정·시험 출력이 필요할 수 있어요.", "기존 제품 교체 부품, 센서·보드 끼움"],
+    etc: ["기타", "목록에 없는 기능이면 직접 적어 주세요.", "자석 넣을 홈, 물 빠짐 구멍"]
+  },
+  scope: {
+    scale: ["크기 조정만", "모양은 그대로 두고 크기만 바꿔요.", "전체 10% 크게, 높이만 2배"],
+    hole: ["구멍·부분 추가/삭제", "구멍을 뚫거나 막고, 일부를 자르거나 붙여요.", "나사 구멍 추가, 글자 추가, 걸림 부분 자르기"],
+    shape: ["형태 일부 변경", "일부 모양을 바꾸거나 두께를 보강해요.", "손잡이 모양 변경, 얇은 부분 두껍게"],
+    major: ["대부분 다시 설계", "거의 새로 만드는 범위라 담당자가 확인해요.", "기존 파일은 참고만 하고 새로 설계"]
+  },
+  tol: {
+    normal: ["일반 (±0.3mm)", "대부분의 물건에 충분해요.", "거치대, 정리함, 소품"],
+    tight: ["정밀 (±0.1mm)", "꼭 맞게 끼워야 하는 부품용이에요. 시험 출력이 필요할 수 있어요.", "베어링·센서 끼움, 맞물리는 2파트"]
+  },
+  purpose: {
+    deco: ["장식·소품", "보이는 물건이라 표면을 신경 써요.", "피규어 받침, 인테리어 오브제"], living: ["생활용품·수납", "일상에서 쓰는 물건이에요.", "정리함, 컵 받침, 칫솔꽂이"],
+    mount: ["고정·거치대", "무게를 받쳐서 튼튼하게 만들어요.", "모니터 선반 받침, 폰 거치대"], func: ["기능성 부품", "힘·열을 받는 부품이라 튼튼하게 만들어요.", "기계 부품, 공구 부품"],
+    repair: ["수리·교체 부품", "부러진 부품을 대신해요. 치수가 중요해요.", "가구 다리 캡, 손잡이, 클립"], proto: ["시제품·테스트", "모양·크기 확인용이에요.", "제품 시안, 크기 확인용 모형"],
+    gift: ["선물·기념품", "보기 좋게 마감해요.", "이름 키링, 트로피"], hobby: ["취미·장난감", "놀이·취미용이에요.", "핑거보드 트랙, 보드게임 말"], etc: ["기타", "직접 적어 주세요.", ""]
+  },
+  strength: {light: ["가볍게", "속을 적게 채워(10%) 가볍고 저렴해요.", "장식품, 모형"], normal: ["표준", "대부분의 물건에 알맞아요 (벽 2겹 · 속 15%).", "정리함, 소품, 생활용품"],
+    strong: ["튼튼하게", "벽 4겹, 속 30%로 단단해요. 무겁고 조금 비싸요.", "선반 받침, 공구 걸이, 힘 받는 부품"]},
+  quality: {fast: ["빠르게", "층을 두껍게(0.28mm) 쌓아 빠르고 저렴해요. 줄무늬가 보여요.", "시제품, 안 보이는 부품"], normal: ["표준", "깔끔한 기본 품질이에요 (0.20mm).", "대부분의 물건"],
+    fine: ["곱게", "층을 얇게(0.12mm) 쌓아 매끈해요. 시간이 1.5~2배 걸려요.", "피규어, 작은 글씨, 매끈한 곡면"]},
+  support: {none: ["필요 없음", "공중에 뜬 부분이 없으면 이걸로 충분해요.", "바닥이 평평한 상자·명판"], auto: ["자동으로 넣기", "공중에 뜬 부분을 받치는 임시 기둥을 넣고, 출력 후 떼어 내요.", "T자 모양, 돌출된 손잡이, 아치"]}
+};
+FD.helpBtn = (g, k) => FD.HELP[g] && (!k || FD.HELP[g][k]) ? `<span class="fd-q" role="button" tabindex="0" aria-label="설명·예시 보기" data-hg="${g}" data-hk="${k || ""}">?</span>` : "";
+FD.helpAll = g => FD.HELP[g] ? `<button type="button" class="fd-qall" data-hg="${g}"><span class="fd-q" aria-hidden="true">?</span>항목별 설명·예시 보기</button>` : "";
+const helpItem = (g, k) => { const h = FD.HELP[g][k]; if (!h) return "";
+  const m = g === "complexity" ? (FD.COMPLEXITY.find(c => c[0] === k) || [])[3] : null;
+  return `<div class="fd-hi"><b>${esc(h[0])}</b><p>${esc(h[1].replace("{m}", m ? fmtMin(m) : ""))}</p>${h[2] ? `<p class="fd-ex">예) ${esc(h[2])}</p>` : ""}</div>`; };
+// ? 를 눌러도 옵션이 선택되지 않게 (캡처 단계에서 먼저 처리)
+const openHelp = el => {
+  const g = el.dataset.hg, k = el.dataset.hk;
+  // 세로 목록이면 누른 항목 바로 아래, 그 밖에는 묶음 아래에 설명을 펼침
+  const list = el.closest(".choices,.fd-radios");
+  const box = el.classList.contains("fd-qall") ? el.previousElementSibling : list ? el.closest(".choice,.fd-opt") : el.closest(".fd-chips,.fd-mats,.fd-seg,.fd-dots") || el.parentElement;
+  const scope = list || box.parentElement;
+  const key = g + ":" + (k || "*");
+  const old = [...scope.querySelectorAll(":scope > .fd-helpbox")].concat(box.nextElementSibling?.classList.contains("fd-helpbox") ? [box.nextElementSibling] : []);
+  const same = old.find(x => x.dataset.key === key && !x.hidden);
+  old.forEach(x => x.remove());
+  if (same) return;
+  const hb = document.createElement("div"); hb.className = "fd-helpbox"; hb.setAttribute("role", "note"); box.after(hb);
+  requestAnimationFrame(() => hb.scrollIntoView({behavior: "smooth", block: "nearest"}));
+  hb.dataset.key = key; hb.hidden = false;
+  hb.innerHTML = (k ? helpItem(g, k) : Object.keys(FD.HELP[g]).map(x => helpItem(g, x)).join("")) + `<button type="button" class="fd-hclose" aria-label="설명 닫기">닫기</button>`;
+};
+document.addEventListener("click", e => {
+  const q = e.target.closest(".fd-q[data-hg], .fd-qall"); const c = e.target.closest(".fd-hclose");
+  if (c){ e.preventDefault(); e.stopPropagation(); c.parentElement.hidden = true; return; }
+  if (!q) return; e.preventDefault(); e.stopPropagation(); openHelp(q);
+}, true);
+document.addEventListener("keydown", e => { if ((e.key === "Enter" || e.key === " ") && e.target.matches(".fd-q[data-hg]")){ e.preventDefault(); e.stopPropagation(); openHelp(e.target); } }, true);
+
 /* ---------------- 폼 그리기·읽기 (모든 시안 공통 컴포넌트) ---------------- */
 const fieldId = (p, id) => `${p}-${id}`;
 const hasEtc = f => (f.options || []).some(o => o[0] === "etc");
@@ -936,8 +1027,8 @@ FD.fieldHTML = (f, p, val, etcVal) => {
   else if (f.type === "select") c = `<select class="fd-in" id="${id}">${f.options.map(([k, t]) => `<option value="${k}"${k === (v || f.def) ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>`;
   else if (f.type === "dims") c = `<div class="fd-dims" id="${id}">${["가로","세로","높이"].map((t, i) => `<input class="fd-in" type="number" inputmode="decimal" min="1" max="300" placeholder="${t}" aria-label="${t} mm" value="${esc((v || [])[i] || "")}">`).join('<span>×</span>')}</div>`;
   else if (f.type === "chips" || f.type === "radio") c = `<div class="fd-${f.type === "chips" ? "chips" : "radios"}" id="${id}" role="radiogroup">${f.options.map(([k, t, d]) =>
-      `<button type="button" role="radio" class="fd-opt${k === (v || f.def) ? " on" : ""}" aria-checked="${k === (v || f.def)}" data-v="${k}"><b>${esc(t)}</b>${d ? `<small>${esc(d)}</small>` : ""}</button>`).join("")}</div>`;
-  else if (f.type === "checks") c = `<div class="fd-chips" id="${id}">${f.options.map(([k, t]) => `<button type="button" class="fd-opt${(v || []).includes(k) ? " on" : ""}" aria-pressed="${(v || []).includes(k)}" data-v="${k}"><b>${esc(t)}</b></button>`).join("")}</div>`;
+      `<button type="button" role="radio" class="fd-opt${k === (v || f.def) ? " on" : ""}" aria-checked="${k === (v || f.def)}" data-v="${k}"><b>${esc(t)}${f.type === "radio" ? FD.helpBtn(f.id, k) : ""}</b>${d ? `<small>${esc(d)}</small>` : ""}</button>`).join("")}</div>${f.type === "chips" ? FD.helpAll(f.id) : ""}`;
+  else if (f.type === "checks") c = `<div class="fd-chips" id="${id}">${f.options.map(([k, t]) => `<button type="button" class="fd-opt${(v || []).includes(k) ? " on" : ""}" aria-pressed="${(v || []).includes(k)}" data-v="${k}"><b>${esc(t)}</b></button>`).join("")}</div>${FD.helpAll(f.id)}`;
   else if (f.type === "files") c = `<label class="fd-drop" for="${id}">${FD.icon("upload")}<span><b>눌러서 고르거나 끌어다 놓기</b><small>${esc(f.help || "")}</small></span></label>
       <input id="${id}" type="file" accept="${f.accept || ""}" multiple hidden><div class="fd-flist" data-for="${id}"></div>`;
   const on = Array.isArray(v) ? v.includes("etc") : v === "etc";
@@ -1373,7 +1464,7 @@ FD.checkConsent = p => { const ok = document.getElementById(p + "-consent").chec
 FD.mountPrintOptions = (el, st, onChange, cfg = {}) => {
   const o = st.opts, v = cfg.variant || "cards";
   const seg = (k) => `<div class="fd-field"><div class="fd-label">${{strength:"튼튼함",quality:"품질",support:"서포트"}[k]}</div>
-    <div class="fd-seg q" data-q="${k}">${Object.entries(FD.QUICK_LABEL[k]).map(([x, t]) => `<button type="button" class="${o[k] === x ? "on" : ""}" data-v="${x}">${t}</button>`).join("")}</div></div>`;
+    <div class="fd-seg q" data-q="${k}">${Object.entries(FD.QUICK_LABEL[k]).map(([x, t]) => `<button type="button" class="${o[k] === x ? "on" : ""}" data-v="${x}">${t}</button>`).join("")}</div>${FD.helpAll(k)}</div>`;
   const advRow = it => { const val = (o.adv || engineFor(o))[it.id];
     return `<label class="fd-adv-row"><span>${esc(it.label)}${it.unit ? ` <small>(${esc(it.unit)})</small>` : ""}</span>${it.type === "select"
       ? `<select class="fd-in" data-adv="${it.id}">${it.list.map(([k, t]) => `<option value="${k}"${String(k) === String(val) ? " selected" : ""}>${esc(t)}</option>`).join("")}</select>`
@@ -1381,11 +1472,11 @@ FD.mountPrintOptions = (el, st, onChange, cfg = {}) => {
   const draw = () => {
     const adv = advOpen;
     el.innerHTML = `<div class="fd-popts ${v}">
-      <div class="fd-field"><div class="fd-label">재료</div><div class="fd-mats" role="radiogroup">${FD.MATS.map(m => `<button type="button" role="radio" aria-checked="${o.mat === m.v}" class="fd-mat${o.mat === m.v ? " on" : ""}" data-mat="${m.v}"><b>${esc(m.name)}</b><small>${esc(FD.MAT_SHORT[m.v] || "")}</small></button>`).join("")}</div>
+      <div class="fd-field"><div class="fd-label">재료</div><div class="fd-mats" role="radiogroup">${FD.MATS.map(m => `<button type="button" role="radio" aria-checked="${o.mat === m.v}" class="fd-mat${o.mat === m.v ? " on" : ""}" data-mat="${m.v}"><b>${esc(m.name)}${FD.helpBtn("mat", m.v)}</b><small>${esc(FD.MAT_SHORT[m.v] || "")}</small></button>`).join("")}</div>
         <div class="fd-help fd-matdesc" style="margin-top:8px">${esc(FD.MAT_DESC[o.mat] || "")}</div>
         ${cfg.beginner !== false ? '<div class="fd-help" style="margin-top:2px">잘 모르겠으면 PLA Basic이 가장 무난해요.</div>' : ""}</div>
       <div class="fd-field"><div class="fd-label">색상 <span class="fd-cname">${esc((FD.COLORS.find(c => c.v === o.color) || {}).name || "")}</span></div><div class="fd-dots" role="radiogroup">${FD.COLORS.map(c => `<button type="button" role="radio" aria-checked="${o.color === c.v}" aria-label="${esc(c.name)}" title="${esc(c.name)}" class="fd-dot${o.color === c.v ? " on" : ""}${c.v === "투명" ? " clear" : c.v === "기타" ? " other" : ""}" data-color="${c.v}" style="--c:${FD.COLOR_HEX[c.v]}"></button>`).join("")}</div></div>
-      <div class="fd-field"><div class="fd-label">사용 용도</div><div class="fd-chips">${FD.PURPOSES.map(([k, t]) => `<button type="button" class="fd-opt${o.purpose === k ? " on" : ""}" data-purpose="${k}"><b>${t}</b></button>`).join("")}</div>
+      <div class="fd-field"><div class="fd-label">사용 용도</div><div class="fd-chips">${FD.PURPOSES.map(([k, t]) => `<button type="button" class="fd-opt${o.purpose === k ? " on" : ""}" data-purpose="${k}"><b>${t}</b></button>`).join("")}</div>${FD.helpAll("purpose")}
         <div class="fd-help fd-padv" ${st.advice ? "" : "hidden"} style="margin-top:6px">${esc(st.advice || "")}</div></div>
       ${o.adv ? `<div class="fd-help">상세 설정으로 계산 중이에요. <button type="button" class="fd-link" data-act="quick">빠른 설정으로 돌아가기</button></div>` : ["strength","quality","support"].map(seg).join("")}
       <div class="fd-field"><div class="fd-label">수량</div><div class="fd-qty"><button type="button" data-qty="-1" aria-label="빼기">−</button><input class="fd-in" type="number" min="1" max="999" value="${o.qty}" aria-label="수량" data-act="qty"><button type="button" data-qty="1" aria-label="더하기">+</button></div></div>
