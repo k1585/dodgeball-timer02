@@ -187,7 +187,9 @@ body{margin:0;background:var(--fd-bg);color:var(--fd-text);font-family:var(--fd-
 .choice:hover{border-color:#b9c6e8}.choice:active{transform:scale(.985)}.choice.on{border-color:var(--fd-accent);background:var(--fd-accent-soft)}
 .choice .em{width:46px;height:46px;border-radius:14px;background:var(--fd-accent-soft);color:var(--fd-accent);display:flex;align-items:center;justify-content:center;flex:none}.choice .em .fd-ic{width:24px;height:24px}
 .choice b{display:block;font-size:17px}.choice small{color:var(--fd-muted);font-size:13.5px}
-.q .fd-field{margin-bottom:22px}.q .fd-label{font-size:15px}
+.q .fd-field{margin-bottom:22px}
+/* 질문 제목·설명이 위에 이미 있으니 칸 안의 같은 제목·설명은 숨김 */
+#ff .fd-field>.fd-label,#ff .fd-field>.fd-help{display:none}.q .fd-label{font-size:15px}
 .q .fd-in{min-height:56px;border-radius:16px;font-size:17px;padding:14px 16px}
 .q .fd-opt{min-height:52px;border-radius:16px;padding:12px 16px;font-size:15px;background:#fff}.q .fd-chips .fd-opt{min-height:44px;border-radius:99px}
 .q .fd-drop{padding:26px;border-radius:20px;background:#fff}
