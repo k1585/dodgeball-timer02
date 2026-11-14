@@ -872,7 +872,6 @@ FD.quoteDesign = (svc, v, student) => {
   for (const f of FD.FEATURES) if ((v.features || []).includes(f[0])) min += f[2];
   const desc = String(v.desc || "").trim();
   if ((svc === "idea" || svc === "pro") && desc.length < S.review.minDescLen) reasons.push("설명이 짧아요. 만들 물건을 조금 더 알려 주시면 바로 견적이 나와요.");
-  if (svc === "pro" && !(v.dims && v.dims.some(x => +x > 0))) reasons.push("전문 모델링은 치수가 필요해요. 치수가 없으면 담당자가 확인해요.");
   if (min > S.review.maxDesignMin) reasons.push(`예상 작업 시간이 ${Math.round(min / 60)}시간을 넘어 일정·범위를 확인해요.`);
   // 의뢰 출력: 지금은 디자인 기본비(1시간 포함)만 결제 → 디자인 후 시간이 넘으면 추가 비용 → 완성 파일로 'STL 파일이 있어요' 출력 주문
   const fee = FD.designFee(svc, min), base = S.design[svc] || 0, k = student ? 1 - S.studentRate : 1;
@@ -914,7 +913,7 @@ FD.FLOWS = {
   ],
   pro: [
     {key: "material", title: "설계 사양", fields: [F.title("예) 센서 하우징 2파트"), {id: "desc", label: "기능·형상 요구사항", type: "textarea", req: true, ph: "맞물리는 부품, 들어갈 부품 치수, 조립 방식 등"},
-      F.dims(true), {id: "tol", label: "공차", type: "radio", def: "normal", options: [["normal","일반 (±0.3mm)"],["tight","정밀 (±0.1mm)"]]}, F.refs(false, "도면·참고 자료")]},
+      F.dims(false), {id: "tol", label: "공차", type: "radio", def: "normal", options: [["normal","일반 (±0.3mm)"],["tight","정밀 (±0.1mm)"]]}, F.refs(false, "도면·참고 자료")]},
     {key: "spec", title: "작업 범위", fields: [F.complexity, {id: "parts", label: "부품 개수", type: "number", def: 1, min: 1, max: 30}, F.features,
       {id: "format", label: "파일 형식", type: "select", def: "stl", options: [["stl","STL"],["step","STEP (수정 가능한 CAD)"],["both","둘 다"]]}, F.qty, F.mat]}
   ]
